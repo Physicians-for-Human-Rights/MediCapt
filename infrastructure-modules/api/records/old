@@ -1,0 +1,231 @@
+---
+swagger: "2.0"
+info:
+  description: "The MediCapt API"
+  version: "0.1"
+  title: "Medicapt API"
+  termsOfService: ""
+  contact: {}
+securityDefinitions:
+  ProviderUsers:
+    type: apiKey
+    name: Authorization
+    in: header
+    x-amazon-apigateway-authtype: cognito_user_pools
+    x-amazon-apigateway-authorizer:
+      type: COGNITO_USER_POOLS
+      providerARNs:
+      - arn:aws:cognito-idp:${region}:${account_id}:userpool/${cognito_user_pool_id}
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /users/{userid}:
+    get:
+      summary: "Get user"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+      security:
+        - Provider: []
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri}
+    put:
+      summary: "Update user"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri}
+    parameters:
+    - name: "userid"
+      in: "path"
+      required: true
+      type: "string"
+  /users:
+    get:
+      summary: "List users"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri}
+    post:
+      summary: "Create user"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri}
+  /institutions/{institutionid}:
+    get:
+      summary: "Get institution"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri}
+    put:
+      summary: "Update instution"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri}
+    parameters:
+    - name: "institutionid"
+      in: "path"
+      required: true
+      type: "string"
+  /institutions:
+    get:
+      summary: "List institutions"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri}
+    post:
+      summary: "Create institution"
+      parameters: []
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri}
+      responses:
+        200:
+          description: "Status 200"
+  /users/{userid}/settings:
+    put:
+      summary: "Change settings"
+      parameters: []
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri}
+      responses:
+        200:
+          description: "Status 200"
+    parameters:
+    - name: "userid"
+      in: "path"
+      required: true
+      type: "string"
+  /patients/{patientid}:
+    get:
+      summary: "Records for patient"
+      parameters: []
+      responses:
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri}
+        200:
+          description: "Status 200"
+    post:
+      parameters: []
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri}
+      responses:
+        200:
+          description: "Status 200"
+    parameters:
+    - name: "patientid"
+      in: "path"
+      required: true
+      type: "string"
+  /patients:
+    get:
+      parameters: []
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri}
+      responses:
+        200:
+          description: "Status 200"
+    post:
+      parameters: []
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri}
+      responses:
+        200:
+          description: "Status 200"
+  /patients/{patientid}/record:
+    get:
+      parameters: []
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri}
+      responses:
+        200:
+          description: "Status 200"
+    put:
+      parameters: []
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri}
+      responses:
+        200:
+          description: "Status 200"
+    parameters:
+    - name: "patientid"
+      in: "path"
+      required: true
+      type: "string"
+  /patients/{patientid}/record/seal:
+    post:
+      parameters: []
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri}
+      responses:
+        200:
+          description: "Status 200"
+    parameters:
+    - name: "patientid"
+      in: "path"
+      required: true
+      type: "string"
+  /patients/{patientid}/record/amend:
+    post:
+      parameters: []
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri}
+      responses:
+        200:
+          description: "Status 200"
+    parameters:
+    - name: "patientid"
+      in: "path"
+      required: true
+      type: "string"
+definitions:
+  UUID:
+    type: "string"
+  Error:
+    type: "object"
+    required:
+    - "code"
+    properties:
+      code:
+        type: "integer"
+        minimum: 400
+        maximum: 599
+      description:
+        type: "string"
+      reasonPhrase:
+        type: "string"
+    description: "This general error structure is used throughout this API."
+  Patient:
+    type: "object"
+  User:
+    type: "object"
+    properties:
+      metadataAccess:
+        type: "array"
+        items:
+          $ref: "#/definitions/UUID"
+      institutionAccess:
+        type: "array"
+        items:
+          $ref: "#/definitions/UUID"
+  Instiution:
+    type: "object"
