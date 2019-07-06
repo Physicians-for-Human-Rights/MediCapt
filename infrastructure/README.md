@@ -36,3 +36,27 @@ networking/*
 storage/*
 admin/users-providers
 api/*
+
+* Creating a KMS CMK
+
+aws kms create-key --origin EXTERNAL
+
+Take the key id and put it below:
+
+aws kms get-parameters-for-import --key-id <keyid> --wrapping-algorithm RSAES_OAEP_SHA_256 --wrapping-key-spec RSA_2048
+openssl enc -d -base64 -A -in public-key.b64 -out public-key.bin
+openssl enc -d -base64 -A -in import-token.b64 -out import-token.bin
+openssl rand -out plaintext-key-material.bin 32
+openssl pkeyutl \
+        -in plaintext-key-material.bin \
+        -inkey public-key.bin \
+        -out encrypted-key-material.bin \
+        -keyform der \
+        -pubin -encrypt \
+        -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256
+aws kms import-key-material --key-id c7ac1c3c-0f32-4e04-acb8-8b7c347717b7 \
+                              --encrypted-key-material fileb://encrypted-key-material.bin \
+                              --import-token fileb://import-token.bin \
+                              --expiration-model KEY_MATERIAL_DOES_NOT_EXPIRE
+
+And you're done.
