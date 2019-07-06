@@ -1,0 +1,16 @@
+// Do not edit the generated code by hand. Change the template and rerun update-config.sh
+
+export default {
+  apiGateway: {
+    records: {
+        URL: $RECORDS_URL,
+        REGION: $REGION
+    }
+  },
+  cognito: {
+    REGION: $REGION,
+    USER_POOL_ID: $USER_POOL_ID,
+    APP_CLIENT_ID: $APP_CLIENT_ID,
+    IDENTITY_POOL_ID: $IDENTITY_POOL_ID
+  }
+};
