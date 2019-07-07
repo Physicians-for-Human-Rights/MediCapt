@@ -85,7 +85,7 @@ resource "aws_s3_bucket_object" "index" {
   content_type = "text/html"
 }
 
-resource "aws_s3_bucket_object" "index" {
+resource "aws_s3_bucket_object" "page_404" {
   bucket = aws_s3_bucket.public_site.bucket
   key = "404.html"
   source = "public-site/404.html"
