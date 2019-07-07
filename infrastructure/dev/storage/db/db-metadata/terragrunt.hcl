@@ -1,5 +1,5 @@
 terraform {
-  source = "git::ssh://git@github.com/abarbu/medicapt-infrastructure-modules.git//storage/db?ref=master"
+  source = "../../../../../medicapt-infrastructure-modules//storage/db"
 }
 
 # Include all settings from the root terragrunt.hcl file

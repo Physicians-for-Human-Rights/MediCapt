@@ -1,5 +1,5 @@
 terraform {
-  source = "git::ssh://git@github.com/abarbu/medicapt-infrastructure-modules.git//networking/vpc?ref=master"
+  source = "../../../../medicapt-infrastructure-modules//networking/vpc"
 }
 
 # Include all settings from the root terragrunt.hcl file
