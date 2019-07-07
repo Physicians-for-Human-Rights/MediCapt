@@ -1,5 +1,5 @@
 terraform {
-  source = "../../../../medicapt-infrastructure-modules//networking/vpc"
+  source = "../../../../../medicapt-infrastructure-modules//networking/vpc"
 }
 
 # Include all settings from the root terragrunt.hcl file
