@@ -14,11 +14,17 @@ Amplify.configure({
     API: {
         endpoints: [
             {
-                name: "notes",
+                name: "records",
                 endpoint: config.apiGateway.URL,
                 region: config.apiGateway.REGION
             },
         ]
+    },
+    Storage: {
+        AWSS3: {
+            bucket: config.s3.BUCKET,
+            region: config.s3.REGION
+        }
     }
 });
 

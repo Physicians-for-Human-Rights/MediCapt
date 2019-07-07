@@ -2,7 +2,13 @@
   "expo": {
     "name": "MediCapt",
     "slug": "medicaptApp",
-    "privacy": "public",
+    "ios": {
+      "bundleIdentifier": "com.medicapt.medicaptapp"
+    },
+    "android": {
+      "package": "com.medicapt.medicaptapp"
+    },
+    "privacy": "unlisted",
     "sdkVersion": "33.0.0",
     "platforms": [
       "ios",
