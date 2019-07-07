@@ -45,7 +45,7 @@ variable "flow_logs_retention_in_days" {
 
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
-  version = "~> 2.0"
+  version = "2.7.0"
   name = "vpc-${var.namespace}-${var.backend}-${var.stage}"
   cidr = "10.${var.classB}.0.0/16"
   enable_dns_hostnames = true
