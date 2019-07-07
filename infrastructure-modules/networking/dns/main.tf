@@ -76,6 +76,22 @@ EOF
     }
 }
 
+# TODO This is just temporary as the API gateway has to resolve the website
+# correctly.
+resource "aws_s3_bucket_object" "index" {
+  bucket = aws_s3_bucket.public_site.bucket
+  key = "index.html"
+  source = "public-site/index.html"
+  content_type = "text/html"
+}
+
+resource "aws_s3_bucket_object" "index" {
+  bucket = aws_s3_bucket.public_site.bucket
+  key = "404.html"
+  source = "public-site/404.html"
+  content_type = "text/html"
+}
+
 resource "aws_route53_record" "domain" {
    name = "${var.domain_name}"
    zone_id = "${data.aws_route53_zone.root.zone_id}"
