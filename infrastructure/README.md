@@ -28,13 +28,17 @@ medicapt-deidentified-prod-db-password
 medicapt-metadata-prod-db-password
 medicapt-records-prod-db-password
 
+medicapt-deidentified-dev-db-password
+medicapt-metadata-dev-db-password
+medicapt-records-dev-db-password
+
 Or for whatever stage (prod, dev, beta, etc.) that you're building.
 
 Modules must be applied in this order due to dependencies:
 admin/logging
 networking/*
-storage/*
 admin/users-providers
+storage/*
 api/*
 
 * Creating a KMS CMK
@@ -60,3 +64,8 @@ aws kms import-key-material --key-id c7ac1c3c-0f32-4e04-acb8-8b7c347717b7 \
                               --expiration-model KEY_MATERIAL_DOES_NOT_EXPIRE
 
 And you're done.
+
+* Data API
+
+The data API has to be enabled for each database manually. There doesn't seem to
+be a way to do it through terraform at the moment.
