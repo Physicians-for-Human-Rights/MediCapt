@@ -61,6 +61,31 @@ data "aws_ssm_parameter" "db_password" {
   name = "${var.namespace}-${var.backend}-${var.stage}-db-password"
 }
 
+resource "aws_secretsmanager_secret" "db_password" {
+  kms_key_id          = "${data.aws_kms_key.master.key_id}"
+  name                = "${var.namespace}-${var.backend}-${var.stage}-db-password"
+}
+
+resource "aws_secretsmanager_secret_version" "db_password" {
+  lifecycle {
+    ignore_changes = [
+      "secret_string"
+    ]
+  }
+  secret_id     = aws_secretsmanager_secret.db_password.id
+  secret_string = <<EOF
+{
+  "username": "${aws_rds_cluster.db.master_username}",
+  "engine": "aurora",
+  "dbname": "medicapt",
+  "host": "${aws_rds_cluster.db.endpoint}",
+  "password": "${data.aws_ssm_parameter.db_password.value}",
+  "port": ${aws_rds_cluster.db.port},
+  "dbInstanceIdentifier": "${var.namespace}-${var.backend}-${var.stage}"
+}
+EOF
+}
+
 resource "aws_db_subnet_group" "db" {
   name        = "${var.namespace}-${var.backend}-${var.stage}"
   subnet_ids = data.terraform_remote_state.vpc.outputs.vpc.private_subnets
@@ -134,32 +159,38 @@ resource "aws_rds_cluster" "db" {
   }
 }
 
-resource "aws_db_event_subscription" "db" {
-  name      = "${var.namespace}-${var.backend}-${var.stage}"
-  sns_topic = data.terraform_remote_state.logging.outputs.alarm_topic.arn
-  # TODO Shouldn't this be the right source type?
-  # source_type = "db-cluster"
-  source_ids  = [aws_rds_cluster.db.id]
-  event_categories = [
-    "availability",
-    "deletion",
-    "failover",
-    "failure",
-    "low storage",
-    "maintenance",
-    "notification",
-    "read replica",
-    "recovery",
-    "restoration",
-  ]
-}
+# TODO I had to disable this because updating the db was hanging in terraform. Reenable
+# resource "aws_db_event_subscription" "db" {
+#   name      = "${var.namespace}-${var.backend}-${var.stage}"
+#   sns_topic = data.terraform_remote_state.logging.outputs.alarm_topic.arn
+#   # TODO Shouldn't this be the right source type?
+#   # source_type = "db-cluster"
+#   source_ids  = [aws_rds_cluster.db.id]
+#   event_categories = [
+#     "availability",
+#     "deletion",
+#     "failover",
+#     "failure",
+#     "low storage",
+#     "maintenance",
+#     "notification",
+#     "read replica",
+#     "recovery",
+#     "restoration",
+#   ]
+# }
 
 output "db" {
   description = "RDS cluster"
   value       = aws_rds_cluster.db
 }
 
-output "db_events" {
-  description = "Database event subscription"
-  value       = aws_db_event_subscription.db
+# output "db_events" {
+#   description = "Database event subscription"
+#   value       = aws_db_event_subscription.db
+# }
+
+output "db_secret" {
+  description = "Secret Manager secret for db connections"
+  value       = aws_secretsmanager_secret.db_password
 }

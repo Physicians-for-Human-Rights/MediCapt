@@ -1,3 +1,7 @@
+# pip install -r requirements.txt -t boto3/python/lib/python3.7/site-packages/
+# touch boto3/python/lib/python3.7/site-packages/.keep
+# mkdir -p boto3/python/lib/python3.7/site-packages
+
 terraform {
   required_version = ">= 0.12, < 0.13"
   backend "s3" {}
@@ -46,6 +50,10 @@ variable "cognito_sms_external_id" {
 data "aws_acm_certificate" "main" {
   domain   = "${var.domain_name}"
   statuses = ["ISSUED"]
+}
+
+data "aws_kms_key" "master" {
+  key_id = var.kms_key_id
 }
 
 resource "aws_iam_role" "cognito_sns_role" {
@@ -185,7 +193,7 @@ EOF
     required            = true
     mutable             = true
     string_attribute_constraints {
-      min_length = 5
+      min_length = 3
       max_length = 300
     }
   }
@@ -207,7 +215,7 @@ EOF
     required            = true
     mutable             = true
     string_attribute_constraints {
-      min_length = 5
+      min_length = 1
       max_length = 300
     }
   }
@@ -218,7 +226,7 @@ EOF
     required            = true
     mutable             = true
     string_attribute_constraints {
-      min_length = 5
+      min_length = 1
       max_length = 300
     }
   }
@@ -229,7 +237,7 @@ EOF
     required            = true
     mutable             = true
     string_attribute_constraints {
-      min_length = 5
+      min_length = 1
       max_length = 300
     }
   }
@@ -247,18 +255,29 @@ EOF
 
   schema {
     attribute_data_type = "String"
-    name                = "government_id_type"
+    name                = "official_id_type"
     # required            = true
     mutable             = true
     string_attribute_constraints {
-      min_length = 5
+      min_length = 3
       max_length = 300
     }
   }
 
   schema {
     attribute_data_type = "String"
-    name                = "government_id_number"
+    name                = "official_id_number"
+    # required            = true
+    mutable             = true
+    string_attribute_constraints {
+      min_length = 3
+      max_length = 300
+    }
+  }
+
+  schema {
+    attribute_data_type = "String"
+    name                = "official_id_expires"
     # required            = true
     mutable             = true
     string_attribute_constraints {
@@ -362,6 +381,28 @@ resource "aws_iam_policy" "lambda" {
         "cognito-idp:ListUsers"
       ],
       "Resource": "${aws_cognito_user_pool.main.arn}"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "rds-data:ExecuteStatement"
+      ],
+      "Resource": "${data.aws_rds_cluster.database.arn}"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": "${data.aws_secretsmanager_secret.db_password.arn}"
+    }
+,
+    {
+      "Effect": "Allow",
+      "Action": [
+        "kms:Decrypt"
+      ],
+      "Resource": "${data.aws_kms_key.master.arn}"
     }
   ]
 }
@@ -397,18 +438,58 @@ resource "aws_cognito_identity_pool_roles_attachment" "main" {
 data "archive_file" "src" {
   type        = "zip"
   source_dir  = "${path.module}/src"
-  output_path = "${path.module}/src.zip"
+  output_path = "${path.module}/code.zip"
+}
+
+resource "null_resource" "boto3" {
+  provisioner "local-exec" {
+    command = "pip install -r requirements.txt -t boto3/python/lib/python3.7/site-packages/"
+  }
+}
+
+data "archive_file" "boto3" {
+  type        = "zip"
+  source_dir  = "${path.module}/boto3"
+  output_path = "${path.module}/boto3.zip"
+  depends_on  = [null_resource.boto3]
+}
+
+data "aws_ssm_parameter" "db_password" {
+  name = "${var.namespace}-records-${var.stage}-db-password"
+}
+
+data "aws_secretsmanager_secret" "db_password" {
+  name = "${var.namespace}-records-${var.stage}-db-password"
+}
+
+data "aws_rds_cluster" "database" {
+  cluster_identifier = "${var.namespace}-records-${var.stage}"
+}
+
+resource "aws_lambda_layer_version" "boto3" {
+  layer_name          = "${var.namespace}-${var.stage}-boto3"
+  filename            = data.archive_file.boto3.output_path
+  compatible_runtimes = ["python3.7"]
+  source_code_hash    = data.archive_file.boto3.output_base64sha256
 }
 
 resource "aws_lambda_function" "pre_sign_up" {
   function_name = "${var.namespace}-${var.stage}-providers-pre-sign-up"
   role          = "${aws_iam_role.lambda.arn}"
-  runtime       = "nodejs8.10"
+  runtime       = "python3.7"
   filename      = data.archive_file.src.output_path
-  handler       = "index.handler"
+  handler       = "pre_sign_up.handler"
   timeout       = 30
   memory_size   = 128
   source_code_hash = data.archive_file.src.output_base64sha256
+  layers = ["${aws_lambda_layer_version.boto3.arn}"]
+  environment {
+    variables = {
+      DATABASE_NAME = "${var.namespace}_records_${var.stage}"
+      DB_CLUSTER_ARN = data.aws_rds_cluster.database.arn
+      DB_PASSWORD_ARN = data.aws_secretsmanager_secret.db_password.arn
+    }
+  }
 }
 
 resource "aws_lambda_permission" "pre_sign_up" {

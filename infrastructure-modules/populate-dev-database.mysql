@@ -1,0 +1,5 @@
+USE medicapt_records_dev;
+INSERT INTO institution (name,address,location_gps)
+  VALUES ("MIT","32 Vassar Street, Cambridge, 02139, USA", "{'lat': 42.360726, 'long': -71.093779}");
+INSERT INTO pending_provider_singup (name,email,phone_number,official_id_number,official_id_expires,institution_id)
+  VALUES ("Andrei Barbu","andrei@0xab.com","+13153330621","somenumber1","2019-12-31",1);
