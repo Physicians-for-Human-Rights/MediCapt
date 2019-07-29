@@ -15,7 +15,10 @@ import { Auth } from "aws-amplify";
 var _ = require("lodash");
 var getYear = require("date-fns/get_year");
 import { isValid, parse } from "date-fns";
-import logo from "../assets/medicapt.png";
+import logo from "../../assets/medicapt.png";
+
+import { connect } from "react-redux";
+import { setUser } from "../redux/actions";
 
 import {
   Authenticator,
@@ -30,26 +33,22 @@ import {
   Loading
 } from "aws-amplify-react";
 
-const AlwaysOn = props => {
-  return (
-    <div>
-      <div>I am always here to show current auth state: {props.authState}</div>
-      <button onClick={() => props.onStateChange("signUp")}>
-        Show Sign Up
-      </button>
-    </div>
-  );
-};
-
-export default class Y extends React.Component {
+class AuthScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleAuthStateChange = this.handleAuthStateChange.bind(this);
+  }
   handleAuthStateChange(state) {
     if (state === "signedIn") {
-      /* Do something when the user has signed-in */
+      Auth.currentAuthenticatedUser()
+        .then(user => {
+          this.props.setUser(user);
+          this.props.navigation.navigate("App");
+        })
+        .catch(x => console.log("Not signed in")); // TODO Better error handling, should sign out user.
     }
   }
   render() {
-    console.log("Running web version");
-    console.log(Platform.OS);
     return (
       <Authenticator
         hideDefault={true}
@@ -141,7 +140,6 @@ export default class Y extends React.Component {
         <ConfirmSignIn />
         <ConfirmSignUp />
         <Greetings />
-        <AlwaysOn />
         <VerifyContact />
         <ForgotPassword />
         <Loading />
@@ -149,3 +147,8 @@ export default class Y extends React.Component {
     );
   }
 }
+
+export default connect(
+  null,
+  { setUser }
+)(AuthScreen);

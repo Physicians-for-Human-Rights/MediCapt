@@ -31,6 +31,15 @@
     ],
     "ios": {
       "supportsTablet": true
+    },
+      "packagerOpts": {
+      "assetExts": [
+        "json",
+        "yaml",
+        "svg",
+        "png",
+        "jpg"
+      ]
     }
   }
 }
