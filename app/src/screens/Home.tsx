@@ -61,6 +61,12 @@ class HomeScreen extends React.Component<Props> {
         title: "Medicapt",
         header: null
     };
+
+    componentDidMount() {
+        // TODO Debugging
+        this.props.navigation.navigate("SelectForm")
+    }
+
     render() {
         return (
             <SafeAreaView forceInset={{ top: "always" }} style={styles.container}>

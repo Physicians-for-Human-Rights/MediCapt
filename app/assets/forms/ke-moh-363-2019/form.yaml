@@ -142,7 +142,7 @@ root:
           field:
             type: bool
       - evidence:
-          text: Collect evidence, such as bodily fluid samples, collection of clothing, hair combings, scrapings or cuttings of finger nails, blood samples, and photographs.
+          text: I AUTHORIZE the clinician to collect evidence, such as bodily fluid samples, collection of clothing, hair combings, scrapings or cuttings of finger nails, blood samples, and photographs.
           consent-required: true
           field:
             type: bool
@@ -166,10 +166,10 @@ root:
               field:
                 type: bool
           - reason:
-              title: The person you are speaking for is a
+              title: The person you are speaking for is
               only-when:
-                path: root.proxy.parts.is-proxy.field.value
-                value: female
+                path: root.consent.proxy.parts.is-proxy.field.value
+                value: true
               field:
                 type: list
                 select-multiple: true
@@ -186,14 +186,13 @@ root:
           consent-required: true
           field:
             type: signature
-  - preliminaries:
-      title: Preliminary
+  - clinic:
+      title: Clinic
       parts:
       - date:
-          title: Date
+          title: Date from completed
           field:
             type: date
-            default: !!js/function 'function () { return Date.now() }'
       - county-code:
           title: County code
           field:
@@ -203,21 +202,24 @@ root:
             other-allowed: true
       - sub-county-code:
           title: Sub-county code
-          field-type: text
+          field:
+            type: text
       - facility-name:
           title: Facility name
-          field-type: text
+          field:
+            type: text
       - op-ip-number:
           title: OP/IP Number
-          field-type: number
+          field:
+            type: number
       - mfl-code:
           title: MFL Code
-          field-type: text
+          field:
+            type: text
       - time:
           title: Date and time of exam
           field:
             type: date-time
-            default: !!js/function 'function () { return Date.now() }'
   - demographics:
       title: Demographics
       parts:
@@ -232,7 +234,6 @@ root:
           title: Date of birth
           field:
             type: date
-            validation: !!js/function 'function (value) { return value < Date.now() }'
       - gender:
           title: Gender
           field:
@@ -262,14 +263,13 @@ root:
           title: Citizenship
           field:
             type: text
-  - incident:
-      title: Incident
+  - incident-basics:
+      title: Incident basics
       parts:
       - time:
           title: Date and time of incident
           field:
             type: date-time
-            default: !!js/function 'function () { return Date.now() }'
       - nr-of-perpetrators:
           title: Number of perpetrators
           field:
@@ -331,6 +331,9 @@ root:
               title: What is reported
               field:
                 type: text
+  - incident-details:
+      title: Incident details
+      parts:
       - circumstance:
           title: Circumstances and survivor account
           description: How, where, what was used? Struggle?
@@ -370,7 +373,6 @@ root:
               title: Date and time of incident
               field:
                 type: date-time
-                default: !!js/function 'function () { return Date.now() }'
       - healthcare-facility:
           title: Previous healthcare facility
           parts:
@@ -392,7 +394,6 @@ root:
                 value: true
               field:
                 type: date-time
-                default: !!js/function 'function () { return Date.now() }'
           - was-treated:
               title: Were you treated?
               only-when:
@@ -417,25 +418,45 @@ root:
       required: false
       field:
         type: text
+  - general-condition:
+      title: General condition
+      parts:
+        - bp:
+            title: BP
+            field:
+              type: number
+        - pulse-rate:
+            title: Pulse rate
+            field:
+              type: number
+        - respiratory-rate:
+            title: Respiratory rate
+            field:
+              type: number
+        - temperature:
+            title: Temperature
+            field:
+              type: number
+        - demeanor:
+            title: Demeanor
+            field:
+              type: text
   - physical-exam:
       title: Physical exam
-      parts:
-      - overall:
-          title: Body map and comments
-          show-body-images:
-            generic-images:
-              - anterior.svg
-              - bottom.svg
-              - posterior.svg
-              - top.svg
-          field:
-            type: text
-      - ob-gyn-history:
-          title: OB/GYN history
-          only-when:
-            path: root.demographics.gender.field.value
-            value: female
-          parts:
+      show-body-images:
+        generic-images:
+          - anterior.svg
+          - bottom.svg
+          - posterior.svg
+          - top.svg
+        field:
+          type: text
+  - ob-gyn-history:
+      title: OB/GYN history
+      only-when:
+        path: root.demographics.gender.field.value
+        value: female
+        parts:
           - parity:
               title: Parity
               field:
@@ -458,78 +479,55 @@ root:
                 type: date
               if-unknown:
                 value: Unknown
-      - general-condition:
-          title: General condition
-          parts:
-          - bp:
-              title: BP
-              field:
-                type: number
-          - pulse-rate:
-              title: Pulse rate
-              field:
-                type: number
-          - respiratory-rate:
-              title: Respiratory rate
-              field:
-                type: number
-          - temperature:
-              title: Temperature
-              field:
-                type: number
-          - demeanor:
-              title: Demeanor
-              field:
-                type: text
-      - genital-exam:
-          title: Genital examination
-          show-body-images:
-            gender-path: root.demographics.parts.gender.field.value
-            female-images:
-              - female-1.svg
-              - female-2.svg
-              - female-3.svg
-            male-images:
-              - male-1.svg
-              - male-2.svg
-              - male-3.svg
-          parts:
-          - physical-injuries:
-              title: Physical injuries
-              field:
-                type: text
-          - outer-genitalia:
-              title: Outer genitalia
-              field:
-                type: text
-          - vagina:
-              title: Vagina
-              only-when:
-                path: root.demographics.parts.gender.field.value
-                value: female
-              field:
-                type: text
-          - hymen:
-              title: Hymen
-              only-when:
-                path: root.demographics.parts.gender.field.value
-                value: female
-              field:
-                type: text
-          - anus:
-              title: Anus
-              field:
-                type: text
-          - other:
-              title: Other significant orifices
-              required: false
-              field:
-                type: text
-          - comments:
-              title: Comments
-              required: false
-              field:
-                type: text
+  - genital-exam:
+      title: Genital examination
+      show-body-images:
+        gender-path: root.demographics.parts.gender.field.value
+        female-images:
+          - female-1.svg
+          - female-2.svg
+          - female-3.svg
+        male-images:
+          - male-1.svg
+          - male-2.svg
+          - male-3.svg
+      parts:
+        - physical-injuries:
+            title: Physical injuries
+            field:
+              type: text
+        - outer-genitalia:
+            title: Outer genitalia
+            field:
+              type: text
+        - vagina:
+            title: Vagina
+            only-when:
+              path: root.demographics.parts.gender.field.value
+              value: female
+            field:
+              type: text
+        - hymen:
+            title: Hymen
+            only-when:
+              path: root.demographics.parts.gender.field.value
+              value: female
+            field:
+              type: text
+        - anus:
+            title: Anus
+            field:
+              type: text
+        - other:
+            title: Other significant orifices
+            required: false
+            field:
+              type: text
+        - comments:
+            title: Comments
+            required: false
+            field:
+              type: text
   - forensic:
       title: Forensic exam
       parts:
@@ -874,82 +872,85 @@ root:
           only-when:
             path: root.demographics.parts.date.value
             is-child: true
-      - cognitive-function:
-          title: Cognitive function
-          parts:
-          - memory:
-              title: Memory
-              description: Recent memory, long-term and short term memory (past several days, months, years).
-              field:
-                type: text
-          - orientation:
-              title: Orientation
-              description: Orientation to time, place, person i.e. ability to recognize time, where they are, people around etc.
-              field:
-                type: text
-          - concentration:
-              title: Concentration
-              description: Ability to pay attention e.g. counting or spelling backwards, small tasks.
-              field:
-                type: text
-          - intelligence:
-              title: Intelligence
-              description: Use of vocabulary (compare level of education with case presentation; above average, average, below average).
-              field:
-                type: text
-          - judgment:
-              title: Judgment
-              description: Ability to understand relations between facts and to draw conclusions; responses in social situations.
-              field:
-                type: text
-      - insight-level:
-          title: Insight level
-          description: Realizing that there are physical or mental problems; denial of illness, ascribing blame to outside factors; recognizing need for treatment (Indicate whether insight level is; present, fair, not present)
-          field:
-            type: text
-      - recommendation:
-          title: Recommendation following assessment
-          field:
-            type: text
-      - referral-point:
-          title: Referral points
-          field:
-            type: text
-      - referral-uptake:
-          title: Referral uptake since last visit e.g. other medical services, children's department, police, legal aid, shelter etc.
-          field:
-            type: text
-      - by:
-          title: By
-          parts:
-            - name:
-                title: Name of examining clinician
-                field:
-                  type: text
-            - signature:
-                title: Signature
-                field:
-                  type: signature
-            - date:
-                title: Date
-                field:
-                  type: date            
-      - to:
-          required: false
-          title: To
-          parts:
-            - name:
-                title: Name of police officer
-                field:
-                  type: text
-            - signature:
-                title: Signature
-                field:
-                  type: signature
-            - date:
-                title: Date
-                field:
-                  type: date
+  - cognitive-function:
+        title: Cognitive function
+        parts:
+        - memory:
+            title: Memory
+            description: Recent memory, long-term and short term memory (past several days, months, years).
+            field:
+              type: text
+        - orientation:
+            title: Orientation
+            description: Orientation to time, place, person i.e. ability to recognize time, where they are, people around etc.
+            field:
+              type: text
+        - concentration:
+            title: Concentration
+            description: Ability to pay attention e.g. counting or spelling backwards, small tasks.
+            field:
+              type: text
+        - intelligence:
+            title: Intelligence
+            description: Use of vocabulary (compare level of education with case presentation; above average, average, below average).
+            field:
+              type: text
+        - judgment:
+            title: Judgment
+            description: Ability to understand relations between facts and to draw conclusions; responses in social situations.
+            field:
+              type: text
+  - psychological-conclusions:
+      title: Psychological assessment conclusions
+      parts:
+       - insight-level:
+           title: Insight level
+           description: Realizing that there are physical or mental problems; denial of illness, ascribing blame to outside factors; recognizing need for treatment (Indicate whether insight level is; present, fair, not present)
+           field:
+             type: text
+       - recommendation:
+           title: Recommendation following assessment
+           field:
+             type: text
+       - referral-point:
+           title: Referral points
+           field:
+             type: text
+       - referral-uptake:
+           title: Referral uptake since last visit e.g. other medical services, children's department, police, legal aid, shelter etc.
+           field:
+             type: text
+       - by:
+           title: By
+           parts:
+             - name:
+                 title: Name of examining clinician
+                 field:
+                   type: text
+             - signature:
+                 title: Signature
+                 field:
+                   type: signature
+             - date:
+                 title: Date
+                 field:
+                   type: date            
+       - to:
+           required: false
+           title: To
+           parts:
+             - name:
+                 title: Name of police officer
+                 field:
+                   type: text
+             - signature:
+                 title: Signature
+                 field:
+                   type: signature
+             - date:
+                 title: Date
+                 field:
+                   type: date
   - attestation:
       title: Physician attestation
       parts:

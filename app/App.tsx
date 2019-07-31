@@ -27,6 +27,7 @@ import store from "./src/redux/store";
 
 import Authentication from "./src/screens/Authentication";
 import FormScreen from "./src/screens/Form";
+import SignatureScreen from "./src/screens/Signature";
 import FormOverviewScreen from "./src/screens/FormOverview";
 import SelectFormScreen from "./src/screens/SelectForm";
 import HomeScreen from "./src/screens/Home";
@@ -95,7 +96,8 @@ const AppStack = createStackNavigator({
     Other: OtherScreen,
     FormOverview: FormOverviewScreen,
     SelectForm: SelectFormScreen,
-    Form: FormScreen
+    Form: FormScreen,
+    Signature: SignatureScreen
 });
 
 const AppContainer = createAppContainer(

@@ -1,6 +1,7 @@
-import { FORM_SET_PATH } from "../actionTypes";
+import { FORM_SET_PATH, FORM_SET_ID } from "../actionTypes";
 
 const initialState = {
+    formId: {},
     formPaths: {}
 };
 
@@ -16,6 +17,12 @@ export default function(state = initialState, action) {
                         value: value
                     }
                 }
+            };
+        }
+        case FORM_SET_ID: {
+            return {
+                ...state,
+                formId: action.payload.id
             };
         }
         default:
