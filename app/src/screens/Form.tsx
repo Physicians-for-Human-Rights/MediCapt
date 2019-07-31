@@ -267,6 +267,19 @@ class Form extends React.Component<Props> {
 
     formSetPath(valuePath, value) {
         this.props.formSetPath(valuePath, value);
+        let current_section = this.state.formSections[this.state.currentSection];
+        this.setState(state => {
+            let newCache = _.clone(this.state.sectionCompletionStatusCache)
+            newCache[this.state.currentSection] =
+                isSectionComplete(current_section,
+                    (path) =>
+                        // TODO This is pretty obscene.
+                        // Clearly it's the wrongs solution.
+                        (path == valuePath) ?
+                            value :
+                            this.formGetPath(path));
+            return { sectionCompletionStatusCache: newCache }
+        })
     }
 
     renderOneEntry(entry, index, formPath) {
@@ -545,8 +558,6 @@ class Form extends React.Component<Props> {
         let sectionContent = [];
         if (this.state.formSections) {
             let current_section = this.state.formSections[this.state.currentSection];
-            this.state.sectionCompletionStatusCache[this.state.currentSection] =
-                isSectionComplete(current_section, (path) => this.formGetPath(path));
             sectionContent = this.renderOneEntry(
                 current_section.content.parts,
                 0,
