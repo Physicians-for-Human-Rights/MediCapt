@@ -93,7 +93,7 @@ class Menu extends React.Component {
                     Component={TouchableOpacity}
                     badge={{
                         value: i + 1,
-                        status: "error"
+                        status: this.props.isSectionComplete(i) ? "success" : "error"
                     }}
                     onPress={() => this.props.changeSection(i)}
                 />
@@ -120,6 +120,108 @@ class Menu extends React.Component {
     }
 }
 
+function mapSectionWithPaths(section, getValue, fns) {
+    function process(entry, index, formPath) {
+        if (Array.isArray(entry)) {
+            return entry.map((e, i) => {
+                return process(e, i, formPath);
+            });
+        } else {
+            const obj = entry[Object.keys(entry)[0]];
+            let inner = null;
+            formPath = formPath + "." + Object.keys(entry)[0];
+            if (_.has(obj, "only-when.path") && _.has(obj, "only-when.value")) {
+                if (getValue(_.get(obj, "only-when.path")) != _.has(obj, "only-when.value"))
+                    return null;
+            }
+            if (_.has(obj, "field.type")) {
+                switch (_.get(obj, "field.type")) {
+                    case "list":
+                        if (_.get(obj, "field.select-multiple")) {
+                            inner = fns.selectMultiple(entry,
+                                obj,
+                                index,
+                                formPath,
+                                _.get(obj, "field.list-options").map((e, i) => { return formPath + ".field.value." + i; }))
+                        } else {
+                            console.log(
+                                "UNSUPPORTED FIELD TYPE LIST WITHOUT SELECT MUTLIPLE"
+                            );
+                            console.log(obj);
+                        }
+                        break;
+                    case "signature":
+                        inner = fns.signature(entry, obj, index, formPath, formPath + ".field.value");
+                        break;
+                    case "bool":
+                        inner = fns.bool(entry, obj, index, formPath, formPath + ".field.value");
+                        break;
+                    case "gender":
+                        inner = fns.gender(entry, obj, index, formPath, formPath + ".field.value");
+                        break;
+                    case "text":
+                        inner = fns.text(entry, obj, index, formPath, formPath + ".field.value");
+                        break;
+                    case "number":
+                        inner = fns.number(entry, obj, index, formPath, formPath + ".field.value");
+                        break;
+                    case "date":
+                        inner = fns.date(entry, obj, index, formPath, formPath + ".field.value");
+                        break;
+                    case "date-time":
+                        inner = fns.dateTime(entry, obj, index, formPath, formPath + ".field.value");
+                        break;
+                    default:
+                        console.log("UNSUPPORTED FIELD TYPE");
+                        console.log(obj);
+                        break;
+                }
+            }
+            if (_.has(obj, "parts")) {
+                return fns._combineParts(entry, obj, index, formPath, inner, process(obj.parts, 0, formPath + ".parts"));
+            }
+            else return inner;
+        }
+    }
+    return process(section.content.parts, 0, "root." + section.name);
+}
+
+function allFormValuePathsForSection(section, getValue) {
+    let allValuePaths = [];
+    mapSectionWithPaths(section, getValue,
+        {
+            selectMultiple: (entry, obj, index, formPath, valuePaths) => allValuePaths = allValuePaths.concat(valuePaths),
+            signature: (entry, obj, index, formPath, valuePaths) => allValuePaths.push(valuePaths),
+            bool: (entry, obj, index, formPath, valuePaths) => allValuePaths.push(valuePaths),
+            gender: (entry, obj, index, formPath, valuePaths) => allValuePaths.push(valuePaths),
+            text: (entry, obj, index, formPath, valuePaths) => allValuePaths.push(valuePaths),
+            number: (entry, obj, index, formPath, valuePaths) => allValuePaths.push(valuePaths),
+            date: (entry, obj, index, formPath, valuePaths) => allValuePaths.push(valuePaths),
+            dateTime: (entry, obj, index, formPath, valuePaths) => allValuePaths.push(valuePaths),
+            _combineParts: (entry, obj, index, inner, outer) => null
+        })
+    return allValuePaths;
+}
+
+function isSectionComplete(section, getValue) {
+    let complete = true;
+    mapSectionWithPaths(section, getValue,
+        {
+            selectMultiple: (entry, obj, index, formPath, valuePaths) =>
+                // NB This checks not that getValue exists, but that at least one of them is also true.
+                complete = complete && _.some(valuePaths, (x) => getValue(x)),
+            signature: (entry, obj, index, formPath, valuePath) => complete = complete && (getValue(valuePath) != null),
+            bool: (entry, obj, index, formPath, valuePath) => complete = complete && (getValue(valuePath) != null),
+            gender: (entry, obj, index, formPath, valuePath) => complete = complete && (getValue(valuePath) != null),
+            text: (entry, obj, index, formPath, valuePath) => complete = complete && (getValue(valuePath) != null),
+            number: (entry, obj, index, formPath, valuePath) => complete = complete && (getValue(valuePath) != null),
+            date: (entry, obj, index, formPath, valuePath) => complete = complete && (getValue(valuePath) != null),
+            dateTime: (entry, obj, index, formPath, valuePath) => complete = complete && (getValue(valuePath) != null),
+            _combineParts: (entry, obj, index, inner, outer) => null
+        })
+    return complete;
+}
+
 class Form extends React.Component<Props> {
     static navigationOptions = {
         title: "Lots of features here",
@@ -131,7 +233,9 @@ class Form extends React.Component<Props> {
         this.state = {
             form: null,
             formSections: null,
-            currentSection: 1
+            currentSection: 0,
+            // NB Recomputing this each update introduces noticeable lag.
+            sectionCompletionStatusCache: []
         };
     }
 
@@ -148,7 +252,7 @@ class Form extends React.Component<Props> {
                 content: e[Object.keys(e)[0]]
             };
         });
-        this.setState({ form: form, formSections: formSections });
+        this.setState({ form: form, formSections: formSections, sectionCompletionStatusCache: formSections.map(() => false) });
     };
 
     async componentDidMount() {
@@ -159,6 +263,10 @@ class Form extends React.Component<Props> {
         return this.props.formPaths[valuePath]
             ? this.props.formPaths[valuePath].value
             : null;
+    }
+
+    formSetPath(valuePath, value) {
+        this.props.formSetPath(valuePath, value);
     }
 
     renderOneEntry(entry, index, formPath) {
@@ -208,9 +316,9 @@ class Form extends React.Component<Props> {
                                 let valuePath = formPath + ".field.value." + i;
                                 let fn = () => {
                                     if (this.formGetPath(valuePath)) {
-                                        this.props.formSetPath(valuePath, false);
+                                        this.formSetPath(valuePath, false);
                                     } else {
-                                        this.props.formSetPath(valuePath, true);
+                                        this.formSetPath(valuePath, true);
                                     }
                                 };
                                 return (
@@ -243,7 +351,6 @@ class Form extends React.Component<Props> {
                         let buttonStyle = {};
                         let image = null;
                         if (this.formGetPath(valuePath)) {
-                            icon = <Icon name="done" size={15} color="white" />;
                             title = " Update signature";
                             image = (
                                 <Image
@@ -266,9 +373,9 @@ class Form extends React.Component<Props> {
                                     onPress={() =>
                                         this.props.navigation.navigate("Signature", {
                                             signed: dataImage =>
-                                                this.props.formSetPath(valuePath, dataImage),
+                                                this.formSetPath(valuePath, dataImage),
                                             cancelSignature: () =>
-                                                this.props.formSetPath(valuePath, "")
+                                                this.formSetPath(valuePath, "")
                                         })
                                     }
                                 />
@@ -286,7 +393,7 @@ class Form extends React.Component<Props> {
                         inner = (
                             <ButtonGroup
                                 selectedIndex={selected}
-                                onPress={i => this.props.formSetPath(valuePath, i == 0)}
+                                onPress={i => this.formSetPath(valuePath, i == 0)}
                                 buttons={["Yes", "No"]}
                             />
                         );
@@ -303,7 +410,7 @@ class Form extends React.Component<Props> {
                         inner = (
                             <ButtonGroup
                                 selectedIndex={selected}
-                                onPress={i => this.props.formSetPath(valuePath, values[i])}
+                                onPress={i => this.formSetPath(valuePath, values[i])}
                                 buttons={["Male", "Female"]}
                             />
                         );
@@ -322,7 +429,7 @@ class Form extends React.Component<Props> {
                                 }}
                                 textAlign={"center"}
                                 editable={true}
-                                onChangeText={text => this.props.formSetPath(valuePath, text)}
+                                onChangeText={text => this.formSetPath(valuePath, text)}
                                 value={this.formGetPath(valuePath)}
                             />
                         );
@@ -342,7 +449,7 @@ class Form extends React.Component<Props> {
                                 keyboardType={"numeric"}
                                 textAlign={"center"}
                                 editable={true}
-                                onChangeText={text => this.props.formSetPath(valuePath, text)}
+                                onChangeText={text => this.formSetPath(valuePath, text)}
                                 value={this.formGetPath(valuePath)}
                             />
                         );
@@ -365,7 +472,7 @@ class Form extends React.Component<Props> {
                                 <DateTimePicker
                                     isVisible={this.state["isVisible_dateTime_" + valuePath]}
                                     onConfirm={date => {
-                                        this.props.formSetPath(valuePath, date);
+                                        this.formSetPath(valuePath, date);
                                         this.setState({
                                             ["isVisible_dateTime_" + valuePath]: true
                                         });
@@ -397,7 +504,7 @@ class Form extends React.Component<Props> {
                                 <DateTimePicker
                                     isVisible={this.state["isVisible_dateTime_" + valuePath]}
                                     onConfirm={date => {
-                                        this.props.formSetPath(valuePath, date);
+                                        this.formSetPath(valuePath, date);
                                         this.setState({
                                             ["isVisible_dateTime_" + valuePath]: true
                                         });
@@ -438,13 +545,14 @@ class Form extends React.Component<Props> {
         let sectionContent = [];
         if (this.state.formSections) {
             let current_section = this.state.formSections[this.state.currentSection];
+            this.state.sectionCompletionStatusCache[this.state.currentSection] =
+                isSectionComplete(current_section, (path) => this.formGetPath(path));
             sectionContent = this.renderOneEntry(
                 current_section.content.parts,
                 0,
                 "root." + current_section.name
             );
         }
-
         return (
             <View style={styles.container}>
                 <SideMenu
@@ -455,7 +563,10 @@ class Form extends React.Component<Props> {
                             formSections={this.state.formSections}
                             changeSection={i => {
                                 this.setState({ currentSection: i });
-                                //this.scrollView.scrollTo({ x: 0, y: 0, animated: true });
+                                this.scrollView.scrollTo({ x: 0, y: 0, animated: true });
+                            }}
+                            isSectionComplete={i => {
+                                return (this.state.sectionCompletionStatusCache && this.state.sectionCompletionStatusCache[i]);
                             }}
                         />
                     }
@@ -479,7 +590,8 @@ class Form extends React.Component<Props> {
                             { text: "30%", style: { color: "#fff" } }
                         }
                         containerStyle={{
-                            backgroundColor: "#d5001c",
+                            backgroundColor: (this.state.sectionCompletionStatusCache &&
+                                this.state.sectionCompletionStatusCache[this.state.currentSection]) ? "#1cd500" : "#d5001c",
                             justifyContent: "space-around"
                         }}
                     />

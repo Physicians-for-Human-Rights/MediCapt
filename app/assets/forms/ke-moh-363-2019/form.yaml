@@ -410,14 +410,16 @@ root:
                 type: bool
   - history:
       title: Significant medical or surgical history
-      required: false
-      field:
-        type: text
+      parts:
+        - history:
+            field:
+              type: text
   - comments:
       title: Other information provided by patient or observed by clinician
-      required: false
-      field:
-        type: text
+      parts:
+        - observations:
+            field:
+              type: text
   - general-condition:
       title: General condition
       parts:
@@ -443,20 +445,21 @@ root:
               type: text
   - physical-exam:
       title: Physical exam
-      show-body-images:
-        generic-images:
-          - anterior.svg
-          - bottom.svg
-          - posterior.svg
-          - top.svg
-        field:
-          type: text
+      parts:
+          - exam:
+              field:
+                type: body-images
+                generic-images:
+                  - anterior.svg
+                  - bottom.svg
+                  - posterior.svg
+                  - top.svg
   - ob-gyn-history:
       title: OB/GYN history
       only-when:
         path: root.demographics.gender.field.value
         value: female
-        parts:
+      parts:
           - parity:
               title: Parity
               field:
@@ -617,21 +620,23 @@ root:
             type: text
   - referrals:
       title: Referrals
-      field:
-        type: list
-        select-multiple: true
-        list-options:
-          - police station
-          - HIV test
-          - laboratory
-          - legal
-          - trauma counseling
-          - safe shelter
-          - OPD/CCC/HIV clinic
-        other:
-          title: other
-          field:
-            type: text
+      parts:
+        - referral-list:
+            field:
+              type: list
+              select-multiple: true
+              list-options:
+                - police station
+                - HIV test
+                - laboratory
+                - legal
+                - trauma counseling
+                - safe shelter
+                - OPD/CCC/HIV clinic
+              other:
+                title: other
+                field:
+                  type: text
   - laboratory-samples:
       title: Laboratory samples
       parts:
