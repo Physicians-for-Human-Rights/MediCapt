@@ -488,6 +488,7 @@ resource "aws_lambda_function" "pre_sign_up" {
       DATABASE_NAME = "${var.namespace}_records_${var.stage}"
       DB_CLUSTER_ARN = data.aws_rds_cluster.database.arn
       DB_PASSWORD_ARN = data.aws_secretsmanager_secret.db_password.arn
+      STAGE = var.stage
     }
   }
 }

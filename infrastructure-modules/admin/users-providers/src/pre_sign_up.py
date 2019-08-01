@@ -16,11 +16,7 @@ db_secret_arn = os.environ['DB_PASSWORD_ARN']
 rds_client = boto3.client('rds-data')
 
 def handler(event, context):
-    logger.info('## ENVIRONMENT VARIABLES')
-    logger.info(os.environ)
-    logger.info('## EVENT')
     logger.info(event)
-    logger.info(event['request']['userAttributes']['email'])
     response = rds_client.execute_statement(
         secretArn=db_secret_arn,
         resourceArn=db_cluster_arn,
@@ -37,12 +33,20 @@ def handler(event, context):
         parameters=[{'name':'email',
                      'value':{'stringValue':
                               event['request']['userAttributes']['email']}}])
+    error = None
     if len(response['records']) < 1:
-        raise Exception('You are not authroized to sign up')
+        error = 'You are not authroized to sign up'
     if len(response['records']) > 2:
-        raise Exception('Signup error')
+        error = 'Too many signup records'
     if response['records'][0][3]['stringValue'] != event['request']['userAttributes']['phone_number']:
-        raise Exception('Phone number does not match')
+        error = 'Phone number does not match'
     if response['records'][0][4]['stringValue'] != event['request']['userAttributes']['custom:official_id_number']:
-        raise Exception('ID number does not match')
+        error = 'ID number does not match'
+    # This provides better error messages for non-prod environments
+    if error:
+        logger.error(error)
+        if stage == 'prod':
+            raise Exception('Sign up failed. You are either not authorized or incorrect information was entered.')
+        else:
+            raise Exception(error)
     return event
