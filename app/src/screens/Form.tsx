@@ -120,7 +120,7 @@ class Menu extends React.Component {
     }
 }
 
-function mapSectionWithPaths(section, getValue, fns) {
+function mapSectionWithPaths(section, getValue, fns, pre, post) {
     function process(entry, index, formPath) {
         if (Array.isArray(entry)) {
             return entry.map((e, i) => {
@@ -134,6 +134,7 @@ function mapSectionWithPaths(section, getValue, fns) {
                 if (getValue(_.get(obj, "only-when.path")) != _.has(obj, "only-when.value"))
                     return null;
             }
+            let pre = fns.pre && fns.pre(entry, obj, index, formPath);
             if (_.has(obj, "field.type")) {
                 switch (_.get(obj, "field.type")) {
                     case "list":
@@ -177,10 +178,11 @@ function mapSectionWithPaths(section, getValue, fns) {
                         break;
                 }
             }
+            let subparts = null;
             if (_.has(obj, "parts")) {
-                return fns._combineParts(entry, obj, index, formPath, inner, process(obj.parts, 0, formPath + ".parts"));
+                subparts = fns._combineParts(entry, obj, index, formPath, inner, process(obj.parts, 0, formPath + ".parts"));
             }
-            else return inner;
+            return fns.post(entry, obj, index, formPath, pre, inner, subparts);
         }
     }
     return process(section.content.parts, 0, "root." + section.name);
@@ -191,14 +193,15 @@ function allFormValuePathsForSection(section, getValue) {
     mapSectionWithPaths(section, getValue,
         {
             selectMultiple: (entry, obj, index, formPath, valuePaths) => allValuePaths = allValuePaths.concat(valuePaths),
-            signature: (entry, obj, index, formPath, valuePaths) => allValuePaths.push(valuePaths),
-            bool: (entry, obj, index, formPath, valuePaths) => allValuePaths.push(valuePaths),
-            gender: (entry, obj, index, formPath, valuePaths) => allValuePaths.push(valuePaths),
-            text: (entry, obj, index, formPath, valuePaths) => allValuePaths.push(valuePaths),
-            number: (entry, obj, index, formPath, valuePaths) => allValuePaths.push(valuePaths),
-            date: (entry, obj, index, formPath, valuePaths) => allValuePaths.push(valuePaths),
-            dateTime: (entry, obj, index, formPath, valuePaths) => allValuePaths.push(valuePaths),
-            _combineParts: (entry, obj, index, inner, outer) => null
+            signature: (entry, obj, index, formPath, valuePath) => allValuePaths.push(valuePath),
+            bool: (entry, obj, index, formPath, valuePath) => allValuePaths.push(valuePath),
+            gender: (entry, obj, index, formPath, valuePath) => allValuePaths.push(valuePath),
+            text: (entry, obj, index, formPath, valuePath) => allValuePaths.push(valuePath),
+            number: (entry, obj, index, formPath, valuePath) => allValuePaths.push(valuePath),
+            date: (entry, obj, index, formPath, valuePath) => allValuePaths.push(valuePath),
+            dateTime: (entry, obj, index, formPath, valuePath) => allValuePaths.push(valuePath),
+            _combineParts: (entry, obj, index, inner, outer) => null,
+            post: (entry, obj, index, formPath, pre, inner, subparts) => null
         })
     return allValuePaths;
 }
@@ -217,7 +220,8 @@ function isSectionComplete(section, getValue) {
             number: (entry, obj, index, formPath, valuePath) => complete = complete && (getValue(valuePath) != null),
             date: (entry, obj, index, formPath, valuePath) => complete = complete && (getValue(valuePath) != null),
             dateTime: (entry, obj, index, formPath, valuePath) => complete = complete && (getValue(valuePath) != null),
-            _combineParts: (entry, obj, index, inner, outer) => null
+            _combineParts: (entry, obj, index, inner, outer) => null,
+            post: (entry, obj, index, formPath, pre, inner, subparts) => null
         })
     return complete;
 }
@@ -234,6 +238,7 @@ class Form extends React.Component<Props> {
             form: null,
             formSections: null,
             currentSection: 0,
+            sectionChanged: false,
             // NB Recomputing this each update introduces noticeable lag.
             sectionCompletionStatusCache: []
         };
@@ -259,6 +264,13 @@ class Form extends React.Component<Props> {
         await this._loadForm();
     }
 
+    componentDidUpdate() {
+        if (this.state.sectionChanged) {
+            this.scrollView.scrollTo({ x: 0, y: 0, animated: true });
+            this.setState({ sectionChanged: false });
+        }
+    }
+
     formGetPath(valuePath) {
         return this.props.formPaths[valuePath]
             ? this.props.formPaths[valuePath].value
@@ -282,31 +294,11 @@ class Form extends React.Component<Props> {
         })
     }
 
-    renderOneEntry(entry, index, formPath) {
-        if (Array.isArray(entry)) {
-            return entry.map((e, i) => {
-                return this.renderOneEntry(e, i, formPath);
-            });
-        } else {
-            const obj = entry[Object.keys(entry)[0]];
-            formPath = formPath + "." + Object.keys(entry)[0];
-            if (_.has(obj, "only-when.path") && _.has(obj, "only-when.value")) {
-                if (
-                    !this.props.formPaths[_.get(obj, "only-when.path")] ||
-                    this.props.formPaths[_.get(obj, "only-when.path")].value !=
-                    _.has(obj, "only-when.value")
-                )
-                    return null;
-            }
-            /* console.log(formPath);
-             * console.log(entry);
-             * console.log(obj);
-             * console.log(plainToFlattenObject(obj));
-             * console.log(objectPaths(obj)); */
+    renderFns = {
+        pre: () => { return null },
+        post: (entry, obj, index, formPath, pre, inner, subparts) => {
             var title = null;
             var description = null;
-            var inner = null;
-            var subparts = null;
             if (_.has(obj, "title")) {
                 title = _.get(obj, "title");
             }
@@ -320,236 +312,211 @@ class Form extends React.Component<Props> {
                     <Text style={{ marginBottom: 10 }}>{_.get(obj, "text")}</Text>
                 );
             }
-            // TODO Two things are named value. The value of a key referenced by the form and the value set in redux. Rename one.
-            if (_.has(obj, "field.type")) {
-                switch (_.get(obj, "field.type")) {
-                    case "list":
-                        if (_.get(obj, "field.select-multiple")) {
-                            let items = _.get(obj, "field.list-options").map((e, i) => {
-                                let valuePath = formPath + ".field.value." + i;
-                                let fn = () => {
-                                    if (this.formGetPath(valuePath)) {
-                                        this.formSetPath(valuePath, false);
-                                    } else {
-                                        this.formSetPath(valuePath, true);
-                                    }
-                                };
-                                return (
-                                    <ListItem
-                                        key={i}
-                                        title={_.upperFirst(e)}
-                                        checkBox={{
-                                            checked: this.formGetPath(valuePath),
-                                            onPress: fn
-                                        }}
-                                        onPress={fn}
-                                        containerStyle={{ borderTopWidth: 0, borderBottomWidth: 0 }}
-                                    />
-                                );
-                            });
-                            inner = <View>{items}</View>;
-                        } else {
-                            // TODO Error handling
-                            console.log(
-                                "UNSUPPORTED FIELD TYPE LIST WITHOUT SELECT MUTLIPLE"
-                            );
-                            console.log(obj);
-                        }
-                        break;
-                    case "signature": {
-                        // TODO This only seems to work outside of the card, we'll make it a modal or something.
-                        let valuePath = formPath + ".field.value";
-                        let icon = null;
-                        let title = null;
-                        let buttonStyle = {};
-                        let image = null;
-                        if (this.formGetPath(valuePath)) {
-                            title = " Update signature";
-                            image = (
-                                <Image
-                                    style={{ width: 200, height: 200 }}
-                                    source={{ uri: this.formGetPath(valuePath) }}
-                                />
-                            );
-                        } else {
-                            title = " Sign here";
-                            icon = <Icon name="edit" size={15} color="white" />;
-                            buttonStyle = { backgroundColor: "red" };
-                        }
-                        inner = (
-                            <View>
-                                {image}
-                                <Button
-                                    icon={icon}
-                                    title={title}
-                                    buttonStyle={buttonStyle}
-                                    onPress={() =>
-                                        this.props.navigation.navigate("Signature", {
-                                            signed: dataImage =>
-                                                this.formSetPath(valuePath, dataImage),
-                                            cancelSignature: () =>
-                                                this.formSetPath(valuePath, "")
-                                        })
-                                    }
-                                />
-                            </View>
-                        );
-                        break;
-                    }
-                    case "bool": {
-                        let valuePath = formPath + ".field.value";
-                        let selected = this.props.formPaths[valuePath]
-                            ? this.props.formPaths[valuePath].value
-                                ? 0
-                                : 1
-                            : null;
-                        inner = (
-                            <ButtonGroup
-                                selectedIndex={selected}
-                                onPress={i => this.formSetPath(valuePath, i == 0)}
-                                buttons={["Yes", "No"]}
-                            />
-                        );
-                        break;
-                    }
-                    case "gender": {
-                        let valuePath = formPath + ".field.value";
-                        let values = ["male", "female"];
-                        let selected = this.props.formPaths[valuePath]
-                            ? this.props.formPaths[valuePath].value == "male"
-                                ? 0
-                                : 1
-                            : null;
-                        inner = (
-                            <ButtonGroup
-                                selectedIndex={selected}
-                                onPress={i => this.formSetPath(valuePath, values[i])}
-                                buttons={["Male", "Female"]}
-                            />
-                        );
-                        break;
-                    }
-                    case "text": {
-                        let valuePath = formPath + ".field.value";
-                        inner = (
-                            <TextInput
-                                style={{
-                                    width: "100%",
-                                    height: 40,
-                                    borderColor: "gray",
-                                    borderWidth: 1,
-                                    backgroundColor: "#DCDCDC"
-                                }}
-                                textAlign={"center"}
-                                editable={true}
-                                onChangeText={text => this.formSetPath(valuePath, text)}
-                                value={this.formGetPath(valuePath)}
-                            />
-                        );
-                        break;
-                    }
-                    case "number": {
-                        let valuePath = formPath + ".field.value";
-                        inner = (
-                            <TextInput
-                                style={{
-                                    width: "100%",
-                                    height: 40,
-                                    borderColor: "gray",
-                                    borderWidth: 1,
-                                    backgroundColor: "#DCDCDC"
-                                }}
-                                keyboardType={"numeric"}
-                                textAlign={"center"}
-                                editable={true}
-                                onChangeText={text => this.formSetPath(valuePath, text)}
-                                value={this.formGetPath(valuePath)}
-                            />
-                        );
-                        break;
-                    }
-                    case "date": {
-                        let valuePath = formPath + ".field.value";
-                        inner = (
-                            <>
-                                <Button
-                                    title={
-                                        this.formGetPath(valuePath)
-                                            ? this.formGetPath(valuePath).toLocaleDateString()
-                                            : "Choose date"
-                                    }
-                                    onPress={() =>
-                                        this.setState({ ["isVisible_dateTime_" + valuePath]: true })
-                                    }
-                                />
-                                <DateTimePicker
-                                    isVisible={this.state["isVisible_dateTime_" + valuePath]}
-                                    onConfirm={date => {
-                                        this.formSetPath(valuePath, date);
-                                        this.setState({
-                                            ["isVisible_dateTime_" + valuePath]: true
-                                        });
-                                    }}
-                                    onCancel={() =>
-                                        this.setState({
-                                            ["isVisible_dateTime_" + valuePath]: false
-                                        })
-                                    }
-                                />
-                            </>
-                        );
-                        break;
-                    }
-                    case "date-time": {
-                        let valuePath = formPath + ".field.value";
-                        inner = (
-                            <>
-                                <Button
-                                    title={
-                                        this.formGetPath(valuePath)
-                                            ? this.formGetPath(valuePath).toLocaleString()
-                                            : "Choose date and time"
-                                    }
-                                    onPress={() =>
-                                        this.setState({ ["isVisible_dateTime_" + valuePath]: true })
-                                    }
-                                />
-                                <DateTimePicker
-                                    isVisible={this.state["isVisible_dateTime_" + valuePath]}
-                                    onConfirm={date => {
-                                        this.formSetPath(valuePath, date);
-                                        this.setState({
-                                            ["isVisible_dateTime_" + valuePath]: true
-                                        });
-                                    }}
-                                    mode="datetime"
-                                    onCancel={() =>
-                                        this.setState({
-                                            ["isVisible_dateTime_" + valuePath]: false
-                                        })
-                                    }
-                                />
-                            </>
-                        );
-                        break;
-                    }
-                    default:
-                        // TODO Error handling
-                        console.log("UNSUPPORTED FIELD TYPE");
-                        console.log(obj);
-                        break;
-                }
-            }
-            if (_.has(obj, "parts")) {
-                subparts = this.renderOneEntry(obj.parts, 0, formPath + ".parts");
-                subparts = <View>{subparts}</View>;
-            }
             return (
                 <Card key={index} title={title}>
                     {description}
                     {inner}
                     {subparts}
                 </Card>
+            );
+        },
+        _combineParts: (entry, obj, index, inner, formPath, subparts) => {
+            return <View>{subparts}</View>
+        },
+        selectMultiple: (entry, obj, index, formPath, valuePaths) => {
+            if (_.get(obj, "field.select-multiple")) {
+                let items = _.get(obj, "field.list-options").map((e, i) => {
+                    let valuePath = valuePaths[i];
+                    let fn = () => {
+                        if (this.formGetPath(valuePath)) {
+                            this.formSetPath(valuePath, false);
+                        } else {
+                            this.formSetPath(valuePath, true);
+                        }
+                    };
+                    return (
+                        <ListItem
+                            key={i}
+                            title={_.upperFirst(e)}
+                            checkBox={{
+                                checked: this.formGetPath(valuePath),
+                                onPress: fn
+                            }}
+                            onPress={fn}
+                            containerStyle={{ borderTopWidth: 0, borderBottomWidth: 0 }}
+                        />
+                    );
+                });
+                return <View>{items}</View>;
+            } else {
+                // TODO Error handling
+                console.log(
+                    "UNSUPPORTED FIELD TYPE LIST WITHOUT SELECT MUTLIPLE"
+                );
+                console.log(obj);
+                return null;
+            }
+        },
+        signature: (entry, obj, index, formPath, valuePath) => {
+            let icon = null;
+            let title = null;
+            let buttonStyle = {};
+            let image = null;
+            if (this.formGetPath(valuePath)) {
+                title = " Update signature";
+                return (
+                    <Image
+                        style={{ width: 200, height: 200 }}
+                        source={{ uri: this.formGetPath(valuePath) }}
+                    />
+                );
+            } else {
+                title = " Sign here";
+                icon = <Icon name="edit" size={15} color="white" />;
+                buttonStyle = { backgroundColor: "red" };
+            }
+            return (
+                <View>
+                    {image}
+                    <Button
+                        icon={icon}
+                        title={title}
+                        buttonStyle={buttonStyle}
+                        onPress={() =>
+                            this.props.navigation.navigate("Signature", {
+                                signed: dataImage =>
+                                    this.formSetPath(valuePath, dataImage),
+                                cancelSignature: () =>
+                                    this.formSetPath(valuePath, "")
+                            })
+                        }
+                    />
+                </View>
+            );
+        },
+        bool: (entry, obj, index, formPath, valuePath) => {
+            let selected = this.props.formPaths[valuePath]
+                ? this.props.formPaths[valuePath].value
+                    ? 0
+                    : 1
+                : null;
+            return (
+                <ButtonGroup
+                    selectedIndex={selected}
+                    onPress={i => this.formSetPath(valuePath, i == 0)}
+                    buttons={["Yes", "No"]}
+                />
+            );
+        },
+        gender: (entry, obj, index, formPath, valuePath) => {
+            let values = ["male", "female"];
+            let selected = this.props.formPaths[valuePath]
+                ? this.props.formPaths[valuePath].value == "male"
+                    ? 0
+                    : 1
+                : null;
+            return (
+                <ButtonGroup
+                    selectedIndex={selected}
+                    onPress={i => this.formSetPath(valuePath, values[i])}
+                    buttons={["Male", "Female"]}
+                />
+            );
+        },
+        text: (entry, obj, index, formPath, valuePath) => {
+            return (
+                <TextInput
+                    style={{
+                        width: "100%",
+                        height: 40,
+                        borderColor: "gray",
+                        borderWidth: 1,
+                        backgroundColor: "#DCDCDC"
+                    }}
+                    textAlign={"center"}
+                    editable={true}
+                    onChangeText={text => this.formSetPath(valuePath, text)}
+                    value={this.formGetPath(valuePath)}
+                />
+            )
+        },
+        number: (entry, obj, index, formPath, valuePath) => {
+            return (
+                <TextInput
+                    style={{
+                        width: "100%",
+                        height: 40,
+                        borderColor: "gray",
+                        borderWidth: 1,
+                        backgroundColor: "#DCDCDC"
+                    }}
+                    keyboardType={"numeric"}
+                    textAlign={"center"}
+                    editable={true}
+                    onChangeText={text => this.formSetPath(valuePath, text)}
+                    value={this.formGetPath(valuePath)}
+                />
+            );
+        },
+        date: (entry, obj, index, formPath, valuePath) => {
+            return (
+                <>
+                    <Button
+                        title={
+                            this.formGetPath(valuePath)
+                                ? this.formGetPath(valuePath).toLocaleDateString()
+                                : "Choose date"
+                        }
+                        onPress={() =>
+                            this.setState({ ["isVisible_dateTime_" + valuePath]: true })
+                        }
+                    />
+                    <DateTimePicker
+                        isVisible={this.state["isVisible_dateTime_" + valuePath]}
+                        onConfirm={date => {
+                            this.formSetPath(valuePath, date);
+                            this.setState({
+                                ["isVisible_dateTime_" + valuePath]: true
+                            });
+                        }}
+                        onCancel={() =>
+                            this.setState({
+                                ["isVisible_dateTime_" + valuePath]: false
+                            })
+                        }
+                    />
+                </>
+            );
+        },
+        dateTime: (entry, obj, index, formPath, valuePath) => {
+            return (
+                <>
+                    <Button
+                        title={
+                            this.formGetPath(valuePath)
+                                ? this.formGetPath(valuePath).toLocaleString()
+                                : "Choose date and time"
+                        }
+                        onPress={() =>
+                            this.setState({ ["isVisible_dateTime_" + valuePath]: true })
+                        }
+                    />
+                    <DateTimePicker
+                        isVisible={this.state["isVisible_dateTime_" + valuePath]}
+                        onConfirm={date => {
+                            this.formSetPath(valuePath, date);
+                            this.setState({
+                                ["isVisible_dateTime_" + valuePath]: true
+                            });
+                        }}
+                        mode="datetime"
+                        onCancel={() =>
+                            this.setState({
+                                ["isVisible_dateTime_" + valuePath]: false
+                            })
+                        }
+                    />
+                </>
             );
         }
     }
@@ -558,10 +525,10 @@ class Form extends React.Component<Props> {
         let sectionContent = [];
         if (this.state.formSections) {
             let current_section = this.state.formSections[this.state.currentSection];
-            sectionContent = this.renderOneEntry(
-                current_section.content.parts,
-                0,
-                "root." + current_section.name
+            sectionContent = mapSectionWithPaths(
+                current_section,
+                (path) => this.formGetPath(path),
+                this.renderFns
             );
         }
         return (
@@ -592,9 +559,34 @@ class Form extends React.Component<Props> {
                             }
                         }}
                         centerComponent={
-                            <Text style={{ color: "#fff" }} textAlign="center">
-                                Section {this.state.currentSection + 1}{"\n"}{this.state.formSections ? this.state.formSections[this.state.currentSection].title : ""}
-                            </Text>
+                            <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
+                                <Button
+                                    title=""
+                                    icon={<Icon name="arrow-back" size={15} color="white" />}
+                                    disabled={this.state.currentSection == 0}
+                                    onPress={() => {
+                                        this.setState({
+                                            sectionChanged: true,
+                                            currentSection: this.state.currentSection - 1
+                                        })
+                                    }}
+                                />
+                                <Text style={{ width: '60%', marginLeft: '10%', marginRight: '10%', color: "#fff" }} textAlign="center">
+                                    Section {this.state.currentSection + 1}{"\n"}{this.state.formSections ? this.state.formSections[this.state.currentSection].title : ""}
+                                </Text>
+                                <Button
+                                    title=""
+                                    disabled={this.state.formSections && this.state.currentSection == this.state.formSections.length - 1}
+                                    onPress={() => {
+                                        this.setState({
+                                            sectionChanged: true,
+                                            currentSection: this.state.currentSection + 1
+                                        })
+                                    }}
+                                    icon={<Icon name="arrow-forward" size={15} color="white" />}
+                                    iconRight
+                                />
+                            </View>
                         }
                         rightComponent={
                             // TODO Change this to a submit button
@@ -631,15 +623,23 @@ class Form extends React.Component<Props> {
                                 <Button
                                     title=" Previous section"
                                     icon={<Icon name="arrow-back" size={15} color="white" />}
+                                    disabled={this.state.currentSection == 0}
+                                    onPress={() => {
+                                        this.setState({
+                                            sectionChanged: true,
+                                            currentSection: this.state.currentSection - 1
+                                        })
+                                    }}
                                 />
                                 <Button
                                     title="Next section "
-                                    onPress={() =>
-                                        // TODO This is just a place holder, we need to disable buttons & handle the end
+                                    disabled={this.state.formSections && this.state.currentSection == this.state.formSections.length - 1}
+                                    onPress={() => {
                                         this.setState({
+                                            sectionChanged: true,
                                             currentSection: this.state.currentSection + 1
                                         })
-                                    }
+                                    }}
                                     icon={<Icon name="arrow-forward" size={15} color="white" />}
                                     iconRight
                                 />

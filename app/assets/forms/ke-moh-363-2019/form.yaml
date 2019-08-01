@@ -539,7 +539,7 @@ root:
           field:
             type: bool
       - state-of-clothes:
-          title: State of clothes?
+          title: State of clothes
           field:
             type: text
       - clothes-transported:
