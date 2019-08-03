@@ -3,10 +3,10 @@ import * as ExpoPixi from "expo-pixi";
 import React, { Component } from "react";
 import { Platform, AppState, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView, NavigationScreenProps } from "react-navigation";
-import { Header, Button } from "react-native-elements";
+import { Header, Button, ButtonGroup } from "react-native-elements";
 import styles_ from "../styles";
+import BodySketch from "./BodySketch";
 import * as FileSystem from "expo-file-system";
-import SignatureComponent from "./SignatureComponent";
 
 const isAndroid = Platform.OS === "android";
 function uuidv4() {
@@ -18,18 +18,15 @@ function uuidv4() {
     });
 }
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-export default class Signature extends Component {
+export default class Body extends Component {
     state = {
         strokeColor: 0,
         appState: AppState.currentState,
-        changed: false
+        changed: false,
+        toolMode: 0
     };
     static navigationOptions = {
-        title: "Sign anywhere below",
+        title: "Draw and comment on diagram",
         header: null
     };
 
@@ -67,22 +64,12 @@ export default class Signature extends Component {
             const { uri } = await this.sketch.takeSnapshotAsync({
                 format: "png"
             });
-            let res;
-            if (uri instanceof Blob) {
-                res = await new Promise(resolve => {
-                    const reader = new FileReader();
-                    reader.onload = function() {
-                        resolve(this.result);
-                    };
-                    reader.readAsDataURL(uri);
-                });
-            } else {
-                res = await FileSystem.readAsStringAsync(uri, {
-                    encoding: FileSystem.EncodingType.Base64
-                });
-                res = "data:image/jpeg;base64," + res;
-            }
-            this.props.navigation.state.params.signed(res);
+            let res = await FileSystem.readAsStringAsync(uri, {
+                encoding: FileSystem.EncodingType.Base64
+            });
+            this.props.navigation.state.params.enterData(
+                "data:image/png;base64," + res
+            );
             this.props.navigation.goBack();
         } else {
             this.onCancel();
@@ -99,7 +86,7 @@ export default class Signature extends Component {
             <View style={styles_.container}>
                 <Header
                     centerComponent={{
-                        text: "Sign anywhere below",
+                        text: "Draw and comment on diagram",
                         style: { color: "#fff" }
                     }}
                     containerStyle={{
@@ -107,19 +94,27 @@ export default class Signature extends Component {
                         justifyContent: "space-around"
                     }}
                 />
+                <ButtonGroup
+                    selectedIndex={this.state.toolMode}
+                    onPress={i => this.setState({ toolMode: i })}
+                    buttons={["Draw line", "Draw point", "Select"]}
+                />
                 <View style={styles.container}>
                     <View style={styles.sketchContainer}>
-                        <SignatureComponent
+                        <BodySketch
+                            baseImage={this.props.navigation.state.params.baseImage}
                             ref={ref => (this.sketch = ref)}
                             style={styles.sketch}
-                            strokeColor={0x0000ff}
+                            strokeColor={"blue"}
                             strokeAlpha={1}
+                            toolMode={
+                                this.state.toolMode
+                                    ? ["draw-line", "draw-point", "elect"][this.state.toolMode]
+                                    : null
+                            }
                             onChange={this.onChange}
                             onReady={this.onReady}
-                            webglContextAttributes={{
-                                stencil: true,
-                                preserveDrawingBuffer: true
-                            }}
+                            onSelect={this.onSelect}
                         />
                     </View>
                 </View>
@@ -134,12 +129,12 @@ export default class Signature extends Component {
                     }}
                 >
                     <Button
-                        title="Submit signature"
+                        title="Submit drawing"
                         style={styles.button}
                         onPress={this.onSubmit}
                     />
                     <Button
-                        title="Don't sign"
+                        title="Don't submit"
                         buttonStyle={{ backgroundColor: "#d5001c" }}
                         style={styles.button}
                         onPress={this.onCancel}

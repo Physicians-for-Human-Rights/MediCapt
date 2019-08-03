@@ -1,14 +1,6 @@
 import React from "react";
-import {
-    ActivityIndicator,
-    Text,
-    Image,
-    View
-} from "react-native";
-import {
-    SafeAreaView,
-    NavigationScreenProps
-} from "react-navigation";
+import { ActivityIndicator, Text, Image, View } from "react-native";
+import { SafeAreaView, NavigationScreenProps } from "react-navigation";
 import { Icon, Button } from "react-native-elements";
 
 import { Auth } from "aws-amplify";
@@ -28,14 +20,16 @@ class ButtonWithIconBackground extends React.Component<Props> {
                 <View style={{ zIndex: 1 }}>
                     <Button
                         title={this.props.label}
-                        containerViewStyle={{ image: "imgUrl('../../assets/medicapt.png')" }}
+                        containerViewStyle={{
+                            image: "imgUrl('../../assets/medicapt.png')"
+                        }}
                         onPress={this.props.onPress}
                         buttonStyle={styles.largeTileButton}
                         titleStyle={{ color: "#d5001c" }}
                         type="outline"
                     />
                 </View>
-                <View style={{ zIndex: 0, position: 'absolute' }}>
+                <View style={{ zIndex: 0, position: "absolute" }}>
                     <Button
                         onPress={this.props.onPress}
                         buttonStyle={styles.largeTileButton}
@@ -64,7 +58,7 @@ class HomeScreen extends React.Component<Props> {
 
     componentDidMount() {
         // TODO Debugging
-        this.props.navigation.navigate("SelectForm")
+        this.props.navigation.navigate("SelectForm");
     }
 
     render() {
@@ -85,11 +79,18 @@ class HomeScreen extends React.Component<Props> {
                         <Image source={phr_logo} style={styles.logo} />
                     </View>
                 </View>
-                <View style={{
-                    flex: 1, flexDirection: "row", alignItems: 'center'
-                }}>
+                <View
+                    style={{
+                        flex: 1,
+                        flexDirection: "row",
+                        alignItems: "center"
+                    }}
+                >
                     <View>
-                        <Text style={styles.welcomeText}> {this.props.user.user.attributes.name} </Text>
+                        <Text style={styles.welcomeText}>
+                            {" "}
+                            {this.props.user.user.attributes.name}{" "}
+                        </Text>
                     </View>
                 </View>
                 <View style={{ flex: 4 }}>
@@ -130,9 +131,13 @@ class HomeScreen extends React.Component<Props> {
                         />
                     </View>
                 </View>
-                <View style={{
-                    flex: 0.6, flexDirection: "row", alignItems: 'center'
-                }}>
+                <View
+                    style={{
+                        flex: 0.6,
+                        flexDirection: "row",
+                        alignItems: "center"
+                    }}
+                >
                     <View style={{ marginRight: 30 }}>
                         <ActivityIndicator size="large" color="#0000ff" />
                     </View>
@@ -152,7 +157,7 @@ class HomeScreen extends React.Component<Props> {
                         <Button raised title="Log out" onPress={this._signOutAsync} />
                     </View>
                 </View>
-            </SafeAreaView >
+            </SafeAreaView>
         );
     }
     _createNewRecord = () => {
@@ -185,4 +190,6 @@ class HomeScreen extends React.Component<Props> {
     };
 }
 
-export default connect(state => { return { user: state.user } })(HomeScreen);
+export default connect(state => {
+    return { user: state.user };
+})(HomeScreen);

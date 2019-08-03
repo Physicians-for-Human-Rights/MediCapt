@@ -31,6 +31,8 @@ import SignatureScreen from "./src/screens/Signature";
 import FormOverviewScreen from "./src/screens/FormOverview";
 import SelectFormScreen from "./src/screens/SelectForm";
 import HomeScreen from "./src/screens/Home";
+import BodyScreen from "./src/screens/Body";
+import BodyDetailsScreen from "./src/screens/BodyDetails";
 
 import theme from "./src/theme";
 
@@ -93,6 +95,8 @@ const styles = StyleSheet.create({
 
 const AppStack = createStackNavigator({
     Home: HomeScreen,
+    Body: BodyScreen,
+    BodyDetails: BodyDetailsScreen,
     Other: OtherScreen,
     FormOverview: FormOverviewScreen,
     SelectForm: SelectFormScreen,
