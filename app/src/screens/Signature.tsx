@@ -6,7 +6,7 @@ import { SafeAreaView, NavigationScreenProps } from "react-navigation";
 import { Header, Button } from "react-native-elements";
 import styles_ from "../styles";
 import * as FileSystem from "expo-file-system";
-import SignatureComponent from "./SignatureComponent";
+import SignatureComponent from "../components/Signature";
 
 const isAndroid = Platform.OS === "android";
 function uuidv4() {

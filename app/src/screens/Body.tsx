@@ -1,11 +1,19 @@
 import Expo from "expo";
 import * as ExpoPixi from "expo-pixi";
 import React, { Component } from "react";
-import { Platform, AppState, StyleSheet, Text, View } from "react-native";
+import {
+    ImageBackground,
+    Platform,
+    AppState,
+    StyleSheet,
+    Text,
+    View,
+    Image
+} from "react-native";
 import { SafeAreaView, NavigationScreenProps } from "react-navigation";
 import { Header, Button, ButtonGroup } from "react-native-elements";
 import styles_ from "../styles";
-import BodySketch from "./BodySketch";
+import BodySketch from "../components/BodySketch";
 import * as FileSystem from "expo-file-system";
 
 const isAndroid = Platform.OS === "android";
@@ -101,21 +109,27 @@ export default class Body extends Component {
                 />
                 <View style={styles.container}>
                     <View style={styles.sketchContainer}>
-                        <BodySketch
-                            baseImage={this.props.navigation.state.params.baseImage}
-                            ref={ref => (this.sketch = ref)}
-                            style={styles.sketch}
-                            strokeColor={"blue"}
-                            strokeAlpha={1}
-                            toolMode={
-                                this.state.toolMode
-                                    ? ["draw-line", "draw-point", "elect"][this.state.toolMode]
-                                    : null
-                            }
-                            onChange={this.onChange}
-                            onReady={this.onReady}
-                            onSelect={this.onSelect}
-                        />
+                        <ImageBackground
+                            style={{ width: "100%", height: "100%" }}
+                            imageStyle={{ resizeMode: "contain" }}
+                            source={{ uri: this.props.navigation.state.params.baseImage }}
+                        >
+                            <BodySketch
+                                baseImage={this.props.navigation.state.params.baseImage}
+                                ref={ref => (this.sketch = ref)}
+                                style={styles.sketch}
+                                strokeColor={0x0000ff}
+                                strokeAlpha={1}
+                                toolMode={
+                                    this.state.toolMode
+                                        ? ["draw-line", "draw-point", "elect"][this.state.toolMode]
+                                        : null
+                                }
+                                onChange={this.onChange}
+                                onReady={this.onReady}
+                                onSelect={this.onSelect}
+                            />
+                        </ImageBackground>
                     </View>
                 </View>
                 <View
@@ -154,7 +168,8 @@ const styles = StyleSheet.create({
         flex: 1
     },
     sketchContainer: {
-        height: "100%"
+        height: "100%",
+        zIndex: 1
     },
     label: {
         width: "100%",

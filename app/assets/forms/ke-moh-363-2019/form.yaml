@@ -191,7 +191,7 @@ root:
       title: Clinic
       parts:
       - date:
-          title: Date from completed
+          title: Date form completed
           field:
             type: date
       - county-code:

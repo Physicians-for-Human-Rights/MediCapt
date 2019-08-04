@@ -31,7 +31,7 @@ import {
 } from "react-native-elements";
 import SideMenu from "react-native-side-menu";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import DateTimePicker from "./DateTimePicker";
+import DateTimePicker from "../components/DateTimePicker";
 
 import ExpoPixi from "expo-pixi";
 
@@ -80,150 +80,53 @@ type Props = NavigationScreenProps;
 
 import allForms from "../allForms";
 
+import Menu from "../components/FormMenu";
+import Top from "../components/FormTop";
+import Bottom from "../components/FormBottom";
 
-class Top extends React.PureComponent {
-    /* shouldComponentUpdate(nextProps, nextState) {
-     *     console.log(nextProps)
-     *     console.log(nextState)
-     *     return true;
-     * } */
+// This keeps track of any paths which have been updated and need to
+// be redrawn. It is automatically cleared by CardView when the
+// relevant components are redraw. CardView understands that
+// forms can be nested and redraws only the part of the hierarchy that
+// was affected by a formValue updated. Anything put into CardView is
+// must be a form element and the only relevant values must be
+// paths in the form itself.
+var changedSinceLastRender = [];
+
+// Some components must take over the screen. We allow these to rerender
+// until they say they are done. Clearing this must be done manually.
+// CardView will rerender this component until the flag is cleared.
+// As with changedSinceLastRender this should only be used
+// for form components and they should only depend on values
+// present as formPaths.
+var hasVisibleModal = [];
+
+class CardWrap extends React.Component {
+    shouldComponentUpdate(nextProps, nextState) {
+        const formPath = this.props.formPath;
+        if (
+            nextProps.formPath === this.props.formPath &&
+            !_.some(changedSinceLastRender, vp => vp.startsWith(formPath)) &&
+            !_.some(hasVisibleModal, vp => vp.startsWith(formPath))
+        ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     componentDidUpdate(prevProps, prevState) {
-        if (this.props) {
-            Object.entries(this.props).forEach(([key, val]) =>
-                prevProps[key] !== val && console.log(`Top Prop '${key}' changed`)
-            );
-        }
-        if (this.state) {
-            Object.entries(this.state).forEach(([key, val]) =>
-                prevState[key] !== val && console.log(`Top State '${key}' changed`)
-            );
-        }
+        const formPath = this.props.formPath;
+        _.remove(changedSinceLastRender, vp => vp.startsWith(formPath));
     }
 
     render() {
-        console.log("RENDER TOP!!");
-        return (<Header
-            leftComponent={{
-                icon: "menu",
-                color: "#fff",
-                onPress: this.props.openSideMenu
-            }}
-            centerComponent={
-                <View
-                    style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center"
-                    }}
-                >
-                    <Button
-                        title=""
-                        icon={<Icon name="arrow-back" size={15} color="white" />}
-                        disabled={this.props.currentSection == 0}
-                        onPress={() => this.props.sectionOffset(-1)}
-                    />
-                    <Text
-                        style={{
-                            width: "60%",
-                            marginLeft: "10%",
-                            marginRight: "10%",
-                            color: "#fff"
-                        }}
-                        textAlign="center"
-                    >
-                        Section {this.props.currentSection + 1}
-                        {"\n"}
-                        {this.props.title
-                            ? this.props.title
-                            : ""}
-                    </Text>
-                    <Button
-                        title=""
-                        disabled={this.props.currentSection == this.props.lastSection
-                        }
-                        onPress={() => this.props.sectionOffset(1)}
-                        icon={<Icon name="arrow-forward" size={15} color="white" />}
-                        iconRight
-                    />
-                </View>
-            }
-            rightComponent={
-                // TODO Change this to a submit button
-                { text: "30%", style: { color: "#fff" } }
-            }
-            containerStyle={{
-                backgroundColor:
-                    this.props.isSectionCompleted
-                        ? "#1cd500"
-                        : "#d5001c",
-                justifyContent: "space-around"
-            }}
-        />);
-    }
-}
-
-
-class Menu extends React.PureComponent {
-    /* shouldComponentUpdate(nextProps, nextState) {
-     *     console.log(nextProps)
-     *     console.log(nextState)
-     *     return true;
-     * } */
-    componentDidUpdate(prevProps, prevState) {
-        if (this.props) {
-            Object.entries(this.props).forEach(([key, val]) =>
-                prevProps[key] !== val && console.log(`M Prop '${key}' changed`)
-            );
-        }
-        if (this.state) {
-            Object.entries(this.state).forEach(([key, val]) =>
-                prevState[key] !== val && console.log(`M State '${key}' changed`)
-            );
-        }
-    }
-
-    render() {
-        console.log("RENDER MENU!!");
-        let sectionItems = [];
-        if (this.props.formSections) {
-            sectionItems = this.props.formSections.map((e, i) => (
-                <ListItem
-                    key={i}
-                    title={e.title}
-                    containerStyle={{
-                        borderTopWidth: 1,
-                        borderBottomWidth: 0
-                    }}
-                    Component={TouchableOpacity}
-                    badge={{
-                        value: i + 1,
-                        status: this.props.isSectionComplete[i] ? "success" : "error"
-                    }}
-                    onPress={(x) => {
-                        console.log(x);
-                        this.props.changeSection(i)
-                    }
-                    }
-                />
-            ));
-        }
         return (
-            <ScrollView
-                style={{ flex: 1, backgroundColor: "#b3d9ff" }}
-                scrollsToTop={false}
-            >
-                <Header
-                    centerComponent={{
-                        text: "Form sections",
-                        style: { color: "#000" }
-                    }}
-                    containerStyle={{
-                        backgroundColor: "#b3d9ff",
-                        justifyContent: "space-around"
-                    }}
-                />
-                {sectionItems}
-            </ScrollView >
+            <Card key={this.props.index} title={this.props.title}>
+                {this.props.description}
+                {this.props.inner}
+                {this.props.subparts}
+            </Card>
         );
     }
 }
@@ -386,7 +289,7 @@ class Form extends React.Component<Props> {
             files: null,
             form: null,
             formSections: null,
-            currentSection: 1, // TODO Debugging
+            currentSection: 8, // TODO Debugging
             sectionChanged: false,
             // NB Recomputing this each update introduces noticeable lag.
             sectionCompletionStatusCache: []
@@ -479,26 +382,6 @@ class Form extends React.Component<Props> {
         await this._loadForm();
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        Object.entries(this.props).forEach(([key, val]) =>
-            prevProps[key] !== val && console.log(`F Prop '${key}' changed`)
-        );
-        Object.entries(this.state).forEach(([key, val]) =>
-            prevState[key] !== val && console.log(`F State '${key}' changed`)
-        );
-        /* if (this.state.sectionChanged) {
-         *     this.scrollView.scrollTo({ x: 0, y: 0, animated: true });
-         *     this.setState({ sectionChanged: false });
-         * } */
-    }
-    /* 
-     *     componentDidUpdate() {
-     *         if (this.state.sectionChanged) {
-     *             this.scrollView.scrollTo({ x: 0, y: 0, animated: true });
-     *             this.setState({ sectionChanged: false });
-     *         }
-     *     } */
-
     formGetPath(valuePath, default_ = null) {
         return this.props.formPaths[valuePath]
             ? this.props.formPaths[valuePath].value
@@ -506,21 +389,23 @@ class Form extends React.Component<Props> {
     }
 
     formSetPath(valuePath, value) {
+        changedSinceLastRender.push(valuePath);
         this.props.formSetPath(valuePath, value);
         let current_section = this.state.formSections[this.state.currentSection];
-        let is_complete = isSectionComplete(
-            current_section,
-            path =>
-                // TODO This is pretty obscene.
-                // Clearly it's the wrongs solution.
-                path == valuePath ? value : this.formGetPath(path)
-        )
-        if (this.state.sectionCompletionStatusCache[this.state.currentSection] !== is_complete) {
+        let is_complete = isSectionComplete(current_section, path =>
+            // TODO This is pretty obscene.
+            // Clearly it's the wrongs solution.
+            path == valuePath ? value : this.formGetPath(path)
+        );
+        if (
+            this.state.sectionCompletionStatusCache[this.state.currentSection] !==
+            is_complete
+        ) {
             this.setState(state => {
                 let newCache = _.clone(this.state.sectionCompletionStatusCache);
                 newCache[this.state.currentSection] = is_complete;
                 return { sectionCompletionStatusCache: newCache };
-            })
+            });
         }
     }
 
@@ -545,11 +430,15 @@ class Form extends React.Component<Props> {
                 );
             }
             return (
-                <Card key={index} title={title}>
-                    {description}
-                    {inner}
-                    {subparts}
-                </Card>
+                <CardWrap
+                    key={index}
+                    title={title}
+                    needsUpdate={true}
+                    formPath={formPath}
+                    description={description}
+                    inner={inner}
+                    subparts={subparts}
+                />
             );
         },
         _combineParts: (entry, obj, index, inner, formPath, subparts) => {
@@ -638,7 +527,6 @@ class Form extends React.Component<Props> {
             let title = null;
             let buttonStyle = {};
             let image = null;
-            console.log(this.formGetPath(valuePath));
             if (this.formGetPath(valuePath)) {
                 title = " Replace signature";
                 image = (
@@ -883,14 +771,32 @@ class Form extends React.Component<Props> {
                             this.formSetPath(valuePath, date);
                         }}
                         disableClock={true}
-                        onCancel={() =>
+                        onCancel={() => {
                             this.setState({
                                 ["isVisible_dateTime_" + valuePath]: false
-                            })
-                        }
+                            });
+                            _.pull(hasVisibleModal, valuePath);
+                        }}
                     />
                 );
             } else {
+                let picker =
+                    (<DateTimePicker
+                        isVisible={this.state["isVisible_dateTime_" + valuePath]}
+                        onConfirm={date => {
+                            this.formSetPath(valuePath, date);
+                            this.setState({
+                                ["isVisible_dateTime_" + valuePath]: false
+                            });
+                            _.pull(hasVisibleModal, valuePath);
+                        }}
+                        onCancel={() => {
+                            this.setState({
+                                ["isVisible_dateTime_" + valuePath]: false
+                            });
+                            _.pull(hasVisibleModal, valuePath);
+                        }}
+                    />)
                 return (
                     <>
                         <Button
@@ -900,24 +806,13 @@ class Form extends React.Component<Props> {
                                     : "Choose date"
                             }
                             buttonStyle={buttonStyle}
-                            onPress={() =>
-                                this.setState({ ["isVisible_dateTime_" + valuePath]: true })
-                            }
-                        />
-                        <DateTimePicker
-                            isVisible={this.state["isVisible_dateTime_" + valuePath]}
-                            onConfirm={date => {
-                                this.formSetPath(valuePath, date);
-                                this.setState({
-                                    ["isVisible_dateTime_" + valuePath]: true
-                                });
+                            onPress={() => {
+                                hasVisibleModal.push(valuePath);
+                                this.setState({ ["isVisible_dateTime_" + valuePath]: true });
                             }}
-                            onCancel={() =>
-                                this.setState({
-                                    ["isVisible_dateTime_" + valuePath]: false
-                                })
-                            }
                         />
+                        {this.state["isVisible_dateTime_" + valuePath] ?
+                            picker : null}
                     </>
                 );
             }
@@ -935,14 +830,33 @@ class Form extends React.Component<Props> {
                         onChange={date => {
                             this.formSetPath(valuePath, date);
                         }}
-                        onCancel={() =>
+                        onCancel={() => {
                             this.setState({
                                 ["isVisible_dateTime_" + valuePath]: false
-                            })
-                        }
+                            });
+                            _.pull(hasVisibleModal, valuePath);
+                        }}
                     />
                 );
             } else {
+                let picker =
+                    (<DateTimePicker
+                        isVisible={this.state["isVisible_dateTime_" + valuePath]}
+                        onConfirm={date => {
+                            this.formSetPath(valuePath, date);
+                            this.setState({
+                                ["isVisible_dateTime_" + valuePath]: false
+                            });
+                            _.pull(hasVisibleModal, valuePath);
+                        }}
+                        mode="datetime"
+                        onCancel={() => {
+                            this.setState({
+                                ["isVisible_dateTime_" + valuePath]: false
+                            });
+                            _.pull(hasVisibleModal, valuePath);
+                        }}
+                    />)
                 return (
                     <>
                         <Button
@@ -952,25 +866,13 @@ class Form extends React.Component<Props> {
                                     : "Choose date and time"
                             }
                             buttonStyle={buttonStyle}
-                            onPress={() =>
-                                this.setState({ ["isVisible_dateTime_" + valuePath]: true })
-                            }
-                        />
-                        <DateTimePicker
-                            isVisible={this.state["isVisible_dateTime_" + valuePath]}
-                            onConfirm={date => {
-                                this.formSetPath(valuePath, date);
-                                this.setState({
-                                    ["isVisible_dateTime_" + valuePath]: true
-                                });
+                            onPress={() => {
+                                hasVisibleModal.push(valuePath);
+                                this.setState({ ["isVisible_dateTime_" + valuePath]: true });
                             }}
-                            mode="datetime"
-                            onCancel={() =>
-                                this.setState({
-                                    ["isVisible_dateTime_" + valuePath]: false
-                                })
-                            }
                         />
+                        {this.state["isVisible_dateTime_" + valuePath] ?
+                            picker : null}
                     </>
                 );
             }
@@ -1017,22 +919,21 @@ class Form extends React.Component<Props> {
     menuChangeSection = i => {
         this.setState({ currentSection: i });
         this.scrollView.scrollTo({ x: 0, y: 0, animated: true });
-    }
+    };
 
     sectionOffset = o => {
         this.setState({
             sectionChanged: true,
             currentSection: this.state.currentSection + o
         });
-    }
+    };
 
     openSideMenu = () => {
         Keyboard.dismiss();
         this.sideMenu.openMenu(true);
-    }
+    };
 
     render() {
-        console.log("RENDER");
         let sectionContent = [];
         if (this.state.formSections) {
             let current_section = this.state.formSections[this.state.currentSection];
@@ -1042,15 +943,33 @@ class Form extends React.Component<Props> {
                 this.renderFns
             );
         }
-        let top = [];
+        let top = null;
+        let bottom = null;
         if (this.state.formSections) {
-            top = <Top sectionOffset={this.sectionOffset}
-                currentSection={this.state.currentSection}
-                openSideMenu={this.openSideMenu}
-                title={this.state.formSections[this.state.currentSection].title}
-                lastSection={this.state.formSections.length - 1}
-                isSectionCompleted={this.state.sectionCompletionStatusCache[this.state.currentSection]}
-            />
+            top = (
+                <Top
+                    sectionOffset={this.sectionOffset}
+                    currentSection={this.state.currentSection}
+                    openSideMenu={this.openSideMenu}
+                    title={this.state.formSections[this.state.currentSection].title}
+                    lastSection={this.state.formSections.length - 1}
+                    isSectionCompleted={
+                        this.state.sectionCompletionStatusCache[this.state.currentSection]
+                    }
+                />
+            );
+            bottom = (
+                <Bottom
+                    sectionOffset={this.sectionOffset}
+                    currentSection={this.state.currentSection}
+                    openSideMenu={this.openSideMenu}
+                    title={this.state.formSections[this.state.currentSection].title}
+                    lastSection={this.state.formSections.length - 1}
+                    isSectionCompleted={
+                        this.state.sectionCompletionStatusCache[this.state.currentSection]
+                    }
+                />
+            );
         }
         return (
             <View style={styles.container}>
@@ -1077,66 +996,7 @@ class Form extends React.Component<Props> {
                         keyboardShouldPersistTaps="handled"
                     >
                         {sectionContent}
-                        <View style={{ marginBottom: "10%" }}>
-                            <View
-                                style={{
-                                    flex: 1,
-                                    alignItems: "center",
-                                    marginTop: "5%",
-
-                                    flexDirection: "row",
-                                    justifyContent: "space-around"
-                                }}
-                            >
-                                <Button
-                                    title=" Previous section"
-                                    icon={<Icon name="arrow-back" size={15} color="white" />}
-                                    disabled={this.state.currentSection == 0}
-                                    onPress={() => {
-                                        this.setState({
-                                            sectionChanged: true,
-                                            currentSection: this.state.currentSection - 1
-                                        });
-                                    }}
-                                />
-                                <Button
-                                    title="Next section "
-                                    disabled={
-                                        this.state.formSections &&
-                                        this.state.currentSection ==
-                                        this.state.formSections.length - 1
-                                    }
-                                    onPress={() => {
-                                        this.setState({
-                                            sectionChanged: true,
-                                            currentSection: this.state.currentSection + 1
-                                        });
-                                    }}
-                                    icon={<Icon name="arrow-forward" size={15} color="white" />}
-                                    iconRight
-                                />
-                            </View>
-                            <View
-                                style={{
-                                    flex: 1,
-                                    alignItems: "center",
-                                    marginTop: "5%",
-
-                                    flexDirection: "row",
-                                    justifyContent: "space-around"
-                                }}
-                            >
-                                <Button
-                                    title=" Save partial"
-                                    icon={<Icon name="save" size={15} color="white" />}
-                                />
-                                <Button
-                                    title="Print "
-                                    icon={<Icon name="print" size={15} color="white" />}
-                                    iconRight
-                                />
-                            </View>
-                        </View>
+                        {bottom}
                     </ScrollView>
                 </SideMenu>
             </View>

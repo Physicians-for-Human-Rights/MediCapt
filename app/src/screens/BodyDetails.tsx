@@ -5,7 +5,7 @@ import { Platform, AppState, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView, NavigationScreenProps } from "react-navigation";
 import { Header, ButtonGroup, Button } from "react-native-elements";
 import styles_ from "../styles";
-import BodySketch from "./BodySketch";
+import BodySketch from "../components/BodySketch";
 import * as FileSystem from "expo-file-system";
 
 const isAndroid = Platform.OS === "android";

@@ -3,7 +3,8 @@ import { GLView } from "expo-gl";
 import React from "react";
 import { PanResponder, PixelRatio } from "react-native";
 
-import { PIXI } from "expo-pixi";
+import * as PixiInstance from "pixi.js";
+import ExpoPixi, { PIXI } from 'expo-pixi';
 import { takeSnapshotAsync } from "expo-pixi/lib/utils";
 
 global.__ExpoSketchId = global.__ExpoSketchId || 0;
@@ -66,7 +67,9 @@ export default class BodySketch extends React.Component<Props> {
     delay: number = 10;
     panResponder: PanResponder;
     renderer: PIXI.Renderer;
-
+    /* texture;
+     * background;
+     */
     componentWillMount() {
         global.__ExpoSketchId++;
         this.setupPanResponder();
@@ -155,12 +158,13 @@ export default class BodySketch extends React.Component<Props> {
         this.points.push(point);
 
         this.graphics.clear();
+
         for (let i = 0; i < this.points.length; i++) {
             const { x, y, color, width, alpha } = this.points[i];
             if (i === 0) {
                 this.graphics.lineStyle(
                     width || this.props.strokeWidth || 10,
-                    color || this.props.strokeColor || 0x000000,
+                    color || this.props.strokeColor || 0x0000ff,
                     alpha || this.props.strokeAlpha || 1
                 );
                 this.graphics.moveTo(x, y);
@@ -168,6 +172,7 @@ export default class BodySketch extends React.Component<Props> {
                 this.graphics.lineTo(x, y);
             }
         }
+
         this.graphics.currentPath.shape.closed = false;
         this.graphics.endFill(); /// TODO: this may be wrong: need stroke
         this.renderer._update();
@@ -223,16 +228,7 @@ export default class BodySketch extends React.Component<Props> {
                 autoStart: false
             }
         );
-        this.image = PIXI.Sprite.fromImage(this.props.baseImage);
-        /* this.image = PIXI.Sprite.fromImage("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P//PwAGBAL/VJiKjgAAAABJRU5ErkJggg=="); */
-        console.log(this.image)
-        this.image.scale.x = 1000;
-        this.image.scale.y = 1000;
-        this.stage.addChild(this.image);
 
-        /* adjustRatio(this.image, this.renderer, true);
-         * centerSprite(this.image, this.renderer);
-         */
         this.renderer._update = () => {
             this.renderer.render(this.stage);
             context.endFrameEXP();
@@ -246,6 +242,7 @@ export default class BodySketch extends React.Component<Props> {
             }
             this.lines = initialLines;
         }
+        this.renderer._update();
     };
 
     buildLine = ({ points, color, alpha, width }) => {
