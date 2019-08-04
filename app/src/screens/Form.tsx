@@ -80,7 +80,7 @@ type Props = NavigationScreenProps;
 
 import allForms from "../allForms";
 
-class Menu extends React.Component {
+class Menu extends React.PureComponent {
     /* shouldComponentUpdate(nextProps, nextState) {
      *     console.log(nextProps)
      *     console.log(nextState)
@@ -100,6 +100,7 @@ class Menu extends React.Component {
     }
 
     render() {
+        console.log("RENDER MENU!!");
         let sectionItems = [];
         if (this.props.formSections) {
             sectionItems = this.props.formSections.map((e, i) => (
@@ -113,9 +114,13 @@ class Menu extends React.Component {
                     Component={TouchableOpacity}
                     badge={{
                         value: i + 1,
-                        status: this.props.isSectionComplete(i) ? "success" : "error"
+                        status: this.props.isSectionComplete[i] ? "success" : "error"
                     }}
-                    onPress={() => this.props.changeSection(i)}
+                    onPress={(x) => {
+                        console.log(x);
+                        this.props.changeSection(i)
+                    }
+                    }
                 />
             ));
         }
@@ -135,7 +140,7 @@ class Menu extends React.Component {
                     }}
                 />
                 {sectionItems}
-            </ScrollView>
+            </ScrollView >
         );
     }
 }
@@ -420,17 +425,20 @@ class Form extends React.Component<Props> {
     formSetPath(valuePath, value) {
         this.props.formSetPath(valuePath, value);
         let current_section = this.state.formSections[this.state.currentSection];
-        this.setState(state => {
-            let newCache = _.clone(this.state.sectionCompletionStatusCache);
-            newCache[this.state.currentSection] = isSectionComplete(
-                current_section,
-                path =>
-                    // TODO This is pretty obscene.
-                    // Clearly it's the wrongs solution.
-                    path == valuePath ? value : this.formGetPath(path)
-            );
-            return { sectionCompletionStatusCache: newCache };
-        });
+        let is_complete = isSectionComplete(
+            current_section,
+            path =>
+                // TODO This is pretty obscene.
+                // Clearly it's the wrongs solution.
+                path == valuePath ? value : this.formGetPath(path)
+        )
+        if (this.state.sectionCompletionStatusCache[this.state.currentSection] !== is_complete) {
+            this.setState(state => {
+                let newCache = _.clone(this.state.sectionCompletionStatusCache);
+                newCache[this.state.currentSection] = is_complete;
+                return { sectionCompletionStatusCache: newCache };
+            })
+        }
     }
 
     renderFns = {
@@ -923,6 +931,11 @@ class Form extends React.Component<Props> {
         }
     };
 
+    menuChangeSection = i => {
+        this.setState({ currentSection: i });
+        this.scrollView.scrollTo({ x: 0, y: 0, animated: true });
+    }
+
     render() {
         console.log("RENDER");
         let sectionContent = [];
@@ -942,16 +955,8 @@ class Form extends React.Component<Props> {
                         <Menu
                             navigator={navigator}
                             formSections={this.state.formSections}
-                            changeSection={i => {
-                                this.setState({ currentSection: i });
-                                this.scrollView.scrollTo({ x: 0, y: 0, animated: true });
-                            }}
-                            isSectionComplete={i => {
-                                return (
-                                    this.state.sectionCompletionStatusCache &&
-                                    this.state.sectionCompletionStatusCache[i]
-                                );
-                            }}
+                            changeSection={this.menuChangeSection}
+                            isSectionComplete={this.state.sectionCompletionStatusCache}
                         />
                     }
                 >
