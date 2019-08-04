@@ -80,6 +80,89 @@ type Props = NavigationScreenProps;
 
 import allForms from "../allForms";
 
+
+class Top extends React.PureComponent {
+    /* shouldComponentUpdate(nextProps, nextState) {
+     *     console.log(nextProps)
+     *     console.log(nextState)
+     *     return true;
+     * } */
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props) {
+            Object.entries(this.props).forEach(([key, val]) =>
+                prevProps[key] !== val && console.log(`Top Prop '${key}' changed`)
+            );
+        }
+        if (this.state) {
+            Object.entries(this.state).forEach(([key, val]) =>
+                prevState[key] !== val && console.log(`Top State '${key}' changed`)
+            );
+        }
+    }
+
+    render() {
+        console.log("RENDER TOP!!");
+        return (<Header
+            leftComponent={{
+                icon: "menu",
+                color: "#fff",
+                onPress: this.props.openSideMenu
+            }}
+            centerComponent={
+                <View
+                    style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center"
+                    }}
+                >
+                    <Button
+                        title=""
+                        icon={<Icon name="arrow-back" size={15} color="white" />}
+                        disabled={this.props.currentSection == 0}
+                        onPress={() => this.props.sectionOffset(-1)}
+                    />
+                    <Text
+                        style={{
+                            width: "60%",
+                            marginLeft: "10%",
+                            marginRight: "10%",
+                            color: "#fff"
+                        }}
+                        textAlign="center"
+                    >
+                        Section {this.props.currentSection + 1}
+                        {"\n"}
+                        {this.props.title
+                            ? this.props.title
+                            : ""}
+                    </Text>
+                    <Button
+                        title=""
+                        disabled={this.props.currentSection == this.props.lastSection
+                        }
+                        onPress={() => this.props.sectionOffset(1)}
+                        icon={<Icon name="arrow-forward" size={15} color="white" />}
+                        iconRight
+                    />
+                </View>
+            }
+            rightComponent={
+                // TODO Change this to a submit button
+                { text: "30%", style: { color: "#fff" } }
+            }
+            containerStyle={{
+                backgroundColor:
+                    this.props.isSectionCompleted
+                        ? "#1cd500"
+                        : "#d5001c",
+                justifyContent: "space-around"
+            }}
+        />);
+    }
+}
+
+
 class Menu extends React.PureComponent {
     /* shouldComponentUpdate(nextProps, nextState) {
      *     console.log(nextProps)
@@ -936,6 +1019,18 @@ class Form extends React.Component<Props> {
         this.scrollView.scrollTo({ x: 0, y: 0, animated: true });
     }
 
+    sectionOffset = o => {
+        this.setState({
+            sectionChanged: true,
+            currentSection: this.state.currentSection + o
+        });
+    }
+
+    openSideMenu = () => {
+        Keyboard.dismiss();
+        this.sideMenu.openMenu(true);
+    }
+
     render() {
         console.log("RENDER");
         let sectionContent = [];
@@ -946,6 +1041,16 @@ class Form extends React.Component<Props> {
                 path => this.formGetPath(path),
                 this.renderFns
             );
+        }
+        let top = [];
+        if (this.state.formSections) {
+            top = <Top sectionOffset={this.sectionOffset}
+                currentSection={this.state.currentSection}
+                openSideMenu={this.openSideMenu}
+                title={this.state.formSections[this.state.currentSection].title}
+                lastSection={this.state.formSections.length - 1}
+                isSectionCompleted={this.state.sectionCompletionStatusCache[this.state.currentSection]}
+            />
         }
         return (
             <View style={styles.container}>
@@ -960,82 +1065,7 @@ class Form extends React.Component<Props> {
                         />
                     }
                 >
-                    <Header
-                        leftComponent={{
-                            icon: "menu",
-                            color: "#fff",
-                            onPress: () => {
-                                Keyboard.dismiss();
-                                this.sideMenu.openMenu(true);
-                            }
-                        }}
-                        centerComponent={
-                            <View
-                                style={{
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    alignItems: "center"
-                                }}
-                            >
-                                <Button
-                                    title=""
-                                    icon={<Icon name="arrow-back" size={15} color="white" />}
-                                    disabled={this.state.currentSection == 0}
-                                    onPress={() => {
-                                        this.setState({
-                                            sectionChanged: true,
-                                            currentSection: this.state.currentSection - 1
-                                        });
-                                    }}
-                                />
-                                <Text
-                                    style={{
-                                        width: "60%",
-                                        marginLeft: "10%",
-                                        marginRight: "10%",
-                                        color: "#fff"
-                                    }}
-                                    textAlign="center"
-                                >
-                                    Section {this.state.currentSection + 1}
-                                    {"\n"}
-                                    {this.state.formSections
-                                        ? this.state.formSections[this.state.currentSection].title
-                                        : ""}
-                                </Text>
-                                <Button
-                                    title=""
-                                    disabled={
-                                        this.state.formSections &&
-                                        this.state.currentSection ==
-                                        this.state.formSections.length - 1
-                                    }
-                                    onPress={() => {
-                                        this.setState({
-                                            sectionChanged: true,
-                                            currentSection: this.state.currentSection + 1
-                                        });
-                                    }}
-                                    icon={<Icon name="arrow-forward" size={15} color="white" />}
-                                    iconRight
-                                />
-                            </View>
-                        }
-                        rightComponent={
-                            // TODO Change this to a submit button
-                            { text: "30%", style: { color: "#fff" } }
-                        }
-                        containerStyle={{
-                            backgroundColor:
-                                this.state.sectionCompletionStatusCache &&
-                                    this.state.sectionCompletionStatusCache[
-                                    this.state.currentSection
-                                    ]
-                                    ? "#1cd500"
-                                    : "#d5001c",
-                            justifyContent: "space-around"
-                        }}
-                    />
+                    {top}
                     <ScrollView
                         ref={ref => (this.scrollView = ref)}
                         style={{ flex: 10, backgroundColor: "#fff" }}
