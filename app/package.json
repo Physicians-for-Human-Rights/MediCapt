@@ -13,7 +13,7 @@
     "aws-amplify-react-native": "^2.1.13",
     "date-fns": "^1.30.1",
     "expo": "^34.0.0",
-    "expo-cli": "^2.21.2",
+    "expo-cli": "^5.0.0",
     "expo-file-system": "~6.0.0",
     "expo-pixi": "https://github.com/expo/expo-pixi.git#78df64037171bd3cb22cca04374926c5470145e0",
     "lodash": "^4.17.14",
