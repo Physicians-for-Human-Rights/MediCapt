@@ -3,13 +3,13 @@
     "name": "MediCapt",
     "slug": "medicaptApp",
     "ios": {
-      "bundleIdentifier": "com.medicapt.medicaptapp"
+      "supportsTablet": true
     },
     "android": {
       "package": "com.medicapt.medicaptapp"
     },
     "privacy": "unlisted",
-    "sdkVersion": "33.0.0",
+    "sdkVersion": "34.0.0",
     "platforms": [
       "ios",
       "android",
@@ -29,10 +29,7 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": {
-      "supportsTablet": true
-    },
-      "packagerOpts": {
+    "packagerOpts": {
       "assetExts": [
         "json",
         "yaml",
