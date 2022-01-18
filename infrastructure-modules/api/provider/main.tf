@@ -1,11 +1,5 @@
 terraform {
-  required_version = ">= 0.12, < 0.13"
-  backend "s3" {}
-}
-
-provider "aws" {
-  region = var.aws_region
-  version = "~> 2.0"
+  required_version = ">= 1.1, < 1.2"
 }
 
 variable "aws_region" {
@@ -35,7 +29,7 @@ resource "aws_api_gateway_rest_api" "records" {
   name        = "${var.namespace}-${var.stage}-records"
   description = "Records API"
   body = templatefile("${path.module}/api.yaml",
-    { cognito_user_pool_id = "${var.namespace}-${var.stage}-providers"
+    { cognito_user_pool_id = "${var.namespace}-${var.stage}-provider"
       region = var.aws_region
       account_id = data.aws_caller_identity.current.account_id
       lambda_uri = aws_lambda_function.gateway_lambda.invoke_arn
@@ -56,11 +50,11 @@ resource "aws_lambda_permission" "apigw" {
 }
 
 resource "aws_lambda_function" "gateway_lambda" {
-  function_name = "${var.namespace}-${var.stage}-providers-api-gateway-lambda"
+  function_name = "${var.namespace}-${var.stage}-provider-lambda"
   filename = data.archive_file.src.output_path
   source_code_hash = data.archive_file.src.output_base64sha256
   handler = "index.handler"
-  runtime = "nodejs8.10"
+  runtime = "nodejs14.x"
   role = aws_iam_role.gateway_lambda.arn
 }
 

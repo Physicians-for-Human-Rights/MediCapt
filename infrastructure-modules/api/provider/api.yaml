@@ -16,6 +16,7 @@ securityDefinitions:
       type: COGNITO_USER_POOLS
       providerARNs:
       - arn:aws:cognito-idp:${region}:${account_id}:userpool/${cognito_user_pool_id}
+
 consumes:
 - "application/json"
 produces:
