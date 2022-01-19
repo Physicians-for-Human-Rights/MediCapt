@@ -24,8 +24,8 @@ const countries_button_labels = handled_countries.map(country => {
 });
 
 function guessCountry() {
-    if (handled_countries.indexOf(Localization.country) >= 0) {
-        return Localization.country;
+    if (handled_countries.indexOf(Localization.region) >= 0) {
+        return Localization.region;
     } else {
         return handled_countries[0];
     }
