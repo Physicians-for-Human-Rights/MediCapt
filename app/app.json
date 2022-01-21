@@ -2,22 +2,10 @@
   "expo": {
     "name": "MediCapt",
     "slug": "medicaptApp",
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "package": "com.medicapt.medicaptapp"
-    },
-    "privacy": "unlisted",
-    "sdkVersion": "41.0.0",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+    "privacy": "unlisted",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -29,6 +17,18 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.medicapt.medicaptapp"
+    },
+    "web": {},
     "packagerOpts": {
       "assetExts": [
         "json",

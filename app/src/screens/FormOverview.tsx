@@ -9,14 +9,14 @@ import {
     View
 } from "react-native";
 import {
-    createStackNavigator,
     createSwitchNavigator,
     createAppContainer,
     SafeAreaView
 } from "react-navigation";
+import { createStackNavigator } from 'react-navigation-stack';
 
 import Amplify from "aws-amplify";
-import config from "./config.js";
+import config from "../../config.js";
 
 import styles from "../styles";
 

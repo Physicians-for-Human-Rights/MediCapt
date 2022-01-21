@@ -1,6 +1,7 @@
 import React from "react";
 import { ActivityIndicator, Text, Image, View } from "react-native";
-import { SafeAreaView, NavigationScreenProps } from "react-navigation";
+import { SafeAreaView } from "react-navigation";
+import { NavigationStackScreenProps } from 'react-navigation-stack';
 import { Icon, Button } from "react-native-elements";
 
 import { Auth } from "aws-amplify";
@@ -11,7 +12,7 @@ import styles from "../styles";
 
 import { connect } from "react-redux";
 
-type Props = NavigationScreenProps;
+type Props = NavigationStackScreenProps;
 
 class ButtonWithIconBackground extends React.Component<Props> {
     render() {

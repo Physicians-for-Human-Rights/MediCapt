@@ -10,12 +10,11 @@ import {
     View
 } from "react-native";
 import {
-    createStackNavigator,
     createSwitchNavigator,
     createAppContainer,
-    SafeAreaView,
-    NavigationScreenProps
+    SafeAreaView
 } from "react-navigation";
+import { createStackNavigator, NavigationStackScreenProps } from 'react-navigation-stack';
 import { ThemeProvider } from "react-native-elements";
 
 import Amplify from "aws-amplify";
@@ -64,7 +63,7 @@ Amplify.configure({
     }
 });
 
-type Props = NavigationScreenProps;
+type Props = NavigationStackScreenProps;
 
 class OtherScreen extends React.Component<Props> {
     static navigationOptions = {

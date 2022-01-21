@@ -1,11 +1,11 @@
 import React from "react";
 import { Text, View } from "react-native";
 import {
-    createStackNavigator,
     createSwitchNavigator,
     createAppContainer,
     SafeAreaView
 } from "react-navigation";
+import { createStackNavigator } from 'react-navigation-stack';
 import { Header, Icon, Button } from "react-native-elements";
 
 export default class Top extends React.PureComponent {

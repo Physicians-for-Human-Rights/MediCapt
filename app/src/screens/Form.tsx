@@ -15,11 +15,11 @@ import {
     Platform
 } from "react-native";
 import {
-    createStackNavigator,
     createSwitchNavigator,
     createAppContainer,
     SafeAreaView
 } from "react-navigation";
+import { createStackNavigator } from 'react-navigation-stack';
 import {
     Header,
     Icon,

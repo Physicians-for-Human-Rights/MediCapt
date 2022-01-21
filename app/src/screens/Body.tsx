@@ -1,5 +1,3 @@
-import Expo from "expo";
-import * as ExpoPixi from "expo-pixi";
 import React, { Component } from "react";
 import {
     ImageBackground,
@@ -10,7 +8,8 @@ import {
     View,
     Image
 } from "react-native";
-import { SafeAreaView, NavigationScreenProps } from "react-navigation";
+import { SafeAreaView } from "react-navigation";
+import { NavigationStackScreenProps } from 'react-navigation-stack';
 import { Header, Button, ButtonGroup } from "react-native-elements";
 import styles_ from "../styles";
 import BodySketch from "../components/BodySketch";
