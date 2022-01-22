@@ -228,3 +228,7 @@ output "cognito_user_pool_clients" {
 output "cognito_user_pool_domain" {
   value = module.cognito_user_pool.domain
 }
+
+output "cognito_user_pool_arn" {
+  value = module.cognito_user_pool.user_pool.arn
+}

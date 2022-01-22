@@ -1,79 +1,461 @@
----
-swagger: "2.0"
+swagger: '2.0'
 info:
-  description: "The MediCapt API"
-  version: "0.1"
-  title: "Medicapt API"
-  termsOfService: ""
-  contact: {}
-securityDefinitions:
-  ProviderUsers:
-    type: apiKey
-    name: Authorization
-    in: header
-    x-amazon-apigateway-authtype: cognito_user_pools
-    x-amazon-apigateway-authorizer:
-      type: COGNITO_USER_POOLS
-      providerARNs:
-      - arn:aws:cognito-idp:${region}:${account_id}:userpool/${cognito_user_pool_id}
-
-consumes:
-- "application/json"
-produces:
-- "application/json"
+  description: |
+    Medicapt API for providers
+  version: 1.0.0
+  title: Medicapt API --- Providers
+  termsOfService: TODO
+  contact:
+    email: TODO@TODO.TODO
+  license:
+    name: TODO
+    url: https://TODO
+# securityDefinitions:
+#   CognitoUserProvider:
+#     type: apiKey
+#     name: Authorization
+#     in: header
+#     x-amazon-apigateway-authtype: cognito_user_pools
+#     x-amazon-apigateway-authorizer:
+#       type: cognito_user_pools
+#       providerARNs:
+#       - ${cognito_user_pool_provider_arn}
+# security:
+#   - CognitoUserProvider: []
+schemes:
+- https
 paths:
-  /users/{userid}:
-    get:
-      summary: "Get user"
-      parameters: []
+  /provider/record:
+    post:
+      tags:
+      - record
+      summary: Add a new record
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      operationId: providerCreateRecord
+      parameters:
+      - in: body
+        name: body
+        description: Create a new record
+        required: true
+        schema:
+          $ref: '#/definitions/Record'
       responses:
-        200:
-          description: "Status 200"
-      security:
-        - Provider: []
+        405:
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/Record'
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri}
+        uri: ${lambda_uri_providerCreateRecord}
         responses:
           default:
             statusCode: "200"
-        passthroughBehavior: "when_no_match"
+        passthroughBehavior: "NEVER"
         httpMethod: "POST"
-        contentHandling: "CONVERT_TO_TEXT"
         type: "aws_proxy"
-    parameters:
-    - name: "userid"
-      in: "path"
-      required: true
-      type: "string"
+  /provider/record/{recordId}:
+    get:
+      tags:
+      - record
+      summary: Get a record by ID
+      operationId: providerGetRecordById
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - name: recordId
+        in: path
+        description: ID of the record to return
+        required: true
+        type: string
+        format: uuid
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Record'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Record not found
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerGetRecordById}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    post:
+      tags:
+      - record
+      summary: Update an existing record
+      operationId: providerUpdateRecordById
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      parameters:
+      - name: recordId
+        in: path
+        description: ID of the record to return
+        required: true
+        type: string
+        format: uuid
+      - in: body
+        name: body
+        description: Updated record
+        required: true
+        schema:
+          $ref: '#/definitions/Record'
+      responses:
+        400:
+          description: Record already sealed
+        404:
+          description: Record not found
+        405:
+          description: Validation exception
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerUpdateRecordById}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    delete:
+      tags:
+      - record
+      summary: Deletes a record
+      operationId: providerDeleteRecordById
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - name: recordId
+        in: path
+        description: ID of record to delete
+        required: true
+        type: string
+        format: uuid
+      responses:
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Record not found
+        405:
+          description: Record already sealed
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerDeleteRecordById}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+  /provider/seal_record/{recordId}:
+    post:
+      tags:
+      - record
+      summary: Update an existing record
+      operationId: providerSealRecordById
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      parameters:
+      - name: recordId
+        in: path
+        description: ID of record to return
+        required: true
+        type: string
+        format: uuid
+      responses:
+        400:
+          description: Record already sealed
+        404:
+          description: Record not found
+        405:
+          description: Validation exception
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerSealRecordById}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+  /provider/record_image/{recordId}:
+    post:
+      tags:
+      - record
+      summary: Upload an image for a record
+      operationId: providerUploadImageForRecordBy
+      consumes:
+       - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - in: formData
+        name: upfile
+        type: file
+        required: true
+        description: The file to upload.
+      - in: formData
+        name: formTag
+        type: string
+        required: true
+        description: Tag in the form that this image corresopnds to.
+      - name: recordId
+        in: path
+        description: ID of record to return
+        required: true
+        type: string
+        format: uuid
+      responses:
+        400:
+          description: Record already sealed
+        404:
+          description: Record not found
+        405:
+          description: Validation exception
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerUploadImageForRecordBy}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+  /provider/record_image/{recordId}/{formTag}:
+    get:
+      tags:
+      - record
+      summary: Get an image in a record
+      operationId: providerGetImageByFormTag
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: recordId
+        in: path
+        description: The record id
+        required: true
+        type: string
+        format: uuid
+      - name: formTag
+        in: path
+        description: The form tag for this image
+        required: true
+        type: string
+      responses:
+        400:
+          description: Record already sealed
+        404:
+          description: Record or image not found
+        405:
+          description: Validation exception
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerGetImageByFormTag}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    delete:
+      tags:
+      - record
+      summary: Delete an image in a record
+      operationId: providerDeleteImageByFormTag
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: recordId
+        in: path
+        description: The record id
+        required: true
+        type: string
+        format: uuid
+      - name: formTag
+        in: path
+        description: The form tag for this image
+        required: true
+        type: string
+      responses:
+        400:
+          description: Record already sealed
+        404:
+          description: Record or image not found
+        405:
+          description: Validation exception
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerDeleteImageByFormTag}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+  /provider/own_records:
+    get:
+      tags:
+      - record
+      summary: List your own records
+      operationId: providerGetOwnRecords
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - name: status
+        in: query
+        description: Status values to filter by
+        required: false
+        type: array
+        items:
+          type: string
+          enum:
+          - empty
+          - not_empty
+          - sealed
+          - not_sealed
+          - patient_signed
+          - not_patient_signed
+          - provider_signed
+          - not_provider_signed
+          - has_labs
+          - not_has_labs
+        collectionFormat: multi
+      - in: query
+        name: offset
+        type: integer
+        required: false
+        default: 0
+        minimum: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: limit
+        type: integer
+        required: false
+        default: 20
+        minimum: 1
+        maximum: 100
+        description: The numbers of items to return.
+      - in: query
+        name: sort
+        required: false
+        type: array
+        items:
+          type: string
+        default: []
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RecordMetadata'
+        400:
+          description: Invalid status value
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerGetOwnRecords}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+  /provider/forms:
+    get:
+      tags:
+      - record
+      summary: List all forms
+      operationId: providerGetForms
+      produces:
+      - application/json
+      parameters:
+      - in: query
+        name: offset
+        type: integer
+        required: false
+        default: 0
+        minimum: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: limit
+        type: integer
+        required: false
+        default: 20
+        minimum: 1
+        maximum: 100
+        description: The numbers of items to return.
+      - in: query
+        name: sort
+        required: false
+        type: array
+        items:
+          type: string
+        default: []
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Form'
+        400:
+          description: Invalid status value
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerGetForms}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
 definitions:
-  UUID:
-    type: "string"
-  Error:
-    type: "object"
-    required:
-    - "code"
+  RecordMetadata:
+    type: object
     properties:
-      code:
-        type: "integer"
-        minimum: 400
-        maximum: 599
-      description:
-        type: "string"
-      reasonPhrase:
-        type: "string"
-    description: "This general error structure is used throughout this API."
-  Patient:
-    type: "object"
-  User:
-    type: "object"
+      form_id:
+        type: string
+        format: uuid
+      createdAt:
+        type: string
+        format: date
+      name:
+        type: string
+      age:
+        type: number
+      editedAt:
+        type: string
+        format: date
+      form_contents:
+        type: object
+  Record:
+    type: object
     properties:
-      metadataAccess:
-        type: "array"
-        items:
-          $ref: "#/definitions/UUID"
-      institutionAccess:
-        type: "array"
-        items:
-          $ref: "#/definitions/UUID"
-  Instiution:
-    type: "object"
+      form_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      form_contents:
+        type: object
+  Form:
+    type: object
+    properties:
+      form_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      country_code:
+        type: string
+      form_layout:
+        type: object

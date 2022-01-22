@@ -60,6 +60,7 @@ module "template_files" {
 }
 
 resource "aws_s3_bucket_object" "static_files" {
+  #checkov:skip=CKV_AWS_186:Letting AWS manage keys is safer here
   for_each     = module.template_files.files
   key          = each.key
   content_type = each.value.content_type
