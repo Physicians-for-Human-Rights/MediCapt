@@ -2,7 +2,6 @@ import React from "react";
 import {
     ActivityIndicator,
     StatusBar,
-    AsyncStorage,
     StyleSheet,
     Text,
     TextInput,
@@ -27,7 +26,8 @@ import {
     ListItem,
     ButtonGroup,
     Card,
-    Image
+    Image,
+    Badge
 } from "react-native-elements";
 import SideMenu from "react-native-side-menu";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -85,20 +85,23 @@ export default class Menu extends React.PureComponent {
             sectionItems = this.props.formSections.map((e, i) => (
                 <ListItem
                     key={i}
-                    title={e.title}
                     containerStyle={{
                         borderTopWidth: 1,
                         borderBottomWidth: 0
                     }}
                     Component={TouchableOpacity}
-                    badge={{
-                        value: i + 1,
-                        status: this.props.isSectionComplete[i] ? "success" : "error"
-                    }}
                     onPress={x => {
                         this.props.changeSection(i);
                     }}
-                />
+                >
+                <Badge
+                value={i + 1}
+                        status={this.props.isSectionComplete[i] ? "success" : "error"}
+                    />
+                    <ListItem.Title>
+                        {e.title}
+                    </ListItem.Title>
+                </ListItem>
             ));
         }
         return (

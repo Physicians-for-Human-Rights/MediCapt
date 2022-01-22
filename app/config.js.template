@@ -2,27 +2,15 @@
 
 export default {
   apiGateway: {
-    records: {
-        REGION: $REGION,
-        URL: $RECORDS_URL
+    provider: {
+        REGION: "$REGION",
+        URL: $PROVIDER_URL
     }
   },
   cognito: {
-    REGION: $REGION,
+    REGION: "$REGION",
     USER_POOL_ID: $USER_POOL_ID,
-    APP_CLIENT_ID: $APP_CLIENT_ID,
-    IDENTITY_POOL_ID: $IDENTITY_POOL_ID
-  },
-  s3: {
-    records: {
-      REGION: $REGION,
-      BUCKET: $RECORDS_BUCKET
-    }
-  },
-  rds: {
-    records: {
-      REGION: $REGION,
-      DB: $RECORDS_DB
-    }
+    IDENTITY_POOL_ID: $IDENTITY_POOL_ID,
+    APP_CLIENT_ID: $APP_CLIENT_ID
   }
 };

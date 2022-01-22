@@ -9,6 +9,8 @@ import { Auth } from "aws-amplify";
 import medicapt_logo from "../../assets/medicapt.png";
 import phr_logo from "../../assets/phr.png";
 import styles from "../styles";
+import { setUser } from "../redux/actions";
+import isEmpty from 'lodash/isEmpty';
 
 import { connect } from "react-redux";
 
@@ -30,8 +32,9 @@ class ButtonWithIconBackground extends React.Component<Props> {
                         type="outline"
                     />
                 </View>
-                <View style={{ zIndex: 0, position: "absolute" }}>
+                <View style={{ zIndex: 0, position: "absolute", width: "100%" }}>
                     <Button
+                        style={{ alignSelf: 'stretch' }}
                         onPress={this.props.onPress}
                         buttonStyle={styles.largeTileButton}
                         titleStyle={{ color: "#d5001c" }}
@@ -57,109 +60,113 @@ class HomeScreen extends React.Component<Props> {
         header: null
     };
 
-    componentDidMount() {
-        // TODO Debugging
-        this.props.navigation.navigate("SelectForm");
+    async componentDidMount() {
+        const user = await Auth.currentAuthenticatedUser();
+        this.props.setUser(user);
     }
 
     render() {
-        return (
-            <SafeAreaView forceInset={{ top: "always" }} style={styles.container}>
-                <View
-                    style={{
-                        justifyContent: "space-around",
-                        flex: 2,
-                        flexDirection: "row"
-                    }}
-                >
-                    <View style={{ flex: 1 }}>
-                        <Image source={medicapt_logo} style={styles.logo} />
+        if (!isEmpty(this.props.user)) {
+            return (
+                <SafeAreaView forceInset={{ top: "always" }} style={styles.container}>
+                    <View
+                        style={{
+                            justifyContent: "space-around",
+                            flex: 2,
+                            flexDirection: "row"
+                        }}
+                    >
+                        <View style={{ flex: 1 }}>
+                            <Image source={medicapt_logo} style={styles.logo} />
+                        </View>
+                        <View style={{ flex: 1 }}>
+                            {/* <Text>Hello</Text> */}
+                            <Image source={phr_logo} style={styles.logo} />
+                        </View>
                     </View>
-                    <View style={{ flex: 1 }}>
-                        {/* <Text>Hello</Text> */}
-                        <Image source={phr_logo} style={styles.logo} />
-                    </View>
-                </View>
-                <View
-                    style={{
-                        flex: 1,
-                        flexDirection: "row",
-                        alignItems: "center"
-                    }}
-                >
-                    <View>
-                        <Text style={styles.welcomeText}>
-                            {" "}
-                            {this.props.user.user.attributes.name}{" "}
-                        </Text>
-                    </View>
-                </View>
-                <View style={{ flex: 4 }}>
                     <View
                         style={{
                             flex: 1,
                             flexDirection: "row",
-                            minWidth: "80%"
+                            alignItems: "center"
                         }}
                     >
-                        <ButtonWithIconBackground
-                            label="Create new record"
-                            onPress={this._createNewRecord}
-                            iconName="plus"
-                            iconType="foundation"
-                        />
-                        <View style={{ flex: 0.4 }} />
-                        <ButtonWithIconBackground
-                            label="Incomplete records"
-                            onPress={this._incompleteRecords}
-                            iconName="pencil"
-                            iconType="foundation"
-                        />
+                        <View>
+                            <Text style={styles.welcomeText}>
+                                {" "}
+                                {this.props.user.attributes.name}{" "}
+                            </Text>
+                        </View>
                     </View>
-                    <View style={{ flex: 1, flexDirection: "row" }}>
-                        <ButtonWithIconBackground
-                            label="Find record"
-                            onPress={this._findRecord}
-                            iconName="search"
-                            iconType="font-awesome"
-                        />
-                        <View style={{ flex: 0.4 }} />
-                        <ButtonWithIconBackground
-                            label="Settings"
-                            onPress={this._loadSettings}
-                            iconName="cog"
-                            iconType="font-awesome"
-                        />
+                    <View style={{ flex: 4 }}>
+                        <View
+                            style={{
+                                flex: 1,
+                                flexDirection: "row",
+                                minWidth: "80%"
+                            }}
+                        >
+                            <ButtonWithIconBackground
+                                label="Create new record"
+                                onPress={this._createNewRecord}
+                                iconName="plus"
+                                iconType="foundation"
+                            />
+                            <View style={{ flex: 0.4 }} />
+                            <ButtonWithIconBackground
+                                label="Incomplete records"
+                                onPress={this._incompleteRecords}
+                                iconName="pencil"
+                                iconType="foundation"
+                            />
+                        </View>
+                        <View style={{ flex: 1, flexDirection: "row" }}>
+                            <ButtonWithIconBackground
+                                label="Find record"
+                                onPress={this._findRecord}
+                                iconName="search"
+                                iconType="font-awesome"
+                            />
+                            <View style={{ flex: 0.4 }} />
+                            <ButtonWithIconBackground
+                                label="Settings"
+                                onPress={this._loadSettings}
+                                iconName="cog"
+                                iconType="font-awesome"
+                            />
+                        </View>
                     </View>
-                </View>
-                <View
-                    style={{
-                        flex: 0.6,
-                        flexDirection: "row",
-                        alignItems: "center"
-                    }}
-                >
-                    <View style={{ marginRight: 30 }}>
-                        <ActivityIndicator size="large" color="#0000ff" />
+                    <View
+                        style={{
+                            flex: 0.6,
+                            flexDirection: "row",
+                            alignItems: "center"
+                        }}
+                    >
+                        <View style={{ marginRight: 30 }}>
+                            <ActivityIndicator size="large" color="#0000ff" />
+                        </View>
+                        <View>
+                            <Text style={styles.syncText}>Synchronizing 3 records</Text>
+                        </View>
                     </View>
-                    <View>
-                        <Text style={styles.syncText}>Synchronizing 3 records</Text>
+                    <View style={styles.sideBySideButtons}>
+                        <View style={styles.simpleButton}>
+                            <Button
+                                raised
+                                title="Log out everywhere"
+                                onPress={this._signOutAsyncEverywhere}
+                            />
+                        </View>
+                        <View style={styles.simpleButton}>
+                            <Button raised title="Log out" onPress={this._signOutAsync} />
+                        </View>
                     </View>
-                </View>
-                <View style={styles.sideBySideButtons}>
-                    <View style={styles.simpleButton}>
-                        <Button
-                            raised
-                            title="Log out everywhere"
-                            onPress={this._signOutAsyncEverywhere}
-                        />
-                    </View>
-                    <View style={styles.simpleButton}>
-                        <Button raised title="Log out" onPress={this._signOutAsync} />
-                    </View>
-                </View>
-            </SafeAreaView>
-        );
+                </SafeAreaView>
+            );
+        } else {
+            return (<></>);
+        }
     }
     _createNewRecord = () => {
         this.props.navigation.navigate("SelectForm");
@@ -177,7 +184,7 @@ class HomeScreen extends React.Component<Props> {
         Auth.signOut()
             .then(data => this.props.navigation.navigate("Authentication"))
             .catch(err => {
-                console.log(err);
+                console.log('Auth error', err);
                 this.props.navigation.navigate("Authentication");
             }); // TODO What else can we do on error?
     };
@@ -185,12 +192,15 @@ class HomeScreen extends React.Component<Props> {
         Auth.signOut({ global: true })
             .then(data => this.props.navigation.navigate("Authentication"))
             .catch(err => {
-                console.log(err);
+                console.log('Auth error', err);
                 this.props.navigation.navigate("Authentication");
             }); // TODO What else can we do on error?
     };
 }
 
-export default connect(state => {
-    return { user: state.user };
-})(HomeScreen);
+export default connect(state =>
+    {
+        return { user: state.user.user };
+    },
+                       { setUser }
+)(HomeScreen);

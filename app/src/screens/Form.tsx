@@ -2,7 +2,6 @@ import React from "react";
 import {
     ActivityIndicator,
     StatusBar,
-    AsyncStorage,
     StyleSheet,
     Text,
     TextInput,
@@ -122,15 +121,18 @@ class CardWrap extends React.Component {
 
     render() {
         return (
-            <Card key={this.props.index} title={this.props.title}>
+            <Card key={this.props.index}>
+                <Card.Title>
+                    {this.props.title}
+                </Card.Title>
                 {this.props.description}
                 {this.props.inner}
                 {this.props.subparts}
             </Card>
         );
     }
-}
-
+            }
+            
 function mapSectionWithPaths(section, getValue, fns, pre, post) {
     function process(entry, index, formPath) {
         if (Array.isArray(entry)) {
@@ -168,9 +170,9 @@ function mapSectionWithPaths(section, getValue, fns, pre, post) {
                             );
                         } else {
                             console.log(
-                                "UNSUPPORTED FIELD TYPE LIST WITHOUT SELECT MUTLIPLE"
+                                "UNSUPPORTED FIELD TYPE LIST WITHOUT SELECT MUTLIPLE",
+                                obj
                             );
-                            console.log(obj);
                         }
                         break;
                     default:
@@ -183,8 +185,7 @@ function mapSectionWithPaths(section, getValue, fns, pre, post) {
                                 formPath + ".field.value"
                             );
                         } else {
-                            console.log("UNSUPPORTED FIELD TYPE");
-                            console.log(obj);
+                            console.log("UNSUPPORTED FIELD TYPE", obj);
                         }
                         break;
                 }
@@ -289,7 +290,7 @@ class Form extends React.Component<Props> {
             files: null,
             form: null,
             formSections: null,
-            currentSection: 8, // TODO Debugging
+            currentSection: 0,
             sectionChanged: false,
             // NB Recomputing this each update introduces noticeable lag.
             sectionCompletionStatusCache: []
@@ -456,17 +457,16 @@ class Form extends React.Component<Props> {
                         }
                     };
                     return (
-                        <ListItem
-                            key={i}
+                        <ListItem key={i}
                             Component={TouchableOpacity}
-                            title={_.upperFirst(e)}
-                            checkBox={{
-                                checked: this.formGetPath(valuePath),
-                                onPress: fn
-                            }}
                             onPress={fn}
-                            containerStyle={{ borderTopWidth: 0, borderBottomWidth: 0 }}
-                        />
+                            containerStyle={{ borderTopWidth: 0, borderBottomWidth: 0 }}>
+                            <ListItem.CheckBox checked={this.formGetPath(valuePath)} onPress={fn} />
+                            <ListItem.Title>
+                                {_.upperFirst(e)}
+                            </ListItem.Title>
+
+                        </ListItem>
                     );
                 });
                 if (_.get(obj, "field.other")) {
@@ -517,8 +517,7 @@ class Form extends React.Component<Props> {
                 return <View>{items}</View>;
             } else {
                 // TODO Error handling
-                console.log("UNSUPPORTED FIELD TYPE LIST WITHOUT SELECT MUTLIPLE");
-                console.log(obj);
+                console.log("UNSUPPORTED FIELD TYPE LIST WITHOUT SELECT MUTLIPLE", obj);
                 return null;
             }
         },
@@ -562,6 +561,7 @@ class Form extends React.Component<Props> {
             let title = null;
             let image = null;
             let icon = null;
+            let buttonStyle = {};
             if (this.formGetPath(valuePath)) {
                 title = " Update diagram";
                 image = (
@@ -766,6 +766,7 @@ class Form extends React.Component<Props> {
             if (Platform.OS == "web") {
                 return (
                     <DateTimePicker
+                        style={{ zIndex: -100 }}
                         clearIcon={null}
                         onChange={date => {
                             this.formSetPath(valuePath, date);

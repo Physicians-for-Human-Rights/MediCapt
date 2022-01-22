@@ -24,7 +24,8 @@ import config from "./config.js";
 import { Provider } from "react-redux";
 import store from "./src/redux/store";
 
-import Authentication from "./src/screens/Authentication";
+import withAuthenticator from "./src/screens/Authentication";
+
 import FormScreen from "./src/screens/Form";
 import SignatureScreen from "./src/screens/Signature";
 import FormOverviewScreen from "./src/screens/FormOverview";
@@ -49,17 +50,11 @@ Amplify.configure({
     API: {
         endpoints: [
             {
-                name: "records",
-                endpoint: config.apiGateway.URL,
-                region: config.apiGateway.REGION
+                name: "provider",
+                endpoint: config.apiGateway.provider.URL,
+                region: config.apiGateway.provider.REGION
             }
         ]
-    },
-    Storage: {
-        AWSS3: {
-            bucket: config.s3.BUCKET,
-            region: config.s3.REGION
-        }
     }
 });
 
@@ -92,37 +87,29 @@ const styles = StyleSheet.create({
     }
 });
 
-const AppStack = createStackNavigator({
-    Home: HomeScreen,
-    Body: BodyScreen,
-    BodyDetails: BodyDetailsScreen,
-    Other: OtherScreen,
-    FormOverview: FormOverviewScreen,
-    SelectForm: SelectFormScreen,
-    Form: FormScreen,
-    Signature: SignatureScreen
-});
+const AppContainer =
+    createAppContainer(createStackNavigator({ Home: HomeScreen,
+                                              Body: BodyScreen,
+                                              BodyDetails: BodyDetailsScreen,
+                                              Other: OtherScreen,
+                                              FormOverview: FormOverviewScreen,
+                                              SelectForm: SelectFormScreen,
+                                              Form: FormScreen,
+                                              Signature: SignatureScreen
+    },
+                                            {
+                                                initialRouteName: 'Home',
+    }));
 
-const AppContainer = createAppContainer(
-    createSwitchNavigator(
-        {
-            Authentication: Authentication,
-            App: AppStack
-        },
-        {
-            initialRouteName: "Authentication"
-        }
-    )
-);
+function App({ isPassedToWithAuthenticator, signOut, user }) {
+    return (
+        <Provider store={store}>
+            <ThemeProvider theme={theme}>
+                <AppContainer />
+            </ThemeProvider>
+        </Provider>
 
-export default class App extends React.Component {
-    render() {
-        return (
-            <Provider store={store}>
-                <ThemeProvider theme={theme}>
-                    <AppContainer />
-                </ThemeProvider>
-            </Provider>
-        );
-    }
+    );
 }
+
+export default withAuthenticator(App);

@@ -1,5 +1,6 @@
 import React from "react";
-import { AsyncStorage, Text, View, TouchableOpacity } from "react-native";
+import { Text, View, TouchableOpacity } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from "react-navigation";
 import {
     Header,
@@ -71,20 +72,22 @@ class SelectForm extends React.Component {
         } else {
             let listOfForms = [];
             if (formList[this.state.country]) {
-                listOfForms = formList[this.state.country].map((e, i) => (
-                    <ListItem
-                        key={i}
-                        title={e.name}
-                        subtitle={e.subtitle}
-                        chevronColor="black"
-                        chevron
-                        Component={TouchableOpacity}
-                        onPress={() => {
-                            this.props.formSetId(e);
-                            this.props.navigation.navigate("Form");
-                        }}
-                    />
-                ));
+                listOfForms = formList[this.state.country].map((e, i) => {
+                    return (
+                        <ListItem key={i}
+                                  Component={TouchableOpacity}
+                                  onPress={() => {this.props.formSetId(e); this.props.navigation.navigate("Form");}}
+                        >
+                            <ListItem.Title>
+                                { e.name }
+                            </ListItem.Title>
+                            <ListItem.Subtitle>
+                                { e.subtitle }
+                            </ListItem.Subtitle>
+                            <ListItem.Chevron color="black" />
+                        </ListItem>
+                    )
+                });
             } else {
                 listOfForms = <Text> No form avilable for this country. </Text>;
             }
@@ -97,7 +100,8 @@ class SelectForm extends React.Component {
                         }}
                         containerStyle={{
                             backgroundColor: "#d5001c",
-                            justifyContent: "space-around"
+                            justifyContent: "space-around",
+                            width: "100%"
                         }}
                     />
                     <View style={{ flex: 0.1, width: "80%" }}></View>
