@@ -225,6 +225,10 @@ output "cognito_user_pool_clients" {
   value = module.cognito_user_pool.clients
 }
 
+output "cognito_user_pool_client_web" {
+  value = module.cognito_user_pool.clients.web
+}
+
 output "cognito_user_pool_domain" {
   value = module.cognito_user_pool.domain
 }
