@@ -455,19 +455,19 @@ root:
           - anterior:
               field:
                 type: body-image
-                generic-image: anterior.svg
+                generic-image: anterior.png
           - posterior:
               field:
                 type: body-image
-                generic-image: posterior.svg
+                generic-image: posterior.png
           - top:
               field:
                 type: body-image
-                generic-image: top.svg
+                generic-image: top.png
           - bottom:
               field:
                 type: body-image
-                generic-image: bottom.svg
+                generic-image: bottom.png
   - ob-gyn-history:
       title: OB/GYN history
       only-when:
@@ -501,13 +501,13 @@ root:
       show-body-images:
         gender-path: root.demographics.parts.gender.field.value
         female-images:
-          - female-1.svg
-          - female-2.svg
-          - female-3.svg
+          - female-1.png
+          - female-2.png
+          - female-3.png
         male-images:
-          - male-1.svg
-          - male-2.svg
-          - male-3.svg
+          - male-1.png
+          - male-2.png
+          - male-3.png
       parts:
         - physical-injuries:
             title: Physical injuries

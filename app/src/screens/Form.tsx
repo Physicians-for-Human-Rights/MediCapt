@@ -278,6 +278,29 @@ function isSectionComplete(section, getValue) {
     return complete;
 }
 
+function blobToBase64(blob:Blob) {
+  return new Promise((resolve, _) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function readImage(uri:string, mimePrefix:string) {
+    let content = null;
+    if (Platform.OS == "web") {
+        content = await fetch(uri);
+        content = await content.blob();
+        content = await blobToBase64(content);
+    } else {
+        content = await FileSystem.readAsStringAsync(uri, {
+            encoding: FileSystem.EncodingType.Base64
+        });
+        content = mimePrefix + content;
+    }
+    return content;
+}
+
 class Form extends React.Component<Props> {
     static navigationOptions = {
         title: "Lots of features here",
@@ -316,45 +339,19 @@ class Form extends React.Component<Props> {
                             }
                             break;
                         case "svg":
-                            if (Platform.OS == "web") {
-                                content = await fetch(f.localUri);
-                                content = await content.blob();
-                                const reader = new FileReader();
-                                reader.onload = function() {
-                                    content = this.result;
-                                };
-                                reader.readAsDataURL(content);
-                            } else {
-                                content = await FileSystem.readAsStringAsync(f.localUri, {
-                                    encoding: FileSystem.EncodingType.Base64
-                                });
-                            }
-                            content = "data:image/svg+xml;base64," + content;
+                            content = await readImage(f.localUri, "data:image/svg+xml;base64,")
+                            // TODO Error handling
+                            console.error("SVG Support was removed because it doesn't work well on Android");
                             break;
                         case "png":
-                            content = await FileSystem.readAsStringAsync(f.localUri, {
-                                encoding: FileSystem.EncodingType.Base64
-                            });
-                            content = "data:image/png;base64," + content;
+                            content = await readImage(f.localUri, "data:image/png;base64,")
                             break;
                         case "jpg":
-                            if (Platform.OS == "web") {
-                                content = await fetch(f.localUri);
-                                content = await content.blob();
-                                const reader = new FileReader();
-                                reader.onload = function() {
-                                    content = this.result;
-                                };
-                                reader.readAsDataURL(content);
-                            } else {
-                                content = await FileSystem.readAsStringAsync(f.localUri, {
-                                    encoding: FileSystem.EncodingType.Base64
-                                });
-                            }
-                            content = "data:image/jpg;base64," + content;
+                            content = await readImage(f.localUri, "data:image/jpg;base64,")
                             break;
                         default:
                             // TODO Error handling
+                            console.error("Trying to read unknown file type", filename, f.localUri);
                             content = await FileSystem.readAsStringAsync(f.localUri, {
                                 encoding: FileSystem.EncodingType.Base64
                             });
@@ -517,7 +514,7 @@ class Form extends React.Component<Props> {
                 return <View>{items}</View>;
             } else {
                 // TODO Error handling
-                console.log("UNSUPPORTED FIELD TYPE LIST WITHOUT SELECT MUTLIPLE", obj);
+                console.error("UNSUPPORTED FIELD TYPE LIST WITHOUT SELECT MUTLIPLE", obj);
                 return null;
             }
         },
@@ -575,13 +572,12 @@ class Form extends React.Component<Props> {
                 title = " Draw and comment";
                 icon = <Icon name="edit" size={15} color="white" />;
                 buttonStyle = { backgroundColor: "#d5001c" };
+                let imageUri = this.state.files[_.get(obj, "field.generic-image")]
                 image = (
                     <Image
                         resizeMode="contain"
                         style={{ width: 200, height: 200 }}
-                        source={{
-                            uri: this.state.files[_.get(obj, "field.generic-image")]
-                        }}
+                        source={{ uri: this.state.files[_.get(obj, "field.generic-image")] }}
                     />
                 );
             }
