@@ -18,4 +18,6 @@ When infrastructure that the app relies on changes you will want to run
 
 The website with `expo web`
 
-Any changes that you make will lead to the website reloading.
+On the phone with `expo start` Note that you also need to install the expo app.
+
+Any changes that you make will lead to the website and the app reloading.
