@@ -3,7 +3,6 @@ import {
     Platform,
     ActivityIndicator,
     StatusBar,
-    AsyncStorage,
     Button,
     StyleSheet,
     Text,
@@ -34,7 +33,16 @@ import HomeScreen from "./src/screens/Home";
 import BodyScreen from "./src/screens/Body";
 import BodyDetailsScreen from "./src/screens/BodyDetails";
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import theme from "./src/theme";
+
+let dataMemory = {};
+
+function stackTrace() {
+    var err = new Error();
+    return err.stack;
+}
 
 Amplify.configure({
     Auth: {
@@ -42,10 +50,14 @@ Amplify.configure({
         region: config.cognito.REGION,
         userPoolId: config.cognito.USER_POOL_ID,
         identityPoolId: config.cognito.IDENTITY_POOL_ID,
-        userPoolWebClientId: config.cognito.APP_CLIENT_ID
+        userPoolWebClientId: config.cognito.APP_CLIENT_ID,
     },
     Analytics: {
         disabled: true
+    },
+    Storage: {
+        region: "us-east-1",
+        bucket: "medicapt-records-dev"
     },
     API: {
         endpoints: [
@@ -101,14 +113,13 @@ const AppContainer =
                                                 initialRouteName: 'Home',
     }));
 
-function App({ isPassedToWithAuthenticator, signOut, user }) {
+function App() {
     return (
         <Provider store={store}>
             <ThemeProvider theme={theme}>
                 <AppContainer />
             </ThemeProvider>
         </Provider>
-
     );
 }
 
