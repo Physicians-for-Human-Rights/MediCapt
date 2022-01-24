@@ -1,0 +1,229 @@
+{
+  "ModelName": "MediCapt forms",
+  "ModelMetadata": {
+    "Author": "Andrei Barbu",
+    "DateCreated": "Jan 23, 2022, 11:04 PM",
+    "DateLastModified": "Jan 24, 2022, 12:34 AM",
+    "Description": "Storing forms for MediCapt",
+    "AWSService": "Amazon DynamoDB",
+    "Version": "3.0"
+  },
+  "DataModel": [
+    {
+      "TableName": "Forms",
+      "KeyAttributes": {
+        "PartitionKey": {
+          "AttributeName": "Country",
+          "AttributeType": "S"
+        },
+        "SortKey": {
+          "AttributeName": "FormUUID",
+          "AttributeType": "S"
+        }
+      },
+      "NonKeyAttributes": [
+        {
+          "AttributeName": "Name",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "Subtitle",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "DateEntered",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "DateCreated",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "Tag",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "Priority",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "Version",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "Location",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "IsEnabled",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "Country#Location#Enabled",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "Country#Location#Enabled#Tag",
+          "AttributeType": "S"
+        }
+      ],
+      "GlobalSecondaryIndexes": [
+        {
+          "IndexName": "AllTags",
+          "KeyAttributes": {
+            "PartitionKey": {
+              "AttributeName": "Country#Location#Enabled",
+              "AttributeType": "S"
+            }
+          },
+          "Projection": {
+            "ProjectionType": "INCLUDE",
+            "NonKeyAttributes": [
+              "Tag"
+            ]
+          }
+        },
+        {
+          "IndexName": "PriorityForms",
+          "KeyAttributes": {
+            "PartitionKey": {
+              "AttributeName": "Country#Location#Enabled",
+              "AttributeType": "S"
+            },
+            "SortKey": {
+              "AttributeName": "Priority",
+              "AttributeType": "S"
+            }
+          },
+          "Projection": {
+            "ProjectionType": "ALL"
+          }
+        },
+        {
+          "IndexName": "PriorityFormsByTag",
+          "KeyAttributes": {
+            "PartitionKey": {
+              "AttributeName": "Country#Location#Enabled#Tag",
+              "AttributeType": "S"
+            },
+            "SortKey": {
+              "AttributeName": "Priority",
+              "AttributeType": "S"
+            }
+          },
+          "Projection": {
+            "ProjectionType": "ALL"
+          }
+        }
+      ],
+      "TableData": [
+        {
+          "Country": {
+            "S": "KE"
+          },
+          "FormUUID": {
+            "S": "ke-moh-363-2019"
+          },
+          "Name": {
+            "S": "Post-rape care form"
+          },
+          "Subtitle": {
+            "S": "Keyna MOH 363"
+          },
+          "DateEntered": {
+            "S": "2019-01-01T10:10:10.000Z"
+          },
+          "DateCreated": {
+            "S": "2019-01-01T10:10:10.000Z"
+          },
+          "Tag": {
+            "S": "Sexual Assault"
+          },
+          "Priority": {
+            "S": "1"
+          },
+          "Version": {
+            "S": "1"
+          },
+          "Location": {
+            "S": "1"
+          }
+        },
+        {
+          "Country": {
+            "S": "KE"
+          },
+          "FormUUID": {
+            "S": "617a8795-229c-4aa2-bdb1-e4b8fb344e32"
+          },
+          "Name": {
+            "S": "Post-rape care form"
+          },
+          "Subtitle": {
+            "S": "Keyna MOH 363"
+          },
+          "DateEntered": {
+            "S": "2019-01-01"
+          },
+          "DateCreated": {
+            "S": "2019-01-01"
+          },
+          "Tag": {
+            "S": "sexual-assault"
+          },
+          "Priority": {
+            "S": "1"
+          },
+          "Version": {
+            "S": "1"
+          },
+          "IsEnabled": {
+            "S": "1"
+          },
+          "Country#Location#Enabled": {
+            "S": "KE##1"
+          }
+        },
+        {
+          "Country": {
+            "S": "CD"
+          },
+          "FormUUID": {
+            "S": "5af874c4-2685-4f18-9c7d-fa7355200c1f"
+          },
+          "Name": {
+            "S": "Certificat médico-légal d’agression sexuelle"
+          },
+          "Subtitle": {
+            "S": "DRC PHR"
+          },
+          "DateEntered": {
+            "S": "2019-01-01"
+          },
+          "DateCreated": {
+            "S": "2019-01-01"
+          },
+          "Tag": {
+            "S": "sexual-assault"
+          },
+          "Priority": {
+            "S": "1"
+          },
+          "Version": {
+            "S": "1"
+          },
+          "IsEnabled": {
+            "S": "1"
+          },
+          "Country#Location#Enabled": {
+            "S": "CD##1"
+          }
+        }
+      ],
+      "DataAccess": {
+        "MySql": {}
+      },
+      "BillingMode": "PAY_PER_REQUEST"
+    }
+  ]
+}
