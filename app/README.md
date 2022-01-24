@@ -3,11 +3,7 @@
 You will need to install some global tools:
 
 ```
-npm install -g @aws-amplify/cli
-npm install -g fs-minipass
-npm install -g minizlib
 npm install -g expo-cli
-npm install -g sharp-cli
 yarn install
 ```
 
