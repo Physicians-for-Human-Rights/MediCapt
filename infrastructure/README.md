@@ -1,5 +1,8 @@
 # Medicapt backend infrastructure
 
+Overview of the deign of the app:
+https://app.cloudcraft.co/view/259c0a0b-21f3-4565-bf0e-9c5e5ab63e81?key=f99acf58-5ee2-479e-9756-f26006be7e66
+
 ## Terraform and terragrunt
 
 You must install terraform and terragrunt.
@@ -103,6 +106,20 @@ different domain_name, as the medicapt domains are linked to our accounts.
 ## Modifying
 
 ### Uploading
+
+## Budgeting
+
+You must follow the instructions here and create yourself a web hook.
+
+https://api.slack.com/apps/new
+
+Create an incoming webhook on the next page.
+Add new webhooks to workspace
+
+Select which channel you want the webhook to post to and place it in the
+`stage.hcl` with key `budget_slack_webhook`
+
+More info about webhooks at: https://api.slack.com/messaging/webhooks
 
 
 You will need to install terragrunt. Modules contains the raw code, live
