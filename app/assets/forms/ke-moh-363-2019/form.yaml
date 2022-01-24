@@ -283,12 +283,6 @@ root:
           title: Alleged perpetrators
           repeated: true
           parts:
-          - name:
-              title: Name
-              field:
-                type: text
-              if-unknown:
-                value: Unknown
           - relationship:
               title: Relationship
               field:
@@ -301,7 +295,7 @@ root:
                 type: gender
               if-unknown:
                 value: Unknown
-          - gender:
+          - age:
               title: Estimated age
               field:
                 type: number
@@ -375,7 +369,7 @@ root:
                   field:
                     type: long-text
           - time:
-              title: Date and time of incident
+              title: Date and time of report
               field:
                 type: date-time
       - healthcare-facility:
@@ -468,6 +462,11 @@ root:
               field:
                 type: body-image
                 generic-image: bottom.png
+          - comments: 
+              title: Comments
+              required: false
+              field:
+                type: long-text
   - ob-gyn-history:
       title: OB/GYN history
       only-when:
@@ -671,10 +670,6 @@ root:
                       Ref: lab-sample-type-a
                 - skin-swab:
                     title: Anal swab
-                    parts:
-                      Ref: lab-sample-type-a
-                - oral-swab:
-                    title: Oral swab
                     parts:
                       Ref: lab-sample-type-a
                 - oral-swab:
