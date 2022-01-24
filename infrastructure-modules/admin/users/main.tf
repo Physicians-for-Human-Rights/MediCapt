@@ -48,7 +48,7 @@ module "cognito_user_pool" {
   allow_admin_create_user_only = false
 
   enable_username_case_sensitivity = false
-  advanced_security_mode           = "ENFORCED"
+  advanced_security_mode           = "AUDIT" # "ENFORCED"
 
   auto_verified_attributes = [
     "email"
@@ -99,8 +99,9 @@ EOF
   # email_from_address     = "noreply@mineiros.io"
   # email_source_arn       = "arn:aws:ses:us-east-1:999999999999:identity"
 
-  # Require MFA
-  mfa_configuration        = "ON"
+  # TODO We would like to require MFA
+  # But amplify on Android has an issue with it
+  mfa_configuration        = "OPTIONAL" # "OFF"
   allow_software_mfa_token = true
 
   password_minimum_length    = 10
@@ -184,14 +185,10 @@ EOF
   clients = [
     {
       name                 = "web"
-      read_attributes      = ["email", "email_verified", "preferred_username"]
-      allowed_oauth_scopes = ["phone", "email", "openid", "profile", "aws.cognito.signin.user.admin"]
-      allowed_oauth_flows  = ["code", "implicit"]
-      callback_urls        = ["https://${var.stage}.${var.domain_name}/signedin", "https://${var.stage}.${var.domain_name}/redirect"]
-      logout_urls          = ["https://${var.stage}.${var.domain_name}/signedout"]
-      default_redirect_uri = "https://${var.stage}.${var.domain_name}/redirect"
-      generate_secret      = false
-      supported_identity_providers = [ "COGNITO" ]
+    },
+    {
+      name                 = "native"
+      generate_secret      = true
     }
   ]
 
@@ -215,6 +212,20 @@ resource null_resource cognito_users {
   }
 }
 
+resource "aws_cognito_identity_pool" "main" {
+  identity_pool_name               = "${var.namespace}-${var.user_type}-${var.stage}"
+  allow_unauthenticated_identities = false
+  allow_classic_flow               = false
+  cognito_identity_providers {
+    client_id               = module.cognito_user_pool.clients.web.id
+    provider_name           = module.cognito_user_pool.user_pool.endpoint
+  }
+  cognito_identity_providers {
+    client_id               = module.cognito_user_pool.clients.native.id
+    provider_name           = module.cognito_user_pool.user_pool.endpoint
+  }
+}
+
 ###############################################################################
 
 output "cognito_user_pool_id" {
@@ -229,10 +240,18 @@ output "cognito_user_pool_client_web" {
   value = module.cognito_user_pool.clients.web
 }
 
+output "cognito_user_pool_client_native" {
+  value = module.cognito_user_pool.clients.native
+}
+
 output "cognito_user_pool_domain" {
   value = module.cognito_user_pool.domain
 }
 
 output "cognito_user_pool_arn" {
   value = module.cognito_user_pool.user_pool.arn
+}
+
+output "cognito_identity_pool" {
+  value = aws_cognito_identity_pool.main
 }
