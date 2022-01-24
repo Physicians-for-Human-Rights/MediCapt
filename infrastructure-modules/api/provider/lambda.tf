@@ -49,7 +49,7 @@ resource "aws_lambda_function" "providerGetRecordById" {
 
 resource "aws_lambda_permission" "apigw-providerGetRecordById" {
   action        = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.providerGetRecordById.arn}"
+  function_name = aws_lambda_function.providerGetRecordById.arn
   principal     = "apigateway.amazonaws.com"
   source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
 }
@@ -77,7 +77,7 @@ resource "aws_lambda_function" "providerUpdateRecordById" {
 
 resource "aws_lambda_permission" "apigw-providerUpdateRecordById" {
   action        = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.providerUpdateRecordById.arn}"
+  function_name = aws_lambda_function.providerUpdateRecordById.arn
   principal     = "apigateway.amazonaws.com"
   source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
 }
@@ -105,7 +105,7 @@ resource "aws_lambda_function" "providerDeleteRecordById" {
 
 resource "aws_lambda_permission" "apigw-providerDeleteRecordById" {
   action        = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.providerDeleteRecordById.arn}"
+  function_name = aws_lambda_function.providerDeleteRecordById.arn
   principal     = "apigateway.amazonaws.com"
   source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
 }
@@ -133,7 +133,7 @@ resource "aws_lambda_function" "providerSealRecordById" {
 
 resource "aws_lambda_permission" "apigw-providerSealRecordById" {
   action        = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.providerSealRecordById.arn}"
+  function_name = aws_lambda_function.providerSealRecordById.arn
   principal     = "apigateway.amazonaws.com"
   source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
 }
@@ -161,7 +161,7 @@ resource "aws_lambda_function" "providerUploadImageForRecordBy" {
 
 resource "aws_lambda_permission" "apigw-providerUploadImageForRecordBy" {
   action        = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.providerUploadImageForRecordBy.arn}"
+  function_name = aws_lambda_function.providerUploadImageForRecordBy.arn
   principal     = "apigateway.amazonaws.com"
   source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
 }
@@ -189,7 +189,7 @@ resource "aws_lambda_function" "providerGetImageByFormTag" {
 
 resource "aws_lambda_permission" "apigw-providerGetImageByFormTag" {
   action        = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.providerGetImageByFormTag.arn}"
+  function_name = aws_lambda_function.providerGetImageByFormTag.arn
   principal     = "apigateway.amazonaws.com"
   source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
 }
@@ -217,7 +217,7 @@ resource "aws_lambda_function" "providerDeleteImageByFormTag" {
 
 resource "aws_lambda_permission" "apigw-providerDeleteImageByFormTag" {
   action        = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.providerDeleteImageByFormTag.arn}"
+  function_name = aws_lambda_function.providerDeleteImageByFormTag.arn
   principal     = "apigateway.amazonaws.com"
   source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
 }
@@ -245,18 +245,18 @@ resource "aws_lambda_function" "providerGetOwnRecords" {
 
 resource "aws_lambda_permission" "apigw-providerGetOwnRecords" {
   action        = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.providerGetOwnRecords.arn}"
+  function_name = aws_lambda_function.providerGetOwnRecords.arn
   principal     = "apigateway.amazonaws.com"
   source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
 }
 
-resource "aws_lambda_function" "providerGetForms" {
+resource "aws_lambda_function" "providerGetFormsByCountry" {
   depends_on = [
     aws_iam_role_policy_attachment.dead_letter,
     aws_iam_role_policy_attachment.aws_xray_write_only_access,
     aws_iam_role_policy_attachment.cloudwatch_lambda
   ]
-  function_name = "${var.namespace}-${var.stage}-providerGetForms"
+  function_name = "${var.namespace}-${var.stage}-providerGetFormsByCountry"
   filename = data.archive_file.src.output_path
   source_code_hash = data.archive_file.src.output_base64sha256
   handler = "index.handler"
@@ -271,9 +271,37 @@ resource "aws_lambda_function" "providerGetForms" {
   }
 }
 
-resource "aws_lambda_permission" "apigw-providerGetForms" {
+resource "aws_lambda_permission" "apigw-providerGetFormsByCountry" {
   action        = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.providerGetForms.arn}"
+  function_name = aws_lambda_function.providerGetFormsByCountry.arn
+  principal     = "apigateway.amazonaws.com"
+  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+}
+
+resource "aws_lambda_function" "providerGetFormByUUID" {
+  depends_on = [
+    aws_iam_role_policy_attachment.dead_letter,
+    aws_iam_role_policy_attachment.aws_xray_write_only_access,
+    aws_iam_role_policy_attachment.cloudwatch_lambda
+  ]
+  function_name = "${var.namespace}-${var.stage}-providerGetFormByUUID"
+  filename = data.archive_file.src.output_path
+  source_code_hash = data.archive_file.src.output_base64sha256
+  handler = "index.handler"
+  runtime = "nodejs14.x"
+  role = aws_iam_role.gateway_lambda.arn
+  reserved_concurrent_executions = 0
+  tracing_config {
+    mode = "Active"
+  }
+  dead_letter_config {
+    target_arn = aws_sqs_queue.dead_letter_queue.arn
+  }
+}
+
+resource "aws_lambda_permission" "apigw-providerGetFormByUUID" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.providerGetFormByUUID.arn
   principal     = "apigateway.amazonaws.com"
   source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
 }

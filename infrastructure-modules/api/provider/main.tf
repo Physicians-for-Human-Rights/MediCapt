@@ -26,7 +26,8 @@ resource "aws_api_gateway_rest_api" "records" {
       lambda_uri_providerGetImageByFormTag      = aws_lambda_function.providerGetImageByFormTag.invoke_arn
       lambda_uri_providerDeleteImageByFormTag   = aws_lambda_function.providerDeleteImageByFormTag.invoke_arn
       lambda_uri_providerGetOwnRecords          = aws_lambda_function.providerGetOwnRecords.invoke_arn
-      lambda_uri_providerGetForms               = aws_lambda_function.providerGetForms.invoke_arn
+      lambda_uri_providerGetFormsByCountry      = aws_lambda_function.providerGetFormsByCountry.invoke_arn
+      lambda_uri_providerGetFormByUUID          = aws_lambda_function.providerGetFormByUUID.invoke_arn
     })
 }
 
