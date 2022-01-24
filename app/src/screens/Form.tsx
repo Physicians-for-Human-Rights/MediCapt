@@ -762,8 +762,8 @@ class Form extends React.Component<Props> {
             if (Platform.OS == "web") {
                 return (
                     <DateTimePicker
-                        style={{ zIndex: -100 }}
                         clearIcon={null}
+                        value={current_value}
                         onChange={date => {
                             this.formSetPath(valuePath, date);
                         }}
@@ -780,6 +780,7 @@ class Form extends React.Component<Props> {
                 let picker =
                     (<DateTimePicker
                         isVisible={this.state["isVisible_dateTime_" + valuePath]}
+                        mode="date"
                         onConfirm={date => {
                             this.formSetPath(valuePath, date);
                             this.setState({
@@ -987,9 +988,6 @@ class Form extends React.Component<Props> {
                         style={{ flex: 10, backgroundColor: "#fff" }}
                         keyboardDismissMode="on-drag"
                         accessible={false}
-                        onScroll={() => {
-                            Keyboard.dismiss();
-                        }}
                         keyboardShouldPersistTaps="handled"
                     >
                         {sectionContent}
