@@ -462,7 +462,6 @@ class Form extends React.Component<Props> {
                             <ListItem.Title>
                                 {_.upperFirst(e)}
                             </ListItem.Title>
-
                         </ListItem>
                     );
                 });
@@ -780,6 +779,7 @@ class Form extends React.Component<Props> {
                 let picker =
                     (<DateTimePicker
                         isVisible={this.state["isVisible_dateTime_" + valuePath]}
+                        value={current_value}
                         mode="date"
                         onConfirm={date => {
                             this.formSetPath(valuePath, date);
@@ -825,6 +825,7 @@ class Form extends React.Component<Props> {
                 return (
                     <DateTimePicker
                         clearIcon={null}
+                        value={current_value}
                         onChange={date => {
                             this.formSetPath(valuePath, date);
                         }}
@@ -840,6 +841,7 @@ class Form extends React.Component<Props> {
                 let picker =
                     (<DateTimePicker
                         isVisible={this.state["isVisible_dateTime_" + valuePath]}
+                        value={current_value}
                         onConfirm={date => {
                             this.formSetPath(valuePath, date);
                             this.setState({
