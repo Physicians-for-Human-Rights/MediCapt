@@ -199,7 +199,11 @@ root:
   - clinic:
       title: Clinic
       parts:
-      - date:
+      - date-start:
+          title: Start date
+          field:
+            type: date
+      - date-complete:
           title: Date form completed
           field:
             type: date
