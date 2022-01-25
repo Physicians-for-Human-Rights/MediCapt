@@ -3,6 +3,14 @@ country: KE
 language: EN
 date: 2019-07-01
 values:
+  - key: gender
+    value:
+      - key: male
+        value: "Male"
+      - key: female
+        value: "Female"
+      - key: transgender
+        value: "Transgender"
   - key: lab-sample-destination
     value:
       - destination:

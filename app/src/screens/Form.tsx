@@ -635,17 +635,23 @@ class Form extends React.Component<Props> {
             );
         },
         gender: (entry, obj, index, formPath, valuePath) => {
-            let values = ["male", "female"];
+            let options = _.find(this.state.form.values, o => "gender" == o.key);
+            if (options) {
+                options = options.value;
+            } else {
+                // TODO This is a conservative approach if no gender key is specified
+                // Do we want something else?
+                options = [{ key: "male", value: "Male" },
+                           { key: "female", value: "Female" }]
+            }
             let selected = this.props.formPaths[valuePath]
-                ? this.props.formPaths[valuePath].value == "male"
-                    ? 0
-                    : 1
+                ? _.indexOf(_.map(options, x => x.key), this.props.formPaths[valuePath].value)
                 : null;
             return (
                 <ButtonGroup
                     selectedIndex={selected}
-                    onPress={i => this.formSetPath(valuePath, values[i])}
-                    buttons={["Male", "Female"]}
+                    onPress={i => this.formSetPath(valuePath, _.map(options, x => x.key)[i])}
+                    buttons={_.map(options, x => x.value)}
                 />
             );
         },
