@@ -5546,17 +5546,18 @@ expo-font@^10.0.4, expo-font@~10.0.4:
   dependencies:
     fontfaceobserver "^2.1.0"
 
-expo-gl-cpp@~11.1.0:
-  version "11.1.0"
-  resolved "https://registry.yarnpkg.com/expo-gl-cpp/-/expo-gl-cpp-11.1.0.tgz#84c8f688b7009ca8944523866fd8e16bc195889d"
-  integrity sha512-tIbMex36+pn81cuPatWfLMkOcqUTiBOEQg3NJrp1XGio7xqDQga1OKk1vaYsxrGPhZHNx3Qv5iS83t4EGJ1RTw==
+expo-gl-cpp@~10.4.1:
+  version "10.4.1"
+  resolved "https://registry.yarnpkg.com/expo-gl-cpp/-/expo-gl-cpp-10.4.1.tgz#2458393dc00f8cc2c10f63b6868b3b349a3e751f"
+  integrity sha512-KdXVcSOaQXPzElZI0uHNnsswQh52OhsJZ3b6OgeouNmGo46Vug0V1DACWxmyFONl9cmLX9JQAhaoQ+ZtbSCM4w==
 
-expo-gl@~11.1.1:
-  version "11.1.1"
-  resolved "https://registry.yarnpkg.com/expo-gl/-/expo-gl-11.1.1.tgz#2d611f3cff7422e591274d8b91334b2973a7132b"
-  integrity sha512-1bpPGmLnn6H4vs9X019zxMAlOdSqIyyWAT/yJC7f/qGzs9lTPM6STN3N+7fVMtPkXaCMyvyJL8vFJQ75+YmGpQ==
+expo-gl@~10.4.2:
+  version "10.4.2"
+  resolved "https://registry.yarnpkg.com/expo-gl/-/expo-gl-10.4.2.tgz#71df3410abfe3003dec0d4687e50d388c3984f07"
+  integrity sha512-n71r9D9uMFEui4p3kUjKEQXeJ09fewKBAQtFPXIYovRug2msSDeRoIU1w5ati7PjF/fv/drPCP25cY62TuU7oA==
   dependencies:
-    expo-gl-cpp "~11.1.0"
+    expo-gl-cpp "~10.4.1"
+    expo-modules-core "~0.2.0"
     invariant "^2.2.4"
 
 expo-keep-awake@~10.0.1:
@@ -5589,6 +5590,11 @@ expo-modules-core@0.6.4, expo-modules-core@^0.6.4:
   dependencies:
     compare-versions "^3.4.0"
     invariant "^2.2.4"
+
+expo-modules-core@~0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/expo-modules-core/-/expo-modules-core-0.2.0.tgz#68e5b6e53d0afbf8d131578831aed657589a2d42"
+  integrity sha512-inpfZ5X/BaTtbj2wG9PA9AC0MN8VyId6KSRlVuEg7+ziurHBy/kKDFxpOddUokhwiln2uhoYPSStJjR/tKypdw==
 
 expo-modules-core@~0.4.0:
   version "0.4.10"
@@ -7876,7 +7882,7 @@ react-clock@^3.0.0:
     merge-class-names "^1.1.1"
     prop-types "^15.6.0"
 
-react-date-picker@^8.3.3:
+react-date-picker@^8.3.3, react-date-picker@^8.3.6:
   version "8.3.6"
   resolved "https://registry.yarnpkg.com/react-date-picker/-/react-date-picker-8.3.6.tgz#446142bee5691aea66a2bac53313357aca561cd4"
   integrity sha512-c1rThf0jSKROoSGLpUEPtcC8VE+XoVgqxh+ng9aLYQvjDMGWQBgoat6Qrj8nRVzvCPpdXV4jqiCB3z2vVVuseA==
