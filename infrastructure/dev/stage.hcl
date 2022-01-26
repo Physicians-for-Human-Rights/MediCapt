@@ -12,4 +12,5 @@ locals {
   cognito_default_users = {
     andrei = "andrei@0xab.com"
   }
+  budget_slack_webhook = "https://hooks.slack.com/services/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"
 }
