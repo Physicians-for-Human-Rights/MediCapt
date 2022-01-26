@@ -29,9 +29,26 @@ resource "aws_api_gateway_rest_api" "records" {
       lambda_uri_providerGetFormsByCountry      = aws_lambda_function.providerGetFormsByCountry.invoke_arn
       lambda_uri_providerGetFormByUUID          = aws_lambda_function.providerGetFormByUUID.invoke_arn
     })
+  endpoint_configuration {
+    types = ["REGIONAL"]
+  }
 }
 
 resource "aws_api_gateway_deployment" "api" {
+  depends_on = [
+    aws_api_gateway_rest_api.records,
+    aws_lambda_function.providerCreateRecord,
+    aws_lambda_function.providerGetRecordById,
+    aws_lambda_function.providerUpdateRecordById,
+    aws_lambda_function.providerDeleteRecordById,
+    aws_lambda_function.providerSealRecordById,
+    aws_lambda_function.providerUploadImageForRecordBy,
+    aws_lambda_function.providerGetImageByFormTag,
+    aws_lambda_function.providerDeleteImageByFormTag,
+    aws_lambda_function.providerGetOwnRecords,
+    aws_lambda_function.providerGetFormsByCountry,
+    aws_lambda_function.providerGetFormByUUID
+  ]
   rest_api_id = aws_api_gateway_rest_api.records.id
   # should be var.stage but see this issue, required for cloudwatch support
   # the stage itself is set up by aws_api_gateway_stage
@@ -40,11 +57,26 @@ resource "aws_api_gateway_deployment" "api" {
   lifecycle {
     create_before_destroy = true
   }
+  triggers = {
+    redeployment = sha1(jsonencode(aws_api_gateway_rest_api.records.body))
+  }
 }
 
 resource "aws_api_gateway_stage" "api" {
   depends_on = [
-    aws_api_gateway_deployment.api
+    aws_api_gateway_deployment.api,
+    aws_api_gateway_rest_api.records,
+    aws_lambda_function.providerCreateRecord,
+    aws_lambda_function.providerGetRecordById,
+    aws_lambda_function.providerUpdateRecordById,
+    aws_lambda_function.providerDeleteRecordById,
+    aws_lambda_function.providerSealRecordById,
+    aws_lambda_function.providerUploadImageForRecordBy,
+    aws_lambda_function.providerGetImageByFormTag,
+    aws_lambda_function.providerDeleteImageByFormTag,
+    aws_lambda_function.providerGetOwnRecords,
+    aws_lambda_function.providerGetFormsByCountry,
+    aws_lambda_function.providerGetFormByUUID
   ]
   rest_api_id    = aws_api_gateway_rest_api.records.id
   stage_name     = var.stage
@@ -70,17 +102,6 @@ resource "aws_api_gateway_method_settings" "settings" {
     logging_level = "INFO"
     data_trace_enabled = true
   }
-}
-
-resource "aws_lambda_permission" "apigw" {
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.providerCreateRecord.function_name
-  principal     = "apigateway.amazonaws.com"
-  # The /*/* portion grants access from any method on any resource within the API Gateway "REST API"
-  # This used to be
-  # source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
-  # But we must change the arn a bit
-  source_arn = "${replace(aws_api_gateway_deployment.api.execution_arn, var.stage, "")}*/*"
 }
 
 resource "aws_sqs_queue" "dead_letter_queue" {

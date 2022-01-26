@@ -10,7 +10,7 @@ resource "aws_lambda_function" "providerCreateRecord" {
   handler = "index.handler"
   runtime = "nodejs14.x"
   role = aws_iam_role.gateway_lambda.arn
-  reserved_concurrent_executions = 0
+  reserved_concurrent_executions = null
   tracing_config {
     mode = "Active"
   }
@@ -38,7 +38,7 @@ resource "aws_lambda_function" "providerGetRecordById" {
   handler = "index.handler"
   runtime = "nodejs14.x"
   role = aws_iam_role.gateway_lambda.arn
-  reserved_concurrent_executions = 0
+  reserved_concurrent_executions = null
   tracing_config {
     mode = "Active"
   }
@@ -49,9 +49,9 @@ resource "aws_lambda_function" "providerGetRecordById" {
 
 resource "aws_lambda_permission" "apigw-providerGetRecordById" {
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.providerGetRecordById.arn
+  function_name = aws_lambda_function.providerGetRecordById.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${replace(aws_api_gateway_deployment.api.execution_arn, var.stage, "")}*/*"
 }
 
 resource "aws_lambda_function" "providerUpdateRecordById" {
@@ -66,7 +66,7 @@ resource "aws_lambda_function" "providerUpdateRecordById" {
   handler = "index.handler"
   runtime = "nodejs14.x"
   role = aws_iam_role.gateway_lambda.arn
-  reserved_concurrent_executions = 0
+  reserved_concurrent_executions = null
   tracing_config {
     mode = "Active"
   }
@@ -77,9 +77,9 @@ resource "aws_lambda_function" "providerUpdateRecordById" {
 
 resource "aws_lambda_permission" "apigw-providerUpdateRecordById" {
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.providerUpdateRecordById.arn
+  function_name = aws_lambda_function.providerUpdateRecordById.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${replace(aws_api_gateway_deployment.api.execution_arn, var.stage, "")}*/*"
 }
 
 resource "aws_lambda_function" "providerDeleteRecordById" {
@@ -94,7 +94,7 @@ resource "aws_lambda_function" "providerDeleteRecordById" {
   handler = "index.handler"
   runtime = "nodejs14.x"
   role = aws_iam_role.gateway_lambda.arn
-  reserved_concurrent_executions = 0
+  reserved_concurrent_executions = null
   tracing_config {
     mode = "Active"
   }
@@ -105,9 +105,9 @@ resource "aws_lambda_function" "providerDeleteRecordById" {
 
 resource "aws_lambda_permission" "apigw-providerDeleteRecordById" {
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.providerDeleteRecordById.arn
+  function_name = aws_lambda_function.providerDeleteRecordById.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${replace(aws_api_gateway_deployment.api.execution_arn, var.stage, "")}*/*"
 }
 
 resource "aws_lambda_function" "providerSealRecordById" {
@@ -122,7 +122,7 @@ resource "aws_lambda_function" "providerSealRecordById" {
   handler = "index.handler"
   runtime = "nodejs14.x"
   role = aws_iam_role.gateway_lambda.arn
-  reserved_concurrent_executions = 0
+  reserved_concurrent_executions = null
   tracing_config {
     mode = "Active"
   }
@@ -133,9 +133,9 @@ resource "aws_lambda_function" "providerSealRecordById" {
 
 resource "aws_lambda_permission" "apigw-providerSealRecordById" {
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.providerSealRecordById.arn
+  function_name = aws_lambda_function.providerSealRecordById.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${replace(aws_api_gateway_deployment.api.execution_arn, var.stage, "")}*/*"
 }
 
 resource "aws_lambda_function" "providerUploadImageForRecordBy" {
@@ -150,7 +150,7 @@ resource "aws_lambda_function" "providerUploadImageForRecordBy" {
   handler = "index.handler"
   runtime = "nodejs14.x"
   role = aws_iam_role.gateway_lambda.arn
-  reserved_concurrent_executions = 0
+  reserved_concurrent_executions = null
   tracing_config {
     mode = "Active"
   }
@@ -161,9 +161,9 @@ resource "aws_lambda_function" "providerUploadImageForRecordBy" {
 
 resource "aws_lambda_permission" "apigw-providerUploadImageForRecordBy" {
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.providerUploadImageForRecordBy.arn
+  function_name = aws_lambda_function.providerUploadImageForRecordBy.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${replace(aws_api_gateway_deployment.api.execution_arn, var.stage, "")}*/*"
 }
 
 resource "aws_lambda_function" "providerGetImageByFormTag" {
@@ -178,7 +178,7 @@ resource "aws_lambda_function" "providerGetImageByFormTag" {
   handler = "index.handler"
   runtime = "nodejs14.x"
   role = aws_iam_role.gateway_lambda.arn
-  reserved_concurrent_executions = 0
+  reserved_concurrent_executions = null
   tracing_config {
     mode = "Active"
   }
@@ -189,9 +189,9 @@ resource "aws_lambda_function" "providerGetImageByFormTag" {
 
 resource "aws_lambda_permission" "apigw-providerGetImageByFormTag" {
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.providerGetImageByFormTag.arn
+  function_name = aws_lambda_function.providerGetImageByFormTag.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${replace(aws_api_gateway_deployment.api.execution_arn, var.stage, "")}*/*"
 }
 
 resource "aws_lambda_function" "providerDeleteImageByFormTag" {
@@ -206,7 +206,7 @@ resource "aws_lambda_function" "providerDeleteImageByFormTag" {
   handler = "index.handler"
   runtime = "nodejs14.x"
   role = aws_iam_role.gateway_lambda.arn
-  reserved_concurrent_executions = 0
+  reserved_concurrent_executions = null
   tracing_config {
     mode = "Active"
   }
@@ -217,9 +217,9 @@ resource "aws_lambda_function" "providerDeleteImageByFormTag" {
 
 resource "aws_lambda_permission" "apigw-providerDeleteImageByFormTag" {
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.providerDeleteImageByFormTag.arn
+  function_name = aws_lambda_function.providerDeleteImageByFormTag.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${replace(aws_api_gateway_deployment.api.execution_arn, var.stage, "")}*/*"
 }
 
 resource "aws_lambda_function" "providerGetOwnRecords" {
@@ -234,7 +234,7 @@ resource "aws_lambda_function" "providerGetOwnRecords" {
   handler = "index.handler"
   runtime = "nodejs14.x"
   role = aws_iam_role.gateway_lambda.arn
-  reserved_concurrent_executions = 0
+  reserved_concurrent_executions = null
   tracing_config {
     mode = "Active"
   }
@@ -245,9 +245,9 @@ resource "aws_lambda_function" "providerGetOwnRecords" {
 
 resource "aws_lambda_permission" "apigw-providerGetOwnRecords" {
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.providerGetOwnRecords.arn
+  function_name = aws_lambda_function.providerGetOwnRecords.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${replace(aws_api_gateway_deployment.api.execution_arn, var.stage, "")}*/*"
 }
 
 resource "aws_lambda_function" "providerGetFormsByCountry" {
@@ -262,7 +262,7 @@ resource "aws_lambda_function" "providerGetFormsByCountry" {
   handler = "index.handler"
   runtime = "nodejs14.x"
   role = aws_iam_role.gateway_lambda.arn
-  reserved_concurrent_executions = 0
+  reserved_concurrent_executions = null
   tracing_config {
     mode = "Active"
   }
@@ -273,9 +273,9 @@ resource "aws_lambda_function" "providerGetFormsByCountry" {
 
 resource "aws_lambda_permission" "apigw-providerGetFormsByCountry" {
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.providerGetFormsByCountry.arn
+  function_name = aws_lambda_function.providerGetFormsByCountry.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${replace(aws_api_gateway_deployment.api.execution_arn, var.stage, "")}*/*"
 }
 
 resource "aws_lambda_function" "providerGetFormByUUID" {
@@ -290,7 +290,7 @@ resource "aws_lambda_function" "providerGetFormByUUID" {
   handler = "index.handler"
   runtime = "nodejs14.x"
   role = aws_iam_role.gateway_lambda.arn
-  reserved_concurrent_executions = 0
+  reserved_concurrent_executions = null
   tracing_config {
     mode = "Active"
   }
@@ -301,7 +301,7 @@ resource "aws_lambda_function" "providerGetFormByUUID" {
 
 resource "aws_lambda_permission" "apigw-providerGetFormByUUID" {
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.providerGetFormByUUID.arn
+  function_name = aws_lambda_function.providerGetFormByUUID.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn = "${aws_api_gateway_deployment.api.execution_arn}/*/*"
+  source_arn = "${replace(aws_api_gateway_deployment.api.execution_arn, var.stage, "")}*/*"
 }
