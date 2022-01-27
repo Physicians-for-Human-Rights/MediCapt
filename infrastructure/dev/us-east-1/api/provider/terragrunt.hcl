@@ -14,6 +14,14 @@ dependency "cognito" {
   config_path = "../../admin/users/provider"
 }
 
+dependency "website" {
+  config_path = "../../networking/website"
+}
+
 inputs = {
   cognito_user_pool_provider_arn = dependency.cognito.outputs.cognito_user_pool_arn
+  domain_name = dependency.website.outputs.domain_name
+  certificate_arn = dependency.website.outputs.acm_arn
+  endpoint_configuration = "REGIONAL"
+  hosted_zone_id = dependency.website.outputs.hosted_zone_id
 }
