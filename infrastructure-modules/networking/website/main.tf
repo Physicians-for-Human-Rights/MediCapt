@@ -36,6 +36,7 @@ module "acm_request_certificate" {
   ttl                               = "300"
   zone_id                           = var.hosted_zone_id
   wait_for_certificate_issued       = true
+  subject_alternative_names         = ["*.${var.stage}.${var.domain_name}"]
 }
 
 module "cdn" {
@@ -70,3 +71,29 @@ resource "aws_s3_bucket_object" "static_files" {
   #
   bucket       = module.cdn.s3_bucket
 }
+
+output "domain_name" {
+  value = "${var.stage}.${var.domain_name}"
+  description = "The domain name we deployed"
+}
+
+output "hosted_zone_id" {
+  value = var.hosted_zone_id
+  description = "Hosted zone id"
+}
+
+output "acm_arn" {
+  value = module.acm_request_certificate.arn
+  description = "ACM ARN"
+}
+
+output "acm_id" {
+  value = module.acm_request_certificate.id
+  description = "ACM id"
+}
+
+output "bucket" {
+  value = module.cdn.s3_bucket
+  description = "S3 bucket"
+}
+

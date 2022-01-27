@@ -17,37 +17,39 @@ resource "aws_api_gateway_rest_api" "records" {
     { cognito_user_pool_provider_arn = var.cognito_user_pool_provider_arn
       region = var.aws_region
       account_id = data.aws_caller_identity.current.account_id
-      lambda_uri_providerCreateRecord           = aws_lambda_function.providerCreateRecord.invoke_arn
-      lambda_uri_providerGetRecordById          = aws_lambda_function.providerGetRecordById.invoke_arn
-      lambda_uri_providerUpdateRecordById       = aws_lambda_function.providerUpdateRecordById.invoke_arn
-      lambda_uri_providerDeleteRecordById       = aws_lambda_function.providerDeleteRecordById.invoke_arn
-      lambda_uri_providerSealRecordById         = aws_lambda_function.providerSealRecordById.invoke_arn
-      lambda_uri_providerUploadImageForRecordBy = aws_lambda_function.providerUploadImageForRecordBy.invoke_arn
-      lambda_uri_providerGetImageByFormTag      = aws_lambda_function.providerGetImageByFormTag.invoke_arn
-      lambda_uri_providerDeleteImageByFormTag   = aws_lambda_function.providerDeleteImageByFormTag.invoke_arn
-      lambda_uri_providerGetOwnRecords          = aws_lambda_function.providerGetOwnRecords.invoke_arn
-      lambda_uri_providerGetFormsByCountry      = aws_lambda_function.providerGetFormsByCountry.invoke_arn
-      lambda_uri_providerGetFormByUUID          = aws_lambda_function.providerGetFormByUUID.invoke_arn
+      # NB: Is there a way to pass in a map and do a lookup?
+      lambda_uri_providerCreateRecord           = aws_lambda_function.lambdas["providerCreateRecord"].invoke_arn
+      lambda_uri_providerGetRecordById          = aws_lambda_function.lambdas["providerGetRecordById"].invoke_arn
+      lambda_uri_providerUpdateRecordById       = aws_lambda_function.lambdas["providerUpdateRecordById"].invoke_arn
+      lambda_uri_providerDeleteRecordById       = aws_lambda_function.lambdas["providerDeleteRecordById"].invoke_arn
+      lambda_uri_providerSealRecordById         = aws_lambda_function.lambdas["providerSealRecordById"].invoke_arn
+      lambda_uri_providerUploadImageForRecordBy = aws_lambda_function.lambdas["providerUploadImageForRecordBy"].invoke_arn
+      lambda_uri_providerGetImageByFormTag      = aws_lambda_function.lambdas["providerGetImageByFormTag"].invoke_arn
+      lambda_uri_providerDeleteImageByFormTag   = aws_lambda_function.lambdas["providerDeleteImageByFormTag"].invoke_arn
+      lambda_uri_providerGetOwnRecords          = aws_lambda_function.lambdas["providerGetOwnRecords"].invoke_arn
+      lambda_uri_providerGetFormsByCountry      = aws_lambda_function.lambdas["providerGetFormsByCountry"].invoke_arn
+      lambda_uri_providerGetFormByUUID          = aws_lambda_function.lambdas["providerGetFormByUUID"].invoke_arn
     })
   endpoint_configuration {
-    types = ["REGIONAL"]
+    types = [var.endpoint_configuration]
   }
 }
 
 resource "aws_api_gateway_deployment" "api" {
+  # NB: Unfortunately, depends_on must be static in terraform.
   depends_on = [
     aws_api_gateway_rest_api.records,
-    aws_lambda_function.providerCreateRecord,
-    aws_lambda_function.providerGetRecordById,
-    aws_lambda_function.providerUpdateRecordById,
-    aws_lambda_function.providerDeleteRecordById,
-    aws_lambda_function.providerSealRecordById,
-    aws_lambda_function.providerUploadImageForRecordBy,
-    aws_lambda_function.providerGetImageByFormTag,
-    aws_lambda_function.providerDeleteImageByFormTag,
-    aws_lambda_function.providerGetOwnRecords,
-    aws_lambda_function.providerGetFormsByCountry,
-    aws_lambda_function.providerGetFormByUUID
+    aws_lambda_function.lambdas["providerCreateRecord"],
+    aws_lambda_function.lambdas["providerGetRecordById"],
+    aws_lambda_function.lambdas["providerUpdateRecordById"],
+    aws_lambda_function.lambdas["providerDeleteRecordById"],
+    aws_lambda_function.lambdas["providerSealRecordById"],
+    aws_lambda_function.lambdas["providerUploadImageForRecordBy"],
+    aws_lambda_function.lambdas["providerGetImageByFormTag"],
+    aws_lambda_function.lambdas["providerDeleteImageByFormTag"],
+    aws_lambda_function.lambdas["providerGetOwnRecords"],
+    aws_lambda_function.lambdas["providerGetFormsByCountry"],
+    aws_lambda_function.lambdas["providerGetFormByUUID"]
   ]
   rest_api_id = aws_api_gateway_rest_api.records.id
   # should be var.stage but see this issue, required for cloudwatch support
@@ -63,20 +65,21 @@ resource "aws_api_gateway_deployment" "api" {
 }
 
 resource "aws_api_gateway_stage" "api" {
+  # NB: Unfortunately, depends_on must be static in terraform.
   depends_on = [
     aws_api_gateway_deployment.api,
     aws_api_gateway_rest_api.records,
-    aws_lambda_function.providerCreateRecord,
-    aws_lambda_function.providerGetRecordById,
-    aws_lambda_function.providerUpdateRecordById,
-    aws_lambda_function.providerDeleteRecordById,
-    aws_lambda_function.providerSealRecordById,
-    aws_lambda_function.providerUploadImageForRecordBy,
-    aws_lambda_function.providerGetImageByFormTag,
-    aws_lambda_function.providerDeleteImageByFormTag,
-    aws_lambda_function.providerGetOwnRecords,
-    aws_lambda_function.providerGetFormsByCountry,
-    aws_lambda_function.providerGetFormByUUID
+    aws_lambda_function.lambdas["providerCreateRecord"],
+    aws_lambda_function.lambdas["providerGetRecordById"],
+    aws_lambda_function.lambdas["providerUpdateRecordById"],
+    aws_lambda_function.lambdas["providerDeleteRecordById"],
+    aws_lambda_function.lambdas["providerSealRecordById"],
+    aws_lambda_function.lambdas["providerUploadImageForRecordBy"],
+    aws_lambda_function.lambdas["providerGetImageByFormTag"],
+    aws_lambda_function.lambdas["providerDeleteImageByFormTag"],
+    aws_lambda_function.lambdas["providerGetOwnRecords"],
+    aws_lambda_function.lambdas["providerGetFormsByCountry"],
+    aws_lambda_function.lambdas["providerGetFormByUUID"]
   ]
   rest_api_id    = aws_api_gateway_rest_api.records.id
   stage_name     = var.stage
