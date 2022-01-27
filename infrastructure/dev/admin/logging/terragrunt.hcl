@@ -1,5 +1,5 @@
 terraform {
-  source = "../../../../medicapt-infrastructure-modules/admin/logging"
+  source = "../../../../medicapt-infrastructure-modules//admin/logging"
 }
 
 # Include all settings from the root terragrunt.hcl file
