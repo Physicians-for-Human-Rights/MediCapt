@@ -1,11 +1,16 @@
+# To reduce the blast radius of updates, we split the api.yaml file automatically with split-api.sh
+# This produces subdirectories in apis/ for each path.
+# The first entry of the path is removed since we assume it's a prefix for the kind of API we're making.
+# A placeholder index.js will be provided if a new path is created.
+# Update lambdas.tf nd then this file for every endpoint.
+#
+# Instead of touching every single endpoint, updating only changes one path now.
+# You still have an api.yaml file for easy editing and documentation.
+#
+# Note that this process only creates directories, removing parts of an api.yaml doesn't delete anything.
+
 terraform {
   required_version = ">= 1.1, < 1.2"
-}
-
-data "archive_file" "src" {
-  type        = "zip"
-  source_dir  = "${path.module}/src"
-  output_path = "${path.module}/src.zip"
 }
 
 data "aws_caller_identity" "current" {}

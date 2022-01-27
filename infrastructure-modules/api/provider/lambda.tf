@@ -1,60 +1,50 @@
 locals {
   lambdas = {
     providerCreateRecord = {
-      filename = data.archive_file.src.output_path
-      source_code_hash = data.archive_file.src.output_base64sha256
+      path = "record"
     }
-
     providerGetRecordById = {
-      filename = data.archive_file.src.output_path
-      source_code_hash = data.archive_file.src.output_base64sha256
+      path = "record@{recordId}"
     }
-
     providerUpdateRecordById = {
-      filename = data.archive_file.src.output_path
-      source_code_hash = data.archive_file.src.output_base64sha256
+      path = "record@{recordId}"
     }
-
     providerDeleteRecordById = {
-      filename = data.archive_file.src.output_path
-      source_code_hash = data.archive_file.src.output_base64sha256
+      path = "record@{recordId}"
     }
-
     providerSealRecordById = {
-      filename = data.archive_file.src.output_path
-      source_code_hash = data.archive_file.src.output_base64sha256
+      path = "seal_record@{recordId}"
     }
-
     providerUploadImageForRecordBy = {
-      filename = data.archive_file.src.output_path
-      source_code_hash = data.archive_file.src.output_base64sha256
+      path = "record_image@{recordId}"
     }
-
     providerGetImageByFormTag = {
-      filename = data.archive_file.src.output_path
-      source_code_hash = data.archive_file.src.output_base64sha256
+      path = "record_image@{recordId}@{formTag}"
     }
-
     providerDeleteImageByFormTag = {
-      filename = data.archive_file.src.output_path
-      source_code_hash = data.archive_file.src.output_base64sha256
+      path = "record_image@{recordId}@{formTag}"
     }
-
     providerGetOwnRecords = {
-      filename = data.archive_file.src.output_path
-      source_code_hash = data.archive_file.src.output_base64sha256
+      path = "own_records"
     }
-
     providerGetFormsByCountry = {
-      filename = data.archive_file.src.output_path
-      source_code_hash = data.archive_file.src.output_base64sha256
+      path = "forms@country@{country}"
     }
-
     providerGetFormByUUID = {
-      filename = data.archive_file.src.output_path
-      source_code_hash = data.archive_file.src.output_base64sha256
+      path = "form@{form_uuid}"
     }
   }
+}
+
+      # filename = data.archive_file.src.output_path
+      # source_code_hash = data.archive_file.src.output_base64sha256
+
+data "archive_file" "srcs" {
+  for_each = local.lambdas
+  #
+  type        = "zip"
+  source_dir  = "${path.module}/apis/${each.value.path}/src"
+  output_path = "${path.module}/apis/${each.value.path}/src.zip"
 }
 
 resource "aws_lambda_function" "lambdas" {
@@ -66,8 +56,8 @@ resource "aws_lambda_function" "lambdas" {
     aws_iam_role_policy_attachment.cloudwatch_lambda
   ]
   function_name                  = "${var.namespace}-${var.stage}-${each.key}"
-  filename                       = each.value.filename
-  source_code_hash               = each.value.source_code_hash
+  filename                       = data.archive_file.srcs[each.key].output_path
+  source_code_hash               = data.archive_file.srcs[each.key].output_base64sha256
   handler                        = "index.handler"
   runtime                        = "nodejs14.x"
   role                           = aws_iam_role.gateway_lambda.arn
@@ -82,6 +72,7 @@ resource "aws_lambda_function" "lambdas" {
 
 resource "aws_lambda_permission" "apigws" {
   for_each = aws_lambda_function.lambdas
+  #
   action        = "lambda:InvokeFunction"
   function_name = each.value.function_name
   principal     = "apigateway.amazonaws.com"
