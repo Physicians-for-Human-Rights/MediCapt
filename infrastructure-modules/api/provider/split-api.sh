@@ -30,11 +30,14 @@ for i in `ls apis/xx*`; do
             API_PATH=${API_PATH//\//@}
             API_PATH=${API_PATH:1}
             cat $i >> $PREFIX/$API_PATH/api.yaml
-            mkdir -p $PREFIX/$API_PATH/src
-            if [ ! -f $PREFIX/$API_PATH/src/index.js ]; then
-                cp placeholder_src/index.js $PREFIX/$API_PATH/src/index.js
-                echo $API_PATH
-            fi
+
+            for method in $(grep -oP '^    (\K(get|put|delete|post))(?=:$)' $PREFIX/$API_PATH/api.yaml); do
+                mkdir -p $PREFIX/$API_PATH:$method/src
+                if [ ! -f $PREFIX/$API_PATH:$method/src/index.js ]; then
+                    cp placeholder_src/index.js $PREFIX/$API_PATH:$method/src/index.js
+                    echo $API_PATH:$method
+                fi
+            done
         fi
     fi
 done

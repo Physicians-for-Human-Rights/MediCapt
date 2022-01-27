@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   description: |
-    Medicapt API for providers
+    Medicapt API for healthcare providers
   version: 1.0.0
   title: Medicapt API - Providers
   termsOfService: TODO

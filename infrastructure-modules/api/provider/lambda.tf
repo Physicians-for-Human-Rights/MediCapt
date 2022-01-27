@@ -1,43 +1,40 @@
 locals {
   lambdas = {
     providerCreateRecord = {
-      path = "record"
+      path = "record:post"
     }
     providerGetRecordById = {
-      path = "record@{recordId}"
+      path = "record@{recordId}:get"
     }
     providerUpdateRecordById = {
-      path = "record@{recordId}"
+      path = "record@{recordId}:post"
     }
     providerDeleteRecordById = {
-      path = "record@{recordId}"
+      path = "record@{recordId}:delete"
     }
     providerSealRecordById = {
-      path = "seal_record@{recordId}"
+      path = "seal_record@{recordId}:post"
     }
     providerUploadImageForRecordBy = {
-      path = "record_image@{recordId}"
+      path = "record_image@{recordId}:post"
     }
     providerGetImageByFormTag = {
-      path = "record_image@{recordId}@{formTag}"
+      path = "record_image@{recordId}@{formTag}:get"
     }
     providerDeleteImageByFormTag = {
-      path = "record_image@{recordId}@{formTag}"
+      path = "record_image@{recordId}@{formTag}:delete"
     }
     providerGetOwnRecords = {
-      path = "own_records"
+      path = "own_records:get"
     }
     providerGetFormsByCountry = {
-      path = "forms@country@{country}"
+      path = "forms@country@{country}:get"
     }
     providerGetFormByUUID = {
-      path = "form@{form_uuid}"
+      path = "form@{form_uuid}:get"
     }
   }
 }
-
-      # filename = data.archive_file.src.output_path
-      # source_code_hash = data.archive_file.src.output_base64sha256
 
 data "archive_file" "srcs" {
   for_each = local.lambdas
