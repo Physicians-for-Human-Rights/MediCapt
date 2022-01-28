@@ -89,7 +89,7 @@ class SelectForm extends React.Component {
                     )
                 });
             } else {
-                listOfForms = <Text> No form avilable for this country. </Text>;
+                listOfForms = [<Text> No form avilable for this country. </Text>];
             }
             return (
                 <View style={styles.container}>

@@ -100,18 +100,21 @@ const styles = StyleSheet.create({
 });
 
 const AppContainer =
-    createAppContainer(createStackNavigator({ Home: HomeScreen,
-                                              Body: BodyScreen,
-                                              BodyDetails: BodyDetailsScreen,
-                                              Other: OtherScreen,
-                                              FormOverview: FormOverviewScreen,
-                                              SelectForm: SelectFormScreen,
-                                              Form: FormScreen,
-                                              Signature: SignatureScreen
-    },
-                                            {
-                                                initialRouteName: 'Home',
-    }));
+    createAppContainer(createStackNavigator(
+        {
+            Home: HomeScreen,
+            Body: BodyScreen,
+            BodyDetails: BodyDetailsScreen,
+            Other: OtherScreen,
+            FormOverview: FormOverviewScreen,
+            SelectForm: SelectFormScreen,
+            Form: FormScreen,
+            Signature: SignatureScreen
+        },
+        {
+            initialRouteName: 'Home',
+        }
+    ));
 
 function App() {
     return (
