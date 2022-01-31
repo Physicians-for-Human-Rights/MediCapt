@@ -1,0 +1,193 @@
+swagger: '2.0'
+info:
+  description: |
+    Medicapt API for healthcare providers
+  version: 1.0.0
+  title: Medicapt API - Providers
+  termsOfService: TODO
+  contact:
+    email: TODO@TODO.TODO
+  license:
+    name: TODO
+    url: https://provider-api.dev.medicapt.click
+securityDefinitions:
+  CognitoUserProvider:
+    type: apiKey
+    name: Authorization
+    in: header
+    x-amazon-apigateway-authtype: cognito_user_pools
+    x-amazon-apigateway-authorizer:
+      type: cognito_user_pools
+      providerARNs:
+      - ${cognito_user_pool_provider_arn}
+security:
+  - CognitoUserProvider: []
+schemes:
+- https
+paths:
+  /provider/own_records:
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - record
+      summary: List your own records
+      operationId: providerGetOwnRecords
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - name: status
+        in: query
+        description: Status values to filter by
+        required: false
+        type: array
+        items:
+          type: string
+          enum:
+          - empty
+          - not_empty
+          - sealed
+          - not_sealed
+          - patient_signed
+          - not_patient_signed
+          - provider_signed
+          - not_provider_signed
+          - has_labs
+          - not_has_labs
+        collectionFormat: multi
+      - in: query
+        name: offset
+        type: integer
+        required: false
+        default: 0
+        minimum: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: limit
+        type: integer
+        required: false
+        default: 20
+        minimum: 1
+        maximum: 100
+        description: The numbers of items to return.
+      - in: query
+        name: sort
+        required: false
+        type: array
+        items:
+          type: string
+        default: []
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RecordMetadata'
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+        400:
+          description: Invalid status value
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerGetOwnRecords}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+definitions:
+  RecordMetadata:
+    type: object
+    properties:
+      form_id:
+        type: string
+        format: uuid
+      createdAt:
+        type: string
+        format: date
+      name:
+        type: string
+      age:
+        type: number
+      editedAt:
+        type: string
+        format: date
+      form_contents:
+        type: object
+  Record:
+    type: object
+    properties:
+      form_uuid:
+        type: string
+        format: uuid
+      name:
+        type: string
+      form_contents:
+        type: object
+  FormMetadata:
+    type: object
+    properties:
+      form_uuid:
+        type: string
+        format: uuid
+      name:
+        type: string
+      subtitle:
+        type: string
+      country:
+        type: string
+      version:
+        type: string
+      tag:
+        type: string
+      form_id:
+        type: string
+  Empty: {}
+  Form:
+    type: object
+    properties:
+      form_uuid:
+        type: string
+        format: uuid
+      form_details:
+        type: object

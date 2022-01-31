@@ -113,7 +113,7 @@ resource "aws_api_gateway_method_settings" "settings" {
 }
 
 resource "aws_sqs_queue" "dead_letter_queue" {
-  name = "${var.namespace}-${var.stage}-provider-dlq"
+  name = "${var.stage}-${var.namespace}-api-provider-dlq"
   #checkov:skip=CKV_AWS_27:We enabled server-side encryption, checkov only looks for CMK instead of SSE
   sqs_managed_sse_enabled = true
 }

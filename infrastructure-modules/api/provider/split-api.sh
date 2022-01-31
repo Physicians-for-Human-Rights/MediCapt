@@ -29,13 +29,19 @@ for i in `ls apis/xx*`; do
             API_PATH=$(grep -oP '^  /provider(\K\/.*)(?=:$)' $i)
             API_PATH=${API_PATH//\//@}
             API_PATH=${API_PATH:1}
-            cat $i >> $PREFIX/$API_PATH/api.yaml
 
+            cat $i >> $PREFIX/$API_PATH/api.yaml
             for method in $(grep -oP '^    (\K(get|put|delete|post))(?=:$)' $PREFIX/$API_PATH/api.yaml); do
-                mkdir -p $PREFIX/$API_PATH:$method/src
-                if [ ! -f $PREFIX/$API_PATH:$method/src/index.js ]; then
-                    cp placeholder_src/index.js $PREFIX/$API_PATH:$method/src/index.js
-                    echo $API_PATH:$method
+                mkdir -p $PREFIX/$API_PATH/$method/src
+                # NB This api.yaml includes the other methods for this endpoint,
+                # but this is only for our convenience and is never read in by
+                # anything else.
+                if [ ! -f $PREFIX/$API_PATH/$method/src/index.js ]; then
+                    cp placeholders/index.js $PREFIX/$API_PATH/$method/src/index.js
+                    echo $API_PATH/$method
+                fi
+                if [ ! -f $PREFIX/$API_PATH/$method/plicy.json ]; then
+                    cp placeholders/policy.json $PREFIX/$API_PATH/$method/policy.json
                 fi
             done
         fi

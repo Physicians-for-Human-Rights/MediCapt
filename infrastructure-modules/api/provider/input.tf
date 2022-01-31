@@ -13,6 +13,11 @@ variable "namespace" {
   type        = string
 }
 
+variable "lambda_insights_layer" {
+  description = "The layer arn for lambda insights in this region: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versionsx86-64.html"
+  type        = string
+}
+
 variable "cognito_user_pool_provider_arn" {
   description = "The ARN of the cognito user pool that can call these functions"
   type        = string
@@ -35,6 +40,5 @@ variable "endpoint_configuration" {
 
 variable "hosted_zone_id" {
   description = "The hosted zone id for the API gateway"
-  type        = string
-}
-
+   type        = string
+ }

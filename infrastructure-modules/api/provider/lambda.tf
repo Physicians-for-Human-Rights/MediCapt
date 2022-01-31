@@ -1,37 +1,48 @@
 locals {
   lambdas = {
     providerCreateRecord = {
-      path = "record:post"
+      path = "record/post"
+      reserved_concurrent_executions = null
     }
     providerGetRecordById = {
-      path = "record@{recordId}:get"
+      path = "record@{recordId}/get"
+      reserved_concurrent_executions = null
     }
     providerUpdateRecordById = {
-      path = "record@{recordId}:post"
+      path = "record@{recordId}/post"
+      reserved_concurrent_executions = null
     }
     providerDeleteRecordById = {
-      path = "record@{recordId}:delete"
+      path = "record@{recordId}/delete"
+      reserved_concurrent_executions = null
     }
     providerSealRecordById = {
-      path = "seal_record@{recordId}:post"
+      path = "seal_record@{recordId}/post"
+      reserved_concurrent_executions = null
     }
     providerUploadImageForRecordBy = {
-      path = "record_image@{recordId}:post"
+      path = "record_image@{recordId}/post"
+      reserved_concurrent_executions = null
     }
     providerGetImageByFormTag = {
-      path = "record_image@{recordId}@{formTag}:get"
+      path = "record_image@{recordId}@{formTag}/get"
+      reserved_concurrent_executions = null
     }
     providerDeleteImageByFormTag = {
-      path = "record_image@{recordId}@{formTag}:delete"
+      path = "record_image@{recordId}@{formTag}/delete"
+      reserved_concurrent_executions = null
     }
     providerGetOwnRecords = {
-      path = "own_records:get"
+      path = "own_records/get"
+      reserved_concurrent_executions = null
     }
     providerGetFormsByCountry = {
-      path = "forms@country@{country}:get"
+      path = "forms@country@{country}/get"
+      reserved_concurrent_executions = null
     }
     providerGetFormByUUID = {
-      path = "form@{form_uuid}:get"
+      path = "form@{form_uuid}/get"
+      reserved_concurrent_executions = null
     }
   }
 }
@@ -47,24 +58,44 @@ data "archive_file" "srcs" {
 resource "aws_lambda_function" "lambdas" {
   for_each = local.lambdas
   #
-  depends_on = [
-    aws_iam_role_policy_attachment.dead_letter,
-    aws_iam_role_policy_attachment.aws_xray_write_only_access,
-    aws_iam_role_policy_attachment.cloudwatch_lambda
-  ]
-  function_name                  = "${var.namespace}-${var.stage}-${each.key}"
+  function_name                  = "${var.stage}-${var.namespace}-api-${each.key}"
   filename                       = data.archive_file.srcs[each.key].output_path
   source_code_hash               = data.archive_file.srcs[each.key].output_base64sha256
   handler                        = "index.handler"
   runtime                        = "nodejs14.x"
-  role                           = aws_iam_role.gateway_lambda.arn
-  reserved_concurrent_executions = null
+  role                           = aws_iam_role.lambdas[each.key].arn
+  reserved_concurrent_executions = each.value.reserved_concurrent_executions
   tracing_config {
     mode = "Active"
   }
   dead_letter_config {
     target_arn = aws_sqs_queue.dead_letter_queue.arn
   }
+  environment {
+    variables = {
+      # NB In a better world we would do:
+      # depends_on = [
+      #   aws_iam_role_policy_attachment.dead_letter[each.key],
+      #   aws_iam_role_policy_attachment.aws_xray_write_only_access[each.key],
+      #   aws_iam_role_policy_attachment.cloudwatch_lambda[each.key]
+      # ]
+      # But as of 2022 Terraform doesn't allow any references in depends_on
+      # they must be totally static. So we cheat and introduce this manual dependency
+      dependencies = sha256(join(",",
+        [ aws_iam_role_policy_attachment.dead_letter[each.key].policy_arn,
+          aws_iam_role_policy_attachment.aws_xray_write_only_access[each.key].policy_arn,
+          aws_iam_role_policy_attachment.cloudwatch_lambda[each.key].policy_arn,
+          aws_iam_role_policy_attachment.insights_policy[each.key].policy_arn
+        ]))
+    }
+  }
+  layers = [
+    var.lambda_insights_layer
+  ]
+  # TODO Determine what memory size works best per endpoint
+  # https://github.com/alexcasalboni/aws-lambda-power-tuning
+  memory_size = 128
+  # TODO We could transition to architectures=["arm64"], worth benchmarking
 }
 
 resource "aws_lambda_permission" "apigws" {
@@ -74,6 +105,49 @@ resource "aws_lambda_permission" "apigws" {
   function_name = each.value.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${replace(aws_api_gateway_deployment.api.execution_arn, var.stage, "")}*/*"
+}
+
+data "template_file" "lambda_policy_jsons" {
+  for_each = local.lambdas
+  #
+  template = file("${path.module}/apis/${each.value.path}/policy.json")
+  vars = {
+  }
+}
+
+resource "aws_iam_role" "lambdas" {
+  for_each = local.lambdas
+  #
+  name  = "${var.namespace}-${var.stage}-lambda-role-${each.key}"
+  assume_role_policy = data.template_file.lambda_policy_jsons[each.key].rendered
+}
+
+resource "aws_iam_role_policy_attachment" "dead_letter" {
+  for_each = local.lambdas
+  #
+  role       = aws_iam_role.lambdas[each.key].name
+  policy_arn = aws_iam_policy.dead_letter.arn
+}
+
+resource "aws_iam_role_policy_attachment" "aws_xray_write_only_access" {
+  for_each = local.lambdas
+  #
+  role       = aws_iam_role.lambdas[each.key].name
+  policy_arn = "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "cloudwatch_lambda" {
+  for_each = local.lambdas
+  #
+  role       = aws_iam_role.lambdas[each.key].name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+}
+
+resource "aws_iam_role_policy_attachment" "insights_policy" {
+  for_each = local.lambdas
+  #
+  role       = aws_iam_role.lambdas[each.key].name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy"
 }
 
 locals {
