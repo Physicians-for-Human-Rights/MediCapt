@@ -153,6 +153,7 @@ will be available to user managers.
 `patientAge`
 `patientUUID`
 `sharedOnDate`
+`sharedExpiresOnDate`
 `sharedByUUID`
 
 Global secondary indices:
