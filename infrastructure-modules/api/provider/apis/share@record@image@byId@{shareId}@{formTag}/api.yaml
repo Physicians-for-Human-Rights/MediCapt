@@ -25,46 +25,39 @@ security:
 schemes:
 - https
 paths:
-  /provider/form/{form_uuid}:
+  /provider/share/record/image/byId/{shareId}/{formTag}:
     get:
       security:
       - CognitoUserProvider: []
       tags:
-      - record
-      summary: Get the details on a form
-      operationId: providerGetFormByUUID
+      - Share
+      summary: Get an image in a record
+      operationId: providerGetSharedRecordImageByFormTag
+      consumes:
+      - application/json
       produces:
       - application/json
       parameters:
-      - in: query
-        name: offset
-        type: integer
-        required: false
-        default: 0
-        minimum: 0
-        description: The number of items to skip before starting to collect the result set.
-      - in: query
-        name: limit
-        type: integer
-        required: false
-        default: 20
-        minimum: 1
-        maximum: 100
-        description: The numbers of items to return.
-      - in: path
-        name: form_uuid
-        type: string
+      - name: shareId
+        in: path
+        description: The share id
         required: true
-        description: The UUID of the form
+        type: string
+        format: uuid
+      - name: formTag
+        in: path
+        description: The form tag for this image
+        required: true
+        type: string
       responses:
-        200:
-          description: successful operation
-          schema:
-            $ref: '#/definitions/Form'
         400:
-          description: Invalid status value
+          description: Record already sealed
+        404:
+          description: Record or image not found
+        405:
+          description: Validation exception
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerGetFormByUUID}
+        uri: ${lambda_uri_providerGetSharedRecordImageByFormTag}
         responses:
           default:
             statusCode: "200"
@@ -109,6 +102,7 @@ paths:
             Access-Control-Allow-Origin:
               type: "string"
 definitions:
+  Empty: {}
   RecordMetadata:
     type: object
     properties:
@@ -155,7 +149,6 @@ definitions:
         type: string
       form_id:
         type: string
-  Empty: {}
   Form:
     type: object
     properties:
@@ -163,4 +156,14 @@ definitions:
         type: string
         format: uuid
       form_details:
+        type: object
+  Share:
+    type: object
+    properties:
+      shareUUID:
+        type: string
+        format: uuid
+      formMetadata:
+        type: object
+      form:
         type: object

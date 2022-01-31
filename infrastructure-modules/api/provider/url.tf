@@ -1,5 +1,5 @@
 resource "aws_api_gateway_domain_name" "api_domain" {
-  domain_name = "provider-api.${var.domain_name}"
+  domain_name = "${var.user_type}-api.${var.domain_name}"
   regional_certificate_arn = var.certificate_arn
 
   endpoint_configuration {
@@ -8,7 +8,10 @@ resource "aws_api_gateway_domain_name" "api_domain" {
 }
 
 resource "aws_api_gateway_base_path_mapping" "base_path_mapping" {
-  api_id      = aws_api_gateway_rest_api.records.id
+  depends_on = [
+    aws_api_gateway_stage.api
+  ]
+  api_id      = aws_api_gateway_rest_api.provider.id
   base_path   = ""
   stage_name  = var.stage
 

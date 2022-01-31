@@ -25,32 +25,63 @@ security:
 schemes:
 - https
 paths:
-  /provider/record:
+  /provider/record/share/byId/{recordId}:
     post:
       security:
       - CognitoUserProvider: []
       tags:
-      - Record
-      summary: Add a new record
-      consumes:
-      - application/json
+      - Share
+      summary: Share a record
+      operationId: providerPutSharedRecordById
       produces:
       - application/json
-      operationId: providerCreateRecord
       parameters:
-      - in: body
-        name: body
-        description: Create a new record
+      - name: recordId
+        in: path
+        description: ID of record to share
         required: true
-        schema:
-          $ref: '#/definitions/Record'
+        type: string
+        format: uuid
       responses:
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Record not found
         405:
-          description: Invalid input
-          schema:
-            $ref: '#/definitions/Record'
+          description: Record already sealed
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerCreateRecord}
+        uri: ${lambda_uri_providerPutSharedRecordById}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - Share
+      summary: Get the sharing status of this record
+      operationId: providerGetRecordSharesById
+      produces:
+      - application/json
+      parameters:
+      - name: recordId
+        in: path
+        description: ID of record to share
+        required: true
+        type: string
+        format: uuid
+      responses:
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Record not found
+        405:
+          description: Record already sealed
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerGetRecordSharesById}
         responses:
           default:
             statusCode: "200"

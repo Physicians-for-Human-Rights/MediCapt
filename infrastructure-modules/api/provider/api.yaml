@@ -30,7 +30,7 @@ paths:
       security:
       - CognitoUserProvider: []
       tags:
-      - record
+      - Record
       summary: Add a new record
       consumes:
       - application/json
@@ -94,12 +94,12 @@ paths:
               type: "string"
             Access-Control-Allow-Origin:
               type: "string"
-  /provider/record/{recordId}:
+  /provider/record/byId/{recordId}:
     get:
       security:
       - CognitoUserProvider: []
       tags:
-      - record
+      - Record
       summary: Get a record by ID
       operationId: providerGetRecordById
       produces:
@@ -133,7 +133,7 @@ paths:
       security:
       - CognitoUserProvider: []
       tags:
-      - record
+      - Record
       summary: Update an existing record
       operationId: providerUpdateRecordById
       consumes:
@@ -172,7 +172,7 @@ paths:
       security:
       - CognitoUserProvider: []
       tags:
-      - record
+      - Record
       summary: Deletes a record
       operationId: providerDeleteRecordById
       produces:
@@ -237,12 +237,12 @@ paths:
               type: "string"
             Access-Control-Allow-Origin:
               type: "string"
-  /provider/seal_record/{recordId}:
+  /provider/record/seal/{recordId}:
     post:
       security:
       - CognitoUserProvider: []
       tags:
-      - record
+      - Record
       summary: Update an existing record
       operationId: providerSealRecordById
       consumes:
@@ -308,12 +308,12 @@ paths:
               type: "string"
             Access-Control-Allow-Origin:
               type: "string"
-  /provider/record_image/{recordId}:
+  /provider/record/image/byId/{recordId}:
     post:
       security:
       - CognitoUserProvider: []
       tags:
-      - record
+      - Record
       summary: Upload an image for a record
       operationId: providerUploadImageForRecordBy
       consumes:
@@ -389,12 +389,12 @@ paths:
               type: "string"
             Access-Control-Allow-Origin:
               type: "string"
-  /provider/record_image/{recordId}/{formTag}:
+  /provider/record/image/byId/{recordId}/{formTag}:
     get:
       security:
       - CognitoUserProvider: []
       tags:
-      - record
+      - Record
       summary: Get an image in a record
       operationId: providerGetImageByFormTag
       consumes:
@@ -432,7 +432,7 @@ paths:
       security:
       - CognitoUserProvider: []
       tags:
-      - record
+      - Record
       summary: Delete an image in a record
       operationId: providerDeleteImageByFormTag
       consumes:
@@ -503,37 +503,18 @@ paths:
               type: "string"
             Access-Control-Allow-Origin:
               type: "string"
-  /provider/own_records:
+  /provider/record/by-user:
     get:
       security:
       - CognitoUserProvider: []
       tags:
-      - record
+      - Record
       summary: List your own records
       operationId: providerGetOwnRecords
       produces:
       - application/json
       - application/xml
       parameters:
-      - name: status
-        in: query
-        description: Status values to filter by
-        required: false
-        type: array
-        items:
-          type: string
-          enum:
-          - empty
-          - not_empty
-          - sealed
-          - not_sealed
-          - patient_signed
-          - not_patient_signed
-          - provider_signed
-          - not_provider_signed
-          - has_labs
-          - not_has_labs
-        collectionFormat: multi
       - in: query
         name: offset
         type: integer
@@ -549,13 +530,6 @@ paths:
         minimum: 1
         maximum: 100
         description: The numbers of items to return.
-      - in: query
-        name: sort
-        required: false
-        type: array
-        items:
-          type: string
-        default: []
       responses:
         200:
           description: successful operation
@@ -613,12 +587,12 @@ paths:
               type: "string"
             Access-Control-Allow-Origin:
               type: "string"
-  /provider/forms/country/{country}:
+  /provider/form/byCountry/{country}:
     get:
       security:
       - CognitoUserProvider: []
       tags:
-      - record
+      - Form
       summary: List all forms for a country
       operationId: providerGetFormsByCountry
       produces:
@@ -698,12 +672,12 @@ paths:
               type: "string"
             Access-Control-Allow-Origin:
               type: "string"
-  /provider/form/{form_uuid}:
+  /provider/form/byId/{formId}:
     get:
       security:
       - CognitoUserProvider: []
       tags:
-      - record
+      - Form
       summary: Get the details on a form
       operationId: providerGetFormByUUID
       produces:
@@ -725,7 +699,7 @@ paths:
         maximum: 100
         description: The numbers of items to return.
       - in: path
-        name: form_uuid
+        name: formId
         type: string
         required: true
         description: The UUID of the form
@@ -781,7 +755,452 @@ paths:
               type: "string"
             Access-Control-Allow-Origin:
               type: "string"
+  /provider/record/share/byId/{recordId}:
+    post:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - Share
+      summary: Share a record
+      operationId: providerPutSharedRecordById
+      produces:
+      - application/json
+      parameters:
+      - name: recordId
+        in: path
+        description: ID of record to share
+        required: true
+        type: string
+        format: uuid
+      responses:
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Record not found
+        405:
+          description: Record already sealed
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerPutSharedRecordById}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - Share
+      summary: Get the sharing status of this record
+      operationId: providerGetRecordSharesById
+      produces:
+      - application/json
+      parameters:
+      - name: recordId
+        in: path
+        description: ID of record to share
+        required: true
+        type: string
+        format: uuid
+      responses:
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Record not found
+        405:
+          description: Record already sealed
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerGetRecordSharesById}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+  /provider/share/record/byId/{shareId}:
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - Share
+      summary: Get a shared record by share ID
+      operationId: providerGetSharedRecordById
+      produces:
+      - application/json
+      parameters:
+      - name: shareId
+        in: path
+        description: ID of the record to return
+        required: true
+        type: string
+        format: uuid
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Share'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Record not found
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerGetSharedRecordById}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    delete:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - Share
+      summary: Deletes a record share.
+      operationId: providerDeleteSharedRecordById
+      produces:
+      - application/json
+      parameters:
+      - name: shareId
+        in: path
+        description: ID of share to delete
+        required: true
+        type: string
+        format: uuid
+      responses:
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Record not found
+        405:
+          description: Record already sealed
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerDeleteRecordById}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+  /provider/share/record/image/byId/{shareId}/{formTag}:
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - Share
+      summary: Get an image in a record
+      operationId: providerGetSharedRecordImageByFormTag
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: shareId
+        in: path
+        description: The share id
+        required: true
+        type: string
+        format: uuid
+      - name: formTag
+        in: path
+        description: The form tag for this image
+        required: true
+        type: string
+      responses:
+        400:
+          description: Record already sealed
+        404:
+          description: Record or image not found
+        405:
+          description: Validation exception
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerGetSharedRecordImageByFormTag}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+  /provider/share/record/with-user:
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - Share
+      summary: List records shared with you
+      operationId: providerGetSharedRecordsWithUser
+      produces:
+      - application/json
+      parameters:
+      - in: query
+        name: offset
+        type: integer
+        required: false
+        default: 0
+        minimum: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: limit
+        type: integer
+        required: false
+        default: 20
+        minimum: 1
+        maximum: 100
+        description: The numbers of items to return.
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Share'
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+        400:
+          description: Invalid status value
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerGetSharedRecordsWithUser}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+  /provider/share/record/by-user:
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - Share
+      summary: List records you share
+      operationId: providerGetSharedRecordsByUser
+      produces:
+      - application/json
+      parameters:
+      - in: query
+        name: offset
+        type: integer
+        required: false
+        default: 0
+        minimum: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: limit
+        type: integer
+        required: false
+        default: 20
+        minimum: 1
+        maximum: 100
+        description: The numbers of items to return.
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Share'
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+        400:
+          description: Invalid status value
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerGetSharedRecordsByUser}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
 definitions:
+  Empty: {}
   RecordMetadata:
     type: object
     properties:
@@ -828,7 +1247,6 @@ definitions:
         type: string
       form_id:
         type: string
-  Empty: {}
   Form:
     type: object
     properties:
@@ -836,4 +1254,14 @@ definitions:
         type: string
         format: uuid
       form_details:
+        type: object
+  Share:
+    type: object
+    properties:
+      shareUUID:
+        type: string
+        format: uuid
+      formMetadata:
+        type: object
+      form:
         type: object

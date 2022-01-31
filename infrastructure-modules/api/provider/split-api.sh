@@ -40,7 +40,7 @@ for i in `ls apis/xx*`; do
                     cp placeholders/index.js $PREFIX/$API_PATH/$method/src/index.js
                     echo $API_PATH/$method
                 fi
-                if [ ! -f $PREFIX/$API_PATH/$method/plicy.json ]; then
+                if [ ! -f $PREFIX/$API_PATH/$method/policy.json ]; then
                     cp placeholders/policy.json $PREFIX/$API_PATH/$method/policy.json
                 fi
             done

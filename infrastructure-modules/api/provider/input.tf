@@ -42,3 +42,8 @@ variable "hosted_zone_id" {
   description = "The hosted zone id for the API gateway"
    type        = string
  }
+
+variable "user_type" {
+  description = "The type of user, e.g., associate"
+   type        = string
+ }

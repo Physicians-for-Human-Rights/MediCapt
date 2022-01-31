@@ -1,5 +1,5 @@
 resource "aws_iam_role" "cloudwatch" {
-  name = "api_gateway_cloudwatch_global"
+  name = "${var.stage}-${var.namespace}-${var.user_type}-api-gateway-cloudwatch"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -56,7 +56,7 @@ data "aws_iam_policy_document" "dead_letter" {
 }
 
 resource "aws_iam_policy" "dead_letter" {
-  name   = "${var.namespace}-${var.stage}_provider-dead-letter-config"
+  name   = "${var.stage}-${var.namespace}-${var.user_type}-dead-letter-config"
   description = "Provide access to the lambda dead letter queue"
   policy = data.aws_iam_policy_document.dead_letter.json
 }

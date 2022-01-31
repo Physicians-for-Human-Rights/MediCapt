@@ -25,32 +25,46 @@ security:
 schemes:
 - https
 paths:
-  /provider/record:
-    post:
+  /provider/share/record/with-user:
+    get:
       security:
       - CognitoUserProvider: []
       tags:
-      - Record
-      summary: Add a new record
-      consumes:
-      - application/json
+      - Share
+      summary: List records shared with you
+      operationId: providerGetSharedRecordsByUser
       produces:
       - application/json
-      operationId: providerCreateRecord
       parameters:
-      - in: body
-        name: body
-        description: Create a new record
-        required: true
-        schema:
-          $ref: '#/definitions/Record'
+      - in: query
+        name: offset
+        type: integer
+        required: false
+        default: 0
+        minimum: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: limit
+        type: integer
+        required: false
+        default: 20
+        minimum: 1
+        maximum: 100
+        description: The numbers of items to return.
       responses:
-        405:
-          description: Invalid input
+        200:
+          description: successful operation
           schema:
-            $ref: '#/definitions/Record'
+            type: array
+            items:
+              $ref: '#/definitions/Share'
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+        400:
+          description: Invalid status value
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerCreateRecord}
+        uri: ${lambda_uri_providerGetSharedRecordsByUser}
         responses:
           default:
             statusCode: "200"

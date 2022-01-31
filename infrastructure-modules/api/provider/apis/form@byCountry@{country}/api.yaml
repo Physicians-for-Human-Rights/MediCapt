@@ -25,44 +25,48 @@ security:
 schemes:
 - https
 paths:
-  /provider/record_image/{recordId}:
-    post:
+  /provider/form/byCountry/{country}:
+    get:
       security:
       - CognitoUserProvider: []
       tags:
-      - record
-      summary: Upload an image for a record
-      operationId: providerUploadImageForRecordBy
-      consumes:
-       - multipart/form-data
+      - Form
+      summary: List all forms for a country
+      operationId: providerGetFormsByCountry
       produces:
       - application/json
       parameters:
-      - in: formData
-        name: upfile
-        type: file
-        required: true
-        description: The file to upload.
-      - in: formData
-        name: formTag
+      - in: query
+        name: offset
+        type: integer
+        required: false
+        default: 0
+        minimum: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: limit
+        type: integer
+        required: false
+        default: 20
+        minimum: 1
+        maximum: 100
+        description: The numbers of items to return.
+      - in: path
+        name: country
         type: string
         required: true
-        description: Tag in the form that this image corresopnds to.
-      - name: recordId
-        in: path
-        description: ID of record to return
-        required: true
-        type: string
-        format: uuid
+        description: The ISO 2 letter country code from which forms should be listed
       responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/FormMetadata'
         400:
-          description: Record already sealed
-        404:
-          description: Record not found
-        405:
-          description: Validation exception
+          description: Invalid status value
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerUploadImageForRecordBy}
+        uri: ${lambda_uri_providerGetFormsByCountry}
         responses:
           default:
             statusCode: "200"
@@ -107,6 +111,7 @@ paths:
             Access-Control-Allow-Origin:
               type: "string"
 definitions:
+  Empty: {}
   RecordMetadata:
     type: object
     properties:
@@ -153,7 +158,6 @@ definitions:
         type: string
       form_id:
         type: string
-  Empty: {}
   Form:
     type: object
     properties:
@@ -161,4 +165,14 @@ definitions:
         type: string
         format: uuid
       form_details:
+        type: object
+  Share:
+    type: object
+    properties:
+      shareUUID:
+        type: string
+        format: uuid
+      formMetadata:
+        type: object
+      form:
         type: object

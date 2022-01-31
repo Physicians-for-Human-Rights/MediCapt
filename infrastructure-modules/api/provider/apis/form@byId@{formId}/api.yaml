@@ -25,106 +25,46 @@ security:
 schemes:
 - https
 paths:
-  /provider/record/{recordId}:
+  /provider/form/byId/{formId}:
     get:
       security:
       - CognitoUserProvider: []
       tags:
-      - record
-      summary: Get a record by ID
-      operationId: providerGetRecordById
+      - Form
+      summary: Get the details on a form
+      operationId: providerGetFormByUUID
       produces:
       - application/json
-      - application/xml
       parameters:
-      - name: recordId
-        in: path
-        description: ID of the record to return
-        required: true
+      - in: query
+        name: offset
+        type: integer
+        required: false
+        default: 0
+        minimum: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: limit
+        type: integer
+        required: false
+        default: 20
+        minimum: 1
+        maximum: 100
+        description: The numbers of items to return.
+      - in: path
+        name: formId
         type: string
-        format: uuid
+        required: true
+        description: The UUID of the form
       responses:
         200:
           description: successful operation
           schema:
-            $ref: '#/definitions/Record'
+            $ref: '#/definitions/Form'
         400:
-          description: Invalid ID supplied
-        404:
-          description: Record not found
+          description: Invalid status value
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerGetRecordById}
-        responses:
-          default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
-    post:
-      security:
-      - CognitoUserProvider: []
-      tags:
-      - record
-      summary: Update an existing record
-      operationId: providerUpdateRecordById
-      consumes:
-      - application/x-www-form-urlencoded
-      produces:
-      - application/json
-      parameters:
-      - name: recordId
-        in: path
-        description: ID of the record to return
-        required: true
-        type: string
-        format: uuid
-      - in: body
-        name: body
-        description: Updated record
-        required: true
-        schema:
-          $ref: '#/definitions/Record'
-      responses:
-        400:
-          description: Record already sealed
-        404:
-          description: Record not found
-        405:
-          description: Validation exception
-      x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerUpdateRecordById}
-        responses:
-          default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
-    delete:
-      security:
-      - CognitoUserProvider: []
-      tags:
-      - record
-      summary: Deletes a record
-      operationId: providerDeleteRecordById
-      produces:
-      - application/json
-      - application/xml
-      parameters:
-      - name: recordId
-        in: path
-        description: ID of record to delete
-        required: true
-        type: string
-        format: uuid
-      responses:
-        400:
-          description: Invalid ID supplied
-        404:
-          description: Record not found
-        405:
-          description: Record already sealed
-      x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerDeleteRecordById}
+        uri: ${lambda_uri_providerGetFormByUUID}
         responses:
           default:
             statusCode: "200"
@@ -169,6 +109,7 @@ paths:
             Access-Control-Allow-Origin:
               type: "string"
 definitions:
+  Empty: {}
   RecordMetadata:
     type: object
     properties:
@@ -215,7 +156,6 @@ definitions:
         type: string
       form_id:
         type: string
-  Empty: {}
   Form:
     type: object
     properties:
@@ -223,4 +163,14 @@ definitions:
         type: string
         format: uuid
       form_details:
+        type: object
+  Share:
+    type: object
+    properties:
+      shareUUID:
+        type: string
+        format: uuid
+      formMetadata:
+        type: object
+      form:
         type: object

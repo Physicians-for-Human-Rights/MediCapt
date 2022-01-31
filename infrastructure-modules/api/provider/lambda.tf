@@ -5,43 +5,71 @@ locals {
       reserved_concurrent_executions = null
     }
     providerGetRecordById = {
-      path = "record@{recordId}/get"
+      path = "record@byId@{recordId}/get"
       reserved_concurrent_executions = null
     }
     providerUpdateRecordById = {
-      path = "record@{recordId}/post"
+      path = "record@byId@{recordId}/post"
       reserved_concurrent_executions = null
     }
     providerDeleteRecordById = {
-      path = "record@{recordId}/delete"
+      path = "record@byId@{recordId}/delete"
       reserved_concurrent_executions = null
     }
     providerSealRecordById = {
-      path = "seal_record@{recordId}/post"
+      path = "record@seal@{recordId}/post"
       reserved_concurrent_executions = null
     }
     providerUploadImageForRecordBy = {
-      path = "record_image@{recordId}/post"
+      path = "record@image@byId@{recordId}/post"
       reserved_concurrent_executions = null
     }
     providerGetImageByFormTag = {
-      path = "record_image@{recordId}@{formTag}/get"
+      path = "record@image@byId@{recordId}@{formTag}/get"
       reserved_concurrent_executions = null
     }
     providerDeleteImageByFormTag = {
-      path = "record_image@{recordId}@{formTag}/delete"
+      path = "record@image@byId@{recordId}@{formTag}/delete"
       reserved_concurrent_executions = null
     }
     providerGetOwnRecords = {
-      path = "own_records/get"
+      path = "record@by-user/get"
       reserved_concurrent_executions = null
     }
     providerGetFormsByCountry = {
-      path = "forms@country@{country}/get"
+      path = "form@byCountry@{country}/get"
       reserved_concurrent_executions = null
     }
     providerGetFormByUUID = {
-      path = "form@{form_uuid}/get"
+      path = "form@byId@{formId}/get"
+      reserved_concurrent_executions = null
+    }
+    providerPutSharedRecordById = {
+      path = "record@share@byId@{recordId}/post"
+      reserved_concurrent_executions = null
+    }
+    providerGetRecordSharesById = {
+      path = "record@share@byId@{recordId}/get"
+      reserved_concurrent_executions = null
+    }
+    providerGetSharedRecordById = {
+      path = "share@record@byId@{shareId}/get"
+      reserved_concurrent_executions = null
+    }
+    providerDeleteSharedRecordById = {
+      path = "share@record@byId@{shareId}/delete"
+      reserved_concurrent_executions = null
+    }
+    providerGetSharedRecordImageByFormTag = {
+      path = "share@record@image@byId@{shareId}@{formTag}/get"
+      reserved_concurrent_executions = null
+    }
+    providerGetSharedRecordsByUser = {
+      path = "share@record@by-user/get"
+      reserved_concurrent_executions = null
+    }
+    providerGetSharedRecordsWithUser = {
+      path = "share@record@with-user/get"
       reserved_concurrent_executions = null
     }
   }

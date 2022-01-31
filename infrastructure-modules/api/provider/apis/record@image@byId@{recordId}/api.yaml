@@ -25,32 +25,44 @@ security:
 schemes:
 - https
 paths:
-  /provider/record:
+  /provider/record/image/byId/{recordId}:
     post:
       security:
       - CognitoUserProvider: []
       tags:
       - Record
-      summary: Add a new record
+      summary: Upload an image for a record
+      operationId: providerUploadImageForRecordBy
       consumes:
-      - application/json
+       - multipart/form-data
       produces:
       - application/json
-      operationId: providerCreateRecord
       parameters:
-      - in: body
-        name: body
-        description: Create a new record
+      - in: formData
+        name: upfile
+        type: file
         required: true
-        schema:
-          $ref: '#/definitions/Record'
+        description: The file to upload.
+      - in: formData
+        name: formTag
+        type: string
+        required: true
+        description: Tag in the form that this image corresopnds to.
+      - name: recordId
+        in: path
+        description: ID of record to return
+        required: true
+        type: string
+        format: uuid
       responses:
+        400:
+          description: Record already sealed
+        404:
+          description: Record not found
         405:
-          description: Invalid input
-          schema:
-            $ref: '#/definitions/Record'
+          description: Validation exception
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerCreateRecord}
+        uri: ${lambda_uri_providerUploadImageForRecordBy}
         responses:
           default:
             statusCode: "200"

@@ -25,34 +25,47 @@ security:
 schemes:
 - https
 paths:
-  /provider/seal_record/{recordId}:
-    post:
+  /provider/record/by-user:
+    get:
       security:
       - CognitoUserProvider: []
       tags:
-      - record
-      summary: Update an existing record
-      operationId: providerSealRecordById
-      consumes:
-      - application/x-www-form-urlencoded
+      - Record
+      summary: List your own records
+      operationId: providerGetOwnRecords
       produces:
       - application/json
+      - application/xml
       parameters:
-      - name: recordId
-        in: path
-        description: ID of record to return
-        required: true
-        type: string
-        format: uuid
+      - in: query
+        name: offset
+        type: integer
+        required: false
+        default: 0
+        minimum: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: limit
+        type: integer
+        required: false
+        default: 20
+        minimum: 1
+        maximum: 100
+        description: The numbers of items to return.
       responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RecordMetadata'
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
         400:
-          description: Record already sealed
-        404:
-          description: Record not found
-        405:
-          description: Validation exception
+          description: Invalid status value
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerSealRecordById}
+        uri: ${lambda_uri_providerGetOwnRecords}
         responses:
           default:
             statusCode: "200"
@@ -97,6 +110,7 @@ paths:
             Access-Control-Allow-Origin:
               type: "string"
 definitions:
+  Empty: {}
   RecordMetadata:
     type: object
     properties:
@@ -143,7 +157,6 @@ definitions:
         type: string
       form_id:
         type: string
-  Empty: {}
   Form:
     type: object
     properties:
@@ -151,4 +164,14 @@ definitions:
         type: string
         format: uuid
       form_details:
+        type: object
+  Share:
+    type: object
+    properties:
+      shareUUID:
+        type: string
+        format: uuid
+      formMetadata:
+        type: object
+      form:
         type: object
