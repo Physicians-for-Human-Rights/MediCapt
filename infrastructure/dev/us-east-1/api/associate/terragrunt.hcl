@@ -1,5 +1,5 @@
 terraform {
-  source = "${local.stage_vars.locals.base_source_url}//api/provider/"
+  source = "${local.stage_vars.locals.base_source_url}//api/associate/"
 }
 
 include "root" {
@@ -11,7 +11,7 @@ locals {
 }
 
 dependency "cognito" {
-  config_path = "../../admin/users/provider"
+  config_path = "../../admin/users/associate"
 }
 
 dependency "website" {
@@ -19,10 +19,10 @@ dependency "website" {
 }
 
 inputs = {
-  cognito_user_pool_provider_arn = dependency.cognito.outputs.cognito_user_pool_arn
+  cognito_user_pool_associate_arn = dependency.cognito.outputs.cognito_user_pool_arn
   domain_name = dependency.website.outputs.domain_name
   certificate_arn = dependency.website.outputs.acm_arn
   endpoint_configuration = "REGIONAL"
   hosted_zone_id = dependency.website.outputs.hosted_zone_id
-  user_type = "provider"
+  user_type = "associate"
 }
