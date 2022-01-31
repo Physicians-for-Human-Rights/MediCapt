@@ -1,0 +1,8 @@
+{
+    "name": "js_uuid",
+    "version": "1.0.1",
+    "dependencies": {
+        "uuid": "8.3.2"
+    }
+}
+
