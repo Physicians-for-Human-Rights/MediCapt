@@ -122,6 +122,43 @@ Select which channel you want the webhook to post to and place it in the
 More info about webhooks at: https://api.slack.com/messaging/webhooks
 
 
+# Manual steps
+
+After creating the user pools, in admin/users, you must go to the console, in
+Cognito, click manage identity pools, click edit identity pool (top right),
+click authentication providers, Cognito should be the default, and under
+"Attributes for access control" select "Use default mappings". Then save.
+
+There doesn't seem to be a way to do this in terraform right now.
+
+
+
+
+
+AWS config;
+  # TODO This assumes we have a us-east-1 deployment
+Need to do something about SNS and AWS Config
+Note AWS Config recording manually turned off
+
+
+# Email
+
+New accounts will be in the SES sandbox, unable to send any useful emails.
+
+https://console.aws.amazon.com/ses
+
+# Updating public access
+
+You should enable block public access to
+
+medicapt-terraform-state-dev
+medicapt-terraform-state-logs-dev	
+
+
+Deployments happen region by region:
+terragrunt graph-dependencies --terragrunt-working-dir us-east-1
+
+
 You will need to install terragrunt. Modules contains the raw code, live
 contains the runtime info for each stage, right now only prod exists. Note that
 paths in the live module can refer to specific git revisions to keep them
