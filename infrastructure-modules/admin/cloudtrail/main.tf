@@ -28,3 +28,7 @@ module "cloudtrail" {
   enable_logging                = true
   s3_bucket_name                = "${var.stage}-${var.namespace}-cloudtrail"
 }
+
+output "cloudtrail_bucket_name" {
+  value = module.s3_bucket.bucket_id
+}

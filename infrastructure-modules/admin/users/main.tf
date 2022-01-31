@@ -37,18 +37,44 @@ variable "temporary_password_validity_days" {
   type        = number
 }
 
+variable "invite_email_subject" {
+  description = "Subject line of the invite email"
+  type        = string
+}
+variable "invite_email_message" {
+  description = "Body of the invite email"
+  type        = string
+}
+variable "invite_sms_message" {
+  description = "Body of the invite sms"
+  type        = string
+}
+
+variable "mfa_configuration" {
+  description = "Multi-factor authentication type"
+  type        = string
+}
+
+variable "user_attributes" {
+  description = "User attribute schema"
+  type        = list(map(any))
+}
+
+variable "advanced_security_mode" {
+  description = "The advanced security mode, should be either AUDIT or ENFORCED. Never OFF"
+  type        = string
+}
+
 module "cognito_user_pool" {
   source  = "mineiros-io/cognito-user-pool/aws"
   version = "~> 0.9.1"
 
   name = "${var.namespace}-${var.user_type}-${var.stage}"
 
-  # TODO
-  # We allow the public to create user profiles
-  allow_admin_create_user_only = false
+  allow_admin_create_user_only = true
 
   enable_username_case_sensitivity = false
-  advanced_security_mode           = "AUDIT" # "ENFORCED"
+  advanced_security_mode           = var.advanced_security_mode
 
   auto_verified_attributes = [
     "email"
@@ -65,25 +91,11 @@ module "cognito_user_pool" {
     }
   ]
 
-  invite_email_subject = "Invitation to MediCapt as a healthcare provider"
-  invite_email_message = <<EOF
-Welcome to MediCapt!
+  invite_email_subject = var.invite_email_subject
+  invite_email_message = var.invite_email_message
+  invite_sms_message   = var.invite_sms_message
 
-Your username is {username} and your temporary password is {####}
-
-Thank you!
-Medicapt team
-EOF
-  invite_sms_message   = <<EOF
-Welcome to MediCapt!
-
-Your username is {username} and your temporary password is {####}
-
-Thank you!
-Medicapt team
-EOF
-
-  domain                = "${var.namespace}-${var.stage}"
+  domain                = "${var.namespace}-${var.user_type}-${var.stage}"
   default_email_option  = "CONFIRM_WITH_LINK"
   email_subject         = "MediCapt Verification Code"
   email_subject_by_link = "MediCapt Verification Link"
@@ -99,9 +111,7 @@ EOF
   # email_from_address     = "noreply@mineiros.io"
   # email_source_arn       = "arn:aws:ses:us-east-1:999999999999:identity"
 
-  # TODO We would like to require MFA
-  # But amplify on Android has an issue with it
-  mfa_configuration        = "OPTIONAL" # "OFF"
+  mfa_configuration        = var.mfa_configuration
   allow_software_mfa_token = true
 
   password_minimum_length    = 10
@@ -112,75 +122,7 @@ EOF
 
   temporary_password_validity_days = var.temporary_password_validity_days
 
-  schema_attributes = [
-    {
-      type     = "String"
-      name     = "email"
-      required = true
-      mutable  = true
-      min_length = 3
-      max_length = 300
-    },
-    {
-      type     = "String"
-      name     = "birthdate"
-      required = true
-      mutable  = true
-      min_length = 3
-      max_length = 300
-    },
-    {
-      type     = "String"
-      name     = "name"
-      required = true
-      mutable  = true
-      min_length = 3
-      max_length = 300
-    },
-    {
-      type     = "String"
-      name     = "nickname"
-      required = true
-      mutable  = true
-      min_length = 1
-      max_length = 300
-    },
-    {
-      type     = "String"
-      name     = "gender"
-      required = true
-      mutable  = true
-      min_length = 1
-      max_length = 300
-    },
-    # Custom attributes cannot be required
-    {
-      type     = "String"
-      name     = "official_id_type"
-      required = false
-      mutable  = true
-      min_length = 3
-      max_length = 300
-    },
-    # Custom attributes cannot be required
-    {
-      type     = "String"
-      name     = "official_id_code"
-      required = false
-      mutable  = true
-      min_length = 3
-      max_length = 300
-    },
-    # Custom attributes cannot be required
-    {
-      type     = "String"
-      name     = "official_id_expires"
-      required = false
-      mutable  = true
-      min_length = 3
-      max_length = 300
-    }
-  ]
+  schema_attributes = var.user_attributes
 
   clients = [
     {
@@ -259,6 +201,25 @@ resource "aws_cognito_identity_pool_roles_attachment" "main" {
   }
 }
 
+
+module "s3_bucket" {
+  source                       = "cloudposse/s3-bucket/aws"
+  version                      = "0.46.0"
+  acl                          = "private"
+  enabled                      = true
+  user_enabled                 = true
+  versioning_enabled           = true
+  sse_algorithm                = "aws:kms"
+  allow_encrypted_uploads_only = true
+  #
+  allowed_bucket_actions       = [
+    "s3:GetObject",
+    "s3:PutObject",
+    "s3:PutObjectTagging"
+  ]
+  name                         = "${var.stage}-${var.namespace}-cognito-image-${var.user_type}"
+}
+
 ###############################################################################
 
 output "cognito_user_pool_id" {
@@ -287,4 +248,12 @@ output "cognito_user_pool_arn" {
 
 output "cognito_identity_pool" {
   value = aws_cognito_identity_pool.main
+}
+
+output "image_bucket_arn" {
+  value = module.s3_bucket.bucket_arn
+}
+
+output "image_bucket_id" {
+  value = module.s3_bucket.bucket_id
 }
