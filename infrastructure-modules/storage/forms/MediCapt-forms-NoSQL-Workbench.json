@@ -3,7 +3,7 @@
   "ModelMetadata": {
     "Author": "Andrei Barbu",
     "DateCreated": "Jan 23, 2022, 11:04 PM",
-    "DateLastModified": "Jan 24, 2022, 12:34 AM",
+    "DateLastModified": "Jan 29, 2022, 09:39 PM",
     "Description": "Storing forms for MediCapt",
     "AWSService": "Amazon DynamoDB",
     "Version": "3.0"
@@ -13,85 +13,127 @@
       "TableName": "Forms",
       "KeyAttributes": {
         "PartitionKey": {
-          "AttributeName": "Country",
+          "AttributeName": "country",
           "AttributeType": "S"
         },
         "SortKey": {
-          "AttributeName": "FormUUID",
+          "AttributeName": "formUUID",
           "AttributeType": "S"
         }
       },
       "NonKeyAttributes": [
         {
-          "AttributeName": "Name",
+          "AttributeName": "locationUUID",
           "AttributeType": "S"
         },
         {
-          "AttributeName": "Subtitle",
+          "AttributeName": "lanugage",
           "AttributeType": "S"
         },
         {
-          "AttributeName": "DateEntered",
+          "AttributeName": "name",
           "AttributeType": "S"
         },
         {
-          "AttributeName": "DateCreated",
+          "AttributeName": "subtitle",
           "AttributeType": "S"
         },
         {
-          "AttributeName": "Tag",
+          "AttributeName": "dateEntered",
           "AttributeType": "S"
         },
         {
-          "AttributeName": "Priority",
+          "AttributeName": "dateCreated",
           "AttributeType": "S"
         },
         {
-          "AttributeName": "Version",
+          "AttributeName": "formId",
           "AttributeType": "S"
         },
         {
-          "AttributeName": "Location",
+          "AttributeName": "organizationCreated",
           "AttributeType": "S"
         },
         {
-          "AttributeName": "IsEnabled",
+          "AttributeName": "tag",
           "AttributeType": "S"
         },
         {
-          "AttributeName": "Country#Location#Enabled",
+          "AttributeName": "priority",
           "AttributeType": "S"
         },
         {
-          "AttributeName": "Country#Location#Enabled#Tag",
+          "AttributeName": "version",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "enabled",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "country_locationUUID",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "country_locationUUID_enabled",
           "AttributeType": "S"
         }
       ],
       "GlobalSecondaryIndexes": [
         {
-          "IndexName": "AllTags",
+          "IndexName": "AllActiveTagsByLocation",
           "KeyAttributes": {
             "PartitionKey": {
-              "AttributeName": "Country#Location#Enabled",
+              "AttributeName": "country_locationUUID",
+              "AttributeType": "S"
+            },
+            "SortKey": {
+              "AttributeName": "enabled",
               "AttributeType": "S"
             }
           },
           "Projection": {
             "ProjectionType": "INCLUDE",
             "NonKeyAttributes": [
-              "Tag"
+              "tag"
             ]
           }
         },
         {
-          "IndexName": "PriorityForms",
+          "IndexName": "AllLocationsByCountry",
           "KeyAttributes": {
             "PartitionKey": {
-              "AttributeName": "Country#Location#Enabled",
+              "AttributeName": "country",
               "AttributeType": "S"
-            },
-            "SortKey": {
-              "AttributeName": "Priority",
+            }
+          },
+          "Projection": {
+            "ProjectionType": "INCLUDE",
+            "NonKeyAttributes": [
+              "locationUUID"
+            ]
+          }
+        },
+        {
+          "IndexName": "AllLanguagesByCountry",
+          "KeyAttributes": {
+            "PartitionKey": {
+              "AttributeName": "country",
+              "AttributeType": "S"
+            }
+          },
+          "Projection": {
+            "ProjectionType": "INCLUDE",
+            "NonKeyAttributes": [
+              "lanugage"
+            ]
+          }
+        },
+        {
+          "IndexName": "ByUUID",
+          "KeyAttributes": {
+            "PartitionKey": {
+              "AttributeName": "formUUID",
               "AttributeType": "S"
             }
           },
@@ -100,14 +142,14 @@
           }
         },
         {
-          "IndexName": "PriorityFormsByTag",
+          "IndexName": "PriorityEnabledForms",
           "KeyAttributes": {
             "PartitionKey": {
-              "AttributeName": "Country#Location#Enabled#Tag",
+              "AttributeName": "country_locationUUID_enabled",
               "AttributeType": "S"
             },
             "SortKey": {
-              "AttributeName": "Priority",
+              "AttributeName": "priority",
               "AttributeType": "S"
             }
           },
@@ -118,105 +160,94 @@
       ],
       "TableData": [
         {
-          "Country": {
+          "country": {
             "S": "KE"
           },
-          "FormUUID": {
-            "S": "ke-moh-363-2019"
-          },
-          "Name": {
-            "S": "Post-rape care form"
-          },
-          "Subtitle": {
-            "S": "Keyna MOH 363"
-          },
-          "DateEntered": {
-            "S": "2019-01-01T10:10:10.000Z"
-          },
-          "DateCreated": {
-            "S": "2019-01-01T10:10:10.000Z"
-          },
-          "Tag": {
-            "S": "Sexual Assault"
-          },
-          "Priority": {
-            "S": "1"
-          },
-          "Version": {
-            "S": "1"
-          },
-          "Location": {
-            "S": "1"
-          }
-        },
-        {
-          "Country": {
-            "S": "KE"
-          },
-          "FormUUID": {
+          "formUUID": {
             "S": "617a8795-229c-4aa2-bdb1-e4b8fb344e32"
           },
-          "Name": {
+          "lanugage": {
+            "S": "EN"
+          },
+          "name": {
             "S": "Post-rape care form"
           },
-          "Subtitle": {
+          "subtitle": {
             "S": "Keyna MOH 363"
           },
-          "DateEntered": {
+          "dateEntered": {
             "S": "2019-01-01"
           },
-          "DateCreated": {
+          "dateCreated": {
             "S": "2019-01-01"
           },
-          "Tag": {
+          "formId": {
+            "S": "Keyna MOH 363"
+          },
+          "organizationCreated": {
+            "S": "Government of Kenya"
+          },
+          "tag": {
             "S": "sexual-assault"
           },
-          "Priority": {
+          "priority": {
             "S": "1"
           },
-          "Version": {
+          "version": {
             "S": "1"
           },
-          "IsEnabled": {
+          "enabled": {
             "S": "1"
           },
-          "Country#Location#Enabled": {
-            "S": "KE##1"
+          "country_locationUUID": {
+            "S": "KE!"
+          },
+          "country_locationUUID_enabled": {
+            "S": "KE!!1"
           }
         },
         {
-          "Country": {
+          "country": {
             "S": "CD"
           },
-          "FormUUID": {
+          "formUUID": {
             "S": "5af874c4-2685-4f18-9c7d-fa7355200c1f"
           },
-          "Name": {
+          "lanugage": {
+            "S": "FR"
+          },
+          "name": {
             "S": "Certificat médico-légal d’agression sexuelle"
           },
-          "Subtitle": {
+          "subtitle": {
             "S": "DRC PHR"
           },
-          "DateEntered": {
+          "dateEntered": {
             "S": "2019-01-01"
           },
-          "DateCreated": {
+          "dateCreated": {
             "S": "2019-01-01"
           },
-          "Tag": {
+          "organizationCreated": {
+            "S": "Government of DRC"
+          },
+          "tag": {
             "S": "sexual-assault"
           },
-          "Priority": {
+          "priority": {
             "S": "1"
           },
-          "Version": {
+          "version": {
             "S": "1"
           },
-          "IsEnabled": {
+          "enabled": {
             "S": "1"
           },
-          "Country#Location#Enabled": {
-            "S": "CD##1"
+          "country_locationUUID": {
+            "S": "CD!"
+          },
+          "country_locationUUID_enabled": {
+            "S": "CD!!1"
           }
         }
       ],
