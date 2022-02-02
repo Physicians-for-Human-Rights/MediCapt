@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { StyleSheet, View } from "react-native"
 import { Header } from "react-native-elements";
 import styles_ from "../styles";
 import SignatureComponent from "../components/Signature";
 
 
-const SignatureNew = props => {
+const Signature = props => {
 
     const onCancel = () => {
         props.navigation.state.params.cancelSignature();
@@ -36,7 +36,7 @@ const SignatureNew = props => {
     );
 };
 
-SignatureNew['navigationOptions'] = screenProps => ({
+Signature['navigationOptions'] = screenProps => ({
     title: "Sign anywhere below",
     header: null
 })
@@ -48,4 +48,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default SignatureNew;
+export default Signature;
