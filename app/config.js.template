@@ -1,16 +1,28 @@
 // Do not edit the generated code by hand. Change the template and rerun update-config.sh
 
 export default {
-  apiGateway: {
-    provider: {
-        REGION: "$REGION",
-        URL: $PROVIDER_URL
+    apiGateway: {
+        provider: {
+            REGION: "$REGION",
+            URL: $PROVIDER_URL
+        },
+        associate: {
+            REGION: "$REGION",
+            URL: $ASSOCIATE_URL
+        }
+    },
+    cognito: {
+        provier: {
+            REGION: "$REGION",
+            USER_POOL_ID: $PROVIDER_USER_POOL_ID,
+            IDENTITY_POOL_ID: $PROVIDER_IDENTITY_POOL_ID,
+            APP_CLIENT_ID: $PROVIDER_APP_CLIENT_ID
+        },
+        associate: {
+            REGION: "$REGION",
+            USER_POOL_ID: $ASSOCIATE_USER_POOL_ID,
+            IDENTITY_POOL_ID: $ASSOCIATE_IDENTITY_POOL_ID,
+            APP_CLIENT_ID: $ASSOCIATE_APP_CLIENT_ID
+        },
     }
-  },
-  cognito: {
-    REGION: "$REGION",
-    USER_POOL_ID: $USER_POOL_ID,
-    IDENTITY_POOL_ID: $IDENTITY_POOL_ID,
-    APP_CLIENT_ID: $APP_CLIENT_ID
-  }
 };

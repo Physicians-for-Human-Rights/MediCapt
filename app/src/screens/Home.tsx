@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-navigation";
 import { NavigationStackScreenProps } from 'react-navigation-stack';
 import { Icon, Button } from "react-native-elements";
 
-import { Auth } from "aws-amplify";
+import { API, Auth } from "aws-amplify";
 
 import medicapt_logo from "../../assets/medicapt.png";
 import phr_logo from "../../assets/phr.png";
@@ -54,6 +54,11 @@ class ButtonWithIconBackground extends React.Component<Props> {
     }
 }
 
+const handleClick = async () => {
+    const data = await API.get("provider", "/provider/record/by-user", {});
+    console.log("DEBUGGING API Returned", data);
+};
+
 class HomeScreen extends React.Component<Props> {
     static navigationOptions = {
         title: "Medicapt",
@@ -80,7 +85,6 @@ class HomeScreen extends React.Component<Props> {
                             <Image source={medicapt_logo} style={styles.logo} />
                         </View>
                         <View style={{ flex: 1 }}>
-                            {/* <Text>Hello</Text> */}
                             <Image source={phr_logo} style={styles.logo} />
                         </View>
                     </View>
@@ -123,7 +127,7 @@ class HomeScreen extends React.Component<Props> {
                         <View style={{ flex: 1, flexDirection: "row" }}>
                             <ButtonWithIconBackground
                                 label="Find record"
-                                onPress={this._findRecord}
+                                onPress={handleClick}
                                 iconName="search"
                                 iconType="font-awesome"
                             />

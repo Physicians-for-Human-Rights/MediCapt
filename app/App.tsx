@@ -6,7 +6,8 @@ import {
     Button,
     StyleSheet,
     Text,
-    View
+    View,
+    Image
 } from "react-native";
 import {
     createSwitchNavigator,
@@ -15,6 +16,7 @@ import {
 } from "react-navigation";
 import { createStackNavigator, NavigationStackScreenProps } from 'react-navigation-stack';
 import { ThemeProvider } from "react-native-elements";
+import styles from "./src/styles";
 
 import Amplify from "aws-amplify";
 import { Auth } from "aws-amplify";
@@ -24,6 +26,7 @@ import { Provider } from "react-redux";
 import store from "./src/redux/store";
 
 import withAuthenticator from "./src/screens/Authentication";
+// import AuthComp from "./src/screens/Authentication";
 
 import FormScreen from "./src/screens/Form";
 import SignatureScreen from "./src/screens/Signature";
@@ -37,38 +40,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import theme from "./src/theme";
 
+import { UserType, reconfigureAmplifyForUserType } from "./src/userTypes";
+
 let dataMemory = {};
 
 function stackTrace() {
     var err = new Error();
     return err.stack;
 }
-
-Amplify.configure({
-    Auth: {
-        mandatorySignIn: true,
-        region: config.cognito.REGION,
-        userPoolId: config.cognito.USER_POOL_ID,
-        identityPoolId: config.cognito.IDENTITY_POOL_ID,
-        userPoolWebClientId: config.cognito.APP_CLIENT_ID,
-    },
-    Analytics: {
-        disabled: true
-    },
-    Storage: {
-        region: "us-east-1",
-        bucket: "medicapt-records-dev"
-    },
-    API: {
-        endpoints: [
-            {
-                name: "provider",
-                endpoint: config.apiGateway.provider.URL,
-                region: config.apiGateway.provider.REGION
-            }
-        ]
-    }
-});
 
 type Props = NavigationStackScreenProps;
 
@@ -91,14 +70,6 @@ class OtherScreen extends React.Component<Props> {
     };
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center"
-    }
-});
-
 const AppContainer =
     createAppContainer(createStackNavigator({ Home: HomeScreen,
                                               Body: BodyScreen,
@@ -115,12 +86,24 @@ const AppContainer =
 
 function App() {
     return (
-        <Provider store={store}>
-            <ThemeProvider theme={theme}>
-                <AppContainer />
-            </ThemeProvider>
-        </Provider>
+        <AppContainer />
     );
 }
 
-export default withAuthenticator(App);
+
+const AuthApp = withAuthenticator(App);
+
+// const AuthApp = AuthComp;
+
+function LoginScreen() {
+/* reconfigureAmplifyForUserType(UserType.Provider); */
+    return (
+        <Provider store={store}>
+            <ThemeProvider theme={theme}>
+                <AuthApp />
+            </ThemeProvider>
+        </Provider>
+    )
+}
+
+export default LoginScreen;

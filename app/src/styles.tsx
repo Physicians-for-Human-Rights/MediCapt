@@ -23,6 +23,13 @@ export default StyleSheet.create({
         marginTop: 30,
         resizeMode: "contain"
     },
+    logo2: {
+        height: 100,
+        width: 180,
+        marginBottom: 10,
+        marginTop: 30,
+        resizeMode: "center"
+    },
     form: {
         width: "90%"
     },
