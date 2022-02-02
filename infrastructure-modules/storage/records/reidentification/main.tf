@@ -43,7 +43,7 @@ resource "aws_s3_bucket_notification" "triger" {
   lambda_function {
     lambda_function_arn = aws_lambda_function.add_reidentification.arn
     events              = ["s3:ObjectCreated:*"]
-    filter_suffix       = "form.json"
+    filter_suffix       = "metadata.json"
   }
   depends_on = [
     aws_lambda_permission.execute
