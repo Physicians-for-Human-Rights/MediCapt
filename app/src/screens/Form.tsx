@@ -18,7 +18,7 @@ import {
     createAppContainer,
     SafeAreaView
 } from "react-navigation";
-import { createStackNavigator } from 'react-navigation-stack';
+import { createStackNavigator, NavigationStackScreenProps } from 'react-navigation-stack';
 import {
     Header,
     Icon,
@@ -75,7 +75,7 @@ import yaml from "js-yaml";
 
 import styles from "../styles";
 
-type Props = NavigationScreenProps;
+type Props = NavigationStackScreenProps;
 
 import allForms from "../allForms";
 
@@ -131,9 +131,9 @@ class CardWrap extends React.Component {
             </Card>
         );
     }
-            }
-            
-function mapSectionWithPaths(section, getValue, fns, pre, post) {
+}
+
+function mapSectionWithPaths(section, getValue, fns) {
     function process(entry, index, formPath) {
         if (Array.isArray(entry)) {
             return entry.map((e, i) => {
@@ -209,84 +209,92 @@ function mapSectionWithPaths(section, getValue, fns, pre, post) {
 
 function allFormValuePathsForSection(section, getValue) {
     let allValuePaths = [];
-    mapSectionWithPaths(section, getValue, {
-        selectMultiple: (entry, obj, index, formPath, valuePaths) =>
-            (allValuePaths = allValuePaths.concat(valuePaths)),
-        signature: (entry, obj, index, formPath, valuePath) =>
-            allValuePaths.push(valuePath),
-        bool: (entry, obj, index, formPath, valuePath) =>
-            allValuePaths.push(valuePath),
-        gender: (entry, obj, index, formPath, valuePath) =>
-            allValuePaths.push(valuePath),
-        text: (entry, obj, index, formPath, valuePath) =>
-            allValuePaths.push(valuePath),
-        "long-text": (entry, obj, index, formPath, valuePath) =>
-            allValuePaths.push(valuePath),
-        number: (entry, obj, index, formPath, valuePath) =>
-            allValuePaths.push(valuePath),
-        date: (entry, obj, index, formPath, valuePath) =>
-            allValuePaths.push(valuePath),
-        "date-time": (entry, obj, index, formPath, valuePath) =>
-            allValuePaths.push(valuePath),
-        list: (entry, obj, index, formPath, valuePath) =>
-            allValuePaths.push(valuePath),
-        "list-with-labels": (entry, obj, index, formPath, valuePath) =>
-            allValuePaths.push(valuePath),
-        "phone-number": (entry, obj, index, formPath, valuePath) =>
-            allValuePaths.push(valuePath),
-        address: (entry, obj, index, formPath, valuePath) =>
-            allValuePaths.push(valuePath),
-        _combineParts: (entry, obj, index, inner, outer) => null,
-        post: (entry, obj, index, formPath, pre, inner, subparts) => null
-    });
+    mapSectionWithPaths(
+        section,
+        getValue,
+        {
+            selectMultiple: (entry, obj, index, formPath, valuePaths) =>
+                (allValuePaths = allValuePaths.concat(valuePaths)),
+            signature: (entry, obj, index, formPath, valuePath) =>
+                allValuePaths.push(valuePath),
+            bool: (entry, obj, index, formPath, valuePath) =>
+                allValuePaths.push(valuePath),
+            gender: (entry, obj, index, formPath, valuePath) =>
+                allValuePaths.push(valuePath),
+            text: (entry, obj, index, formPath, valuePath) =>
+                allValuePaths.push(valuePath),
+            "long-text": (entry, obj, index, formPath, valuePath) =>
+                allValuePaths.push(valuePath),
+            number: (entry, obj, index, formPath, valuePath) =>
+                allValuePaths.push(valuePath),
+            date: (entry, obj, index, formPath, valuePath) =>
+                allValuePaths.push(valuePath),
+            "date-time": (entry, obj, index, formPath, valuePath) =>
+                allValuePaths.push(valuePath),
+            list: (entry, obj, index, formPath, valuePath) =>
+                allValuePaths.push(valuePath),
+            "list-with-labels": (entry, obj, index, formPath, valuePath) =>
+                allValuePaths.push(valuePath),
+            "phone-number": (entry, obj, index, formPath, valuePath) =>
+                allValuePaths.push(valuePath),
+            address: (entry, obj, index, formPath, valuePath) =>
+                allValuePaths.push(valuePath),
+            _combineParts: (entry, obj, index, inner, outer) => null,
+            post: (entry, obj, index, formPath, pre, inner, subparts) => null
+        }
+    );
     return allValuePaths;
 }
 
 function isSectionComplete(section, getValue) {
     let complete = true;
-    mapSectionWithPaths(section, getValue, {
-        selectMultiple: (entry, obj, index, formPath, valuePaths) =>
-            // NB This checks not that getValue exists, but that at least one of them is also true.
-            (complete = complete && _.some(valuePaths, x => getValue(x))),
-        signature: (entry, obj, index, formPath, valuePath) =>
-            (complete = complete && getValue(valuePath) != null),
-        bool: (entry, obj, index, formPath, valuePath) =>
-            (complete = complete && getValue(valuePath) != null),
-        gender: (entry, obj, index, formPath, valuePath) =>
-            (complete = complete && getValue(valuePath) != null),
-        text: (entry, obj, index, formPath, valuePath) =>
-            (complete = complete && getValue(valuePath) != null),
-        "long-text": (entry, obj, index, formPath, valuePath) =>
-            (complete = complete && getValue(valuePath) != null),
-        number: (entry, obj, index, formPath, valuePath) =>
-            (complete = complete && getValue(valuePath) != null),
-        date: (entry, obj, index, formPath, valuePath) =>
-            (complete = complete && getValue(valuePath) != null),
-        "date-time": (entry, obj, index, formPath, valuePath) =>
-            (complete = complete && getValue(valuePath) != null),
-        list: (entry, obj, index, formPath, valuePath) =>
-            (complete = complete && getValue(valuePath) != null),
-        "list-with-labels": (entry, obj, index, formPath, valuePath) =>
-            (complete = complete && getValue(valuePath) != null),
-        "phone-number": (entry, obj, index, formPath, valuePath) =>
-            (complete = complete && getValue(valuePath) != null),
-        address: (entry, obj, index, formPath, valuePath) =>
-            (complete = complete && getValue(valuePath) != null),
-        _combineParts: (entry, obj, index, inner, outer) => null,
-        post: (entry, obj, index, formPath, pre, inner, subparts) => null
-    });
+    mapSectionWithPaths(
+        section,
+        getValue,
+        {
+            selectMultiple: (entry, obj, index, formPath, valuePaths) =>
+                // NB This checks not that getValue exists, but that at least one of them is also true.
+                (complete = complete && _.some(valuePaths, x => getValue(x))),
+            signature: (entry, obj, index, formPath, valuePath) =>
+                (complete = complete && getValue(valuePath) != null),
+            bool: (entry, obj, index, formPath, valuePath) =>
+                (complete = complete && getValue(valuePath) != null),
+            gender: (entry, obj, index, formPath, valuePath) =>
+                (complete = complete && getValue(valuePath) != null),
+            text: (entry, obj, index, formPath, valuePath) =>
+                (complete = complete && getValue(valuePath) != null),
+            "long-text": (entry, obj, index, formPath, valuePath) =>
+                (complete = complete && getValue(valuePath) != null),
+            number: (entry, obj, index, formPath, valuePath) =>
+                (complete = complete && getValue(valuePath) != null),
+            date: (entry, obj, index, formPath, valuePath) =>
+                (complete = complete && getValue(valuePath) != null),
+            "date-time": (entry, obj, index, formPath, valuePath) =>
+                (complete = complete && getValue(valuePath) != null),
+            list: (entry, obj, index, formPath, valuePath) =>
+                (complete = complete && getValue(valuePath) != null),
+            "list-with-labels": (entry, obj, index, formPath, valuePath) =>
+                (complete = complete && getValue(valuePath) != null),
+            "phone-number": (entry, obj, index, formPath, valuePath) =>
+                (complete = complete && getValue(valuePath) != null),
+            address: (entry, obj, index, formPath, valuePath) =>
+                (complete = complete && getValue(valuePath) != null),
+            _combineParts: (entry, obj, index, inner, outer) => null,
+            post: (entry, obj, index, formPath, pre, inner, subparts) => null
+        }
+    );
     return complete;
 }
 
-function blobToBase64(blob:Blob) {
-  return new Promise((resolve, _) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.readAsDataURL(blob);
-  });
+function blobToBase64(blob: Blob) {
+    return new Promise((resolve, _) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+    });
 }
 
-async function readImage(uri:string, mimePrefix:string) {
+async function readImage(uri: string, mimePrefix: string) {
     let content = null;
     if (Platform.OS == "web") {
         content = await fetch(uri);
@@ -642,7 +650,7 @@ class Form extends React.Component<Props> {
                 // TODO This is a conservative approach if no gender key is specified
                 // Do we want something else?
                 options = [{ key: "male", value: "Male" },
-                           { key: "female", value: "Female" }]
+                { key: "female", value: "Female" }]
             }
             let selected = this.props.formPaths[valuePath]
                 ? _.indexOf(_.map(options, x => x.key), this.props.formPaths[valuePath].value)
