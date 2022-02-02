@@ -68,9 +68,19 @@ PII/PHI exists in three locations:
 Related to the security measures listed here, another non-PII/non-PHI storage
 mechanism exists: AWS Cognito which stores user information.
 
-### Records DynamoDB
+### Versioning
 
-#### Storage formats
+The record and sharing storage format is versioned. In what follows describe
+version `"1.0.0"`. Note that this is the string "1.0.0" and never a
+number. Versioning will follow semver/schemaver rules.
+
+Some invariants will always hold for all future versions. The dynamodb row will
+always contain `recordStorageVersion`. The S3 bucket will always contain
+`/<recordUUID>/metadata.json` which will always be a map that contains at least
+one key `recordStorageVersion`. The same value will always be stored under both
+keys.
+
+### 1. Records DynamoDB
 
 This contains metadata about records, enough for healthcare providers to filter
 which records they need.
@@ -89,6 +99,8 @@ which records they need.
 `patientGender`
 `patientAge`
 `patientUUID`
+`caseId`
+`recordStorageVersion`
 
 PatientUUID exists for future compatibility if PHR wants to link together forms
 one day.  It is unique per form at the moment.
@@ -110,13 +122,16 @@ Global secondary indices:
 ### 2. Records S3 bucket
 
 Records are stored in the following path structure:
-`/<locationUUID>/<recordUUID>/form.json`
-`/<locationUUID>/<recordUUID>/metadata.json`
-`/<locationUUID>/<recordUUID>/image/<imageUUID>.jpg` or `.png`
-`/<locationUUID>/<recordUUID>/addendum/<addendumUUID>.json`
+`/<recordUUID>/form.json`
+`/<recordUUID>/metadata.json`
+`/<recordUUID>/image/<imageUUID>.jpg` or `.png`
+`/<recordUUID>/addendum/<addendumUUID>.json`
 
 The S3 bucket cannot be listed. There are no delete permissions on the bucket.
 The bucket is versioned and encrypted with a CMK.
+
+`metadata.json` describes records. At the moment it consists of only
+`{recordStorageVersion: "1.0.0"}`
 
 #### Security controls
 
@@ -138,6 +153,9 @@ will be available to user managers.
 
 ### 3. Sharing DynamoDB
 
+Share rows will always contain `shareStorageVersion`, starting with the string
+`"1.0.0"` in the current version, following the same rules as records.
+
 `sharedWithUUID`
 `recordUUID`
 `locationUUID`
@@ -155,6 +173,7 @@ will be available to user managers.
 `sharedOnDate`
 `sharedExpiresOnDate`
 `sharedByUUID`
+`shareStorageVersion`
 
 Global secondary indices:
       (when attributes aren't specified, all attributes are kept)
