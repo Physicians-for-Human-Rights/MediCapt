@@ -101,7 +101,6 @@ EOF
       min_length = 3
       max_length = 300
     },
-    # Custom attributes cannot be required
     {
       type     = "String"
       name     = "official_id_code"
@@ -110,7 +109,6 @@ EOF
       min_length = 3
       max_length = 300
     },
-    # Custom attributes cannot be required
     {
       type     = "String"
       name     = "official_id_expires"
@@ -119,7 +117,6 @@ EOF
       min_length = 3
       max_length = 300
     },
-    # Custom attributes cannot be required
     {
       type     = "String"
       name     = "official_id_image"
@@ -128,7 +125,6 @@ EOF
       min_length = 3
       max_length = 300
     },
-    # Custom attributes cannot be required
     {
       type     = "String"
       name     = "country"
@@ -137,10 +133,18 @@ EOF
       min_length = 1
       max_length = 100
     },
-    # Custom attributes cannot be required
     {
       type     = "String"
       name     = "language"
+      required = false
+      mutable  = true
+      min_length = 1
+      max_length = 100
+    },
+    {
+      type     = "String"
+      # This date is stored as ISO 8601
+      name     = "expiryDate"
       required = false
       mutable  = true
       min_length = 1
