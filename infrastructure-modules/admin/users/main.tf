@@ -105,7 +105,7 @@ module "cognito_user_pool" {
   challenge_required_on_new_device = true
   user_device_tracking             = "ALWAYS"
 
-  # These paramters can be used to configure SES for emails
+  # TODO These paramters can be used to configure SES for emails
   # email_sending_account  = "DEVELOPER"
   # email_reply_to_address = "support@mineiros.io"
   # email_from_address     = "noreply@mineiros.io"
