@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { StyleSheet, View } from "react-native"
+import { StyleSheet, View } from "react-native";
 import { Button } from "react-native-elements";
 import styles_ from "../styles";
 // https://www.npmjs.com/package/react-native-signature-canvas

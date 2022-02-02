@@ -31,7 +31,6 @@ import FormOverviewScreen from "./src/screens/FormOverview";
 import SelectFormScreen from "./src/screens/SelectForm";
 import HomeScreen from "./src/screens/Home";
 import BodyScreen from "./src/screens/Body";
-import BodyDetailsScreen from "./src/screens/BodyDetails";
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -104,7 +103,6 @@ const AppContainer =
         {
             Home: HomeScreen,
             Body: BodyScreen,
-            BodyDetails: BodyDetailsScreen,
             Other: OtherScreen,
             FormOverview: FormOverviewScreen,
             SelectForm: SelectFormScreen,

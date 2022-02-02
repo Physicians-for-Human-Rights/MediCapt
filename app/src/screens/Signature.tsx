@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View } from "react-native"
+import { StyleSheet, View } from "react-native";
 import { Header } from "react-native-elements";
 import styles_ from "../styles";
 import SignatureComponent from "../components/Signature";
@@ -24,12 +24,9 @@ const Signature = props => {
                     text: "Sign anywhere below",
                     style: { color: "#fff" }
                 }}
-                containerStyle={{
-                    backgroundColor: "#d5001c",
-                    justifyContent: "space-around"
-                }}
+                containerStyle={styles.headerContainer}
             />
-            <View style={styles.container}>
+            <View style={styles.signatureContainer}>
                 <SignatureComponent onSubmit={onSubmit} onCancel={onCancel} />
             </View>
         </View>
@@ -42,7 +39,12 @@ Signature['navigationOptions'] = screenProps => ({
 })
 
 const styles = StyleSheet.create({
-    container: {
+    headerContainer: {
+        backgroundColor: "#d5001c",
+        justifyContent: "space-around",
+        width: "100%"
+    },
+    signatureContainer: {
         flex: 1,
         width: "100%"
     }
