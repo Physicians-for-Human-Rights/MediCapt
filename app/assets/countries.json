@@ -1,12 +1,12 @@
 {
-    "KE": {
-        "name": {
-            "common": "Kenya"
-        }
-    },
-    "CD": {
-        "name": {
-            "common": "DRC"
-        }
+  "KE": {
+    "name": {
+      "common": "Kenya"
     }
+  },
+  "CD": {
+    "name": {
+      "common": "DRC"
+    }
+  }
 }

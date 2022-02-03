@@ -1,2 +1,2 @@
-import DateTimePicker from 'react-datetime-picker';
+import DateTimePicker from 'react-datetime-picker'
 export default DateTimePicker

@@ -4,15 +4,15 @@ export default {
     apiGateway: {
         provider: {
             REGION: "$REGION",
-            URL: $PROVIDER_URL
+            URL: "https://$PROVIDER_URL"
         },
         associate: {
             REGION: "$REGION",
-            URL: $ASSOCIATE_URL
+            URL: "https://$ASSOCIATE_URL"
         }
     },
     cognito: {
-        provier: {
+        provider: {
             REGION: "$REGION",
             USER_POOL_ID: $PROVIDER_USER_POOL_ID,
             IDENTITY_POOL_ID: $PROVIDER_IDENTITY_POOL_ID,

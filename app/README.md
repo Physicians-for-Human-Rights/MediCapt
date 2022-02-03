@@ -10,7 +10,7 @@ yarn install
 When infrastructure that the app relies on changes you will want to run
 `update-config.sh`. This requires that you have a terraform checkout.
 
-## Run 
+## Run
 
 The website with `expo web`
 

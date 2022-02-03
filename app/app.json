@@ -14,14 +14,8 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
+    "assetBundlePatterns": ["**/*"],
+    "platforms": ["ios", "android", "web"],
     "ios": {
       "supportsTablet": true
     },
@@ -30,13 +24,7 @@
     },
     "web": {},
     "packagerOpts": {
-      "assetExts": [
-        "json",
-        "yaml",
-        "svg",
-        "png",
-        "jpg"
-      ]
+      "assetExts": ["json", "yaml", "svg", "png", "jpg"]
     }
   }
 }
