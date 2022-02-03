@@ -2,20 +2,11 @@ import React from 'react'
 import { Text, View, TouchableOpacity } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { SafeAreaView } from 'react-navigation'
-import {
-  Header,
-  Icon,
-  Button,
-  ListItem,
-  ButtonGroup,
-} from 'react-native-elements'
-
+import { Header, ListItem, ButtonGroup } from 'react-native-elements'
 import * as Localization from 'expo-localization'
-
 import { connect } from 'react-redux'
-import { formSetId } from '../redux/actions'
-
-import styles from '../styles'
+import { formSetId } from 'redux/actions'
+import styles from 'styles'
 
 const formList = require('../../assets/forms/forms.json')
 const countries = require('../../assets/countries.json')

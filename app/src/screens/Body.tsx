@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { Header, Button } from 'react-native-elements'
-import styles_ from '../styles'
-import BodyMarker from '../components/BodyMarker'
-import Dialog from '../components/Dialog'
+import styles_ from 'styles'
+import BodyMarker from 'components/BodyMarker'
+import Dialog from 'components/Dialog'
 
 const Body = props => {
   const [annotations, setAnnotations] = useState([])

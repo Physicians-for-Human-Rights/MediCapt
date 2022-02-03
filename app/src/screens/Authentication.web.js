@@ -16,7 +16,6 @@ import {
 import '@aws-amplify/ui-react/styles.css'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Button, Card, ButtonGroup } from 'react-native-elements'
-import awsConfig from '../../config.js'
 
 import indexOf from 'lodash/indexOf'
 import medicapt_logo from '../../assets/medicapt.png'
@@ -28,7 +27,7 @@ import {
   UserType,
   UserTypeList,
   reconfigureAmplifyForUserType,
-} from '../userTypes'
+} from 'utils/userTypes'
 
 function Header(accountType, setAccountType) {
   const { tokens } = useTheme()

@@ -6,20 +6,20 @@ import {
   NavigationStackScreenProps,
 } from 'react-navigation-stack'
 import { ThemeProvider } from 'react-native-elements'
-import styles from './src/styles'
+import styles from 'styles'
 import { Auth } from 'aws-amplify'
 
 import { Provider } from 'react-redux'
-import store from './src/redux/store'
+import store from 'redux/store'
 
-import withAuthenticator from './src/screens/Authentication'
+import withAuthenticator from 'screens/Authentication'
 
-import FormScreen from './src/screens/Form'
-import SignatureScreen from './src/screens/Signature'
-import FormOverviewScreen from './src/screens/FormOverview'
-import SelectFormScreen from './src/screens/SelectForm'
-import HomeScreen from './src/screens/Home'
-import BodyScreen from './src/screens/Body'
+import FormScreen from 'screens/Form'
+import SignatureScreen from 'screens/Signature'
+import FormOverviewScreen from 'screens/FormOverview'
+import SelectFormScreen from 'screens/SelectForm'
+import HomeScreen from 'screens/Home'
+import BodyScreen from 'screens/Body'
 
 import theme from 'theme'
 

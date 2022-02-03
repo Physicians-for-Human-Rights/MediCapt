@@ -17,10 +17,11 @@
     "assetBundlePatterns": ["**/*"],
     "platforms": ["ios", "android", "web"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "click.medicapt.medicaptapp"
     },
     "android": {
-      "package": "com.medicapt.medicaptapp"
+      "package": "click.medicapt.medicaptapp"
     },
     "web": {},
     "packagerOpts": {

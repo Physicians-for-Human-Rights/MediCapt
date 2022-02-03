@@ -34,7 +34,7 @@ import {
   UserType,
   UserTypeList,
   reconfigureAmplifyForUserType,
-} from '../userTypes'
+} from 'utils/userTypes'
 
 const logger = new Logger('SignIn')
 

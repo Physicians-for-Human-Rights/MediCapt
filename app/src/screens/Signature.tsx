@@ -1,8 +1,8 @@
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
 import { Header } from 'react-native-elements'
-import styles_ from '../styles'
-import SignatureComponent from '../components/Signature'
+import styles_ from 'styles'
+import SignatureComponent from 'components/Signature'
 
 const Signature = props => {
   const onCancel = () => {
