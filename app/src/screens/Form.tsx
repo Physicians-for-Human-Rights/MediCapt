@@ -582,8 +582,8 @@ class Form extends React.Component<Props> {
                                 backgroundColor: "black",
                                 height: 5,
                                 width: 5,
-                                top: annotation.coordinates.y * 200,
-                                left: annotation.coordinates.x * 200
+                                top: annotation.markerCoordinates.y * 200,
+                                left: annotation.markerCoordinates.x * 200
                             }} />
                         ))}
                     </ImageBackground>
@@ -619,14 +619,14 @@ class Form extends React.Component<Props> {
                         onPress={() =>
                             this.props.navigation.navigate("Body", {
                                 baseImage: this.state.files[_.get(obj, "field.generic-image")],
-                                enterData: (dataImage, markers) => {
-                                    // if (markers.length === 0) {
+                                enterData: (dataImage, annotations) => {
+                                    // if (annotations.length === 0) {
                                     //     this.formSetPath(valuePath, "");
                                     //     return;
                                     // }
                                     this.formSetPath(valuePath, {
                                         image: dataImage,
-                                        annotations: markers
+                                        annotations
                                     });
                                 }
                             })

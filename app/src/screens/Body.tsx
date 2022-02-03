@@ -5,12 +5,12 @@ import {
 } from "react-native";
 import { Header, Button } from "react-native-elements";
 import styles_ from "../styles";
-
-import BodyAnnotate from "../components/BodyAnnotate";
+import BodyMarker from "../components/BodyMarker";
+import Dialog from "../components/Dialog";
 
 const Body = props => {
-
     const [annotations, setAnnotations] = useState([]);
+    const [selectedMarker, setSelectedMarker] = useState(null);
 
     const onSubmit = async () => {
         props.navigation.state.params.enterData(
@@ -24,9 +24,13 @@ const Body = props => {
         props.navigation.goBack();
     };
 
-    const addAnnotation = newAnnotation => {
-        setAnnotations(prev => [...prev, newAnnotation]);
-    };
+    // callback for dialog to add finalized annotation with marker
+    const confirmAnnotation = text => {
+        setAnnotations(prev => 
+            [...prev, {markerCoordinates: selectedMarker, description: text}]
+        );
+        setSelectedMarker(null);
+    }
 
     return (
         <View style={styles_.container}>
@@ -38,9 +42,9 @@ const Body = props => {
                 containerStyle={styles.headerContainer}
             />
             <View style={styles.annotationContainer}>
-                <BodyAnnotate
+                <BodyMarker
                     baseImage={props.navigation.state.params.baseImage}
-                    addAnnotation={addAnnotation}
+                    confirmMarker={marker => setSelectedMarker(marker)}
                     annotations={annotations}
                 />
             </View>
@@ -57,6 +61,14 @@ const Body = props => {
                     onPress={onCancel}
                 />
             </View>
+
+            <Dialog
+                visible={selectedMarker !== null}
+                title="Annotation"
+                description="Please add any comments on the annotation."
+                handleCancel={() => setSelectedMarker(null)}
+                handleConfirm={confirmAnnotation}
+            />
         </View>
     );
 };

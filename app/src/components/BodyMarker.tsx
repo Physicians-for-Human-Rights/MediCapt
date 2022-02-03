@@ -8,8 +8,7 @@ import {
 } from "react-native";
 import styles_ from "../styles";
 
-const BodyAnnotate = props => {
-
+const BodyMarker = props => {
     const [imageSquareSize, setImageSquareSize] = useState(0)
 
     const handlePress = (evt) => {
@@ -22,10 +21,7 @@ const BodyAnnotate = props => {
             y = evt.nativeEvent.locationY / imageSquareSize;
         }
 
-        props.addAnnotation({
-            coordinates: { x, y },
-            text: ''
-        });
+        props.confirmMarker({ x, y });
     };
 
     return (
@@ -46,8 +42,8 @@ const BodyAnnotate = props => {
                         {props.annotations.map((annotation, idx) => (
                             <View key={idx} style={{
                                 ...StyleSheet.flatten(styles.markers),
-                                top: annotation.coordinates.y * imageSquareSize,
-                                left: annotation.coordinates.x * imageSquareSize
+                                top: annotation.markerCoordinates.y * imageSquareSize,
+                                left: annotation.markerCoordinates.x * imageSquareSize
                             }} />
                         ))}
                     </ImageBackground>
@@ -70,4 +66,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default BodyAnnotate;
+export default BodyMarker;
