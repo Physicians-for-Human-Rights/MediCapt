@@ -12,6 +12,7 @@ import {
   Keyboard,
   Picker,
   Platform,
+  ImageBackground,
 } from 'react-native'
 import {
   createSwitchNavigator,
@@ -574,17 +575,32 @@ class Form extends React.Component<Props> {
       let image = null
       let icon = null
       let buttonStyle = {}
-      if (this.formGetPath(valuePath)) {
-        title = ' Update diagram'
+      const value = this.formGetPath(valuePath)
+      if (value) {
+        title = ' Restart diagram'
         image = (
-          <Image
-            resizeMode="contain"
+          <ImageBackground
+            imageStyle={{ resizeMode: 'contain' }}
             style={{ width: 200, height: 200 }}
             source={{ uri: this.formGetPath(valuePath).image }}
-          />
+          >
+            {value.annotations.map((annotation, idx) => (
+              <View
+                key={idx}
+                style={{
+                  position: 'absolute',
+                  backgroundColor: 'black',
+                  height: 5,
+                  width: 5,
+                  top: annotation.markerCoordinates.y * 200,
+                  left: annotation.markerCoordinates.x * 200,
+                }}
+              />
+            ))}
+          </ImageBackground>
         )
       } else {
-        title = ' Draw and comment'
+        title = ' Mark and annotate'
         icon = <Icon name="edit" size={15} color="white" />
         buttonStyle = { backgroundColor: '#d5001c' }
         let imageUri = this.state.files[_.get(obj, 'field.generic-image')]
@@ -592,9 +608,7 @@ class Form extends React.Component<Props> {
           <Image
             resizeMode="contain"
             style={{ width: 200, height: 200 }}
-            source={{
-              uri: this.state.files[_.get(obj, 'field.generic-image')],
-            }}
+            source={{ uri: imageUri }}
           />
         )
       }
@@ -616,22 +630,16 @@ class Form extends React.Component<Props> {
             onPress={() =>
               this.props.navigation.navigate('Body', {
                 baseImage: this.state.files[_.get(obj, 'field.generic-image')],
-                /* TODO All of this is a placeholder */
-                enterData: (dataImage, lines, text) => {
-                  const value = this.formGetPath(valuePath)
-                  if (this.formGetPath(valuePath)) {
-                    this.formSetPath(valuePath, {
-                      image: dataImage,
-                      annotations: { [lines]: text },
-                    })
-                  } else {
-                    this.formSetPath(valuePath, {
-                      image: dataImage,
-                      annotations: (_.clone(value.annotations)[lines] = text),
-                    })
-                  }
+                enterData: (dataImage, annotations) => {
+                  // if (annotations.length === 0) {
+                  //     this.formSetPath(valuePath, "");
+                  //     return;
+                  // }
+                  this.formSetPath(valuePath, {
+                    image: dataImage,
+                    annotations,
+                  })
                 },
-                cancel: () => this.formSetPath(valuePath, ''),
               })
             }
           />

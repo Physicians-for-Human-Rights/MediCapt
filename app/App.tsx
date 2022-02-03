@@ -20,7 +20,6 @@ import FormOverviewScreen from './src/screens/FormOverview'
 import SelectFormScreen from './src/screens/SelectForm'
 import HomeScreen from './src/screens/Home'
 import BodyScreen from './src/screens/Body'
-import BodyDetailsScreen from './src/screens/BodyDetails'
 
 import theme from 'theme'
 
@@ -50,7 +49,6 @@ const AppContainer = createAppContainer(
     {
       Home: HomeScreen,
       Body: BodyScreen,
-      BodyDetails: BodyDetailsScreen,
       Other: OtherScreen,
       FormOverview: FormOverviewScreen,
       SelectForm: SelectFormScreen,
