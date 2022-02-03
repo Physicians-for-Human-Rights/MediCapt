@@ -83,7 +83,7 @@ export default StyleSheet.create({
     borderWidth: 1,
   },
   welcomeText: {
-    fontSize: scale(22),
+    fontSize: scale(18),
   },
   syncText: {
     fontSize: scale(15),

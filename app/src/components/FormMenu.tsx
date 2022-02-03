@@ -33,8 +33,6 @@ import SideMenu from 'react-native-side-menu'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import DateTimePicker from './DateTimePicker'
 
-import ExpoPixi from 'expo-pixi'
-
 import _ from 'lodash'
 
 function plainToFlattenObject(object) {

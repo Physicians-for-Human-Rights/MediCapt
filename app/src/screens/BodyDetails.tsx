@@ -1,5 +1,4 @@
 import Expo from 'expo'
-import * as ExpoPixi from 'expo-pixi'
 import React, { Component } from 'react'
 import { Platform, AppState, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-navigation'
