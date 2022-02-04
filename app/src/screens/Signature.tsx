@@ -4,15 +4,15 @@ import { Header } from 'react-native-elements'
 import styles_ from 'styles'
 import SignatureComponent from 'components/Signature'
 
-const Signature = props => {
+const Signature = ({ navigation }) => {
   const onCancel = () => {
-    props.navigation.state.params.cancelSignature()
-    props.navigation.goBack()
+    navigation.state.params.cancelSignature()
+    navigation.goBack()
   }
 
   const onSubmit = (signature: string) => {
-    props.navigation.state.params.signed(signature)
-    props.navigation.goBack()
+    navigation.state.params.signed(signature)
+    navigation.goBack()
   }
 
   return (
@@ -30,11 +30,6 @@ const Signature = props => {
     </View>
   )
 }
-
-Signature['navigationOptions'] = screenProps => ({
-  title: 'Sign anywhere below',
-  header: null,
-})
 
 const styles = StyleSheet.create({
   headerContainer: {

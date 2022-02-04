@@ -16,6 +16,9 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  wideContainer: { flex: 10, backgroundColor: '#fff' },
+  bottomSpace: { marginBottom: 10 },
+  noTopBottomBorders: { borderTopWidth: 0, borderBottomWidth: 0 },
   logo: {
     height: 100,
     width: 180,
@@ -87,5 +90,14 @@ export default StyleSheet.create({
   },
   syncText: {
     fontSize: scale(15),
+  },
+  hugeTextInput: {
+    width: '100%',
+    height: 40,
+    maxHeight: 40000 /* TODO This limits the entry to ~1000 lines or so */,
+    borderColor: 'gray',
+    borderBottomWidth: 1,
+    borderRadius: 5,
+    backgroundColor: '#F5F5F5',
   },
 })

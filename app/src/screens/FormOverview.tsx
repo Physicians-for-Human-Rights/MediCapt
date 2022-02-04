@@ -1,6 +1,6 @@
 import React from 'react'
 import { Text } from 'react-native'
-import { SafeAreaView } from 'react-navigation'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import styles from 'styles'
 
 const FormOverview = () => {
@@ -9,10 +9,6 @@ const FormOverview = () => {
       <Text>Woof</Text>
     </SafeAreaView>
   )
-}
-
-FormOverview.navigationOptions = {
-  title: 'Lots of features here',
 }
 
 export default FormOverview

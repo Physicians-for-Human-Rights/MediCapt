@@ -1,14 +1,17 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Text, View, TouchableOpacity } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { SafeAreaView } from 'react-navigation'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { Header, ListItem, ButtonGroup } from 'react-native-elements'
 import * as Localization from 'expo-localization'
 import { connect } from 'react-redux'
 import { formSetId } from 'redux/actions'
 import styles from 'styles'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
 
-const formList = require('../../assets/forms/forms.json')
+import { FormInfos } from 'utils/forms'
+
+const formList: FormInfos = require('../../assets/forms/forms.json')
 const countries = require('../../assets/countries.json')
 const handled_countries = Object.keys(formList)
 const countries_button_labels = handled_countries.map(country => {
@@ -23,93 +26,77 @@ function guessCountry() {
   }
 }
 
-class SelectForm extends React.Component {
-  static navigationOptions = {
-    title: 'Forms by country',
-    header: null,
-  }
+type Props = NativeStackScreenProps
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      loaded: false,
-      country: null,
-    }
-  }
+export default function SelectForm({ navigation }: Props) {
+  const [loaded, setLoaded] = useState(null)
+  const [country, setCountry] = useState(null)
+  const [formId, setFormId] = useState(null)
 
-  _loadInitialState = async () => {
-    try {
+  useEffect(() => {
+    async function fn() {
       let country = await AsyncStorage.getItem('last-used-country')
-      this.setState({
-        loaded: true,
-        country: country ? country : guessCountry(),
+      setCountry(country ? country : guessCountry())
+      setLoaded(true)
+    }
+    fn()
+  }, [])
+
+  if (!loaded) {
+    return (
+      <SafeAreaView forceInset={{ top: 'always' }} style={styles.container}>
+        <Text>Loading...</Text>
+      </SafeAreaView>
+    )
+  } else {
+    let listOfForms = []
+    if (formList[country]) {
+      listOfForms = formList[country].map((formInfo, i) => {
+        return (
+          <ListItem
+            key={i}
+            Component={TouchableOpacity}
+            onPress={() => navigation.navigate('Form', { formInfo })}
+          >
+            <ListItem.Title>{formInfo.name}</ListItem.Title>
+            <ListItem.Subtitle>{formInfo.subtitle}</ListItem.Subtitle>
+            <ListItem.Chevron color="black" />
+          </ListItem>
+        )
       })
-    } catch (error) {
-      this.setState({ loaded: true, country: guessCountry() })
-    }
-  }
-
-  async componentDidMount() {
-    await this._loadInitialState()
-  }
-
-  render() {
-    if (!this.state.loaded) {
-      return (
-        <SafeAreaView forceInset={{ top: 'always' }} style={styles.container}>
-          <Text>Loading...</Text>
-        </SafeAreaView>
-      )
     } else {
-      let listOfForms = []
-      if (formList[this.state.country]) {
-        listOfForms = formList[this.state.country].map((e, i) => {
-          return (
-            <ListItem
-              key={i}
-              Component={TouchableOpacity}
-              onPress={() => {
-                this.props.formSetId(e)
-                this.props.navigation.navigate('Form')
-              }}
-            >
-              <ListItem.Title>{e.name}</ListItem.Title>
-              <ListItem.Subtitle>{e.subtitle}</ListItem.Subtitle>
-              <ListItem.Chevron color="black" />
-            </ListItem>
-          )
-        })
-      } else {
-        listOfForms = [<Text> No form avilable for this country. </Text>]
-      }
-      return (
-        <View style={styles.container}>
-          <Header
-            centerComponent={{
-              text: 'Select a form',
-              style: { color: '#fff' },
-            }}
-            containerStyle={{
-              backgroundColor: '#d5001c',
-              justifyContent: 'space-around',
-              width: '100%',
-            }}
-          />
-          <View style={{ flex: 0.1, width: '80%' }}></View>
-          <View style={{ flex: 0.5, width: '80%' }}>
-            <ButtonGroup
-              onPress={idx =>
-                this.setState({ country: handled_countries[idx] })
-              }
-              selectedIndex={handled_countries.indexOf(this.state.country)}
-              buttons={countries_button_labels}
-            />
-          </View>
-          <View style={{ flex: 3.5, width: '80%' }}>{listOfForms}</View>
-        </View>
-      )
+      listOfForms = [
+        <ListItem key={-1}>
+          <Text> No form avilable for this country. </Text>
+        </ListItem>,
+      ]
     }
+    return (
+      <View style={styles.container}>
+        <Header
+          centerComponent={{
+            text: 'Select a form',
+            style: { color: '#fff' },
+          }}
+          containerStyle={{
+            backgroundColor: '#d5001c',
+            justifyContent: 'space-around',
+            width: '100%',
+          }}
+        />
+        <View style={{ flex: 0.1, width: '80%' }}></View>
+        <View style={{ flex: 0.5, width: '80%' }}>
+          <ButtonGroup
+            onPress={idx => {
+              setCountry(handled_countries[idx])
+              AsyncStorage.setItem('last-used-country', handled_countries[idx])
+            }}
+            selectedIndex={handled_countries.indexOf(country)}
+            buttons={countries_button_labels}
+          />
+        </View>
+        <View style={{ flex: 3.5, width: '80%' }}>{listOfForms}</View>
+      </View>
+    )
   }
 }
-
-export default connect(null, { formSetId })(SelectForm)

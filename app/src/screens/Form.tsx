@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import {
   Text,
   TextInput,
@@ -10,12 +10,7 @@ import {
   Platform,
   ImageBackground,
 } from 'react-native'
-import {
-  createSwitchNavigator,
-  createAppContainer,
-  SafeAreaView,
-} from 'react-navigation'
-import { NavigationStackScreenProps } from 'react-navigation-stack'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import {
   Icon,
   Button,
@@ -32,7 +27,6 @@ import { Asset } from 'expo-asset'
 import * as FileSystem from 'expo-file-system'
 import { connect } from 'react-redux'
 
-import { formSetPath } from 'redux/actions'
 import yaml from 'js-yaml'
 import styles from 'styles'
 import allForms from 'allForms'
@@ -40,798 +34,162 @@ import Menu from 'components/FormMenu'
 import Top from 'components/FormTop'
 import Bottom from 'components/FormBottom'
 
+import { FormInfo, loadForm } from 'utils/forms'
+import renderFnsWrapper from 'utils/formRendering'
+
 import { mapSectionWithPaths, readImage, isSectionComplete } from 'utils/forms'
 
-type Props = NavigationStackScreenProps
+type Props = NativeStackScreenProps
 
-// This keeps track of any paths which have been updated and need to
-// be redrawn. It is automatically cleared by CardView when the
-// relevant components are redraw. CardView understands that
-// forms can be nested and redraws only the part of the hierarchy that
-// was affected by a formValue updated. Anything put into CardView is
-// must be a form element and the only relevant values must be
-// paths in the form itself.
-var changedSinceLastRender = []
-
-// Some components must take over the screen. We allow these to rerender
-// until they say they are done. Clearing this must be done manually.
-// CardView will rerender this component until the flag is cleared.
-// As with changedSinceLastRender this should only be used
-// for form components and they should only depend on values
-// present as formPaths.
-var hasVisibleModal = []
-
-class CardWrap extends React.Component {
-  shouldComponentUpdate(nextProps, nextState) {
-    const formPath = this.props.formPath
-    if (
-      nextProps.formPath === this.props.formPath &&
-      !_.some(changedSinceLastRender, vp => vp.startsWith(formPath)) &&
-      !_.some(hasVisibleModal, vp => vp.startsWith(formPath))
-    ) {
-      return false
-    } else {
-      return true
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    const formPath = this.props.formPath
-    _.remove(changedSinceLastRender, vp => vp.startsWith(formPath))
-  }
-
-  render() {
-    return (
-      <Card key={this.props.index}>
-        <Card.Title>{this.props.title}</Card.Title>
-        {this.props.description}
-        {this.props.inner}
-        {this.props.subparts}
-      </Card>
-    )
-  }
+function formGetPath(
+  formPaths: Record<string, any>,
+  valuePath: string,
+  default_: any = null
+) {
+  return formPaths[valuePath] ? formPaths[valuePath].value : default_
 }
 
-class Form extends React.Component<Props> {
-  static navigationOptions = {
-    title: 'Lots of features here',
-    header: null,
-  }
+function formSetPath(
+  formPaths: Record<string, any>,
+  setFormPaths,
+  valuePath,
+  value
+) {
+  // TODO There was caching here once upon a time, if we don't do it anymore,
+  // remove this function
+  setFormPath(formPaths, setFormPaths, valuePath, value)
+}
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      files: null,
-      form: null,
-      formSections: null,
-      currentSection: 0,
-      sectionChanged: false,
-      // NB Recomputing this each update introduces noticeable lag.
-      sectionCompletionStatusCache: [],
+function setFormPath(
+  formPaths: Record<string, any>,
+  setFormPaths: React.Dispatch<React.SetStateAction<Record<string, any>>>,
+  path: string,
+  value: any
+) {
+  setFormPaths({
+    ...formPaths,
+    [path]: {
+      value: value,
+    },
+  })
+}
+
+export default function Form({ route, navigation }: Props) {
+  const { formInfo }: { formInfo: FormInfo } = route.params
+
+  const [loadedForm, setLoadedForm] = useState({
+    files: null,
+    form: null,
+    formSections: null,
+    // NB Recomputing this each update introduces noticeable lag.
+    sectionCompletionStatusCache: [],
+  })
+  const { formSections } = loadedForm
+
+  const [currentSection, setCurrentSection] = useState(0)
+  const [formPaths, setFormPaths] = useState({} as Record<string, any>)
+
+  // This is state about the current properties of widgets, like if a date-time
+  // picker is open or not.
+  const [dynamicState, setDynamicState] = useState({})
+
+  const sideMenu = useRef(null)
+  const scrollView = useRef(null)
+
+  useEffect(() => {
+    async function fn() {
+      const l = await loadForm(formInfo)
+      setLoadedForm(l)
     }
-  }
+    fn()
+  }, [])
 
-  _loadForm = async () => {
-    // TODO Error handling
-    let files = _.fromPairs(
-      await Promise.all(
-        _.toPairs(allForms[this.props.formId.path]).map(async p => {
-          const filename = p[0]
-          let f = Asset.fromModule(p[1])
-          await f.downloadAsync()
-          let content = null
-          switch (filename.split('.').pop()) {
-            case 'yaml':
-              if (Platform.OS == 'web') {
-                content = await fetch(f.localUri)
-                content = await content.text()
-              } else {
-                content = await FileSystem.readAsStringAsync(f.localUri)
-              }
-              break
-            case 'svg':
-              content = await readImage(
-                f.localUri,
-                'data:image/svg+xml;base64,'
-              )
-              // TODO Error handling
-              console.error(
-                "SVG Support was removed because it doesn't work well on Android"
-              )
-              break
-            case 'png':
-              content = await readImage(f.localUri, 'data:image/png;base64,')
-              break
-            case 'jpg':
-              content = await readImage(f.localUri, 'data:image/jpg;base64,')
-              break
-            default:
-              // TODO Error handling
-              console.error(
-                'Trying to read unknown file type',
-                filename,
-                f.localUri
-              )
-              content = await FileSystem.readAsStringAsync(f.localUri, {
-                encoding: FileSystem.EncodingType.Base64,
-              })
-          }
-          return [filename, content]
-        })
-      )
-    )
-    let form = yaml.load(files['form.yaml'])
-    let formSections = form.root.map(e => {
-      return {
-        name: Object.keys(e)[0],
-        title: e[Object.keys(e)[0]].title,
-        content: e[Object.keys(e)[0]],
-      }
-    })
-    this.setState({
-      files: files,
-      form: form,
-      formSections: formSections,
-      sectionCompletionStatusCache: formSections.map(() => false),
-    })
-  }
+  const renderFns = renderFnsWrapper(
+    dynamicState,
+    newState => setDynamicState(prevState => ({ ...prevState, ...newState })),
+    loadedForm,
+    navigator,
+    formPaths,
+    (value, default_) => formGetPath(formPaths, value, default_),
+    (valuePath, value) => formSetPath(formPaths, setFormPaths, valuePath, value)
+  )
 
-  async componentDidMount() {
-    await this._loadForm()
-  }
+  const setSectionOffset = useCallback(
+    (offset: number) => setCurrentSection(currentSection + offset),
+    [currentSection]
+  )
 
-  formGetPath(valuePath, default_ = null) {
-    return this.props.formPaths[valuePath]
-      ? this.props.formPaths[valuePath].value
-      : default_
-  }
-
-  formSetPath(valuePath, value) {
-    changedSinceLastRender.push(valuePath)
-    this.props.formSetPath(valuePath, value)
-    let current_section = this.state.formSections[this.state.currentSection]
-    let is_complete = isSectionComplete(current_section, path =>
-      // TODO This is pretty obscene.
-      // Clearly it's the wrongs solution.
-      path == valuePath ? value : this.formGetPath(path)
-    )
-    if (
-      this.state.sectionCompletionStatusCache[this.state.currentSection] !==
-      is_complete
-    ) {
-      this.setState(state => {
-        let newCache = _.clone(this.state.sectionCompletionStatusCache)
-        newCache[this.state.currentSection] = is_complete
-        return { sectionCompletionStatusCache: newCache }
-      })
-    }
-  }
-
-  renderFns = {
-    pre: () => {
-      return null
-    },
-    post: (entry, obj, index, formPath, pre, inner, subparts) => {
-      var title = null
-      var description = null
-      if (_.has(obj, 'title')) {
-        title = _.get(obj, 'title')
-      }
-      if (_.has(obj, 'description')) {
-        description = (
-          <Text style={{ marginBottom: 10 }}>{_.get(obj, 'description')}</Text>
-        )
-      }
-      if (_.has(obj, 'text')) {
-        description = (
-          <Text style={{ marginBottom: 10 }}>{_.get(obj, 'text')}</Text>
-        )
-      }
-      return (
-        <CardWrap
-          key={index}
-          title={title}
-          needsUpdate={true}
-          formPath={formPath}
-          description={description}
-          inner={inner}
-          subparts={subparts}
-        />
-      )
-    },
-    _combineParts: (entry, obj, index, inner, formPath, subparts) => {
-      return <View>{subparts}</View>
-    },
-    selectMultiple: (entry, obj, index, formPath, valuePaths, otherPath) => {
-      if (_.get(obj, 'field.select-multiple')) {
-        let items = _.get(obj, 'field.list-options').map((e, i) => {
-          let valuePath = valuePaths[i]
-          let fn = () => {
-            if (this.formGetPath(valuePath)) {
-              this.formSetPath(valuePath, false)
-            } else {
-              this.formSetPath(valuePath, true)
-            }
-          }
-          return (
-            <ListItem
-              key={i}
-              Component={TouchableOpacity}
-              onPress={fn}
-              containerStyle={{ borderTopWidth: 0, borderBottomWidth: 0 }}
-            >
-              <ListItem.CheckBox
-                checked={this.formGetPath(valuePath)}
-                onPress={fn}
-              />
-              <ListItem.Title>{_.upperFirst(e)}</ListItem.Title>
-            </ListItem>
-          )
-        })
-        if (_.get(obj, 'field.other')) {
-          let fn = () => {
-            if (this.formGetPath(otherPath)) {
-              this.formSetPath(otherPath, null)
-            } else {
-              this.formSetPath(otherPath, '')
-            }
-          }
-          items.push(
-            <ListItem
-              Component={TouchableOpacity}
-              key={items.length}
-              title={'Other'}
-              checkBox={{
-                checked: this.formGetPath(otherPath) != null,
-                onPress: fn,
-              }}
-              onPress={fn}
-              containerStyle={{ borderTopWidth: 0, borderBottomWidth: 0 }}
-            />
-          )
-        }
-        if (this.formGetPath(otherPath) != null) {
-          items.push(
-            <TextInput
-              key={items.length}
-              style={{
-                width: '100%',
-                height: 40,
-                maxHeight: 40000 /* TODO This limits the entry to ~1000 lines or so */,
-                borderColor: 'gray',
-                borderBottomWidth: 1,
-                borderRadius: 5,
-                backgroundColor: '#F5F5F5',
-              }}
-              placeholder={'Specify other'}
-              textAlign={'left'}
-              editable={true}
-              multiline={true}
-              numberOfLines={5}
-              onChangeText={text => this.formSetPath(otherPath, text)}
-              value={this.formGetPath(otherPath, '')}
-            />
-          )
-        }
-        return <View>{items}</View>
-      } else {
-        // TODO Error handling
-        console.error(
-          'UNSUPPORTED FIELD TYPE LIST WITHOUT SELECT MUTLIPLE',
-          obj
-        )
-        return null
-      }
-    },
-    signature: (entry, obj, index, formPath, valuePath) => {
-      let icon = null
-      let title = null
-      let buttonStyle = {}
-      let image = null
-      if (this.formGetPath(valuePath)) {
-        title = ' Replace signature'
-        image = (
-          <Image
-            resizeMode="contain"
-            style={{ width: 200, height: 200 }}
-            source={{ uri: this.formGetPath(valuePath) }}
-          />
-        )
-      } else {
-        title = ' Sign here'
-        icon = <Icon name="edit" size={15} color="white" />
-        buttonStyle = { backgroundColor: 'red' }
-      }
-      return (
-        <View>
-          {image}
-          <Button
-            icon={icon}
-            title={title}
-            buttonStyle={buttonStyle}
-            onPress={() =>
-              this.props.navigation.navigate('Signature', {
-                signed: dataImage => this.formSetPath(valuePath, dataImage),
-                cancelSignature: () => this.formSetPath(valuePath, ''),
-              })
-            }
-          />
-        </View>
-      )
-    },
-    'body-image': (entry, obj, index, formPath, valuePath) => {
-      let title = null
-      let image = null
-      let icon = null
-      let buttonStyle = {}
-      const value = this.formGetPath(valuePath)
-      if (value) {
-        title = ' Restart diagram'
-        image = (
-          <ImageBackground
-            imageStyle={{ resizeMode: 'contain' }}
-            style={{ width: 200, height: 200 }}
-            source={{ uri: this.formGetPath(valuePath).image }}
-          >
-            {value.annotations.map((annotation, idx) => (
-              <View
-                key={idx}
-                style={{
-                  position: 'absolute',
-                  backgroundColor: 'black',
-                  height: 5,
-                  width: 5,
-                  top: annotation.markerCoordinates.y * 200,
-                  left: annotation.markerCoordinates.x * 200,
-                }}
-              />
-            ))}
-          </ImageBackground>
-        )
-      } else {
-        title = ' Mark and annotate'
-        icon = <Icon name="edit" size={15} color="white" />
-        buttonStyle = { backgroundColor: '#d5001c' }
-        let imageUri = this.state.files[_.get(obj, 'field.generic-image')]
-        image = (
-          <Image
-            resizeMode="contain"
-            style={{ width: 200, height: 200 }}
-            source={{ uri: imageUri }}
-          />
-        )
-      }
-      return (
-        <View>
-          <View
-            style={{
-              justifyContent: 'center',
-              flexDirection: 'row',
-              marginBottom: 10,
-            }}
-          >
-            {image}
-          </View>
-          <Button
-            icon={icon}
-            title={title}
-            buttonStyle={buttonStyle}
-            onPress={() =>
-              this.props.navigation.navigate('Body', {
-                baseImage: this.state.files[_.get(obj, 'field.generic-image')],
-                enterData: (dataImage, annotations) => {
-                  // if (annotations.length === 0) {
-                  //     this.formSetPath(valuePath, "");
-                  //     return;
-                  // }
-                  this.formSetPath(valuePath, {
-                    image: dataImage,
-                    annotations,
-                  })
-                },
-              })
-            }
-          />
-        </View>
-      )
-    },
-    bool: (entry, obj, index, formPath, valuePath) => {
-      let selected = this.props.formPaths[valuePath]
-        ? this.props.formPaths[valuePath].value
-          ? 0
-          : 1
-        : null
-      return (
-        <ButtonGroup
-          selectedIndex={selected}
-          onPress={i => this.formSetPath(valuePath, i == 0)}
-          buttons={['Yes', 'No']}
-        />
-      )
-    },
-    gender: (entry, obj, index, formPath, valuePath) => {
-      let options = _.find(this.state.form.values, o => 'gender' == o.key)
-      if (options) {
-        options = options.value
-      } else {
-        // TODO This is a conservative approach if no gender key is specified
-        // Do we want something else?
-        options = [
-          { key: 'male', value: 'Male' },
-          { key: 'female', value: 'Female' },
-        ]
-      }
-      let selected = this.props.formPaths[valuePath]
-        ? _.indexOf(
-            _.map(options, x => x.key),
-            this.props.formPaths[valuePath].value
-          )
-        : null
-      return (
-        <ButtonGroup
-          selectedIndex={selected}
-          onPress={i =>
-            this.formSetPath(valuePath, _.map(options, x => x.key)[i])
-          }
-          buttons={_.map(options, x => x.value)}
-        />
-      )
-    },
-    text: (entry, obj, index, formPath, valuePath) => {
-      return (
-        <TextInput
-          style={{
-            width: '100%',
-            height: 40,
-            borderColor: 'gray',
-            borderBottomWidth: 1,
-            borderRadius: 5,
-            backgroundColor: '#F5F5F5',
-          }}
-          placeholder={_.get(obj, 'field.placeholder')}
-          textAlign={'center'}
-          editable={true}
-          onChangeText={text => this.formSetPath(valuePath, text)}
-          value={this.formGetPath(valuePath, '')}
-        />
-      )
-    },
-    'long-text': (entry, obj, index, formPath, valuePath) => {
-      return (
-        <TextInput
-          style={{
-            width: '100%',
-            minHeight: 40,
-            maxHeight: 40000 /* TODO This limits the entry to ~1000 lines or so */,
-            borderColor: 'gray',
-            borderBottomWidth: 1,
-            borderRadius: 5,
-            backgroundColor: '#F5F5F5',
-          }}
-          placeholder={_.get(obj, 'field.placeholder')}
-          textAlign={'left'}
-          editable={true}
-          multiline={true}
-          numberOfLines={5}
-          onChangeText={text => this.formSetPath(valuePath, text)}
-          value={this.formGetPath(valuePath, '')}
-        />
-      )
-    },
-    number: (entry, obj, index, formPath, valuePath) => {
-      return (
-        <TextInput
-          style={{
-            width: '100%',
-            height: 40,
-            borderColor: 'gray',
-            borderBottomWidth: 1,
-            borderRadius: 5,
-            backgroundColor: '#F5F5F5',
-          }}
-          keyboardType={'numeric'}
-          textAlign={'center'}
-          editable={true}
-          placeholder={_.get(obj, 'field.placeholder')}
-          onChangeText={text => this.formSetPath(valuePath, text)}
-          value={this.formGetPath(valuePath, '')}
-        />
-      )
-    },
-    address: (entry, obj, index, formPath, valuePath) => {
-      return (
-        <TextInput
-          style={{
-            width: '100%',
-            height: 40,
-            borderColor: 'gray',
-            borderBottomWidth: 1,
-            borderRadius: 5,
-            backgroundColor: '#F5F5F5',
-          }}
-          textContentType={'fullStreetAddress'}
-          keyboardType={'default'}
-          textAlign={'center'}
-          editable={true}
-          placeholder={_.get(obj, 'field.placeholder')}
-          onChangeText={text => this.formSetPath(valuePath, text)}
-          value={this.formGetPath(valuePath, '')}
-        />
-      )
-    },
-    'phone-number': (entry, obj, index, formPath, valuePath) => {
-      return (
-        <TextInput
-          style={{
-            width: '100%',
-            height: 40,
-            borderColor: 'gray',
-            borderBottomWidth: 1,
-            borderRadius: 5,
-            backgroundColor: '#F5F5F5',
-          }}
-          textContentType={'telephoneNumber'}
-          keyboardType={'phone-pad'}
-          textAlign={'center'}
-          editable={true}
-          placeholder={_.get(obj, 'field.placeholder')}
-          onChangeText={text => this.formSetPath(valuePath, text)}
-          value={this.formGetPath(valuePath, '')}
-        />
-      )
-    },
-    date: (entry, obj, index, formPath, valuePath) => {
-      const current_value = this.formGetPath(valuePath)
-      let buttonStyle = {}
-      if (!current_value) {
-        buttonStyle = { backgroundColor: '#d5001c' }
-      }
-      if (Platform.OS == 'web') {
-        return (
-          <DateTimePicker
-            clearIcon={null}
-            value={current_value}
-            onChange={date => {
-              this.formSetPath(valuePath, date)
-            }}
-            disableClock={true}
-            onCancel={() => {
-              this.setState({
-                ['isVisible_dateTime_' + valuePath]: false,
-              })
-              _.pull(hasVisibleModal, valuePath)
-            }}
-          />
-        )
-      } else {
-        let picker = (
-          <DateTimePicker
-            isVisible={this.state['isVisible_dateTime_' + valuePath]}
-            value={current_value}
-            mode="date"
-            onConfirm={date => {
-              this.formSetPath(valuePath, date)
-              this.setState({
-                ['isVisible_dateTime_' + valuePath]: false,
-              })
-              _.pull(hasVisibleModal, valuePath)
-            }}
-            onCancel={() => {
-              this.setState({
-                ['isVisible_dateTime_' + valuePath]: false,
-              })
-              _.pull(hasVisibleModal, valuePath)
-            }}
-          />
-        )
-        return (
-          <>
-            <Button
-              title={
-                current_value
-                  ? current_value.toLocaleDateString()
-                  : 'Choose date'
-              }
-              buttonStyle={buttonStyle}
-              onPress={() => {
-                hasVisibleModal.push(valuePath)
-                this.setState({ ['isVisible_dateTime_' + valuePath]: true })
-              }}
-            />
-            {this.state['isVisible_dateTime_' + valuePath] ? picker : null}
-          </>
-        )
-      }
-    },
-    'date-time': (entry, obj, index, formPath, valuePath) => {
-      const current_value = this.formGetPath(valuePath)
-      let buttonStyle = {}
-      if (!current_value) {
-        buttonStyle = { backgroundColor: '#d5001c' }
-      }
-      if (Platform.OS == 'web') {
-        return (
-          <DateTimePicker
-            clearIcon={null}
-            value={current_value}
-            onChange={date => {
-              this.formSetPath(valuePath, date)
-            }}
-            onCancel={() => {
-              this.setState({
-                ['isVisible_dateTime_' + valuePath]: false,
-              })
-              _.pull(hasVisibleModal, valuePath)
-            }}
-          />
-        )
-      } else {
-        let picker = (
-          <DateTimePicker
-            isVisible={this.state['isVisible_dateTime_' + valuePath]}
-            value={current_value}
-            onConfirm={date => {
-              this.formSetPath(valuePath, date)
-              this.setState({
-                ['isVisible_dateTime_' + valuePath]: false,
-              })
-              _.pull(hasVisibleModal, valuePath)
-            }}
-            mode="datetime"
-            onCancel={() => {
-              this.setState({
-                ['isVisible_dateTime_' + valuePath]: false,
-              })
-              _.pull(hasVisibleModal, valuePath)
-            }}
-          />
-        )
-        return (
-          <>
-            <Button
-              title={
-                current_value
-                  ? current_value.toLocaleString()
-                  : 'Choose date and time'
-              }
-              buttonStyle={buttonStyle}
-              onPress={() => {
-                hasVisibleModal.push(valuePath)
-                this.setState({ ['isVisible_dateTime_' + valuePath]: true })
-              }}
-            />
-            {this.state['isVisible_dateTime_' + valuePath] ? picker : null}
-          </>
-        )
-      }
-    },
-    'list-with-labels': (entry, obj, index, formPath, valuePath) => {
-      let options = _.get(obj, 'field.list-options')
-      const ref = _.get(obj, 'field.list-options.Ref')
-      if (ref) {
-        // TODO Error handling
-        options = _.find(this.state.form.values, o => ref == o.key).value
-      }
-      let items = options.map((e, i) => {
-        return (
-          <Picker.Item
-            key={i}
-            label={e.key + ' (' + e.value + ')'}
-            value={e.value}
-          />
-        )
-      })
-      const current_value = this.formGetPath(valuePath)
-      if (!current_value) {
-        items = [
-          <Picker.Item key={-1} label="Select a value" value={null} />,
-        ].concat(items)
-      }
-      return (
-        <Picker
-          prompt={_.get(obj, 'title')}
-          selectedValue={current_value == null ? -1 : current_value}
-          style={{ height: 50, width: '100%' }}
-          onValueChange={(itemValue, itemIndex) => {
-            if (itemValue != null) {
-              this.formSetPath(valuePath, itemValue)
-            }
-          }}
-        >
-          {items}
-        </Picker>
-      )
-    },
-  }
-
-  menuChangeSection = i => {
-    this.setState({ currentSection: i })
-    this.scrollView.scrollTo({ x: 0, y: 0, animated: true })
-  }
-
-  sectionOffset = o => {
-    this.setState({
-      sectionChanged: true,
-      currentSection: this.state.currentSection + o,
-    })
-  }
-
-  openSideMenu = () => {
+  const openSideMenu = useCallback(() => {
     Keyboard.dismiss()
-    this.sideMenu.openMenu(true)
-  }
+    sideMenu.current.openMenu(true)
+  }, [sideMenu.current])
 
-  render() {
-    let sectionContent = []
-    if (this.state.formSections) {
-      let current_section = this.state.formSections[this.state.currentSection]
-      sectionContent = mapSectionWithPaths(
-        current_section,
-        path => this.formGetPath(path),
-        this.renderFns
-      )
-    }
-    let top = null
-    let bottom = null
-    if (this.state.formSections) {
-      top = (
-        <Top
-          sectionOffset={this.sectionOffset}
-          currentSection={this.state.currentSection}
-          openSideMenu={this.openSideMenu}
-          title={this.state.formSections[this.state.currentSection].title}
-          lastSection={this.state.formSections.length - 1}
-          isSectionCompleted={
-            this.state.sectionCompletionStatusCache[this.state.currentSection]
-          }
-        />
-      )
-      bottom = (
-        <Bottom
-          sectionOffset={this.sectionOffset}
-          currentSection={this.state.currentSection}
-          openSideMenu={this.openSideMenu}
-          title={this.state.formSections[this.state.currentSection].title}
-          lastSection={this.state.formSections.length - 1}
-          isSectionCompleted={
-            this.state.sectionCompletionStatusCache[this.state.currentSection]
-          }
-        />
-      )
-    }
-    return (
-      <View style={styles.container}>
-        <SideMenu
-          ref={ref => (this.sideMenu = ref)}
-          menu={
-            <Menu
-              navigator={navigator}
-              formSections={this.state.formSections}
-              changeSection={this.menuChangeSection}
-              isSectionComplete={this.state.sectionCompletionStatusCache}
-            />
-          }
-        >
-          {top}
-          <ScrollView
-            ref={ref => (this.scrollView = ref)}
-            style={{ flex: 10, backgroundColor: '#fff' }}
-            keyboardDismissMode="on-drag"
-            accessible={false}
-            keyboardShouldPersistTaps="handled"
-          >
-            {sectionContent}
-            {bottom}
-          </ScrollView>
-        </SideMenu>
-      </View>
+  const menuChangeSection = useCallback(
+    i => {
+      setCurrentSection(i)
+      scrollView.current.scrollTo({ x: 0, y: 0, animated: true })
+    },
+    [currentSection, scrollView.current]
+  )
+
+  let sectionContent = []
+  if (formSections) {
+    const current_section_content = formSections[currentSection]
+    sectionContent = mapSectionWithPaths(
+      current_section_content,
+      (path: string) => formGetPath(formPaths, path),
+      renderFns
     )
   }
+  let top = null
+  let bottom = null
+  if (formSections) {
+    top = (
+      <Top
+        sectionOffset={setSectionOffset}
+        currentSection={currentSection}
+        openSideMenu={openSideMenu}
+        title={formSections[currentSection].title}
+        lastSection={formSections.length - 1}
+        isSectionCompleted={false} // TODO
+      />
+    )
+    bottom = (
+      <Bottom
+        sectionOffset={setSectionOffset}
+        currentSection={currentSection}
+        openSideMenu={openSideMenu}
+        title={formSections[currentSection].title}
+        lastSection={formSections.length - 1}
+        isSectionCompleted={false} // TODO
+      />
+    )
+  }
+  return (
+    <View style={styles.container}>
+      <SideMenu
+        ref={sideMenu}
+        menu={
+          <Menu
+            navigator={navigator}
+            formSections={formSections}
+            changeSection={menuChangeSection}
+            isSectionComplete={false} // TODO
+          />
+        }
+      >
+        {top}
+        <ScrollView
+          ref={scrollView}
+          style={styles.wideContainer}
+          keyboardDismissMode="on-drag"
+          accessible={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {sectionContent}
+          {bottom}
+        </ScrollView>
+      </SideMenu>
+    </View>
+  )
 }
-
-export default connect(
-  state => {
-    return { formId: state.form.formId, formPaths: state.form.formPaths }
-  },
-  { formSetPath }
-)(Form)

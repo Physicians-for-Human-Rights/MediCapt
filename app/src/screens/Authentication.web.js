@@ -86,18 +86,21 @@ export default function withAuthenticator(Component) {
   const AppWithAuthenticator: FunctionComponent<T> = props => {
     const [accountType, setAccountType] = useState(null)
     useMemo(async () => {
-      const r = await AsyncStorage.getItem('@last_account_selection')
-      reconfigureAmplifyForUserType(r)
+      let r = await AsyncStorage.getItem('@last_account_selection')
+      if (indexOf(UserTypeList, r) < 0) {
+        r = UserType.Provider
+      }
       setAccountType(indexOf(UserTypeList, r))
+      reconfigureAmplifyForUserType(r)
       return r
     }, [])
     useEffect(async () => {
       if (accountType !== null) {
+        reconfigureAmplifyForUserType(UserTypeList[accountType])
         await AsyncStorage.setItem(
           '@last_account_selection',
           UserTypeList[accountType]
         )
-        reconfigureAmplifyForUserType(UserTypeList[accountType])
       }
     })
 
@@ -109,12 +112,13 @@ export default function withAuthenticator(Component) {
       },
       Footer: Footer,
     }
+
     if (accountType === null || accountType === undefined) {
       return <></>
     } else {
       return (
         <Authenticator components={defaultComponents} variation={'modal'}>
-          {({ signOut, user }) => <Component />}
+          {({ signOut, user }) => <Component signOut={signOut} user={user} />}
         </Authenticator>
       )
     }

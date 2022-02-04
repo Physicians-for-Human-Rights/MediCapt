@@ -5,20 +5,20 @@ import styles_ from 'styles'
 import BodyMarker from 'components/BodyMarker'
 import Dialog from 'components/Dialog'
 
-const Body = props => {
+const Body = ({ navigation }) => {
   const [annotations, setAnnotations] = useState([])
   const [selectedMarker, setSelectedMarker] = useState(null)
 
   const onSubmit = async () => {
-    props.navigation.state.params.enterData(
-      props.navigation.state.params.baseImage,
+    navigation.state.params.enterData(
+      navigation.state.params.baseImage,
       annotations
     )
-    props.navigation.goBack()
+    navigation.goBack()
   }
 
   const onCancel = () => {
-    props.navigation.goBack()
+    navigation.goBack()
   }
 
   // callback for dialog to add finalized annotation with marker
@@ -41,7 +41,7 @@ const Body = props => {
       />
       <View style={styles.annotationContainer}>
         <BodyMarker
-          baseImage={props.navigation.state.params.baseImage}
+          baseImage={navigation.state.params.baseImage}
           confirmMarker={marker => setSelectedMarker(marker)}
           annotations={annotations}
         />
@@ -70,11 +70,6 @@ const Body = props => {
     </View>
   )
 }
-
-Body['navigationOptions'] = screenProps => ({
-  title: 'Mark and annotate diagram',
-  header: null,
-})
 
 const styles = StyleSheet.create({
   headerContainer: {
