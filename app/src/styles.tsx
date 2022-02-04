@@ -19,6 +19,10 @@ export default StyleSheet.create({
   wideContainer: { flex: 10, backgroundColor: '#fff' },
   bottomSpace: { marginBottom: 10 },
   noTopBottomBorders: { borderTopWidth: 0, borderBottomWidth: 0 },
+  topBorder: {
+    borderTopWidth: 1,
+    borderBottomWidth: 0,
+  },
   logo: {
     height: 100,
     width: 180,

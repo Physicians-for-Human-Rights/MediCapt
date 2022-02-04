@@ -6,7 +6,7 @@ import { Icon, Button } from 'react-native-elements'
 import { API, Auth } from 'aws-amplify'
 import medicapt_logo from '../../assets/medicapt.png'
 import phr_logo from '../../assets/phr.png'
-import styles from '../styles'
+import styles from 'styles'
 import isEmpty from 'lodash/isEmpty'
 
 import { useUser, useSignOut } from 'utils/store'

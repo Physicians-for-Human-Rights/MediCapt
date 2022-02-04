@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { useMap, usePrevious, useSet } from 'react-use'
+import useMap from 'react-use/lib/useMap'
+import usePrevious from 'react-use/lib/usePrevious'
+import useSet from 'react-use/lib/useSet'
 import { View, ScrollView, Keyboard } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import {
@@ -64,6 +66,13 @@ export default function Form({ route, navigation }: Props) {
     }
   }
 
+  const isSectionCompleteList = _.map(formSections, section =>
+    isSectionComplete(section, (value, default_) =>
+      formGetPath(formPaths, value, default_)
+    )
+  )
+  console.log(isSectionCompleteList)
+
   const sideMenu = useRef(null)
   const scrollView = useRef(null)
 
@@ -126,7 +135,7 @@ export default function Form({ route, navigation }: Props) {
         openSideMenu={openSideMenu}
         title={formSections[currentSection].title}
         lastSection={formSections.length - 1}
-        isSectionCompleted={false} // TODO
+        isSectionCompleted={isSectionCompleteList[currentSection]}
       />
     )
     bottom = (
@@ -136,7 +145,7 @@ export default function Form({ route, navigation }: Props) {
         openSideMenu={openSideMenu}
         title={formSections[currentSection].title}
         lastSection={formSections.length - 1}
-        isSectionCompleted={false} // TODO
+        isSectionCompleted={isSectionCompleteList[currentSection]}
       />
     )
   }
@@ -150,7 +159,7 @@ export default function Form({ route, navigation }: Props) {
             navigation={navigation}
             formSections={formSections}
             changeSection={menuChangeSection}
-            isSectionComplete={false} // TODO
+            isSectionCompleteList={isSectionCompleteList} // TODO
           />
         }
       >

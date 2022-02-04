@@ -22,21 +22,6 @@ import _ from 'lodash'
 import styles from 'styles'
 import CardWrap from 'components/CardWrap'
 
-const RerenderFieldAsNecessary = React.memo(
-  CardWrap,
-  (prevProps, nextProps) => {
-    return (
-      prevProps.title === nextProps.title &&
-      prevProps.formPath === nextProps.formPath &&
-      prevProps.rawDescription === nextProps.rawDescription &&
-      !_.some(nextProps.changedPaths, vp =>
-        vp.startsWith(nextProps.formPath)
-      ) &&
-      !_.some(nextProps.keepAlive, vp => vp.startsWith(nextProps.formPath))
-    )
-  }
-)
-
 /*
   Render all of the components of a form recursively. This function is applied
   to a section of a form with mapSectionWithPaths.
@@ -75,10 +60,9 @@ export default function renderFnsWrapper(
         description = <Text style={styles.bottomSpace}>{rawDescription}</Text>
       }
       return (
-        <RerenderFieldAsNecessary
+        <CardWrap
           key={index}
           title={title}
-          needsUpdate={true}
           formPath={formPath}
           description={description}
           rawDescription={rawDescription}

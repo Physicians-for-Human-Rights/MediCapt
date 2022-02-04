@@ -1,5 +1,4 @@
-import { registerRootComponent, Platform } from 'expo'
+import { registerRootComponent } from 'expo'
 import App from './src/App'
-import './styling'
 
 registerRootComponent(App)

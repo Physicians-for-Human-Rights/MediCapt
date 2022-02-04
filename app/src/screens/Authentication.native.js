@@ -142,30 +142,11 @@ function Header(accountType, setAccountType) {
   )
 }
 
-function Header2(accountType, setAccountType) {
-  return () => (
-    <View>
-      <View
-        style={{
-          justifyContent: 'space-around',
-          flex: 2,
-          flexDirection: 'row',
-        }}
-      >
-        <View style={{ flex: 1 }}>
-          <Image source={medicapt_logo} style={styles.logo} />
-        </View>
-        <View style={{ flex: 1 }}>
-          <Image source={phr_logo} style={styles.logo} />
-        </View>
-      </View>
-    </View>
-  )
-}
-
 export default function withAuthenticator(Component) {
   const AppWithAuthenticator = props => {
+    const [authState, setAuthState] = useState(null)
     const [accountType, setAccountType] = useState(null)
+    const [user, setUser] = useState(null)
     useMemo(async () => {
       const r = await AsyncStorage.getItem('@last_account_selection')
       reconfigureAmplifyForUserType(r)
@@ -181,13 +162,19 @@ export default function withAuthenticator(Component) {
         reconfigureAmplifyForUserType(UserTypeList[accountType])
       }
     })
+    useEffect(async () => {
+      if (authState == 'signedIn') {
+        setUser(await Auth.currentAuthenticatedUser())
+      } else {
+        setUser(null)
+      }
+    }, [authState])
     const WrappedHeader = Header(accountType, setAccountType)
-    const [authState, setAuthState] = useState(null)
     if (accountType === null || accountType === undefined) {
       return <></>
     } else {
       if (authState == 'signedIn') {
-        return <Component />
+        return <Component user={user} />
       } else {
         return (
           <>

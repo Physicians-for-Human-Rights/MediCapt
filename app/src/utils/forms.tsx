@@ -147,6 +147,8 @@ export function allFormValuePathsForSection(section, getValue) {
       allValuePaths.push(valuePath),
     address: (entry, obj, index, formPath, valuePath) =>
       allValuePaths.push(valuePath),
+    'body-image': (entry, obj, index, formPath, valuePath) =>
+      allValuePaths.push(valuePath),
     _combineParts: (entry, obj, index, inner, outer) => null,
     post: (entry, obj, index, formPath, pre, inner, subparts) => null,
   })
@@ -180,6 +182,8 @@ export function isSectionComplete(section, getValue) {
     'list-with-labels': (entry, obj, index, formPath, valuePath) =>
       (complete = complete && getValue(valuePath) != null),
     'phone-number': (entry, obj, index, formPath, valuePath) =>
+      (complete = complete && getValue(valuePath) != null),
+    'body-image': (entry, obj, index, formPath, valuePath) =>
       (complete = complete && getValue(valuePath) != null),
     address: (entry, obj, index, formPath, valuePath) =>
       (complete = complete && getValue(valuePath) != null),
