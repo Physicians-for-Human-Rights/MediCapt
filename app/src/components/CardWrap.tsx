@@ -1,5 +1,7 @@
 import { Card } from 'react-native-elements'
 
+/* Wraps every collection of elements in a Form. Can be nested */
+
 export default function CardWrap({
   index,
   title,

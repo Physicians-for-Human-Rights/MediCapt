@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import {
   Text,
   TextInput,
@@ -15,37 +15,45 @@ import {
   Button,
   ListItem,
   ButtonGroup,
-  Card,
   Image,
 } from 'react-native-elements'
-import SideMenu from 'react-native-side-menu'
 import DateTimePicker from 'components/DateTimePicker'
-
 import _ from 'lodash'
-import { Asset } from 'expo-asset'
-import * as FileSystem from 'expo-file-system'
-import { connect } from 'react-redux'
-
-import yaml from 'js-yaml'
 import styles from 'styles'
-import allForms from 'allForms'
-import Menu from 'components/FormMenu'
-import Top from 'components/FormTop'
-import Bottom from 'components/FormBottom'
 import CardWrap from 'components/CardWrap'
 
-import { mapSectionWithPaths, readImage, isSectionComplete } from 'utils/forms'
+const RerenderFieldAsNecessary = React.memo(
+  CardWrap,
+  (prevProps, nextProps) => {
+    return (
+      prevProps.title === nextProps.title &&
+      prevProps.formPath === nextProps.formPath &&
+      prevProps.rawDescription === nextProps.rawDescription &&
+      !_.some(nextProps.changedPaths, vp =>
+        vp.startsWith(nextProps.formPath)
+      ) &&
+      !_.some(nextProps.keepAlive, vp => vp.startsWith(nextProps.formPath))
+    )
+  }
+)
 
-const boolOptions = ['Yes', 'No']
+/*
+  Render all of the components of a form recursively. This function is applied
+  to a section of a form with mapSectionWithPaths.
+ */
 
 export default function renderFnsWrapper(
   dynamicState,
   setDynamicState,
   loadedForm,
-  navigator,
+  navigation,
   formPaths,
   formGetPath,
-  formSetPath
+  formSetPath,
+  changedPaths,
+  keepAlive,
+  removeKeepAlive,
+  addKeepAlive
 ) {
   return {
     pre: () => {
@@ -57,25 +65,27 @@ export default function renderFnsWrapper(
       if (_.has(obj, 'title')) {
         title = _.get(obj, 'title')
       }
+      let rawDescription = null
       if (_.has(obj, 'description')) {
-        description = (
-          <Text style={styles.bottomSpace}>{_.get(obj, 'description')}</Text>
-        )
+        rawDescription = _.get(obj, 'description')
+        description = <Text style={styles.bottomSpace}>{rawDescription}</Text>
       }
       if (_.has(obj, 'text')) {
-        description = (
-          <Text style={styles.bottomSpace}>{_.get(obj, 'text')}</Text>
-        )
+        rawDescription = _.get(obj, 'text')
+        description = <Text style={styles.bottomSpace}>{rawDescription}</Text>
       }
       return (
-        <CardWrap
+        <RerenderFieldAsNecessary
           key={index}
           title={title}
           needsUpdate={true}
           formPath={formPath}
           description={description}
+          rawDescription={rawDescription}
           inner={inner}
           subparts={subparts}
+          changedPaths={changedPaths}
+          keepAlive={keepAlive}
         />
       )
     },
@@ -182,7 +192,7 @@ export default function renderFnsWrapper(
             title={title}
             buttonStyle={buttonStyle}
             onPress={() =>
-              navigator.navigate('Signature', {
+              navigation.navigate('Signature', {
                 signed: dataImage => formSetPath(valuePath, dataImage),
                 cancelSignature: () => formSetPath(valuePath, ''),
               })
@@ -249,9 +259,12 @@ export default function renderFnsWrapper(
             title={title}
             buttonStyle={buttonStyle}
             onPress={() =>
-              navigator.navigate('Body', {
+              navigation.navigate('Body', {
                 baseImage: loadedForm.files[_.get(obj, 'field.generic-image')],
                 enterData: (dataImage, annotations) => {
+                  // TODO Do we want this behavior? You empty a field and it
+                  // counts as not filled anymore
+                  //
                   // if (annotations.length === 0) {
                   //     formSetPath(valuePath, "");
                   //     return;
@@ -277,7 +290,7 @@ export default function renderFnsWrapper(
         <ButtonGroup
           selectedIndex={selected}
           onPress={i => formSetPath(valuePath, i == 0)}
-          buttons={boolOptions}
+          buttons={['Yes', 'No']}
         />
       )
     },
@@ -429,7 +442,7 @@ export default function renderFnsWrapper(
               setDynamicState({
                 ['isVisible_dateTime_' + valuePath]: false,
               })
-              _.pull(hasVisibleModal, valuePath)
+              removeKeepAlive(valuePath)
             }}
           />
         )
@@ -444,13 +457,13 @@ export default function renderFnsWrapper(
               setDynamicState({
                 ['isVisible_dateTime_' + valuePath]: false,
               })
-              _.pull(hasVisibleModal, valuePath)
+              removeKeepAlive(valuePath)
             }}
             onCancel={() => {
               setDynamicState({
                 ['isVisible_dateTime_' + valuePath]: false,
               })
-              _.pull(hasVisibleModal, valuePath)
+              removeKeepAlive(valuePath)
             }}
           />
         )
@@ -464,7 +477,7 @@ export default function renderFnsWrapper(
               }
               buttonStyle={buttonStyle}
               onPress={() => {
-                hasVisibleModal.push(valuePath)
+                addKeepAlive(valuePath)
                 setDynamicState({ ['isVisible_dateTime_' + valuePath]: true })
               }}
             />
@@ -491,7 +504,7 @@ export default function renderFnsWrapper(
               setDynamicState({
                 ['isVisible_dateTime_' + valuePath]: false,
               })
-              _.pull(hasVisibleModal, valuePath)
+              removeKeepAlive(valuePath)
             }}
           />
         )
@@ -505,14 +518,14 @@ export default function renderFnsWrapper(
               setDynamicState({
                 ['isVisible_dateTime_' + valuePath]: false,
               })
-              _.pull(hasVisibleModal, valuePath)
+              removeKeepAlive(valuePath)
             }}
             mode="datetime"
             onCancel={() => {
               setDynamicState({
                 ['isVisible_dateTime_' + valuePath]: false,
               })
-              _.pull(hasVisibleModal, valuePath)
+              removeKeepAlive(valuePath)
             }}
           />
         )
@@ -526,7 +539,7 @@ export default function renderFnsWrapper(
               }
               buttonStyle={buttonStyle}
               onPress={() => {
-                hasVisibleModal.push(valuePath)
+                addKeepAlive(valuePath)
                 setDynamicState({ ['isVisible_dateTime_' + valuePath]: true })
               }}
             />
