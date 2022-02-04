@@ -268,8 +268,8 @@ export default function renderFnsWrapper(
       )
     },
     bool: (entry, obj, index, formPath, valuePath) => {
-      let selected = formPaths[valuePath]
-        ? formPaths[valuePath].value
+      let selected = _.has(formPaths, valuePath)
+        ? formPaths[valuePath]
           ? 0
           : 1
         : null
@@ -296,7 +296,7 @@ export default function renderFnsWrapper(
       let selected = formPaths[valuePath]
         ? _.indexOf(
             _.map(options, x => x.key),
-            formPaths[valuePath].value
+            formPaths[valuePath]
           )
         : null
       return (

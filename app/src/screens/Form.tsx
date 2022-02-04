@@ -37,6 +37,8 @@ import Bottom from 'components/FormBottom'
 import { FormInfo, loadForm } from 'utils/forms'
 import renderFnsWrapper from 'utils/formRendering'
 
+import { useMap, usePrevious } from 'react-use'
+
 import { mapSectionWithPaths, readImage, isSectionComplete } from 'utils/forms'
 
 type Props = NativeStackScreenProps
@@ -46,32 +48,7 @@ function formGetPath(
   valuePath: string,
   default_: any = null
 ) {
-  return formPaths[valuePath] ? formPaths[valuePath].value : default_
-}
-
-function formSetPath(
-  formPaths: Record<string, any>,
-  setFormPaths,
-  valuePath,
-  value
-) {
-  // TODO There was caching here once upon a time, if we don't do it anymore,
-  // remove this function
-  setFormPath(formPaths, setFormPaths, valuePath, value)
-}
-
-function setFormPath(
-  formPaths: Record<string, any>,
-  setFormPaths: React.Dispatch<React.SetStateAction<Record<string, any>>>,
-  path: string,
-  value: any
-) {
-  setFormPaths({
-    ...formPaths,
-    [path]: {
-      value: value,
-    },
-  })
+  return _.has(formPaths, valuePath) ? formPaths[valuePath] : default_
 }
 
 export default function Form({ route, navigation }: Props) {
@@ -87,7 +64,15 @@ export default function Form({ route, navigation }: Props) {
   const { formSections } = loadedForm
 
   const [currentSection, setCurrentSection] = useState(0)
-  const [formPaths, setFormPaths] = useState({} as Record<string, any>)
+  const [
+    formPaths,
+    {
+      set: setFormPath,
+      setAll: setAllFormPaths,
+      remove: removeFormPath,
+      reset: resetFormPaths,
+    },
+  ] = useMap({} as Record<string, any>)
 
   // This is state about the current properties of widgets, like if a date-time
   // picker is open or not.
@@ -111,7 +96,7 @@ export default function Form({ route, navigation }: Props) {
     navigator,
     formPaths,
     (value, default_) => formGetPath(formPaths, value, default_),
-    (valuePath, value) => formSetPath(formPaths, setFormPaths, valuePath, value)
+    (valuePath, value) => setFormPath(valuePath, value)
   )
 
   const setSectionOffset = useCallback(
