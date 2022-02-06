@@ -17,6 +17,11 @@ variable "namespace" {
   type        = string
 }
 
+variable "budgets" {
+  description = "A list of budgets"
+  type        = any
+}
+
 variable "budget_slack_webhook" {
   description = "The webook for slack, see the readme for instructions"
   type        = string
@@ -30,92 +35,7 @@ module "budgets" {
 
   name = "${var.namespace}-${var.stage}-budget"
 
-  budgets = [
-    # We don't use EC2 but this is a common resource that attackers exploit.
-    {
-      name            = "budget-ec2-monthly"
-      budget_type     = "COST"
-      limit_amount    = "1"
-      limit_unit      = "USD"
-      time_unit       = "MONTHLY"
-      cost_filter = {
-        Service = ["Amazon Elastic Compute Cloud - Compute"]
-      }
-      notification = {
-        comparison_operator = "GREATER_THAN"
-        threshold           = "100"
-        threshold_type      = "PERCENTAGE"
-        notification_type   = "FORECASTED"
-      }
-    },
-    {
-      name         = "10-total-monthly"
-      budget_type  = "COST"
-      limit_amount = "10"
-      limit_unit   = "USD"
-      time_unit    = "MONTHLY"
-      notification = {
-        comparison_operator = "GREATER_THAN"
-        threshold           = "100"
-        threshold_type      = "PERCENTAGE"
-        notification_type   = "FORECASTED"
-      }
-    },
-    {
-      name         = "100-total-monthly"
-      budget_type  = "COST"
-      limit_amount = "100"
-      limit_unit   = "USD"
-      time_unit    = "MONTHLY"
-      notification = {
-        comparison_operator = "GREATER_THAN"
-        threshold           = "100"
-        threshold_type      = "PERCENTAGE"
-        notification_type   = "FORECASTED"
-      }
-    },
-    {
-      name         = "200-total-monthly"
-      budget_type  = "COST"
-      limit_amount = "200"
-      limit_unit   = "USD"
-      time_unit    = "MONTHLY"
-      notification = {
-        comparison_operator = "GREATER_THAN"
-        threshold           = "100"
-        threshold_type      = "PERCENTAGE"
-        notification_type   = "FORECASTED"
-      }
-    },
-    {
-      name         = "1000-total-monthly"
-      budget_type  = "COST"
-      limit_amount = "1000"
-      limit_unit   = "USD"
-      time_unit    = "MONTHLY"
-      notification = {
-        comparison_operator = "GREATER_THAN"
-        threshold           = "100"
-        threshold_type      = "PERCENTAGE"
-        notification_type   = "FORECASTED"
-      }
-    },
-    # TODO What other budget categories make sense for PHR?
-    #    If any?
-    {
-      name         = "s3-3GB-limit-monthly"
-      budget_type  = "USAGE"
-      limit_amount = "3"
-      limit_unit   = "GB"
-      time_unit    = "MONTHLY"
-      notification = {
-        comparison_operator = "GREATER_THAN"
-        threshold           = "100"
-        threshold_type      = "PERCENTAGE"
-        notification_type   = "FORECASTED"
-      }
-    }
-  ]
+  budgets = var.budgets
 
   # create an SNS topic and lambda for Slack notifications
   notifications_enabled = true

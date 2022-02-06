@@ -41,22 +41,3 @@ resource "aws_iam_role_policy" "cloudwatch" {
 }
 EOF
 }
-
-data "aws_iam_policy_document" "dead_letter" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "sns:Publish",
-      "sqs:SendMessage",
-    ]
-    resources = [
-      aws_sqs_queue.dead_letter_queue.arn,
-    ]
-  }
-}
-
-resource "aws_iam_policy" "dead_letter" {
-  name   = "${var.stage}-${var.namespace}-${var.user_type}-dead-letter-config"
-  description = "Provide access to the lambda dead letter queue"
-  policy = data.aws_iam_policy_document.dead_letter.json
-}

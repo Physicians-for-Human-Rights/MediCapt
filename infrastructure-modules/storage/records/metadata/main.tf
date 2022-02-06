@@ -17,6 +17,11 @@ variable "namespace" {
   type        = string
 }
 
+variable "dynamodb_point_in_time_recovery" {
+  description = "Should we enable point in time recovery for this table"
+  type        = bool
+}
+
 module "dynamodb_table" {
   source = "cloudposse/dynamodb/aws" 
   version     = "0.29.4"
@@ -29,6 +34,7 @@ module "dynamodb_table" {
   billing_mode                 = "PAY_PER_REQUEST"
   autoscale_min_read_capacity  = null
   autoscale_min_write_capacity = null
+  enable_point_in_time_recovery = var.dynamodb_point_in_time_recovery
   #
   hash_key                     = "locationUUID"
   hash_key_type	               = "S"

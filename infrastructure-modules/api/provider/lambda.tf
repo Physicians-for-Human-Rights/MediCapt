@@ -96,9 +96,11 @@ resource "aws_lambda_function" "lambdas" {
   tracing_config {
     mode = "Active"
   }
-  dead_letter_config {
-    target_arn = aws_sqs_queue.dead_letter_queue.arn
-  }
+  # TODO Reenable this, doesn't work in localstack
+  # But what do we do with it?
+  # dead_letter_config {
+  #   target_arn = aws_sqs_queue.dead_letter_queue.arn
+  # }
   environment {
     variables = {
       # NB In a better world we would do:
@@ -110,7 +112,7 @@ resource "aws_lambda_function" "lambdas" {
       # But as of 2022 Terraform doesn't allow any references in depends_on
       # they must be totally static. So we cheat and introduce this manual dependency
       dependencies = sha256(join(",",
-        [ aws_iam_role_policy_attachment.dead_letter[each.key].policy_arn,
+        [ # aws_iam_role_policy_attachment.dead_letter[each.key].policy_arn,
           aws_iam_role_policy_attachment.aws_xray_write_only_access[each.key].policy_arn,
           aws_iam_role_policy_attachment.cloudwatch_lambda[each.key].policy_arn,
           aws_iam_role_policy_attachment.insights_policy[each.key].policy_arn
@@ -146,15 +148,8 @@ data "template_file" "lambda_policy_jsons" {
 resource "aws_iam_role" "lambdas" {
   for_each = local.lambdas
   #
-  name  = "${var.namespace}-${var.stage}-lambda-role-${each.key}"
+  name  = "${var.namespace}-${var.stage}-lambda-${each.key}"
   assume_role_policy = data.template_file.lambda_policy_jsons[each.key].rendered
-}
-
-resource "aws_iam_role_policy_attachment" "dead_letter" {
-  for_each = local.lambdas
-  #
-  role       = aws_iam_role.lambdas[each.key].name
-  policy_arn = aws_iam_policy.dead_letter.arn
 }
 
 resource "aws_iam_role_policy_attachment" "aws_xray_write_only_access" {

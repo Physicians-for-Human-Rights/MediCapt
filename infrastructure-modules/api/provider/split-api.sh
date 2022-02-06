@@ -16,24 +16,24 @@ for i in `ls apis/xx*`; do
             API_PATH=${API_PATH//\//@}
             API_PATH=${API_PATH:1}
             mkdir -p $PREFIX/$API_PATH
-            cat $i > $PREFIX/$API_PATH/api.yaml
+            cat $i > $PREFIX/$API_PATH/api-part.yaml
         done
     else
         if [ "$FOOTER" == "$i" ]; then
         for API_PATH in $ENDPOINTS; do
             API_PATH=${API_PATH//\//@}
             API_PATH=${API_PATH:1}
-            cat $i >> $PREFIX/$API_PATH/api.yaml
+            cat $i >> $PREFIX/$API_PATH/api-part.yaml
         done
         else
             API_PATH=$(grep -oP '^  /provider(\K\/.*)(?=:$)' $i)
             API_PATH=${API_PATH//\//@}
             API_PATH=${API_PATH:1}
 
-            cat $i >> $PREFIX/$API_PATH/api.yaml
-            for method in $(grep -oP '^    (\K(get|put|delete|post))(?=:$)' $PREFIX/$API_PATH/api.yaml); do
+            cat $i >> $PREFIX/$API_PATH/api-part.yaml
+            for method in $(grep -oP '^    (\K(get|put|delete|post))(?=:$)' $PREFIX/$API_PATH/api-part.yaml); do
                 mkdir -p $PREFIX/$API_PATH/$method/src
-                # NB This api.yaml includes the other methods for this endpoint,
+                # NB This api-part.yaml includes the other methods for this endpoint,
                 # but this is only for our convenience and is never read in by
                 # anything else.
                 if [ ! -f $PREFIX/$API_PATH/$method/src/index.js ]; then

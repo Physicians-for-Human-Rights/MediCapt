@@ -18,7 +18,7 @@ data "aws_caller_identity" "current" {}
 resource "aws_api_gateway_rest_api" "associate" {
   name        = "${var.namespace}-${var.stage}-associate"
   description = "Associate API"
-  body = templatefile("${path.module}/api.yaml",
+  body = templatefile("${path.module}/${var.api_file}",
     { cognito_user_pool_associate_arn = var.cognito_user_pool_associate_arn
       region = var.aws_region
       account_id = data.aws_caller_identity.current.account_id
@@ -89,12 +89,6 @@ resource "aws_api_gateway_method_settings" "settings" {
     logging_level = "INFO"
     data_trace_enabled = true
   }
-}
-
-resource "aws_sqs_queue" "dead_letter_queue" {
-  name = "${var.stage}-${var.namespace}-api-${var.user_type}-dlq"
-  #checkov:skip=CKV_AWS_27:We enabled server-side encryption, checkov only looks for CMK instead of SSE
-  sqs_managed_sse_enabled = true
 }
 
 resource "aws_api_gateway_account" "api" {

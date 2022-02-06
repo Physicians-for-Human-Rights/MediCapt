@@ -1,6 +1,7 @@
 resource "aws_lambda_function" "add_reidentification" {
   depends_on = [
-    aws_iam_role_policy_attachment.dead_letter,
+    # TODO Add this back, blocked by localstack
+    # aws_iam_role_policy_attachment.dead_letter,
     aws_iam_role_policy_attachment.aws_xray_write_only_access,
     aws_iam_role_policy_attachment.cloudwatch_lambda
   ]
@@ -14,9 +15,10 @@ resource "aws_lambda_function" "add_reidentification" {
   tracing_config {
     mode = "Active"
   }
-  dead_letter_config {
-    target_arn = aws_sqs_queue.dead_letter_queue.arn
-  }
+  # TODO Add this back, blocked by localstack
+  # dead_letter_config {
+  #   target_arn = aws_sqs_queue.dead_letter_queue.arn
+  # }
   layers = [
     var.lambda_insights_layer,
     var.lambda_uuid_layer
@@ -36,12 +38,6 @@ data "archive_file" "srcs" {
   type        = "zip"
   source_dir  = "${path.module}/src"
   output_path = "${path.module}/src.zip"
-}
-
-resource "aws_sqs_queue" "dead_letter_queue" {
-  name = "${var.stage}-${var.namespace}-s3-add-reidentification-dlq"
-  #checkov:skip=CKV_AWS_27:We enabled server-side encryption, checkov only looks for CMK instead of SSE
-  sqs_managed_sse_enabled = true
 }
 
 resource "aws_iam_role" "lambda" {
@@ -86,7 +82,7 @@ data "aws_iam_policy_document" "s3_lambda" {
 }
 
 resource "aws_iam_policy" "s3_lambda" {
-  name   = "${var.namespace}-${var.stage}_reidentification-s3-access"
+  name   = "${var.namespace}-${var.stage}-reidentification-s3-access"
   description = "Provide the reidentification lambda with s3 access"
   policy = data.aws_iam_policy_document.s3_lambda.json
 }
@@ -94,30 +90,6 @@ resource "aws_iam_policy" "s3_lambda" {
 resource "aws_iam_role_policy_attachment" "s3_lambda" {
   role       = aws_iam_role.lambda.name
   policy_arn = aws_iam_policy.s3_lambda.arn
-}
-
-data "aws_iam_policy_document" "dead_letter" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "sns:Publish",
-      "sqs:SendMessage",
-    ]
-    resources = [
-      aws_sqs_queue.dead_letter_queue.arn,
-    ]
-  }
-}
-
-resource "aws_iam_policy" "dead_letter" {
-  name   = "${var.namespace}-${var.stage}_reidentification-dead-letter-config"
-  description = "Provide access to the lambda dead letter queue"
-  policy = data.aws_iam_policy_document.dead_letter.json
-}
-
-resource "aws_iam_role_policy_attachment" "dead_letter" {
-  role       = aws_iam_role.lambda.name
-  policy_arn = aws_iam_policy.dead_letter.arn
 }
 
 resource "aws_iam_role_policy_attachment" "aws_xray_write_only_access" {

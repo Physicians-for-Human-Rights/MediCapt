@@ -1,89 +1,70 @@
 swagger: '2.0'
 info:
   description: |
-    Medicapt API for healthcare associates
+    Medicapt API for healthcare providers
   version: 1.0.0
-  title: Medicapt API - Associates
+  title: Medicapt API - Providers
   termsOfService: TODO
   contact:
     email: TODO@TODO.TODO
   license:
     name: TODO
-    url: https://associate-api.dev.medicapt.click
+    url: https://provider-api.dev.medicapt.click
 securityDefinitions:
-  CognitoUserAssociate:
+  CognitoUserProvider:
     type: apiKey
     name: Authorization
     in: header
     x-amazon-apigateway-authtype: cognito_user_pools
     x-amazon-apigateway-authorizer:
       type: cognito_user_pools
-      associateARNs:
-      - ${cognito_user_pool_associate_arn}
+      providerARNs:
+      - ${cognito_user_pool_provider_arn}
 security:
-  - CognitoUserAssociate: []
+  - CognitoUserProvider: []
 schemes:
 - https
 paths:
-  /associate/share/record/byId/{shareId}:
+  /provider/share/record/with-user:
     get:
       security:
-      - CognitoUserAssociate: []
+      - CognitoUserProvider: []
       tags:
-      - share
-      summary: Get a shared record by share ID
-      operationId: associateGetSharedRecordById
+      - Share
+      summary: List records shared with you
+      operationId: providerGetSharedRecordsWithUser
       produces:
       - application/json
       parameters:
-      - name: shareId
-        in: path
-        description: ID of the record to return
-        required: true
-        type: string
-        format: uuid
+      - in: query
+        name: offset
+        type: integer
+        required: false
+        default: 0
+        minimum: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: limit
+        type: integer
+        required: false
+        default: 20
+        minimum: 1
+        maximum: 100
+        description: The numbers of items to return.
       responses:
         200:
           description: successful operation
           schema:
-            $ref: '#/definitions/Share'
+            type: array
+            items:
+              $ref: '#/definitions/Share'
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
         400:
-          description: Invalid ID supplied
-        404:
-          description: Record not found
+          description: Invalid status value
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_associateGetSharedRecordById}
-        responses:
-          default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
-    delete:
-      security:
-      - CognitoUserAssociate: []
-      tags:
-      - share
-      summary: Deletes a record share. You lose access to this record.
-      operationId: associateDeleteSharedRecordById
-      produces:
-      - application/json
-      parameters:
-      - name: shareId
-        in: path
-        description: ID of share to delete
-        required: true
-        type: string
-        format: uuid
-      responses:
-        400:
-          description: Invalid ID supplied
-        404:
-          description: Record not found
-        405:
-          description: Record already sealed
-      x-amazon-apigateway-integration:
-        uri: ${lambda_uri_associateDeleteRecordById}
+        uri: ${lambda_uri_providerGetSharedRecordsWithUser}
         responses:
           default:
             statusCode: "200"
@@ -160,7 +141,7 @@ definitions:
   FormMetadata:
     type: object
     properties:
-      formUUID:
+      form_uuid:
         type: string
         format: uuid
       name:

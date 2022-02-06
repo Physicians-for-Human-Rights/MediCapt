@@ -25,13 +25,13 @@ security:
 schemes:
 - https
 paths:
-  /provider/share/record/with-user:
+  /provider/share/record/by-user:
     get:
       security:
       - CognitoUserProvider: []
       tags:
       - Share
-      summary: List records shared with you
+      summary: List records you share
       operationId: providerGetSharedRecordsByUser
       produces:
       - application/json

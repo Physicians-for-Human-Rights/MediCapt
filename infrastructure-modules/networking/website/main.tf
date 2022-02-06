@@ -17,9 +17,8 @@ variable "domain_name" {
   type        = string
 }
 
-variable "hosted_zone_id" {
-  description = "The zone id, available from the Route 53 dashboard. The domain name must be managed through route 53"
-  type        = string
+resource "aws_route53_zone" "primary" {
+  name = "medicapt.click"
 }
 
 module "acm_request_certificate" {
@@ -34,7 +33,7 @@ module "acm_request_certificate" {
   domain_name                       = "${var.stage}.${var.domain_name}"
   process_domain_validation_options = true
   ttl                               = "300"
-  zone_id                           = var.hosted_zone_id
+  zone_id                           = aws_route53_zone.primary.zone_id
   wait_for_certificate_issued       = true
   subject_alternative_names         = ["*.${var.stage}.${var.domain_name}"]
 }
@@ -46,7 +45,7 @@ module "cdn" {
   stage               = "${var.stage}"
   aliases             = ["${var.stage}.${var.domain_name}"]
   dns_alias_enabled   = true
-  parent_zone_id      = var.hosted_zone_id
+  parent_zone_id      = aws_route53_zone.primary.zone_id
   acm_certificate_arn = module.acm_request_certificate.arn
   depends_on          = [module.acm_request_certificate]
   wait_for_deployment = true
@@ -78,7 +77,7 @@ output "domain_name" {
 }
 
 output "hosted_zone_id" {
-  value = var.hosted_zone_id
+  value = aws_route53_zone.primary.zone_id
   description = "Hosted zone id"
 }
 

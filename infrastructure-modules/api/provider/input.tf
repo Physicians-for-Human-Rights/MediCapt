@@ -47,3 +47,8 @@ variable "user_type" {
   description = "The type of user, e.g., associate"
    type        = string
  }
+
+variable "api_file" {
+  description = "The API file name, e.g., api.yaml"
+   type        = string
+ }

@@ -17,6 +17,11 @@ variable "namespace" {
   type        = string
 }
 
+variable "dynamodb_point_in_time_recovery" {
+  description = "Should we enable point in time recovery for this table"
+  type        = bool
+}
+
 # Images and form definitions are stored in this S3 bucket as in:
 # <country-code>/<form-code>
 # For example: KE/ke-moh-363-2019
@@ -75,6 +80,7 @@ module "dynamodb_table" {
   billing_mode                 = "PAY_PER_REQUEST"
   autoscale_min_read_capacity  = null
   autoscale_min_write_capacity = null
+  enable_point_in_time_recovery = var.dynamodb_point_in_time_recovery
   #
   hash_key                     = "country"
   hash_key_type	               = "S"
