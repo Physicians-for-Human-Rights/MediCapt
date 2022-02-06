@@ -230,3 +230,10 @@ And you're done.
 
 The data API has to be enabled for each database manually. There doesn't seem to
 be a way to do it through terraform at the moment.
+
+
+# Localstack
+
+You need localstack pro and an API key. Put in `localstack-secrets.env`
+
+Runs in its own stage. Run with `start-localstack.sh`
