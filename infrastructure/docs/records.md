@@ -1,5 +1,5 @@
 >Records PHI/PII Design
-======================
+=======================
 
 ## Definitions
 
@@ -124,7 +124,7 @@ Global secondary indices:
 Records are stored in the following path structure:
 `/<recordUUID>/form.json`
 `/<recordUUID>/metadata.json`
-`/<recordUUID>/image/<imageUUID>.jpg` or `.png`
+`/<recordUUID>/image/<imageUUID>.webp`
 `/<recordUUID>/addendum/<addendumUUID>.json`
 
 The S3 bucket cannot be listed. There are no delete permissions on the bucket.
