@@ -14,10 +14,6 @@ dependency "full" {
   config_path = "../full"
 }
 
-dependency "email" {
-  config_path = "../../../email"
-}
-
 dependency "lambda_layers" {
   config_path = "../../../lambda_layers/js_uuid/"
 }
