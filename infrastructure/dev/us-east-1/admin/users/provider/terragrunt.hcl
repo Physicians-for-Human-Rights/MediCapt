@@ -13,9 +13,7 @@ locals {
 inputs = {
   user_type = "provider"
   #
-  cognito_default_users = {
-    andrei = "andrei@0xab.com"
-  }
+  cognito_default_users = {}
   #
   # TODO We would like to require MFA
   # But amplify on Android has an issue with it
@@ -155,7 +153,15 @@ EOF
     {
       type     = "String"
       # This date is stored as ISO 8601
-      name     = "expiryDate"
+      name     = "expiry_date"
+      required = false
+      mutable  = true
+      min_length = 1
+      max_length = 100
+    },
+    {
+      type     = "String"
+      name     = "storage_version"
       required = false
       mutable  = true
       min_length = 1
