@@ -176,6 +176,9 @@ Unit tests are run with localstack. In `localstack/tests/unit` run `yarn
 install` followed by `yarn test` or `yarn test-watch`, use the latter if you're
 developing new tests on the fly.
 
+You can also run `npx majestic` in `localstack/tests/unit`, select start and
+start watching from the UI. This will give you a nice browser-based UI.
+
 ### Integration tests TODO
 
 Integration tests run on both localstack and dev.
