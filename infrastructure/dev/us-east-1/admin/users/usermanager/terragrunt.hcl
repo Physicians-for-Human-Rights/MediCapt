@@ -11,7 +11,7 @@ locals {
 }
 
 inputs = {
-  user_type = "provider"
+  user_type = "usermanager"
   #
   cognito_default_users = {}
   #
@@ -25,7 +25,7 @@ inputs = {
   # the system to adapt and after verying its actions.
   advanced_security_mode = "AUDIT" # "ENFORCED"
   #
-  invite_email_subject = "Invitation to MediCapt as a healthcare provider"
+  invite_email_subject = "Invitation to MediCapt as a user manager"
   invite_email_message = <<EOF
 Welcome to MediCapt!
 
@@ -92,15 +92,6 @@ EOF
       min_length = 3
       max_length = 300
     },
-    # TODO Remove this field, we need to recreate the pool
-    {
-      type     = "String"
-      name     = "picture"
-      required = false
-      mutable  = true
-      min_length = 3
-      max_length = 300
-    },
     # Custom attributes cannot be required
     {
       type     = "String"
@@ -153,7 +144,7 @@ EOF
     {
       type     = "String"
       # This date is stored as ISO 8601
-      name     = "expiry_date"
+      name     = "expiryDate"
       required = false
       mutable  = true
       min_length = 1

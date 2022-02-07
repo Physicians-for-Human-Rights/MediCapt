@@ -166,6 +166,15 @@ EOF
       mutable  = true
       min_length = 1
       max_length = 100
+    },
+    {
+      # This is a comma separated list of location UUIDs where the account has permissions
+      type     = "String"
+      name     = "allowed_locations"
+      required = false
+      mutable  = true
+      min_length = 0
+      max_length = 2048
     }
   ]
 }
