@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "allowSyntheticDefaultImports": false,
+    "resolveJsonModule": true,
+    "lib": ["esnext"],
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "sourceMap": true,
+    "outDir": "dist",
+    "strict": false
+  },
+  "include": ["./src/**/*.ts", "./services.d.ts"],
+  "exclude": ["node_modules", "dist-lambda", "./**/*.js", "./**/*.jsx"]
+}
