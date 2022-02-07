@@ -131,10 +131,6 @@ click authentication providers, Cognito should be the default, and under
 
 There doesn't seem to be a way to do this in terraform right now.
 
-
-
-
-
 AWS config;
   # TODO This assumes we have a us-east-1 deployment
 Need to do something about SNS and AWS Config
@@ -147,93 +143,59 @@ New accounts will be in the SES sandbox, unable to send any useful emails.
 
 https://console.aws.amazon.com/ses
 
-# Updating public access
+## Updating public access
+
+`TODO Do this automatically`
 
 You should enable block public access to
 
-medicapt-terraform-state-dev
-medicapt-terraform-state-logs-dev	
+`medicapt-terraform-state-dev`
+`medicapt-terraform-state-logs-dev`
 
+## Localstack
 
-Deployments happen region by region:
-terragrunt graph-dependencies --terragrunt-working-dir us-east-1
+The localstack stage is configured to run with https://localstack.cloud/ You
+need localstack Pro and an API key. Put the key in
+`localstack/localstack-secrets.env` as in `LOCALSTACK_API_KEY=<API_KEY>`
 
+Run with `start-localstack.sh` This requires `docker`.
 
-You will need to install terragrunt. Modules contains the raw code, live
-contains the runtime info for each stage, right now only prod exists. Note that
-paths in the live module can refer to specific git revisions to keep them
-stable.
+As the name implies, this is totally local and will not use your AWS credentials
+at all. If you want `aws` to talk to localstack, it's best to use `awslocal`
+with `pip install awscli-local`. That way you don't need to set up the endpoint.
 
-State is stored in S3. Modules have to be deployed in order because of
-dependency issues in terraform.
+When getting set up with localstack it's a good idea to comment out your
+`~/.aws/credentials` file temporarily as one of the most common issues are
+requests going to Amazon rather than localhost.
 
-One module is special and must be deployed once per account, it sets up remote
-terraform state. modules/global/s3
-Deploy it to an account with:
+## Common build problems
 
-export TF_VAR_bucket_name=medicapt-terraform-state
-export TF_VAR_table_table=medicapt-terraform-locks
+### `.js` files are being built in the wrong location
 
-After this you can switch to live/prod. You will need to select a KMS CMK. For
-various reasons you want to make this key by hand and not through terraform. You
-need to create the CMK and record its ARN and ID and set these in
+`tsc` has an issue where it only builds the shortest path it can in
+`dist-lambda/`. There doesn't seem to be a way to disable this
+behavior. Instead, just create a `.ts` file at the same depth in a different
+directory tree and it will build in the full path.
 
-export TF_VAR_kms_key_arn=
-export TF_VAR_kms_key_id=
+### Deploying to localstack complains about keys or authorization
 
-We also need to create database passwords, which again shouldn't appear in
-terraform state. Go to the AWS Systems Manager, select the Parameter Store and
-create three passwords:
+Your service is trying to talk to AWS instead of localstack. If you are adding a
+new service we have never used before, you may need to figure its endpoint in
+`localstack/terragrunt.hcl`
 
-medicapt-deidentified-prod-db-password
-medicapt-metadata-prod-db-password
-medicapt-records-prod-db-password
+### I want to run terragrunt for an entire stage
 
-medicapt-deidentified-dev-db-password
-medicapt-metadata-dev-db-password
-medicapt-records-dev-db-password
+You can only run terragrunt for all deployments in a region. To do so run
+commands like this for your stage
 
-Or for whatever stage (prod, dev, beta, etc.) that you're building.
+`terragrunt graph-dependencies --terragrunt-working-dir us-east-1` 
 
-Modules must be applied in this order due to dependencies:
-admin/logging
-networking/*
-admin/users-providers
-storage/*
-api/*
+or
 
-* Creating a KMS CMK
+`terragrunt run-all plan --terragrunt-working-dir us-east-1`
 
-aws kms create-key --origin EXTERNAL
+### Localstack can be slow
 
-Take the key id and put it below:
+Checking if resources exists can be slow in localstack for some reason. You can
+skip this step with: `terragrunt apply -auto-approve -refresh=false`
 
-aws kms get-parameters-for-import --key-id <keyid> --wrapping-algorithm RSAES_OAEP_SHA_256 --wrapping-key-spec RSA_2048
-openssl enc -d -base64 -A -in public-key.b64 -out public-key.bin
-openssl enc -d -base64 -A -in import-token.b64 -out import-token.bin
-openssl rand -out plaintext-key-material.bin 32
-openssl pkeyutl \
-        -in plaintext-key-material.bin \
-        -inkey public-key.bin \
-        -out encrypted-key-material.bin \
-        -keyform der \
-        -pubin -encrypt \
-        -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256
-aws kms import-key-material --key-id c7ac1c3c-0f32-4e04-acb8-8b7c347717b7 \
-                              --encrypted-key-material fileb://encrypted-key-material.bin \
-                              --import-token fileb://import-token.bin \
-                              --expiration-model KEY_MATERIAL_DOES_NOT_EXPIRE
-
-And you're done.
-
-* Data API
-
-The data API has to be enabled for each database manually. There doesn't seem to
-be a way to do it through terraform at the moment.
-
-
-# Localstack
-
-You need localstack pro and an API key. Put in `localstack-secrets.env`
-
-Runs in its own stage. Run with `start-localstack.sh`

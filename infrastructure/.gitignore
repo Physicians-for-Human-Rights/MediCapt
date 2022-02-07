@@ -19,3 +19,7 @@ old
 terragrunt-debug.tfvars.json
 localstack-secrets.env
 .env
+node_modules
+dist/
+*.log
+
