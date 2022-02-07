@@ -207,7 +207,7 @@ module "s3_bucket" {
   version                      = "0.46.0"
   acl                          = "private"
   enabled                      = true
-  user_enabled                 = true
+  user_enabled                 = false
   versioning_enabled           = true
   sse_algorithm                = "aws:kms"
   allow_encrypted_uploads_only = true
