@@ -79,8 +79,8 @@ data "archive_file" "srcs" {
   for_each = local.lambdas
   #
   type        = "zip"
-  source_dir  = "${path.module}/apis/${each.value.path}/src"
-  output_path = "${path.module}/apis/${each.value.path}/src.zip"
+  source_dir  = "../../dist-lambda/api/provider/apis/${each.value.path}/src/"
+  output_path = "${path.module}/api/provider/apis/${each.value.path}/src.zip"
 }
 
 resource "aws_lambda_function" "lambdas" {

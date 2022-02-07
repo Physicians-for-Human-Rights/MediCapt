@@ -38,7 +38,7 @@ variable "lambda_insights_layer" {
 }
 
 
-resource "aws_s3_bucket_notification" "triger" {
+resource "aws_s3_bucket_notification" "trigger" {
   bucket = var.records_bucket_id
   lambda_function {
     lambda_function_arn = aws_lambda_function.add_reidentification.arn

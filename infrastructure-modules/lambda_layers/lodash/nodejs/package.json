@@ -1,0 +1,7 @@
+{
+  "name": "lodash_layer",
+  "version": "1.0.1",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}

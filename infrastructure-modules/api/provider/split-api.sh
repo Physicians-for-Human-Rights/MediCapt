@@ -36,8 +36,8 @@ for i in `ls apis/xx*`; do
                 # NB This api-part.yaml includes the other methods for this endpoint,
                 # but this is only for our convenience and is never read in by
                 # anything else.
-                if [ ! -f $PREFIX/$API_PATH/$method/src/index.js ]; then
-                    cp placeholders/index.js $PREFIX/$API_PATH/$method/src/index.js
+                if [ ! -f $PREFIX/$API_PATH/$method/src/index.ts ]; then
+                    cp placeholders/index.ts $PREFIX/$API_PATH/$method/src/index.ts
                     echo $API_PATH/$method
                 fi
                 if [ ! -f $PREFIX/$API_PATH/$method/policy.json ]; then

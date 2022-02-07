@@ -1,11 +1,10 @@
-resource "aws_lambda_function" "add_reidentification" {
+resource "aws_lambda_function" "humanid" {
   depends_on = [
-    # TODO Add this back, blocked by localstack
     # aws_iam_role_policy_attachment.dead_letter,
     aws_iam_role_policy_attachment.aws_xray_write_only_access,
     aws_iam_role_policy_attachment.cloudwatch_lambda
   ]
-  function_name                  = "${var.stage}-${var.namespace}-records-bucket-add-reidentification"
+  function_name                  = "${var.stage}-${var.namespace}-humanid"
   filename                       = data.archive_file.srcs.output_path
   source_code_hash               = data.archive_file.srcs.output_base64sha256
   handler                        = "index.handler"
@@ -15,13 +14,13 @@ resource "aws_lambda_function" "add_reidentification" {
   tracing_config {
     mode = "Active"
   }
-  # TODO Add this back, blocked by localstack
+  # TODO Enable after localstack
   # dead_letter_config {
   #   target_arn = aws_sqs_queue.dead_letter_queue.arn
   # }
   layers = [
     var.lambda_insights_layer,
-    var.lambda_uuid_layer
+    var.lambda_lodash_layer
   ]
   # TODO Determine what memory size works best per endpoint
   # https://github.com/alexcasalboni/aws-lambda-power-tuning
@@ -29,19 +28,19 @@ resource "aws_lambda_function" "add_reidentification" {
   # TODO We could transition to architectures=["arm64"], worth benchmarking
   environment {
     variables = {
-      reidentificationBucketId = module.s3_bucket.bucket_id
+      humanid_table_name = module.dynamodb_table.table_name
     }
   }
 }
 
 data "archive_file" "srcs" {
   type        = "zip"
-  source_dir  = "../../../dist-lambda/storage/records/reidentification/src/"
+  source_dir  = "../../dist-lambda/storage/humanid/src/"
   output_path = "${path.module}/src/src.zip"
 }
 
 resource "aws_iam_role" "lambda" {
-  name = "${var.stage}-${var.namespace}-s3-add-reidentification-lambda"
+  name = "${var.stage}-${var.namespace}-humanid-lambda"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -59,37 +58,42 @@ resource "aws_iam_role" "lambda" {
 EOF
 }
 
-data "aws_kms_key" "bucket" {
-  key_id = "alias/aws/s3"
+data "aws_kms_key" "dynamo" {
+  key_id = "alias/aws/dynamodb"
 }
 
-data "aws_iam_policy_document" "s3_lambda" {
+data "aws_iam_policy_document" "dynamodb_lambda" {
   statement {
     effect = "Allow"
-    actions = [ "s3:PutObject" ]
-    resources = [ "${module.s3_bucket.bucket_arn}/*" ]
+    actions = [
+      "dynamodb:Query",
+      "dynamodb:Scan",
+      "dynamodb:GetItem",
+      "dynamodb:PutItem",
+      "dynamodb:UpdateItem",
+      "dynamodb:BatchWriteItem" ]
+    resources = [ module.dynamodb_table.table_arn ]
   }
   statement {
     effect = "Allow"
-    actions = [ "kms:GenerateDataKey" ]
-    resources = [ data.aws_kms_key.bucket.arn ]
-  }
-  statement {
-    effect = "Allow"
-    actions = [ "s3:PutObjectTagging", "s3:PutObjectVersionTagging" ]
-    resources = [ "${var.records_bucket_arn}/*" ]
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+    ]
+    resources = [ data.aws_kms_key.dynamo.arn ]
   }
 }
 
-resource "aws_iam_policy" "s3_lambda" {
-  name   = "${var.namespace}-${var.stage}-reidentification-s3-access"
-  description = "Provide the reidentification lambda with s3 access"
-  policy = data.aws_iam_policy_document.s3_lambda.json
+resource "aws_iam_policy" "dynamodb_lambda" {
+  name   = "${var.namespace}-${var.stage}-humanid-dynamodb"
+  description = "Provide the humanid lambdas with dynamodb access"
+  policy = data.aws_iam_policy_document.dynamodb_lambda.json
 }
 
-resource "aws_iam_role_policy_attachment" "s3_lambda" {
+resource "aws_iam_role_policy_attachment" "dynamodb_lambda" {
   role       = aws_iam_role.lambda.name
-  policy_arn = aws_iam_policy.s3_lambda.arn
+  policy_arn = aws_iam_policy.dynamodb_lambda.arn
 }
 
 resource "aws_iam_role_policy_attachment" "aws_xray_write_only_access" {
@@ -105,4 +109,8 @@ resource "aws_iam_role_policy_attachment" "cloudwatch_lambda" {
 resource "aws_iam_role_policy_attachment" "insights_policy" {
   role       = aws_iam_role.lambda.name
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy"
+}
+
+output "lambda" {
+  value = aws_lambda_function.humanid
 }

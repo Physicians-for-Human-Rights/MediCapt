@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "baseUrl": "./",
+    "strict": true,
+    "module": "CommonJS",
+    "resolveJsonModule": true,
+    "lib": ["esnext"],
+    "moduleResolution": "node",
+    "noEmit": false,
+    "skipLibCheck": true,
+    "outDir": "dist-lambda"
+  },
+  "include": ["./**/*.ts"],
+  "exclude": ["node_modules", "dist-lambda", "./**/*.js", "./**/*.jsx"]
+}
