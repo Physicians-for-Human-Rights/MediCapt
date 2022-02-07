@@ -76,5 +76,92 @@ export function reconfigureAmplifyForUserType(userType: UserType) {
         },
       })
       return
+    case UserType.FormDesigner:
+      Amplify.configure({
+        Auth: {
+          mandatorySignIn: true,
+          region: config.cognito.formdesigner.REGION,
+          userPoolId: config.cognito.formdesigner.USER_POOL_ID,
+          identityPoolId: config.cognito.formdesigner.IDENTITY_POOL_ID,
+          userPoolWebClientId: config.cognito.formdesigner.APP_CLIENT_ID,
+        },
+        Analytics: {
+          disabled: true,
+        },
+        // TODO This API doesn't exist yet
+        // API: {
+        //   endpoints: [
+        //     {
+        //       name: 'formdesigner',
+        //       endpoint: config.apiGateway.formdesigner.URL,
+        //       region: config.apiGateway.formdesigner.REGION,
+        //       custom_header: async () => {
+        //         return {
+        //           Authorization: (await Auth.currentSession()).idToken.jwtToken,
+        //         }
+        //       },
+        //     },
+        //   ],
+        // }
+      })
+      return
+    case UserType.Researcher:
+      Amplify.configure({
+        Auth: {
+          mandatorySignIn: true,
+          region: config.cognito.researcher.REGION,
+          userPoolId: config.cognito.researcher.USER_POOL_ID,
+          identityPoolId: config.cognito.researcher.IDENTITY_POOL_ID,
+          userPoolWebClientId: config.cognito.researcher.APP_CLIENT_ID,
+        },
+        Analytics: {
+          disabled: true,
+        },
+        // TODO This API doesn't exist yet
+        // API: {
+        //   endpoints: [
+        //     {
+        //       name: 'researcher',
+        //       endpoint: config.apiGateway.researcher.URL,
+        //       region: config.apiGateway.researcher.REGION,
+        //       custom_header: async () => {
+        //         return {
+        //           Authorization: (await Auth.currentSession()).idToken.jwtToken,
+        //         }
+        //       },
+        //     },
+        //   ],
+        // }
+      })
+      return
+    case UserType.UserManager:
+      Amplify.configure({
+        Auth: {
+          mandatorySignIn: true,
+          region: config.cognito.usermanager.REGION,
+          userPoolId: config.cognito.usermanager.USER_POOL_ID,
+          identityPoolId: config.cognito.usermanager.IDENTITY_POOL_ID,
+          userPoolWebClientId: config.cognito.usermanager.APP_CLIENT_ID,
+        },
+        Analytics: {
+          disabled: true,
+        },
+        // TODO This API doesn't exist yet
+        // API: {
+        //   endpoints: [
+        //     {
+        //       name: 'usermanager',
+        //       endpoint: config.apiGateway.usermanager.URL,
+        //       region: config.apiGateway.usermanager.REGION,
+        //       custom_header: async () => {
+        //         return {
+        //           Authorization: (await Auth.currentSession()).idToken.jwtToken,
+        //         }
+        //       },
+        //     },
+        //   ],
+        // }
+      })
+      return
   }
 }

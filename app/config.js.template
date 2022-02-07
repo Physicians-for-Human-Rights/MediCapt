@@ -24,5 +24,23 @@ export default {
             IDENTITY_POOL_ID: $ASSOCIATE_IDENTITY_POOL_ID,
             APP_CLIENT_ID: $ASSOCIATE_APP_CLIENT_ID
         },
+        formdesigner: {
+            REGION: "$REGION",
+            USER_POOL_ID: $FORMDESIGNER_USER_POOL_ID,
+            IDENTITY_POOL_ID: $FORMDESIGNER_IDENTITY_POOL_ID,
+            APP_CLIENT_ID: $FORMDESIGNER_APP_CLIENT_ID
+        },
+        researcher: {
+            REGION: "$REGION",
+            USER_POOL_ID: $RESEARCHER_USER_POOL_ID,
+            IDENTITY_POOL_ID: $RESEARCHER_IDENTITY_POOL_ID,
+            APP_CLIENT_ID: $RESEARCHER_APP_CLIENT_ID
+        },
+        usermanager: {
+            REGION: "$REGION",
+            USER_POOL_ID: $USERMANAGER_USER_POOL_ID,
+            IDENTITY_POOL_ID: $USERMANAGER_IDENTITY_POOL_ID,
+            APP_CLIENT_ID: $USERMANAGER_APP_CLIENT_ID
+        },
     }
 };
