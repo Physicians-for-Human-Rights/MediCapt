@@ -17,7 +17,7 @@ var lambda = new AWS.Lambda({
   logger: console,
 })
 
-describe('storage/humanID service', () => {
+describe('service/humanID', () => {
   it('Should return a new unique short ID', async () => {
     const mID = uuidv4()
     const action: HumanIDAction = {

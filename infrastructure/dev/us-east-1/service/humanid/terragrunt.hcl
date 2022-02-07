@@ -1,5 +1,5 @@
 terraform {
-  source = "${local.stage_vars.locals.base_source_url}//storage/humanid/"
+  source = "${local.stage_vars.locals.base_source_url}//service/humanid/"
 }
 
 include "root" {
