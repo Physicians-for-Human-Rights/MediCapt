@@ -4,14 +4,6 @@ import usePrevious from 'react-use/lib/usePrevious'
 import useSet from 'react-use/lib/useSet'
 import { View, ScrollView, Keyboard } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import {
-  Icon,
-  Button,
-  ListItem,
-  ButtonGroup,
-  Card,
-  Image,
-} from 'react-native-elements'
 import SideMenu from 'react-native-side-menu'
 import _ from 'lodash'
 

@@ -4,8 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Header, ListItem, ButtonGroup } from 'react-native-elements'
 import * as Localization from 'expo-localization'
-import { connect } from 'react-redux'
-import { formSetId } from 'redux/actions'
 import styles from 'styles'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 
@@ -51,19 +49,17 @@ export default function SelectForm({ navigation }: Props) {
   } else {
     let listOfForms = []
     if (formList[country]) {
-      listOfForms = formList[country].map((formInfo, i) => {
-        return (
-          <ListItem
-            key={i}
-            Component={TouchableOpacity}
-            onPress={() => navigation.navigate('Form', { formInfo })}
-          >
-            <ListItem.Title>{formInfo.name}</ListItem.Title>
-            <ListItem.Subtitle>{formInfo.subtitle}</ListItem.Subtitle>
-            <ListItem.Chevron color="black" />
-          </ListItem>
-        )
-      })
+      listOfForms = formList[country].map((formInfo, i) => (
+        <ListItem
+          key={i}
+          Component={TouchableOpacity}
+          onPress={() => navigation.navigate('Form', { formInfo })}
+        >
+          <ListItem.Title>{formInfo.name}</ListItem.Title>
+          <ListItem.Subtitle>{formInfo.subtitle}</ListItem.Subtitle>
+          <ListItem.Chevron color="black" />
+        </ListItem>
+      ))
     } else {
       listOfForms = [
         <ListItem key={-1}>

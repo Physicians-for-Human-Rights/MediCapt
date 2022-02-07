@@ -5,15 +5,14 @@ import styles_ from 'styles'
 import BodyMarker from 'components/BodyMarker'
 import Dialog from 'components/Dialog'
 
-const Body = ({ navigation }) => {
+const Body = ({ route, navigation }) => {
+  const { enterData, baseImage } = route.params
+
   const [annotations, setAnnotations] = useState([])
   const [selectedMarker, setSelectedMarker] = useState(null)
 
   const onSubmit = async () => {
-    navigation.state.params.enterData(
-      navigation.state.params.baseImage,
-      annotations
-    )
+    enterData(baseImage, annotations)
     navigation.goBack()
   }
 
@@ -41,7 +40,7 @@ const Body = ({ navigation }) => {
       />
       <View style={styles.annotationContainer}>
         <BodyMarker
-          baseImage={navigation.state.params.baseImage}
+          baseImage={baseImage}
           confirmMarker={marker => setSelectedMarker(marker)}
           annotations={annotations}
         />
