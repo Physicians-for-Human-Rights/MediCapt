@@ -168,6 +168,18 @@ When getting set up with localstack it's a good idea to comment out your
 `~/.aws/credentials` file temporarily as one of the most common issues are
 requests going to Amazon rather than localhost.
 
+## Running the test suite
+
+### Unit tests
+
+Unit tests are run with localstack. In `localstack/tests/unit` run `yarn
+install` followed by `yarn test` or `yarn test-watch`, use the latter if you're
+developing new tests on the fly.
+
+### Integration tests TODO
+
+Integration tests run on both localstack and dev.
+
 ## Common build problems
 
 ### `.js` files are being built in the wrong location
