@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   },
   markers: {
     position: 'absolute',
-    backgroundColor: 'black',
+    backgroundColor: 'red',
     height: 10,
     width: 10,
   },

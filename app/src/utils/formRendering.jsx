@@ -204,7 +204,7 @@ export default function renderFnsWrapper(
                 key={idx}
                 style={{
                   position: 'absolute',
-                  backgroundColor: 'black',
+                  backgroundColor: 'red',
                   height: 5,
                   width: 5,
                   top: annotation.markerCoordinates.y * 200,
