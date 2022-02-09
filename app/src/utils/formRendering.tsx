@@ -211,24 +211,13 @@ export default function renderFnsWrapper(
             source={{ uri: formGetPath(valuePath).image }}
           >
             {value.annotations.map((annotation, idx) => (
-              // <View
-              //   key={idx}
-              //   style={{
-              //     position: 'absolute',
-              //     backgroundColor: 'red',
-              //     height: 5,
-              //     width: 5,
-              //     top: annotation.markerCoordinates.y * 200,
-              //     left: annotation.markerCoordinates.x * 200,
-              //   }}
-              // />
               <View
                 key={idx}
                 style={{
                   position: 'absolute',
                   flexDirection: 'row',
-                  top: annotation.markerCoordinates.y * 200,
-                  left: annotation.markerCoordinates.x * 200,
+                  top: annotation.markerCoordinates.y * 200 - 2.5,
+                  left: annotation.markerCoordinates.x * 200 - 2.5,
                 }}
               >
                 <View
