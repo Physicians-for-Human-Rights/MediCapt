@@ -3,9 +3,7 @@ import {
   Text,
   TextInput,
   View,
-  ScrollView,
   TouchableOpacity,
-  Keyboard,
   Picker,
   Platform,
   ImageBackground,
@@ -17,10 +15,26 @@ import {
   ButtonGroup,
   Image,
 } from 'react-native-elements'
+// @ts-ignore TODO TS doesn't understand .native.tsx and .web.tsx files
 import DateTimePicker from 'components/DateTimePicker'
 import _ from 'lodash'
 import styles from 'styles'
 import CardWrap from 'components/CardWrap'
+import {
+  FormSection,
+  FormValueType,
+  FormType,
+  FormPath,
+  FormPart,
+  FormMetadata,
+  FormsMetadata,
+  FormPartRecord,
+  FormDefinition,
+  FormRef,
+  FormKVRawType,
+} from 'utils/formTypes'
+import { resolveRef } from 'utils/forms'
+import { FormFns } from 'utils/formTypesHelpers'
 
 /*
   Render all of the components of a form recursively. This function is applied
@@ -28,44 +42,36 @@ import CardWrap from 'components/CardWrap'
  */
 
 export default function renderFnsWrapper(
-  dynamicState,
-  setDynamicState,
-  loadedForm,
-  navigation,
-  formPaths,
-  formGetPath,
-  formSetPath,
-  changedPaths,
-  keepAlive,
-  removeKeepAlive,
-  addKeepAlive
-) {
+  dynamicState: Record<string, boolean>,
+  setDynamicState: (newState: Record<string, boolean>) => void,
+  files: Record<string, any>,
+  common: Record<string, FormDefinition>,
+  navigation: any,
+  formPaths: any,
+  formGetPath: any,
+  formSetPath: any,
+  changedPaths: any,
+  keepAlive: any,
+  removeKeepAlive: any,
+  addKeepAlive: any
+): FormFns<JSX.Element> {
   return {
     pre: () => {
       return null
     },
-    post: (entry, obj, index, formPath, pre, inner, subparts) => {
-      var title = null
-      var description = null
-      if (_.has(obj, 'title')) {
-        title = _.get(obj, 'title')
-      }
-      let rawDescription = null
-      if (_.has(obj, 'description')) {
-        rawDescription = _.get(obj, 'description')
-        description = <Text style={styles.bottomSpace}>{rawDescription}</Text>
-      }
-      if (_.has(obj, 'text')) {
-        rawDescription = _.get(obj, 'text')
-        description = <Text style={styles.bottomSpace}>{rawDescription}</Text>
-      }
+    post: (entry, part, index, formPath, pre, inner, subparts) => {
       return (
         <CardWrap
+          index={index}
           key={index}
-          title={title}
+          title={'title' in part ? part.title : null}
           formPath={formPath}
-          description={description}
-          rawDescription={rawDescription}
+          description={
+            'description' in part ? (
+              <Text style={styles.bottomSpace}>{part.description}</Text>
+            ) : null
+          }
+          rawDescription={'description' in part ? part.description : null}
           inner={inner}
           subparts={subparts}
           changedPaths={changedPaths}
@@ -73,12 +79,15 @@ export default function renderFnsWrapper(
         />
       )
     },
-    _combineParts: (entry, obj, index, inner, formPath, subparts) => {
+    combinePlainParts: (formPath, index, subparts) => {
       return <View>{subparts}</View>
     },
-    selectMultiple: (entry, obj, index, formPath, valuePaths, otherPath) => {
-      if (_.get(obj, 'field.select-multiple')) {
-        let items = _.get(obj, 'field.list-options').map((e, i) => {
+    combineSmartParts: (entry, part, index, inner, formPath, subparts) => {
+      return <View>{subparts}</View>
+    },
+    selectMultiple: (entry, part, index, formPath, valuePaths, otherPath) => {
+      if ('select-multiple' in part) {
+        let items = part.options.map((e, i) => {
           let valuePath = valuePaths[i]
           let fn = () => {
             if (formGetPath(valuePath)) {
@@ -102,7 +111,7 @@ export default function renderFnsWrapper(
             </ListItem>
           )
         })
-        if (_.get(obj, 'field.other')) {
+        if (part.other) {
           let fn = () => {
             if (formGetPath(otherPath)) {
               formSetPath(otherPath, null)
@@ -144,12 +153,12 @@ export default function renderFnsWrapper(
         // TODO Error handling
         console.error(
           'UNSUPPORTED FIELD TYPE LIST WITHOUT SELECT MUTLIPLE',
-          obj
+          part
         )
         return null
       }
     },
-    signature: (entry, obj, index, formPath, valuePath) => {
+    signature: (entry, part, index, formPath, valuePath) => {
       let icon = null
       let title = null
       let buttonStyle = {}
@@ -185,14 +194,16 @@ export default function renderFnsWrapper(
         </View>
       )
     },
-    'body-image': (entry, obj, index, formPath, valuePath) => {
+    'body-image': (entry, part, index, formPath, valuePath) => {
       let title = null
       let image = null
       let icon = null
       let buttonStyle = {}
       const value = formGetPath(valuePath)
+      let imageUri: string | null = null
       if (value) {
         title = ' Restart diagram'
+        imageUri = null
         image = (
           <ImageBackground
             imageStyle={{ resizeMode: 'contain' }}
@@ -218,7 +229,37 @@ export default function renderFnsWrapper(
         title = ' Mark and annotate'
         icon = <Icon name="edit" size={15} color="white" />
         buttonStyle = { backgroundColor: '#d5001c' }
-        let imageUri = loadedForm.files[_.get(obj, 'field.generic-image')]
+        const genderOrSex: string =
+          formGetPath('inferred.sex') || formGetPath('inferred.gender')
+        if ('filename' in part && part.filename) {
+          imageUri = files[part.filename]
+        } else if (
+          'filename-female' in part &&
+          part['filename-female'] &&
+          genderOrSex &&
+          genderOrSex === 'female'
+        ) {
+          imageUri = files[part['filename-female']]
+        } else if (
+          'filename-inteserx' in part &&
+          part['filename-intersex'] &&
+          genderOrSex &&
+          genderOrSex === 'intersex'
+        ) {
+          imageUri = files[part['filename-intersex']]
+        } else if (
+          'filename-male' in part &&
+          part['filename-male'] &&
+          genderOrSex &&
+          genderOrSex === 'male'
+        ) {
+          imageUri = files[part['filename-male']]
+        } else {
+          // TODO
+          console.log(
+            'NO IMAGE, What do we do here? Prevent this from being filled out? Show a message?'
+          )
+        }
         image = (
           <Image
             resizeMode="contain"
@@ -244,7 +285,7 @@ export default function renderFnsWrapper(
             buttonStyle={buttonStyle}
             onPress={() =>
               navigation.navigate('Body', {
-                baseImage: loadedForm.files[_.get(obj, 'field.generic-image')],
+                baseImage: imageUri,
                 enterData: (dataImage, annotations) => {
                   // TODO Do we want this behavior? You empty a field and it
                   // counts as not filled anymore
@@ -264,7 +305,7 @@ export default function renderFnsWrapper(
         </View>
       )
     },
-    bool: (entry, obj, index, formPath, valuePath) => {
+    bool: (entry, part, index, formPath, valuePath) => {
       let selected = _.has(formPaths, valuePath)
         ? formPaths[valuePath]
           ? 0
@@ -278,18 +319,17 @@ export default function renderFnsWrapper(
         />
       )
     },
-    gender: (entry, obj, index, formPath, valuePath) => {
-      let options = _.find(loadedForm.form.values, o => 'gender' == o.key)
-      if (options) {
-        options = options.value
-      } else {
-        // TODO This is a conservative approach if no gender key is specified
-        // Do we want something else?
-        options = [
-          { key: 'male', value: 'Male' },
-          { key: 'female', value: 'Female' },
-        ]
-      }
+    gender: (entry, part, index, formPath, valuePath) => {
+      let options: Array<FormKVRawType> =
+        'gender' in common
+          ? // TODO Check this at runtime
+            (common.gender as Array<FormKVRawType>)
+          : [
+              // TODO This is a conservative approach if no gender key is specified
+              // Do we want something else?
+              { key: 'male', value: 'Male' },
+              { key: 'female', value: 'Female' },
+            ]
       let selected = formPaths[valuePath]
         ? _.indexOf(
             _.map(options, x => x.key),
@@ -300,11 +340,11 @@ export default function renderFnsWrapper(
         <ButtonGroup
           selectedIndex={selected}
           onPress={i => formSetPath(valuePath, _.map(options, x => x.key)[i])}
-          buttons={_.map(options, x => x.value)}
+          buttons={_.map(options, x => '' + x.value)}
         />
       )
     },
-    text: (entry, obj, index, formPath, valuePath) => {
+    text: (entry, part, index, formPath, valuePath) => {
       return (
         <TextInput
           style={{
@@ -315,7 +355,7 @@ export default function renderFnsWrapper(
             borderRadius: 5,
             backgroundColor: '#F5F5F5',
           }}
-          placeholder={_.get(obj, 'field.placeholder')}
+          placeholder={part.placeholder}
           textAlign={'center'}
           editable={true}
           onChangeText={text => formSetPath(valuePath, text)}
@@ -323,7 +363,7 @@ export default function renderFnsWrapper(
         />
       )
     },
-    'long-text': (entry, obj, index, formPath, valuePath) => {
+    'long-text': (entry, part, index, formPath, valuePath) => {
       return (
         <TextInput
           style={{
@@ -335,7 +375,7 @@ export default function renderFnsWrapper(
             borderRadius: 5,
             backgroundColor: '#F5F5F5',
           }}
-          placeholder={_.get(obj, 'field.placeholder')}
+          placeholder={part.placeholder}
           textAlign={'left'}
           editable={true}
           multiline={true}
@@ -345,7 +385,7 @@ export default function renderFnsWrapper(
         />
       )
     },
-    number: (entry, obj, index, formPath, valuePath) => {
+    number: (entry, part, index, formPath, valuePath) => {
       return (
         <TextInput
           style={{
@@ -359,13 +399,13 @@ export default function renderFnsWrapper(
           keyboardType={'numeric'}
           textAlign={'center'}
           editable={true}
-          placeholder={_.get(obj, 'field.placeholder')}
+          placeholder={part.placeholder}
           onChangeText={text => formSetPath(valuePath, text)}
           value={formGetPath(valuePath, '')}
         />
       )
     },
-    address: (entry, obj, index, formPath, valuePath) => {
+    address: (entry, part, index, formPath, valuePath) => {
       return (
         <TextInput
           style={{
@@ -380,13 +420,13 @@ export default function renderFnsWrapper(
           keyboardType={'default'}
           textAlign={'center'}
           editable={true}
-          placeholder={_.get(obj, 'field.placeholder')}
+          placeholder={part.placeholder}
           onChangeText={text => formSetPath(valuePath, text)}
           value={formGetPath(valuePath, '')}
         />
       )
     },
-    'phone-number': (entry, obj, index, formPath, valuePath) => {
+    'phone-number': (entry, part, index, formPath, valuePath) => {
       return (
         <TextInput
           style={{
@@ -401,13 +441,12 @@ export default function renderFnsWrapper(
           keyboardType={'phone-pad'}
           textAlign={'center'}
           editable={true}
-          placeholder={_.get(obj, 'field.placeholder')}
           onChangeText={text => formSetPath(valuePath, text)}
           value={formGetPath(valuePath, '')}
         />
       )
     },
-    date: (entry, obj, index, formPath, valuePath) => {
+    date: (entry, part, index, formPath, valuePath) => {
       const current_value = formGetPath(valuePath)
       let buttonStyle = {}
       if (!current_value) {
@@ -470,7 +509,7 @@ export default function renderFnsWrapper(
         )
       }
     },
-    'date-time': (entry, obj, index, formPath, valuePath) => {
+    'date-time': (entry, part, index, formPath, valuePath) => {
       const current_value = formGetPath(valuePath)
       let buttonStyle = {}
       if (!current_value) {
@@ -532,19 +571,30 @@ export default function renderFnsWrapper(
         )
       }
     },
-    'list-with-labels': (entry, obj, index, formPath, valuePath) => {
-      let options = _.get(obj, 'field.list-options')
-      const ref = _.get(obj, 'field.list-options.Ref')
-      if (ref) {
-        // TODO Error handling
-        options = _.find(loadedForm.form.values, o => ref == o.key).value
-      }
+    'list-with-parts': (entry, part, index, formPath, valuePath) => {
+      // TODO
+      return <></>
+    },
+    list: (entry, part, index, formPath, valuePath) => {
+      // TODO
+      return <></>
+    },
+    sex: (entry, part, index, formPath, valuePath) => {
+      // TODO
+      return <></>
+    },
+    photo: (entry, part, index, formPath, valuePath) => {
+      // TODO
+      return <></>
+    },
+    'list-with-labels': (entry, part, index, formPath, valuePath) => {
+      let options = resolveRef(part.options, common)
       let items = options.map((e, i) => {
         return (
           <Picker.Item
             key={i}
             label={e.key + ' (' + e.value + ')'}
-            value={e.value}
+            value={'' + e.value}
           />
         )
       })
@@ -556,7 +606,7 @@ export default function renderFnsWrapper(
       }
       return (
         <Picker
-          prompt={_.get(obj, 'title')}
+          prompt={part.title}
           selectedValue={current_value == null ? -1 : current_value}
           style={{ height: 50, width: '100%' }}
           onValueChange={(itemValue, itemIndex) => {

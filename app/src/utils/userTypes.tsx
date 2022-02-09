@@ -40,6 +40,7 @@ export function reconfigureAmplifyForUserType(userType: UserType) {
               region: config.apiGateway.provider.REGION,
               custom_header: async () => {
                 return {
+                  // @ts-ignore TODO This exists, why doesn't typescript know about it?
                   Authorization: (await Auth.currentSession()).idToken.jwtToken,
                 }
               },
@@ -68,6 +69,7 @@ export function reconfigureAmplifyForUserType(userType: UserType) {
               region: config.apiGateway.associate.REGION,
               custom_header: async () => {
                 return {
+                  // @ts-ignore TODO This exists, why doesn't typescript know about it?
                   Authorization: (await Auth.currentSession()).idToken.jwtToken,
                 }
               },
@@ -97,6 +99,7 @@ export function reconfigureAmplifyForUserType(userType: UserType) {
         //       region: config.apiGateway.formdesigner.REGION,
         //       custom_header: async () => {
         //         return {
+        //           // @ts-ignore TODO This exists, why doesn't typescript know about it?
         //           Authorization: (await Auth.currentSession()).idToken.jwtToken,
         //         }
         //       },
@@ -126,6 +129,7 @@ export function reconfigureAmplifyForUserType(userType: UserType) {
         //       region: config.apiGateway.researcher.REGION,
         //       custom_header: async () => {
         //         return {
+        //           // @ts-ignore TODO This exists, why doesn't typescript know about it?
         //           Authorization: (await Auth.currentSession()).idToken.jwtToken,
         //         }
         //       },
@@ -155,6 +159,7 @@ export function reconfigureAmplifyForUserType(userType: UserType) {
         //       region: config.apiGateway.usermanager.REGION,
         //       custom_header: async () => {
         //         return {
+        //           // @ts-ignore TODO This exists, why doesn't typescript know about it?
         //           Authorization: (await Auth.currentSession()).idToken.jwtToken,
         //         }
         //       },

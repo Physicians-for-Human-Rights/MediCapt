@@ -51,15 +51,15 @@ export default function SelectForm({ navigation }: Props) {
   } else {
     let listOfForms = []
     if (formList[country]) {
-      listOfForms = formList[country].map((formInfo, i) => {
+      listOfForms = formList[country].map((formMetadata, i) => {
         return (
           <ListItem
             key={i}
             Component={TouchableOpacity}
-            onPress={() => navigation.navigate('Form', { formInfo })}
+            onPress={() => navigation.navigate('Form', { formMetadata })}
           >
-            <ListItem.Title>{formInfo.name}</ListItem.Title>
-            <ListItem.Subtitle>{formInfo.subtitle}</ListItem.Subtitle>
+            <ListItem.Title>{formMetadata.name}</ListItem.Title>
+            <ListItem.Subtitle>{formMetadata.subtitle}</ListItem.Subtitle>
             <ListItem.Chevron color="black" />
           </ListItem>
         )

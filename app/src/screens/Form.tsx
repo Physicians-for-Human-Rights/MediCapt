@@ -1,8 +1,15 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  FunctionComponent,
+} from 'react'
 import useMap from 'react-use/lib/useMap'
 import usePrevious from 'react-use/lib/usePrevious'
 import useSet from 'react-use/lib/useSet'
 import { View, ScrollView, Keyboard } from 'react-native'
+// @ts-ignore TODO Why doesn't typescript know about this module?
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import {
   Icon,
@@ -20,9 +27,22 @@ import Menu from 'components/FormMenu'
 import Top from 'components/FormTop'
 import Bottom from 'components/FormBottom'
 
-import { FormInfo, loadForm } from 'utils/forms'
+import { loadForm } from 'utils/forms'
+import {
+  FormSection,
+  FormValueType,
+  FormType,
+  FormPath,
+  FormPart,
+  FormMetadata,
+  FormsMetadata,
+  FormPartRecord,
+  FormDefinition,
+  FormRef,
+} from 'utils/formTypes'
 import renderFnsWrapper from 'utils/formRendering'
 import { mapSectionWithPaths, isSectionComplete } from 'utils/forms'
+import { NamedFormSection, NamedFormPart } from 'utils/formTypesHelpers'
 
 type Props = NativeStackScreenProps
 
@@ -31,24 +51,58 @@ function formGetPath(
   valuePath: string,
   default_: any = null
 ) {
+  if (_.startsWith(valuePath, 'inferred.')) {
+    switch (valuePath) {
+      case 'inferred.sex': {
+        let value = _.find(
+          formPaths,
+          (v, k) =>
+            _.includes(k, '.sex.value') ||
+            // These two are definitely not equivalent, but some forms may not
+            // include both
+            _.includes(k, '.gender.value')
+        )
+        if (typeof value === 'string') {
+          return value
+        }
+        return default_
+      }
+      case 'inferred.age-of-majority': {
+        // TODO Should this vary by country?
+        return 18
+      }
+      case 'inferred.age': {
+        let value = _.find(formPaths, (v, k) => _.includes(k, '.age.value'))
+        if (typeof value === 'number') {
+          return value
+        }
+        return default_
+      }
+      default:
+        // TODO Error handling
+        console.log("Don't know how to compute this inferred value", valuePath)
+    }
+  }
   return _.has(formPaths, valuePath) ? formPaths[valuePath] : default_
 }
 
 export default function Form({ route, navigation }: Props) {
-  const { formInfo }: { formInfo: FormInfo } = route.params
+  const { formMetadata }: { formMetadata: FormMetadata } = route.params
 
   const [loadedForm, setLoadedForm] = useState({
-    files: null,
-    form: null,
-    formSections: null,
+    files: [] as Record<string, any>,
+    form: null as null | FormType,
+    formSections: [] as NamedFormSection[],
   })
-  const { formSections } = loadedForm
+  const { form, formSections } = loadedForm
 
   const [currentSection, setCurrentSection] = useState(0)
 
   // This is state about the current properties of widgets, like if a date-time
   // picker is open or not.
-  const [dynamicState, setDynamicState] = useState({})
+  const [dynamicState, setDynamicState] = useState(
+    {} as Record<string, boolean>
+  )
 
   // This section handles caching. Since forms are so dynamic React ends up
   // wanting to rerender them a lot. This allows us to cut off the process early
@@ -61,24 +115,30 @@ export default function Form({ route, navigation }: Props) {
   const previousFormPaths = usePrevious(formPaths)
   let changedPaths = []
   for (const key of _.union(_.keys(formPaths), _.keys(previousFormPaths))) {
-    if (formPaths[key] !== previousFormPaths[key]) {
+    if (previousFormPaths && formPaths[key] !== previousFormPaths[key]) {
       changedPaths.push(key)
     }
   }
 
-  const isSectionCompleteList = _.map(formSections, section =>
-    isSectionComplete(section, (value, default_) =>
-      formGetPath(formPaths, value, default_)
-    )
-  )
-  console.log(isSectionCompleteList)
+  const isSectionCompleteList = form
+    ? _.map(formSections, section =>
+        isSectionComplete(
+          section,
+          form.common,
+          (value: string) => formGetPath(formPaths, value, null)
+          // TODO defaults
+          // (value: string, default_: any) =>
+          // formGetPath(formPaths, value, default_)
+        )
+      )
+    : []
 
   const sideMenu = useRef(null)
   const scrollView = useRef(null)
 
   useEffect(() => {
     async function fn() {
-      const l = await loadForm(formInfo)
+      const l = await loadForm(formMetadata)
       setLoadedForm(l)
     }
     fn()
@@ -104,22 +164,26 @@ export default function Form({ route, navigation }: Props) {
 
   const renderFns = renderFnsWrapper(
     dynamicState,
-    newState => setDynamicState(prevState => ({ ...prevState, ...newState })),
-    loadedForm,
+    (newState: Record<string, boolean>) =>
+      setDynamicState(prevState => ({ ...prevState, ...newState })),
+    loadedForm.files,
+    loadedForm.form ? loadedForm.form.common : {},
     navigation,
     formPaths,
     (value, default_) => formGetPath(formPaths, value, default_),
-    (valuePath, value) => setFormPath(valuePath, value),
+    setFormPath,
     changedPaths,
     keepAlive,
     removeKeepAlive,
     addKeepAlive
   )
-  let sectionContent = []
-  if (formSections) {
+  let sectionContent: null | JSX.Element = null
+  if (!_.isEmpty(formSections) && form && 'common' in form) {
     const current_section_content = formSections[currentSection]
-    sectionContent = mapSectionWithPaths(
+    sectionContent = mapSectionWithPaths<JSX.Element>(
       current_section_content,
+      form.common,
+      <></>,
       (path: string) => formGetPath(formPaths, path),
       renderFns
     )
@@ -127,7 +191,7 @@ export default function Form({ route, navigation }: Props) {
 
   let top = null
   let bottom = null
-  if (formSections) {
+  if (!_.isEmpty(formSections)) {
     top = (
       <Top
         sectionOffset={setSectionOffset}

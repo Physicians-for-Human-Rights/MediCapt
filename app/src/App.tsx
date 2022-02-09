@@ -9,6 +9,8 @@ import { ThemeProvider } from 'react-native-elements'
 import { Provider } from 'react-redux'
 import store from 'redux/store'
 
+// @ts-ignore TODO Typescript doesn't support platform-specific files
+// https://github.com/microsoft/TypeScript/issues/21926
 import withAuthenticator from 'screens/Authentication'
 
 import FormScreen from 'screens/Form'
@@ -31,7 +33,9 @@ import 'styling'
 
 const Stack = createStackNavigator()
 
-function App({ signOut, user }) {
+// NB The types here are terrible because we get different types depending on
+// which of .native.js or .web.js is included
+function App({ signOut, user }: { signOut: () => any; user: any }) {
   const [storeUser, setStoreUser] = useUser()
   const [storeSignOut, setSignOutUser] = useSignOut()
   useEffect(() => setStoreUser(user), [user])
@@ -88,15 +92,17 @@ const AuthApp = withAuthenticator(App)
 
 function LoginScreen() {
   return (
-    <SafeAreaProvider>
-      <StoreProvider>
-        <Provider store={store}>
-          <ThemeProvider theme={theme}>
-            <AuthApp />
-          </ThemeProvider>
-        </Provider>
-      </StoreProvider>
-    </SafeAreaProvider>
+    <React.StrictMode>
+      <SafeAreaProvider>
+        <StoreProvider>
+          <Provider store={store}>
+            <ThemeProvider theme={theme}>
+              <AuthApp />
+            </ThemeProvider>
+          </Provider>
+        </StoreProvider>
+      </SafeAreaProvider>
+    </React.StrictMode>
   )
 }
 

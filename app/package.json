@@ -7,7 +7,11 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "prepare": "pre-commit install"
+    "prepare": "pre-commit install",
+    "test": "jest",
+    "test-watch": "jest --watch --coverage=false --changedSince=origin/master",
+    "test-debug": "jest -o --watch --coverage=false",
+    "update-snapshots": "jest -u --coverage=false"
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^2.1.9",
@@ -61,14 +65,17 @@
     "react-signature-pad-wrapper": "^3.1.1",
     "react-use": "^17.3.2",
     "redux": "^4.1.2",
-    "redux-thunk": "^2.4.1"
+    "redux-thunk": "^2.4.1",
+    "ts-toolbelt": "^9.6.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@babel/preset-env": "^7.16.11",
     "@expo/webpack-config": "^0.16.16",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.4",
+    "@testing-library/react-native": "^9.0.0",
     "@types/amplify": "~1.1.25",
+    "@types/jest": "^27.4.0",
     "@types/js-yaml": "^4.0.5",
     "@types/lodash": "^4.14.178",
     "@types/react": "^17.0.38",
@@ -76,10 +83,33 @@
     "@types/react-native": "~0.64.12",
     "@types/react-native-side-menu": "~1.1.1",
     "@types/react-redux": "~7.1.22",
+    "ajv": "^8.10.0",
+    "ajv-formats": "^2.1.1",
     "babel-plugin-module-resolver": "^4.1.0",
+    "jest": "^27.5.1",
+    "jest-expo": "^44.0.1",
+    "json-schema-faker": "^0.5.0-rcv.41",
     "react-refresh": "^0.11.0",
+    "ts-json-schema-generator": "^0.97.0",
     "typescript": "~4.5.5",
     "webpack-hot-middleware": "^2.25.1"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "transformIgnorePatterns": [
+      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx|js|jsx)$": "babel-jest"
+    },
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "**/*.{js,jsx,ts,tsx}",
+      "!**/coverage/**",
+      "!**/node_modules/**",
+      "!**/babel.config.js",
+      "!**/jest.setup.js"
+    ]
   },
   "private": true
 }

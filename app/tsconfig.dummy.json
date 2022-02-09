@@ -10,10 +10,9 @@
     "moduleResolution": "node",
     "noEmit": true,
     "skipLibCheck": true,
-    "strict": true,
+    "strict": false,
     "noErrorTruncation": true,
     "allowUnionTypes": true
   },
-  "include": ["src/index.d.ts", "src/**/*", "tests/**/*"],
-  "extends": "expo/tsconfig.base"
+  "fileNames": []
 }
