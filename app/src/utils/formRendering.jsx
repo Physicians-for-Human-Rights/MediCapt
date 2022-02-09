@@ -192,7 +192,7 @@ export default function renderFnsWrapper(
       let buttonStyle = {}
       const value = formGetPath(valuePath)
       if (value) {
-        title = ' Modify diagram'
+        title = ' Restart diagram'
         image = (
           <ImageBackground
             imageStyle={{ resizeMode: 'contain' }}
@@ -200,17 +200,43 @@ export default function renderFnsWrapper(
             source={{ uri: formGetPath(valuePath).image }}
           >
             {value.annotations.map((annotation, idx) => (
+              // <View
+              //   key={idx}
+              //   style={{
+              //     position: 'absolute',
+              //     backgroundColor: 'red',
+              //     height: 5,
+              //     width: 5,
+              //     top: annotation.markerCoordinates.y * 200,
+              //     left: annotation.markerCoordinates.x * 200,
+              //   }}
+              // />
               <View
                 key={idx}
                 style={{
                   position: 'absolute',
-                  backgroundColor: 'red',
-                  height: 5,
-                  width: 5,
+                  flexDirection: 'row',
                   top: annotation.markerCoordinates.y * 200,
                   left: annotation.markerCoordinates.x * 200,
                 }}
-              />
+              >
+                <View
+                  style={{
+                    backgroundColor: 'red',
+                    height: 5,
+                    width: 5,
+                  }}
+                />
+                <Text
+                  style={{
+                    color: 'red',
+                    fontWeight: 'bold',
+                    fontSize: 8,
+                  }}
+                >
+                  {idx}
+                </Text>
+              </View>
             ))}
           </ImageBackground>
         )
@@ -258,7 +284,6 @@ export default function renderFnsWrapper(
                     annotations,
                   })
                 },
-                previousAnnotations: value?.annotations,
               })
             }
           />

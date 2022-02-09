@@ -5,6 +5,7 @@ import {
   ImageBackground,
   TouchableWithoutFeedback,
   Platform,
+  Text,
 } from 'react-native'
 import styles_ from 'styles'
 
@@ -22,11 +23,11 @@ const BodyMarker: React.FunctionComponent<BodyMarkerProps> = props => {
   const handlePress = evt => {
     let x, y
     if (Platform.OS === 'web') {
-      x = evt.nativeEvent.offsetX / imageSquareSize
-      y = evt.nativeEvent.offsetY / imageSquareSize
+      x = (evt.nativeEvent.offsetX - 5) / imageSquareSize
+      y = (evt.nativeEvent.offsetY - 5) / imageSquareSize
     } else {
-      x = evt.nativeEvent.locationX / imageSquareSize
-      y = evt.nativeEvent.locationY / imageSquareSize
+      x = (evt.nativeEvent.locationX - 5) / imageSquareSize
+      y = (evt.nativeEvent.locationY - 5) / imageSquareSize
     }
 
     props.confirmMarker({ coordinates: { x, y } })
@@ -59,11 +60,14 @@ const BodyMarker: React.FunctionComponent<BodyMarkerProps> = props => {
               >
                 <View
                   style={{
-                    ...StyleSheet.flatten(styles.markers),
+                    ...StyleSheet.flatten(styles.markerContainer),
                     top: annotation.markerCoordinates.y * imageSquareSize,
                     left: annotation.markerCoordinates.x * imageSquareSize,
                   }}
-                />
+                >
+                  <View style={styles.marker} />
+                  <Text style={styles.text}>{idx}</Text>
+                </View>
               </TouchableWithoutFeedback>
             ))}
           </ImageBackground>
@@ -78,11 +82,20 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
   },
-  markers: {
+  markerContainer: {
     position: 'absolute',
+    flexDirection: 'row',
+  },
+  marker: {
     backgroundColor: 'red',
     height: 10,
     width: 10,
+    marginRight: 3,
+  },
+  text: {
+    color: 'red',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
 })
 
