@@ -5,23 +5,32 @@ import {
   ImageBackground,
   TouchableWithoutFeedback,
   Platform,
+  Text,
 } from 'react-native'
 import styles_ from 'styles'
 
-const BodyMarker = props => {
+import { Marker, Annotation } from 'screens/Body'
+
+interface BodyMarkerProps {
+  baseImage: any
+  confirmMarker: (marker: Marker) => void
+  annotations: Array<Annotation>
+}
+
+const BodyMarker: React.FunctionComponent<BodyMarkerProps> = props => {
   const [imageSquareSize, setImageSquareSize] = useState(0)
 
   const handlePress = evt => {
     let x, y
     if (Platform.OS === 'web') {
-      x = evt.nativeEvent.offsetX / imageSquareSize
-      y = evt.nativeEvent.offsetY / imageSquareSize
+      x = (evt.nativeEvent.offsetX - 5) / imageSquareSize
+      y = (evt.nativeEvent.offsetY - 5) / imageSquareSize
     } else {
-      x = evt.nativeEvent.locationX / imageSquareSize
-      y = evt.nativeEvent.locationY / imageSquareSize
+      x = (evt.nativeEvent.locationX - 5) / imageSquareSize
+      y = (evt.nativeEvent.locationY - 5) / imageSquareSize
     }
 
-    props.confirmMarker({ x, y })
+    props.confirmMarker({ coordinates: { x, y } })
   }
 
   return (
@@ -40,14 +49,26 @@ const BodyMarker = props => {
             source={{ uri: props.baseImage }}
           >
             {props.annotations.map((annotation, idx) => (
-              <View
+              <TouchableWithoutFeedback
                 key={idx}
-                style={{
-                  ...StyleSheet.flatten(styles.markers),
-                  top: annotation.markerCoordinates.y * imageSquareSize,
-                  left: annotation.markerCoordinates.x * imageSquareSize,
-                }}
-              />
+                onPress={() =>
+                  props.confirmMarker({
+                    annotationIndex: idx,
+                    coordinates: annotation.markerCoordinates,
+                  })
+                }
+              >
+                <View
+                  style={{
+                    ...StyleSheet.flatten(styles.markerContainer),
+                    top: annotation.markerCoordinates.y * imageSquareSize,
+                    left: annotation.markerCoordinates.x * imageSquareSize,
+                  }}
+                >
+                  <View style={styles.marker} />
+                  <Text style={styles.text}>{idx}</Text>
+                </View>
+              </TouchableWithoutFeedback>
             ))}
           </ImageBackground>
         </TouchableWithoutFeedback>
@@ -61,11 +82,20 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
   },
-  markers: {
+  markerContainer: {
     position: 'absolute',
-    backgroundColor: 'black',
+    flexDirection: 'row',
+  },
+  marker: {
+    backgroundColor: 'red',
     height: 10,
     width: 10,
+    marginRight: 3,
+  },
+  text: {
+    color: 'red',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
 })
 

@@ -4,14 +4,16 @@ import { Header } from 'react-native-elements'
 import styles_ from 'styles'
 import SignatureComponent from 'components/Signature'
 
-const Signature = ({ navigation }) => {
+const Signature = ({ route, navigation }) => {
+  const { signed, cancelSignature } = route.params
+
   const onCancel = () => {
-    navigation.state.params.cancelSignature()
+    cancelSignature()
     navigation.goBack()
   }
 
   const onSubmit = (signature: string) => {
-    navigation.state.params.signed(signature)
+    signed(signature)
     navigation.goBack()
   }
 

@@ -5,15 +5,36 @@ import styles_ from 'styles'
 import BodyMarker from 'components/BodyMarker'
 import Dialog from 'components/Dialog'
 
-const Body = ({ navigation }) => {
-  const [annotations, setAnnotations] = useState([])
-  const [selectedMarker, setSelectedMarker] = useState(null)
+export interface Coordinates {
+  x: number
+  y: number
+}
+
+export interface Annotation {
+  markerCoordinates: Coordinates
+  description: string
+}
+
+export interface Marker {
+  annotationIndex?: number
+  coordinates: Coordinates
+}
+
+const Body = ({ route, navigation }) => {
+  const { enterData, baseImage, previousAnnotations } = route.params
+
+  const [annotations, setAnnotations] = useState<Array<Annotation>>(
+    previousAnnotations ?? []
+  )
+  const [selectedMarker, setSelectedMarker] = useState<Marker>(null)
+
+  const selectedAnnotation =
+    selectedMarker?.annotationIndex !== undefined
+      ? annotations[selectedMarker.annotationIndex]
+      : null
 
   const onSubmit = async () => {
-    navigation.state.params.enterData(
-      navigation.state.params.baseImage,
-      annotations
-    )
+    enterData(baseImage, annotations)
     navigation.goBack()
   }
 
@@ -23,10 +44,29 @@ const Body = ({ navigation }) => {
 
   // callback for dialog to add finalized annotation with marker
   const confirmAnnotation = text => {
-    setAnnotations(prev => [
-      ...prev,
-      { markerCoordinates: selectedMarker, description: text },
-    ])
+    const newAnnotation = {
+      markerCoordinates: selectedMarker.coordinates,
+      description: text,
+    }
+
+    if (selectedAnnotation) {
+      setAnnotations(prevAnnotations => {
+        const newAnnotations = [...prevAnnotations]
+        newAnnotations[selectedMarker.annotationIndex] = newAnnotation
+        return newAnnotations
+      })
+    } else {
+      setAnnotations(prevAnnotations => [...prevAnnotations, newAnnotation])
+    }
+
+    setSelectedMarker(null)
+  }
+
+  // callback for dialog to delete previously added annotation
+  const deleteAnnotation = () => {
+    setAnnotations(prev =>
+      prev.filter(annotation => annotation !== selectedAnnotation)
+    )
     setSelectedMarker(null)
   }
 
@@ -41,7 +81,7 @@ const Body = ({ navigation }) => {
       />
       <View style={styles.annotationContainer}>
         <BodyMarker
-          baseImage={navigation.state.params.baseImage}
+          baseImage={baseImage}
           confirmMarker={marker => setSelectedMarker(marker)}
           annotations={annotations}
         />
@@ -64,8 +104,10 @@ const Body = ({ navigation }) => {
         visible={selectedMarker !== null}
         title="Annotation"
         description="Please add any comments on the annotation."
+        inputText={selectedAnnotation?.description}
         handleCancel={() => setSelectedMarker(null)}
         handleConfirm={confirmAnnotation}
+        handleDelete={selectedAnnotation ? deleteAnnotation : undefined}
       />
     </View>
   )
