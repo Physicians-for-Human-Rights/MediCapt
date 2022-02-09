@@ -70,14 +70,12 @@ export function shouldSkipConditional(
   }
   if ('only-sex' in part) {
     const sex = getValue('inferred.sex')
-    console.log('only-sex', part['only-sex'], getValue('inferred.sex'))
     switch (part['only-sex']) {
       case 'male':
         if (sex === 'female') return true
         break
       case 'female':
         if (sex === 'male') {
-          console.log('BYE')
           return true
         }
         break
@@ -149,7 +147,6 @@ export function mapSectionWithPaths<Return>(
       let subparts: Return | null = null
       //
       if (!('Ref' in part) && shouldSkipConditional(part, getValue)) {
-        console.log('Killing', formPath)
         return identity
       }
       //

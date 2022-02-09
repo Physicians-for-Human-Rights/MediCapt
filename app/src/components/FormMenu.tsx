@@ -19,8 +19,6 @@ function Menu({
         containerStyle={styles.topBorder}
         Component={TouchableOpacity}
         onPress={x => {
-          console.log('PRESS', x)
-          console.log(x.target.getAttribute('data-index'))
           changeSection(i)
         }}
       >
