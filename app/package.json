@@ -71,6 +71,7 @@
     "@babel/preset-env": "^7.16.11",
     "@expo/webpack-config": "^0.16.16",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.4",
+    "@testing-library/jest-native": "^4.0.4",
     "@testing-library/react-native": "^9.0.0",
     "@types/amplify": "~1.1.25",
     "@types/jest": "^27.4.0",
