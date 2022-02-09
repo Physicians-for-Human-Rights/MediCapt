@@ -143,6 +143,7 @@ export default function Form({ route, navigation }: Props) {
         sectionOffset={setSectionOffset}
         currentSection={currentSection}
         openSideMenu={openSideMenu}
+        formGetPath={value => formGetPath(formPaths, value, null)}
         title={formSections[currentSection].title}
         lastSection={formSections.length - 1}
         isSectionCompleted={isSectionCompleteList[currentSection]}
