@@ -8,7 +8,15 @@ import {
 } from 'react-native'
 import styles_ from 'styles'
 
-const BodyMarker = props => {
+import { Marker, Annotation } from 'screens/Body'
+
+interface BodyMarkerProps {
+  baseImage: any
+  confirmMarker: (marker: Marker) => void
+  annotations: Array<Annotation>
+}
+
+const BodyMarker: React.FunctionComponent<BodyMarkerProps> = props => {
   const [imageSquareSize, setImageSquareSize] = useState(0)
 
   const handlePress = evt => {
@@ -21,7 +29,7 @@ const BodyMarker = props => {
       y = evt.nativeEvent.locationY / imageSquareSize
     }
 
-    props.confirmMarker({ x, y })
+    props.confirmMarker({ coordinates: { x, y } })
   }
 
   return (
@@ -40,14 +48,23 @@ const BodyMarker = props => {
             source={{ uri: props.baseImage }}
           >
             {props.annotations.map((annotation, idx) => (
-              <View
+              <TouchableWithoutFeedback
                 key={idx}
-                style={{
-                  ...StyleSheet.flatten(styles.markers),
-                  top: annotation.markerCoordinates.y * imageSquareSize,
-                  left: annotation.markerCoordinates.x * imageSquareSize,
-                }}
-              />
+                onPress={() =>
+                  props.confirmMarker({
+                    annotationIndex: idx,
+                    coordinates: annotation.markerCoordinates,
+                  })
+                }
+              >
+                <View
+                  style={{
+                    ...StyleSheet.flatten(styles.markers),
+                    top: annotation.markerCoordinates.y * imageSquareSize,
+                    left: annotation.markerCoordinates.x * imageSquareSize,
+                  }}
+                />
+              </TouchableWithoutFeedback>
             ))}
           </ImageBackground>
         </TouchableWithoutFeedback>

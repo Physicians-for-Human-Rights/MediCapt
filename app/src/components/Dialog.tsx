@@ -6,26 +6,22 @@ type DialogProps = {
   visible: boolean
   title: string
   description: string
+  inputText: string
   handleCancel: () => void
   handleConfirm: (text: string) => void
+  handleDelete?: () => void
 }
 
 const Dialog: React.FunctionComponent<DialogProps> = props => {
-  const [text, setText] = useState('')
+  const [text, setText] = useState(props.inputText ?? '')
 
-  const handleConfirm = () => {
-    props.handleConfirm(text)
-    setText('')
-  }
-
-  const handleCancel = () => {
-    props.handleCancel()
-    setText('')
-  }
+  React.useEffect(() => {
+    setText(props.inputText ?? '')
+  }, [props.visible])
 
   return (
     <View>
-      <Overlay isVisible={props.visible} onBackdropPress={handleCancel}>
+      <Overlay isVisible={props.visible} onBackdropPress={props.handleCancel}>
         <Text style={styles.textPrimary}>{props.title}</Text>
         <Text style={styles.textSecondary}>{props.description}</Text>
         <TextInput
@@ -37,16 +33,26 @@ const Dialog: React.FunctionComponent<DialogProps> = props => {
           textAlignVertical="top"
         />
         <View style={styles.buttonsContainer}>
-          <Button
-            title="Cancel"
-            onPress={handleCancel}
-            containerStyle={styles.button}
-          />
-          <Button
-            title="Confirm"
-            onPress={handleConfirm}
-            containerStyle={styles.button}
-          />
+          {props.handleDelete && (
+            <Button
+              title="Delete"
+              buttonStyle={{ backgroundColor: '#d5001c' }}
+              onPress={props.handleDelete}
+              containerStyle={styles.button}
+            />
+          )}
+          <View style={styles.rightButtons}>
+            <Button
+              title="Cancel"
+              onPress={props.handleCancel}
+              containerStyle={styles.button}
+            />
+            <Button
+              title="Confirm"
+              onPress={() => props.handleConfirm(text)}
+              containerStyle={styles.button}
+            />
+          </View>
         </View>
       </Overlay>
     </View>
@@ -56,9 +62,15 @@ const Dialog: React.FunctionComponent<DialogProps> = props => {
 const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
+  },
+  rightButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    flex: 1,
   },
   button: {
     zIndex: 1,

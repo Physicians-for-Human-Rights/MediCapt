@@ -192,7 +192,7 @@ export default function renderFnsWrapper(
       let buttonStyle = {}
       const value = formGetPath(valuePath)
       if (value) {
-        title = ' Restart diagram'
+        title = ' Modify diagram'
         image = (
           <ImageBackground
             imageStyle={{ resizeMode: 'contain' }}
@@ -258,6 +258,7 @@ export default function renderFnsWrapper(
                     annotations,
                   })
                 },
+                previousAnnotations: value?.annotations,
               })
             }
           />
