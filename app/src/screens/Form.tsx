@@ -11,14 +11,6 @@ import useSet from 'react-use/lib/useSet'
 import { View, ScrollView, Keyboard } from 'react-native'
 // @ts-ignore TODO Why doesn't typescript know about this module?
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import {
-  Icon,
-  Button,
-  ListItem,
-  ButtonGroup,
-  Card,
-  Image,
-} from 'react-native-elements'
 import SideMenu from 'react-native-side-menu'
 import _ from 'lodash'
 
@@ -207,6 +199,7 @@ export default function Form({ route, navigation }: Props) {
         sectionOffset={setSectionOffset}
         currentSection={currentSection}
         openSideMenu={openSideMenu}
+        formGetPath={value => formGetPath(formPaths, value, null)}
         title={formSections[currentSection].title}
         lastSection={formSections.length - 1}
         isSectionCompleted={isSectionCompleteList[currentSection]}
@@ -223,7 +216,7 @@ export default function Form({ route, navigation }: Props) {
             navigation={navigation}
             formSections={formSections}
             changeSection={menuChangeSection}
-            isSectionCompleteList={isSectionCompleteList} // TODO
+            isSectionCompleteList={isSectionCompleteList}
           />
         }
       >
