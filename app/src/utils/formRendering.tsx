@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Text,
   TextInput,
@@ -17,6 +17,7 @@ import {
 } from 'react-native-elements'
 // @ts-ignore TODO TS doesn't understand .native.tsx and .web.tsx files
 import DateTimePicker from 'components/DateTimePicker'
+import PhotoSelector from 'components/PhotoSelector'
 import _ from 'lodash'
 import styles from 'styles'
 import CardWrap from 'components/CardWrap'
@@ -593,8 +594,16 @@ export default function renderFnsWrapper(
       return <></>
     },
     photo: (entry, part, index, formPath, valuePath) => {
-      // TODO
-      return <></>
+      const photos: Array<string> = formGetPath(valuePath)?.photos ?? []
+      const setPhotos: (
+        cb: (prev: Array<string>) => Array<string>
+      ) => void = cb => formSetPath(valuePath, { photos: cb(photos) })
+
+      return (
+        <View>
+          <PhotoSelector photos={photos} setPhotos={setPhotos} />
+        </View>
+      )
     },
     'list-with-labels': (entry, part, index, formPath, valuePath) => {
       let options = resolveRef(part.options, common)

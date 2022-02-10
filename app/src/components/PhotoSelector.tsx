@@ -12,7 +12,7 @@ import * as ImagePicker from 'expo-image-picker'
 
 type PhotoSelectorProps = {
   photos: Array<string>
-  setPhotos: React.Dispatch<React.SetStateAction<Array<string>>>
+  setPhotos: (cb: (prev: Array<string>) => Array<string>) => void
 }
 
 const PhotoSelector: React.FunctionComponent<PhotoSelectorProps> = props => {
