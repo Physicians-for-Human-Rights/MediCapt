@@ -13,6 +13,7 @@ export interface Coordinates {
 export interface Annotation {
   markerCoordinates: Coordinates
   description: string
+  photos: Array<string>
 }
 
 export interface Marker {
@@ -43,10 +44,11 @@ const Body = ({ route, navigation }) => {
   }
 
   // callback for dialog to add finalized annotation with marker
-  const confirmAnnotation = text => {
+  const confirmAnnotation = (text, photos) => {
     const newAnnotation = {
       markerCoordinates: selectedMarker.coordinates,
       description: text,
+      photos,
     }
 
     if (selectedAnnotation) {
@@ -104,7 +106,7 @@ const Body = ({ route, navigation }) => {
         visible={selectedMarker !== null}
         title="Annotation"
         description="Please add any comments on the annotation."
-        inputText={selectedAnnotation?.description}
+        selectedAnnotation={selectedAnnotation}
         handleCancel={() => setSelectedMarker(null)}
         handleConfirm={confirmAnnotation}
         handleDelete={selectedAnnotation ? deleteAnnotation : undefined}

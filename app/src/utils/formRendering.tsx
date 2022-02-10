@@ -201,8 +201,9 @@ export default function renderFnsWrapper(
       let buttonStyle = {}
       const value = formGetPath(valuePath)
       let imageUri: string | null = null
+      icon = <Icon name="edit" size={15} color="white" />
       if (value) {
-        title = ' Restart diagram'
+        title = ' Edit diagram'
         imageUri = null
         image = (
           <ImageBackground
@@ -242,7 +243,6 @@ export default function renderFnsWrapper(
         )
       } else {
         title = ' Mark and annotate'
-        icon = <Icon name="edit" size={15} color="white" />
         buttonStyle = { backgroundColor: '#d5001c' }
         const genderOrSex: string =
           formGetPath('inferred.sex') || formGetPath('inferred.gender')
@@ -300,20 +300,14 @@ export default function renderFnsWrapper(
             buttonStyle={buttonStyle}
             onPress={() =>
               navigation.navigate('Body', {
-                baseImage: imageUri,
+                baseImage: value?.image ?? imageUri,
                 enterData: (dataImage, annotations) => {
-                  // TODO Do we want this behavior? You empty a field and it
-                  // counts as not filled anymore
-                  //
-                  // if (annotations.length === 0) {
-                  //     formSetPath(valuePath, "");
-                  //     return;
-                  // }
                   formSetPath(valuePath, {
                     image: dataImage,
                     annotations,
                   })
                 },
+                previousAnnotations: value?.annotations,
               })
             }
           />

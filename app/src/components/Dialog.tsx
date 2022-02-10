@@ -2,21 +2,26 @@ import React, { useState } from 'react'
 import { Button, Overlay } from 'react-native-elements'
 import { View, Text, StyleSheet, TextInput } from 'react-native'
 
+import PhotoSelector from 'components/PhotoSelector'
+import { Annotation } from 'screens/Body'
+
 type DialogProps = {
   visible: boolean
   title: string
   description: string
-  inputText: string
+  selectedAnnotation: Annotation
   handleCancel: () => void
-  handleConfirm: (text: string) => void
+  handleConfirm: (text: string, photos: Array<String>) => void
   handleDelete?: () => void
 }
 
 const Dialog: React.FunctionComponent<DialogProps> = props => {
-  const [text, setText] = useState(props.inputText ?? '')
+  const [text, setText] = useState(props.selectedAnnotation?.description ?? '')
+  const [photos, setPhotos] = useState(props.selectedAnnotation?.photos ?? [])
 
   React.useEffect(() => {
-    setText(props.inputText ?? '')
+    setText(props.selectedAnnotation?.description ?? '')
+    setPhotos(props.selectedAnnotation?.photos ?? [])
   }, [props.visible])
 
   return (
@@ -32,6 +37,7 @@ const Dialog: React.FunctionComponent<DialogProps> = props => {
           blurOnSubmit={true}
           textAlignVertical="top"
         />
+        <PhotoSelector photos={photos} setPhotos={setPhotos} />
         <View style={styles.buttonsContainer}>
           {props.handleDelete && (
             <Button
@@ -49,7 +55,7 @@ const Dialog: React.FunctionComponent<DialogProps> = props => {
             />
             <Button
               title="Confirm"
-              onPress={() => props.handleConfirm(text)}
+              onPress={() => props.handleConfirm(text, photos)}
               containerStyle={styles.button}
             />
           </View>
