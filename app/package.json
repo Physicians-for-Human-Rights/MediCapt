@@ -39,6 +39,7 @@
     "expo-splash-screen": "~0.14.1",
     "expo-status-bar": "~1.2.0",
     "graphql": "^14.0.0",
+    "jest": "^26.6.3",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "react": "17.0.1",
@@ -71,6 +72,7 @@
     "@babel/preset-env": "^7.16.11",
     "@expo/webpack-config": "^0.16.16",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.4",
+    "@testing-library/jest-native": "^4.0.4",
     "@testing-library/react-native": "^9.0.0",
     "@types/amplify": "~1.1.25",
     "@types/jest": "^27.4.0",
@@ -84,7 +86,6 @@
     "ajv": "^8.10.0",
     "ajv-formats": "^2.1.1",
     "babel-plugin-module-resolver": "^4.1.0",
-    "jest": "^27.5.1",
     "jest-expo": "^44.0.1",
     "json-schema-faker": "^0.5.0-rcv.41",
     "react-refresh": "^0.11.0",
@@ -98,7 +99,8 @@
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"
     ],
     "transform": {
-      "^.+\\.(ts|tsx|js|jsx)$": "babel-jest"
+      "^.+\\.(ts|tsx|js|jsx)$": "babel-jest",
+      "^.+\\.(yaml|json)$": "./jestFileTransformer.js"
     },
     "collectCoverage": true,
     "collectCoverageFrom": [

@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  FunctionComponent,
-} from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import useMap from 'react-use/lib/useMap'
 import usePrevious from 'react-use/lib/usePrevious'
 import useSet from 'react-use/lib/useSet'
@@ -20,18 +14,7 @@ import Top from 'components/FormTop'
 import Bottom from 'components/FormBottom'
 
 import { loadForm } from 'utils/forms'
-import {
-  FormSection,
-  FormValueType,
-  FormType,
-  FormPath,
-  FormPart,
-  FormMetadata,
-  FormsMetadata,
-  FormPartRecord,
-  FormDefinition,
-  FormRef,
-} from 'utils/formTypes'
+import { FormType, FormMetadata } from 'utils/formTypes'
 import renderFnsWrapper from 'utils/formRendering'
 import { mapSectionWithPaths, isSectionComplete } from 'utils/forms'
 import { NamedFormSection, NamedFormPart } from 'utils/formTypesHelpers'
@@ -130,8 +113,7 @@ export default function Form({ route, navigation }: Props) {
 
   useEffect(() => {
     async function fn() {
-      const l = await loadForm(formMetadata)
-      setLoadedForm(l)
+      setLoadedForm(await loadForm(formMetadata))
     }
     fn()
   }, [])

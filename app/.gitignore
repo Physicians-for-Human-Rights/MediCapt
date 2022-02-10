@@ -20,3 +20,5 @@ aws-exports.js
 awsconfiguration.json
 config.js
 .DS_Store
+coverage
+.log

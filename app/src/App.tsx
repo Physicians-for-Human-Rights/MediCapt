@@ -1,9 +1,4 @@
 import React, { useEffect } from 'react'
-// import { createAppContainer, SafeAreaView } from 'react-navigation'
-// import {
-//   createStackNavigator,
-//   NavigationStackScreenProps,
-// } from 'react-navigation-stack'
 import { ThemeProvider } from 'react-native-elements'
 
 import { Provider } from 'react-redux'
