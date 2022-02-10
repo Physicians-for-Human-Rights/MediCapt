@@ -114,7 +114,7 @@ class CustomSignIn extends AuthPiece {
   }
 }
 
-function Header(accountType, setAccountType) {
+function Header(userType, setAccountType) {
   return () => (
     <View
       style={{
@@ -127,13 +127,13 @@ function Header(accountType, setAccountType) {
         </Text>
         <ButtonGroup
           selectedButtonStyle={{ backgroundColor: '#d5001c' }}
-          selectedIndex={accountType - 1 + 1}
+          selectedIndex={userType - 1 + 1}
           onPress={i => setAccountType(i)}
           buttons={['Healthcare Provider', 'Associate']}
         />
         <ButtonGroup
           selectedButtonStyle={{ backgroundColor: '#d5001c' }}
-          selectedIndex={accountType > 1 ? accountType - 2 : -1}
+          selectedIndex={userType > 1 ? userType - 2 : -1}
           onPress={i => setAccountType(i + 2)}
           buttons={['User Manager', 'Form Designer', 'Researcher']}
         />
@@ -145,7 +145,7 @@ function Header(accountType, setAccountType) {
 export default function withAuthenticator(Component) {
   const AppWithAuthenticator = props => {
     const [authState, setAuthState] = useState(null)
-    const [accountType, setAccountType] = useState(null)
+    const [userType, setAccountType] = useState(null)
     const [user, setUser] = useState(null)
     useMemo(async () => {
       const r = await AsyncStorage.getItem('@last_account_selection')
@@ -154,12 +154,12 @@ export default function withAuthenticator(Component) {
       return r
     }, [])
     useEffect(async () => {
-      if (accountType !== null) {
+      if (userType !== null) {
         await AsyncStorage.setItem(
           '@last_account_selection',
-          UserTypeList[accountType]
+          UserTypeList[userType]
         )
-        reconfigureAmplifyForUserType(UserTypeList[accountType])
+        reconfigureAmplifyForUserType(UserTypeList[userType])
       }
     })
     useEffect(async () => {
@@ -169,12 +169,12 @@ export default function withAuthenticator(Component) {
         setUser(null)
       }
     }, [authState])
-    const WrappedHeader = Header(accountType, setAccountType)
-    if (accountType === null || accountType === undefined) {
+    const WrappedHeader = Header(userType, setAccountType)
+    if (userType === null || userType === undefined) {
       return <></>
     } else {
       if (authState == 'signedIn') {
-        return <Component user={user} />
+        return <Component user={user} userType={UserTypeList[userType]} />
       } else {
         return (
           <>

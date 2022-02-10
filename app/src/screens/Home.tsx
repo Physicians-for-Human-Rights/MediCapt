@@ -62,7 +62,7 @@ export default function HomeScreen({ navigation }: Props) {
       }) // TODO What else can we do on error?
   }
 
-  if (!isEmpty(user)) {
+  if (!isEmpty(user) && user.attributes) {
     return (
       <SafeAreaView forceInset={{ top: 'always' }} style={styles.container}>
         <View
