@@ -5,7 +5,6 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Header, ListItem, ButtonGroup } from 'react-native-elements'
 import * as Localization from 'expo-localization'
 import styles from 'styles'
-import { NativeStackScreenProps } from '@react-navigation/native-stack'
 
 import { FormsMetadata } from 'utils/formTypesHelpers'
 
@@ -30,9 +29,7 @@ function guessCountry() {
   }
 }
 
-type Props = NativeStackScreenProps
-
-export default function SelectForm({ navigation }: Props) {
+export default function SelectForm({ navigation }) {
   const [loaded, setLoaded] = useState(false)
   const [country, setCountry] = useState(null as null | string)
   const [formId, setFormId] = useState(null)

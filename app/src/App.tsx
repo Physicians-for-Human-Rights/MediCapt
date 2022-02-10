@@ -8,96 +8,64 @@ import store from 'redux/store'
 // https://github.com/microsoft/TypeScript/issues/21926
 import withAuthenticator from 'screens/Authentication'
 
-import FormScreen from 'screens/Form'
-import SignatureScreen from 'screens/Signature'
-import FormOverviewScreen from 'screens/FormOverview'
-import SelectFormScreen from 'screens/SelectForm'
-import HomeScreen from 'screens/Home'
-import BodyScreen from 'screens/Body'
-import PlaceholderScreen from 'screens/Placeholder'
-
 import { StoreProvider, useUser, useSignOut } from 'utils/store'
 
-import theme from 'theme'
+import oldTheme, { theme } from 'theme'
+import { UserType } from 'utils/userTypes'
 
-import { NavigationContainer } from '@react-navigation/native'
-import { createStackNavigator } from '@react-navigation/stack'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
+
+import { default as ProviderApp } from 'screens/provider/App'
+import { default as AssociateApp } from 'screens/associate/App'
+import { default as UserManagerApp } from 'screens/userManager/App'
+import { default as FormDesignerApp } from 'screens/formDesigner/App'
+import { default as ResearcherApp } from 'screens/researcher/App'
+
+import { NativeBaseProvider } from 'native-base'
 
 import 'styling'
 
-const Stack = createStackNavigator()
-
 // NB The types here are terrible because we get different types depending on
 // which of .native.js or .web.js is included
-function App({ signOut, user }: { signOut: () => any; user: any }) {
-  const [storeUser, setStoreUser] = useUser()
-  const [storeSignOut, setSignOutUser] = useSignOut()
-  useEffect(() => setStoreUser(user), [user])
-  useEffect(() => {
-    setSignOutUser(signOut)
-  }, [signOut])
-  return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Home"
-        screenOptions={{ gestureEnabled: false }}
-      >
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ title: 'Medicapt', headerShown: false }}
-        />
-        <Stack.Screen
-          name="Body"
-          component={BodyScreen}
-          options={{ title: 'Add marks on the diagram' }}
-        />
-        <Stack.Screen
-          name="Other"
-          component={PlaceholderScreen}
-          options={{ title: 'Lots of features here' }}
-        />
-        <Stack.Screen
-          name="FormOverview"
-          component={FormOverviewScreen}
-          options={{ title: 'Form overview' }}
-        />
-        <Stack.Screen
-          name="SelectForm"
-          component={SelectFormScreen}
-          options={{ title: 'Select a form' }}
-        />
-        <Stack.Screen
-          name="Form"
-          component={FormScreen}
-          options={{ title: 'Fill out the form' }}
-        />
-        <Stack.Screen
-          name="Signature"
-          component={SignatureScreen}
-          options={{ title: 'Sign anywhere below' }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
-  )
+function App({
+  signOut,
+  user,
+  userType,
+}: {
+  signOut: () => any
+  user: any
+  userType: UserType
+}) {
+  switch (userType) {
+    case UserType.Provider:
+      return <ProviderApp signOut={signOut} user={user} />
+    case UserType.Associate:
+      return <AssociateApp signOut={signOut} user={user} />
+    case UserType.UserManager:
+      return <UserManagerApp signOut={signOut} user={user} />
+    case UserType.FormDesigner:
+      return <FormDesignerApp signOut={signOut} user={user} />
+    case UserType.Researcher:
+      return <ResearcherApp signOut={signOut} user={user} />
+  }
 }
 
 const AuthApp = withAuthenticator(App)
 
 function LoginScreen() {
   return (
-    <React.StrictMode>
-      <SafeAreaProvider>
+    // TODO Remove SafeAreaProvider after the native base switch
+    <SafeAreaProvider>
+      <NativeBaseProvider theme={theme}>
         <StoreProvider>
           <Provider store={store}>
-            <ThemeProvider theme={theme}>
+            <ThemeProvider theme={oldTheme}>
               <AuthApp />
             </ThemeProvider>
           </Provider>
         </StoreProvider>
-      </SafeAreaProvider>
-    </React.StrictMode>
+      </NativeBaseProvider>
+    </SafeAreaProvider>
   )
 }
 

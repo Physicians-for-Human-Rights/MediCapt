@@ -29,7 +29,7 @@ import {
   reconfigureAmplifyForUserType,
 } from 'utils/userTypes'
 
-function Header(accountType, setAccountType) {
+function Header(userType, setAccountType) {
   const { tokens } = useTheme()
   return () => (
     <View>
@@ -56,13 +56,13 @@ function Header(accountType, setAccountType) {
       </Flex>
       <ButtonGroup
         selectedButtonStyle={{ backgroundColor: '#d5001c' }}
-        selectedIndex={accountType}
+        selectedIndex={userType}
         onPress={i => setAccountType(i)}
         buttons={['Healthcare Provider', 'Associate']}
       />
       <ButtonGroup
         selectedButtonStyle={{ backgroundColor: '#d5001c' }}
-        selectedIndex={accountType > 1 ? accountType - 2 : -1}
+        selectedIndex={userType > 1 ? userType - 2 : -1}
         onPress={i => setAccountType(i + 2)}
         buttons={['User Manager', 'Form Designer', 'Researcher']}
       />
@@ -84,7 +84,7 @@ function Footer() {
 
 export default function withAuthenticator(Component) {
   const AppWithAuthenticator: FunctionComponent<T> = props => {
-    const [accountType, setAccountType] = useState(null)
+    const [userType, setAccountType] = useState(null)
     useMemo(async () => {
       let r = await AsyncStorage.getItem('@last_account_selection')
       if (indexOf(UserTypeList, r) < 0) {
@@ -95,17 +95,17 @@ export default function withAuthenticator(Component) {
       return r
     }, [])
     useEffect(async () => {
-      if (accountType !== null) {
-        reconfigureAmplifyForUserType(UserTypeList[accountType])
+      if (userType !== null) {
+        reconfigureAmplifyForUserType(UserTypeList[userType])
         await AsyncStorage.setItem(
           '@last_account_selection',
-          UserTypeList[accountType]
+          UserTypeList[userType]
         )
       }
     })
 
     const defaultComponents = {
-      Header: Header(accountType, setAccountType),
+      Header: Header(userType, setAccountType),
       SignIn: {
         Header: Authenticator.SignIn.Header,
         Footer: Authenticator.SignIn.Footer,
@@ -113,12 +113,18 @@ export default function withAuthenticator(Component) {
       Footer: Footer,
     }
 
-    if (accountType === null || accountType === undefined) {
+    if (userType === null || userType === undefined) {
       return <></>
     } else {
       return (
         <Authenticator components={defaultComponents} variation={'modal'}>
-          {({ signOut, user }) => <Component signOut={signOut} user={user} />}
+          {({ signOut, user }) => (
+            <Component
+              signOut={signOut}
+              user={user}
+              userType={UserTypeList[userType]}
+            />
+          )}
         </Authenticator>
       )
     }
