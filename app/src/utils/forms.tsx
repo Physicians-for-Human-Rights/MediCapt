@@ -1,4 +1,3 @@
-import { A, O, T } from 'ts-toolbelt'
 import { Platform } from 'react-native'
 import * as FileSystem from 'expo-file-system'
 import _ from 'lodash'
@@ -12,7 +11,7 @@ import {
   FormPath,
   FormPart,
   FormMetadata,
-  FormsMetadata,
+  FormSectionRecord,
   FormPartRecord,
   FormDefinition,
   FormRef,
@@ -21,6 +20,7 @@ import {
 } from 'utils/formTypes'
 import {
   NamedFormSection,
+  FormsMetadata,
   NamedFormPart,
   FormFns,
 } from 'utils/formTypesHelpers'
@@ -322,8 +322,8 @@ export function isSectionComplete(
   getValue: GetValueFn
 ) {
   let complete = true
-  mapSectionWithPaths<any>(section, common, [], getValue, {
-    pre: () => null,
+  mapSectionWithPaths<boolean>(section, common, true, getValue, {
+    pre: () => true,
     selectMultiple: (entry, obj, index, formPath, valuePaths) =>
       // NB This checks not that getValue exists, but that at least one of them is also true.
       (complete = complete && _.some(valuePaths, x => getValue(x))),
@@ -359,16 +359,23 @@ export function isSectionComplete(
       (complete = complete && getValue(valuePath) != null),
     photo: (entry, obj, index, formPath, valuePath) =>
       (complete = complete && getValue(valuePath) != null),
-    combinePlainParts: (formPath, index, subparts) => null,
+    combinePlainParts: (formPath, index, subparts) =>
+      _.reduce(subparts, (a, b) => a && b)!,
     combineSmartParts: (
       entry,
       part,
       index,
       inner,
       // The path to the parts and the parts we should combine together
-      formPath
-    ) => null,
-    post: (entry, obj, index, formPath, pre, inner, subparts) => null,
+      formPath,
+      parts
+    ) => {
+      const r = _.reduce(parts, (a, b) => a && b)
+      if (r === undefined) return true
+      else return false
+    },
+    post: (entry, obj, index, formPath, pre, inner, subparts) =>
+      (inner === null ? true : inner) && (subparts === null ? true : subparts),
   })
   return complete
 }
@@ -387,11 +394,13 @@ export async function readImage(uri: string, mimePrefix: string) {
     content = await fetch(uri)
     content = await content.blob()
     content = await blobToBase64(content)
-  } else {
+  } else if (FileSystem.EncodingType) {
     content = await FileSystem.readAsStringAsync(uri, {
       encoding: FileSystem.EncodingType.Base64,
     })
     content = mimePrefix + content
+  } else {
+    console.log('File reading failed')
   }
   return content
 }
@@ -454,15 +463,18 @@ export async function loadForm(formMetadata: FormMetadata) {
   )
   // @ts-ignore TODO need to have a typed loader
   const form: FormType = yaml.load(files['form.yaml'])
-  const formSections: NamedFormSection[] = form.sections.map(e => {
+  return {
+    files: files,
+    form: form,
+    formSections: nameFormSections(form.sections),
+  }
+}
+
+export function nameFormSections(sections: FormSectionRecord[]) {
+  return sections.map(e => {
     return {
       name: Object.keys(e)[0],
       ...Object.values(e)[0],
     }
   })
-  return {
-    files: files,
-    form: form,
-    formSections: formSections,
-  }
 }

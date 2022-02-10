@@ -7,7 +7,6 @@ import * as Localization from 'expo-localization'
 import styles from 'styles'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 
-import { FormMetadata } from 'utils/formTypes'
 import { FormsMetadata } from 'utils/formTypesHelpers'
 
 const formList: Record<
