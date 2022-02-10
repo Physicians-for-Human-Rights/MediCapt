@@ -9,12 +9,13 @@ import {
   FormSection,
   FormType,
   FormValueType,
-  FormsMetadata,
   NonRefFormPart,
 } from 'utils/formTypes'
 
 // Sections and fields are named by the key of the object they're stored in. The
 // name is not present inside the section or field.
+
+export type FormsMetadata = Record<string, FormMetadata>
 
 export type Named<T> = T & { name: string }
 export type NamedFormSection = Named<FormSection>

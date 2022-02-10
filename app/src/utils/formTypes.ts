@@ -43,8 +43,6 @@ export type FormMetadata = {
   formStorageVersion: string
 }
 
-export type FormsMetadata = Record<string, FormMetadata>
-
 /**
    @minProperties 1
    @maxProperties 1

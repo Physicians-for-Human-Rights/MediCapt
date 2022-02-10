@@ -250,7 +250,6 @@ export function mapSectionWithPaths<Return>(
     }
   }
   if (shouldSkipConditional(section, getValue)) {
-    console.log('Killing section', section)
     return identity
   }
   return fns.combinePlainParts(
