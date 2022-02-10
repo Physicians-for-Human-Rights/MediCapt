@@ -201,8 +201,9 @@ export default function renderFnsWrapper(
       let buttonStyle = {}
       const value = formGetPath(valuePath)
       let imageUri: string | null = null
+      icon = <Icon name="edit" size={15} color="white" />
       if (value) {
-        title = ' Restart diagram'
+        title = ' Edit diagram'
         imageUri = null
         image = (
           <ImageBackground
@@ -211,24 +212,13 @@ export default function renderFnsWrapper(
             source={{ uri: formGetPath(valuePath).image }}
           >
             {value.annotations.map((annotation, idx) => (
-              // <View
-              //   key={idx}
-              //   style={{
-              //     position: 'absolute',
-              //     backgroundColor: 'red',
-              //     height: 5,
-              //     width: 5,
-              //     top: annotation.markerCoordinates.y * 200,
-              //     left: annotation.markerCoordinates.x * 200,
-              //   }}
-              // />
               <View
                 key={idx}
                 style={{
                   position: 'absolute',
                   flexDirection: 'row',
-                  top: annotation.markerCoordinates.y * 200,
-                  left: annotation.markerCoordinates.x * 200,
+                  top: annotation.markerCoordinates.y * 200 - 2.5,
+                  left: annotation.markerCoordinates.x * 200 - 2.5,
                 }}
               >
                 <View
@@ -253,7 +243,6 @@ export default function renderFnsWrapper(
         )
       } else {
         title = ' Mark and annotate'
-        icon = <Icon name="edit" size={15} color="white" />
         buttonStyle = { backgroundColor: '#d5001c' }
         const genderOrSex: string =
           formGetPath('inferred.sex') || formGetPath('inferred.gender')
@@ -311,20 +300,14 @@ export default function renderFnsWrapper(
             buttonStyle={buttonStyle}
             onPress={() =>
               navigation.navigate('Body', {
-                baseImage: imageUri,
+                baseImage: value?.image ?? imageUri,
                 enterData: (dataImage, annotations) => {
-                  // TODO Do we want this behavior? You empty a field and it
-                  // counts as not filled anymore
-                  //
-                  // if (annotations.length === 0) {
-                  //     formSetPath(valuePath, "");
-                  //     return;
-                  // }
                   formSetPath(valuePath, {
                     image: dataImage,
                     annotations,
                   })
                 },
+                previousAnnotations: value?.annotations,
               })
             }
           />

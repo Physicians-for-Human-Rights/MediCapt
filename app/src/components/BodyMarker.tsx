@@ -23,11 +23,11 @@ const BodyMarker: React.FunctionComponent<BodyMarkerProps> = props => {
   const handlePress = evt => {
     let x, y
     if (Platform.OS === 'web') {
-      x = (evt.nativeEvent.offsetX - 5) / imageSquareSize
-      y = (evt.nativeEvent.offsetY - 5) / imageSquareSize
+      x = evt.nativeEvent.offsetX / imageSquareSize
+      y = evt.nativeEvent.offsetY / imageSquareSize
     } else {
-      x = (evt.nativeEvent.locationX - 5) / imageSquareSize
-      y = (evt.nativeEvent.locationY - 5) / imageSquareSize
+      x = evt.nativeEvent.locationX / imageSquareSize
+      y = evt.nativeEvent.locationY / imageSquareSize
     }
 
     props.confirmMarker({ coordinates: { x, y } })
@@ -61,8 +61,8 @@ const BodyMarker: React.FunctionComponent<BodyMarkerProps> = props => {
                 <View
                   style={{
                     ...StyleSheet.flatten(styles.markerContainer),
-                    top: annotation.markerCoordinates.y * imageSquareSize,
-                    left: annotation.markerCoordinates.x * imageSquareSize,
+                    top: annotation.markerCoordinates.y * imageSquareSize - 5,
+                    left: annotation.markerCoordinates.x * imageSquareSize - 5,
                   }}
                 >
                   <View style={styles.marker} />

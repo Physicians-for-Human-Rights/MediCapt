@@ -26,6 +26,14 @@
     "web": {},
     "packagerOpts": {
       "assetExts": ["json", "yaml", "svg", "png", "jpg"]
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Medicapt uses your camera to allow you to add photographic records to your forms."
+        }
+      ]
+    ]
   }
 }
