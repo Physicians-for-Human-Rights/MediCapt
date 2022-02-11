@@ -1,19 +1,20 @@
-import { extendTheme, NativeBaseProvider } from 'native-base'
+import { extendTheme } from 'native-base'
+import { theme as defaultTheme } from 'native-base'
 import 'styling'
 
-const newColorTheme = {
-  brand: {
-    900: '#8287af',
-    800: '#7c83db',
-    700: '#b3bef6',
+export const theme = extendTheme({
+  // NB node_modules/native-base/src/theme/base/colors.ts
+  colors: {
+    primary: defaultTheme.colors.red,
+    secondary: defaultTheme.colors.cyan,
+    danger: defaultTheme.colors.fuchsia,
   },
-}
+})
 
-export const theme = extendTheme({ colors: newColorTheme })
+// NB Most similar to red.600
+export const medicaptRed = '#d5001c'
 
 // TODO Remove this after the nativebase switch
-
-const medicaptRed = '#d5001c'
 
 export default {
   ListItem: {
