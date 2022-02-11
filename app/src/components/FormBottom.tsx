@@ -7,7 +7,6 @@ import _ from 'lodash'
 const FormBottom = ({
   sectionOffset,
   currentSection,
-  openSideMenu,
   title,
   lastSection,
   isSectionCompleted,

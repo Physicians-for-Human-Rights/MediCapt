@@ -8,6 +8,10 @@ export type RootStackParamList = {
     signOut: () => any
     user: any
   }
+  FormEditor: {
+    signOut: () => any
+    user: any
+  }
 }
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =

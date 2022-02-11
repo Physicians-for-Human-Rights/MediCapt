@@ -14,9 +14,13 @@ import Top from 'components/FormTop'
 import Bottom from 'components/FormBottom'
 
 import { loadForm } from 'utils/forms'
-import { FormType, FormMetadata } from 'utils/formTypes'
+import { FormType } from 'utils/formTypes'
 import renderFnsWrapper from 'utils/formRendering'
-import { mapSectionWithPaths, isSectionComplete } from 'utils/forms'
+import {
+  nameFormSections,
+  mapSectionWithPaths,
+  isSectionComplete,
+} from 'utils/forms'
 import { NamedFormSection, NamedFormPart } from 'utils/formTypesHelpers'
 
 type Props = NativeStackScreenProps
@@ -61,16 +65,18 @@ function formGetPath(
   return _.has(formPaths, valuePath) ? formPaths[valuePath] : default_
 }
 
-export default function Form({ route, navigation }: Props) {
-  const { formMetadata }: { formMetadata: FormMetadata } = route.params
-
-  const [loadedForm, setLoadedForm] = useState({
-    files: [] as Record<string, any>,
-    form: null as null | FormType,
-    formSections: [] as NamedFormSection[],
-  })
-  const { form, formSections } = loadedForm
-
+export default function Form({
+  files,
+  form,
+  hasSideMenu,
+  hasBottom = true,
+}: {
+  files: Record<string, any>
+  form: FormType
+  hasSideMenu: boolean
+  hasBottom: boolean
+}) {
+  const formSections = nameFormSections(form.sections)
   const [currentSection, setCurrentSection] = useState(0)
 
   // This is state about the current properties of widgets, like if a date-time
@@ -111,13 +117,6 @@ export default function Form({ route, navigation }: Props) {
   const sideMenu = useRef(null)
   const scrollView = useRef(null)
 
-  useEffect(() => {
-    async function fn() {
-      setLoadedForm(await loadForm(formMetadata))
-    }
-    fn()
-  }, [])
-
   const setSectionOffset = useCallback(
     (offset: number) => setCurrentSection(currentSection + offset),
     [currentSection]
@@ -140,24 +139,10 @@ export default function Form({ route, navigation }: Props) {
     dynamicState,
     (newState: Record<string, boolean>) =>
       setDynamicState(prevState => ({ ...prevState, ...newState })),
-    loadedForm.files,
-    loadedForm.form ? loadedForm.form.common : {},
-    (valuePath: string, value) =>
-      navigation.navigate('Body', {
-        baseImage: value.image && value.image.imageUri,
-        enterData: (dataImage, annotations) => {
-          setFormPath(valuePath, {
-            image: dataImage,
-            annotations,
-          })
-        },
-        previousAnnotations: value.annotations,
-      }),
-    (valuePath: string) =>
-      navigation.navigate('Signature', {
-        signed: dataImage => setFormPath(valuePath, dataImage),
-        cancelSignature: () => setFormPath(valuePath, ''),
-      }),
+    files,
+    form ? form.common : {},
+    () => console.log('TODO signature'),
+    () => console.log('TODO body'),
     formPaths,
     (value, default_) => formGetPath(formPaths, value, default_),
     setFormPath,
@@ -166,6 +151,7 @@ export default function Form({ route, navigation }: Props) {
     removeKeepAlive,
     addKeepAlive
   )
+
   let sectionContent: null | JSX.Element = null
   if (!_.isEmpty(formSections) && form && 'common' in form) {
     const current_section_content = formSections[currentSection]
@@ -186,12 +172,13 @@ export default function Form({ route, navigation }: Props) {
         sectionOffset={setSectionOffset}
         currentSection={currentSection}
         openSideMenu={openSideMenu}
+        hasSideMenu={hasSideMenu}
         title={formSections[currentSection].title}
         lastSection={formSections.length - 1}
         isSectionCompleted={isSectionCompleteList[currentSection]}
       />
     )
-    bottom = (
+    bottom = hasBottom && (
       <Bottom
         sectionOffset={setSectionOffset}
         currentSection={currentSection}
@@ -202,8 +189,8 @@ export default function Form({ route, navigation }: Props) {
     )
   }
 
-  return (
-    <View style={styles.container}>
+  const wrapper = (inner: JSX.Element) =>
+    hasSideMenu ? (
       <SideMenu
         ref={sideMenu}
         menu={
@@ -214,18 +201,52 @@ export default function Form({ route, navigation }: Props) {
           />
         }
       >
-        {top}
-        <ScrollView
-          ref={scrollView}
-          style={styles.wideContainer}
-          keyboardDismissMode="on-drag"
-          accessible={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          {sectionContent}
-          {bottom}
-        </ScrollView>
+        {inner}
       </SideMenu>
-    </View>
+    ) : (
+      inner
+    )
+
+  return wrapper(
+    <>
+      {top}
+      <ScrollView
+        ref={scrollView}
+        style={styles.wideContainer}
+        keyboardDismissMode="on-drag"
+        accessible={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        {sectionContent}
+        {bottom}
+      </ScrollView>
+    </>
   )
+
+  // return (
+  //   <View style={styles.container}>
+  //     <SideMenu
+  //       ref={sideMenu}
+  //       menu={
+  //         <Menu
+  //           formSections={formSections}
+  //           changeSection={menuChangeSection}
+  //           isSectionCompleteList={isSectionCompleteList}
+  //         />
+  //       }
+  //     >
+  //       {top}
+  //       <ScrollView
+  //         ref={scrollView}
+  //         style={styles.wideContainer}
+  //         keyboardDismissMode="on-drag"
+  //         accessible={false}
+  //         keyboardShouldPersistTaps="handled"
+  //       >
+  //         {sectionContent}
+  //         {bottom}
+  //       </ScrollView>
+  //     </SideMenu>
+  //   </View>
+  // )
 }

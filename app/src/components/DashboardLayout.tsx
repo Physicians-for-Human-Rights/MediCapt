@@ -165,7 +165,6 @@ export function Sidebar() {
 }
 
 export function Header(props: any) {
-  const { colorMode } = useColorMode()
   return (
     <Box
       px="6"
@@ -199,14 +198,37 @@ export function Header(props: any) {
                 }
               />
             )}
-            <Image
-              h="10"
-              w={10}
-              alt="NativeBase Startup+"
-              resizeMode="cover"
-              source={medicapt_logo}
-            />
+            {props.backButton ? (
+              <IconButton
+                onPress={() => props.navigation.goBack()}
+                icon={
+                  <Icon
+                    size="6"
+                    as={AntDesign}
+                    name="arrowleft"
+                    color="coolGray.500"
+                  />
+                }
+              />
+            ) : (
+              <Box w={10} />
+            )}
+            <Pressable onPress={() => props.navigation.goBack()}>
+              <Image
+                h="10"
+                w={10}
+                alt="NativeBase Startup+"
+                resizeMode="cover"
+                source={medicapt_logo}
+              />
+            </Pressable>
+            {props.displayHeaderTitle && (
+              <Text fontSize="3xl" color="coolGray.500" fontWeight={300}>
+                {props.title}
+              </Text>
+            )}
           </HStack>
+
           {props.searchbar && (
             <Input
               px="4"
@@ -226,6 +248,8 @@ export function Header(props: any) {
               }
             />
           )}
+
+          {props.middlebar}
 
           <HStack space="2" alignItems="center">
             <IconButton
@@ -394,9 +418,11 @@ export default function DashboardLayout({
   navigation,
   scrollable = true,
   displayScreenTitle = true,
+  displayHeaderTitle = true,
   displaySidebar = true,
   searchbar = false,
   backButton = true,
+  middlebar = null,
   ...props
 }: any) {
   const [isSidebarVisible, setIsSidebarVisible] = React.useState(true)
@@ -429,6 +455,10 @@ export default function DashboardLayout({
               title={props.title}
               menuButton={displaySidebar}
               searchbar={searchbar}
+              middlebar={middlebar}
+              displayHeaderTitle={displayHeaderTitle}
+              backButton={backButton}
+              navigation={navigation}
             />
           </Hidden>
 

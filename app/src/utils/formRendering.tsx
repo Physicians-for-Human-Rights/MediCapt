@@ -21,19 +21,7 @@ import PhotoSelector from 'components/PhotoSelector'
 import _ from 'lodash'
 import styles from 'styles'
 import CardWrap from 'components/CardWrap'
-import {
-  FormSection,
-  FormValueType,
-  FormType,
-  FormPath,
-  FormPart,
-  FormMetadata,
-  FormsMetadata,
-  FormPartRecord,
-  FormDefinition,
-  FormRef,
-  FormKVRawType,
-} from 'utils/formTypes'
+import { FormDefinition, FormKVRawType } from 'utils/formTypes'
 import { resolveRef } from 'utils/forms'
 import { FormFns } from 'utils/formTypesHelpers'
 
@@ -47,7 +35,8 @@ export default function renderFnsWrapper(
   setDynamicState: (newState: Record<string, boolean>) => void,
   files: Record<string, any>,
   common: Record<string, FormDefinition>,
-  navigation: any,
+  fnSignature: (valuePath: string, value: any) => any,
+  fnBody: (valuePath: string) => any,
   formPaths: any,
   formGetPath: any,
   formSetPath: any,
@@ -185,12 +174,7 @@ export default function renderFnsWrapper(
             icon={icon}
             title={title}
             buttonStyle={buttonStyle}
-            onPress={() =>
-              navigation.navigate('Signature', {
-                signed: dataImage => formSetPath(valuePath, dataImage),
-                cancelSignature: () => formSetPath(valuePath, ''),
-              })
-            }
+            onPress={() => fnSignature(valuePath)}
           />
         </View>
       )
@@ -299,18 +283,7 @@ export default function renderFnsWrapper(
             icon={icon}
             title={title}
             buttonStyle={buttonStyle}
-            onPress={() =>
-              navigation.navigate('Body', {
-                baseImage: value?.image ?? imageUri,
-                enterData: (dataImage, annotations) => {
-                  formSetPath(valuePath, {
-                    image: dataImage,
-                    annotations,
-                  })
-                },
-                previousAnnotations: value?.annotations,
-              })
-            }
+            onPress={() => fnBody(valuePath, value)}
           />
         </View>
       )
@@ -594,7 +567,9 @@ export default function renderFnsWrapper(
       return <></>
     },
     photo: (entry, part, index, formPath, valuePath) => {
-      const photos: Array<string> = formGetPath(valuePath)?.photos ?? []
+      const photos: Array<string> = formGetPath(valuePath)
+        ? formGetPath(valuePath).photos
+        : []
       const setPhotos: (
         cb: (prev: Array<string>) => Array<string>
       ) => void = cb => formSetPath(valuePath, { photos: cb(photos) })

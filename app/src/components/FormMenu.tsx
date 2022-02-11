@@ -5,12 +5,7 @@ import styles from 'styles'
 
 import _ from 'lodash'
 
-function Menu({
-  navigation,
-  formSections,
-  changeSection,
-  isSectionCompleteList,
-}) {
+function Menu({ formSections, changeSection, isSectionCompleteList }) {
   let sectionItems = []
   if (formSections) {
     sectionItems = formSections.map((e, i) => (

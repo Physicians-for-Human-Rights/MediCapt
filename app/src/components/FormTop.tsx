@@ -6,17 +6,22 @@ const FormTop = ({
   sectionOffset,
   currentSection,
   openSideMenu,
+  hasSideMenu,
   title,
   lastSection,
   isSectionCompleted,
 }) => {
   return (
     <Header
-      leftComponent={{
-        icon: 'menu',
-        color: '#fff',
-        onPress: openSideMenu,
-      }}
+      leftComponent={
+        hasSideMenu
+          ? {
+              icon: 'menu',
+              color: '#fff',
+              onPress: openSideMenu,
+            }
+          : {}
+      }
       centerComponent={
         <View
           style={{

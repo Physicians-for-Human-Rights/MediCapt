@@ -470,7 +470,9 @@ export async function loadForm(formMetadata: FormMetadata) {
   }
 }
 
-export function nameFormSections(sections: FormSectionRecord[]) {
+export function nameFormSections(
+  sections: FormSectionRecord[]
+): NamedFormSection[] {
   return sections.map(e => {
     return {
       name: Object.keys(e)[0],
