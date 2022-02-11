@@ -62,7 +62,7 @@ function Tabs({
       _dark={{ bg: 'coolGray.900' }}
       _light={{ bg: { base: 'primary.900', md: 'white' } }}
     >
-      <HStack px={{ base: 4, md: 4 }} mt="4" justifyContent="start">
+      <HStack px={{ base: 4, md: 4 }} mt="2" justifyContent="start">
         <Pressable
           px="5"
           onPress={() => {
