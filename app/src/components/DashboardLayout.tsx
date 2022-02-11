@@ -28,7 +28,7 @@ import {
 } from '@expo/vector-icons'
 
 import medicapt_logo from '../../assets/medicapt.png'
-import phr_logo from '../../assets/phr.png'
+import phr_logo from '../../assets/phr_small.png'
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
@@ -199,20 +199,12 @@ export function Header(props: any) {
                 }
               />
             )}
-
             <Image
               h="10"
-              w="56"
+              w={10}
               alt="NativeBase Startup+"
-              resizeMode="contain"
+              resizeMode="cover"
               source={medicapt_logo}
-            />
-            <Image
-              h="10"
-              w="56"
-              alt="NativeBase Startup+"
-              resizeMode="contain"
-              source={phr_logo}
             />
           </HStack>
           {props.searchbar && (
