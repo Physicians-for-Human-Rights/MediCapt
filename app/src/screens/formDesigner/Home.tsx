@@ -45,7 +45,7 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
       >
         <HStack pt="5" space={3} justifyContent="center">
           <Pressable onPress={() => console.log("I'm Pressed")}>
-            <Center h="80" w="200" bg="primary.600" rounded="md" shadow={3}>
+            <Center h="80" w="190" bg="primary.600" rounded="md" shadow={3}>
               <VStack space={3}>
                 <Center>
                   <Icon
@@ -69,7 +69,7 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
           <Pressable
             onPress={() => navigation.navigate('FormList', route.params)}
           >
-            <Center h="80" w="200" bg="primary.600" rounded="md" shadow={3}>
+            <Center h="80" w="190" bg="primary.600" rounded="md" shadow={3}>
               <VStack space={3}>
                 <Center>
                   <Icon

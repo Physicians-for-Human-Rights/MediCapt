@@ -234,8 +234,8 @@ export function Header(props: any) {
               icon={
                 <Icon
                   size="6"
-                  name="bell"
-                  as={FontAwesome}
+                  name="lock"
+                  as={MaterialIcons}
                   _light={{
                     color: 'coolGray.400',
                   }}
@@ -258,13 +258,11 @@ export function Header(props: any) {
                   />
                 )
               }}
-              //@ts-ignore
-              _dark={{ bg: 'coolGray.800', borderColor: 'coolGray.700' }}
             >
               <Menu.Group title="Profile">
                 <Menu.Item>Account</Menu.Item>
               </Menu.Group>
-              <Divider mt="3" w="100%" _dark={{ bg: 'coolGray.700' }} />
+              <Divider mt="3" w="100%" />
               <Menu.Group title="Shortcuts">
                 <Menu.Item>Settings</Menu.Item>
                 <Menu.Item>Logout</Menu.Item>
@@ -289,14 +287,9 @@ function MainContent(props: any) {
                 as={AntDesign}
                 name={'arrowleft'}
                 _light={{ color: 'coolGray.800' }}
-                _dark={{ color: 'coolGray.50' }}
               />
             </Pressable>
-            <Text
-              fontSize="lg"
-              _dark={{ color: 'coolGray.50' }}
-              _light={{ color: 'coolGray.800' }}
-            >
+            <Text fontSize="lg" _light={{ color: 'coolGray.800' }}>
               {props.title}
             </Text>
           </HStack>
@@ -313,7 +306,6 @@ export function MobileHeader({ title, backButton, navigation }: any) {
       px="1"
       pt="4"
       pb="4"
-      _dark={{ bg: 'coolGray.900', borderColor: 'coolGray.800' }}
       _light={{
         bg: { base: 'primary.900', md: 'white' },
         borderColor: 'coolGray.200',
@@ -357,11 +349,8 @@ export function MobileHeader({ title, backButton, navigation }: any) {
                 icon={
                   <Icon
                     size="6"
-                    name="bell"
-                    as={FontAwesome}
-                    _dark={{
-                      color: 'coolGray.200',
-                    }}
+                    name="lock"
+                    as={MaterialIcons}
                     _light={{
                       color: 'coolGray.50',
                     }}
@@ -389,11 +378,8 @@ export function MobileHeader({ title, backButton, navigation }: any) {
                   )
                 }}
                 placement="bottom right"
-                //@ts-ignore
-                _dark={{ bg: 'coolGray.800', borderColor: 'coolGray.700' }}
               >
-                <Menu.Item>New Group</Menu.Item>
-                <Menu.Item>New Broadcast</Menu.Item>
+                <Menu.Item>Log out</Menu.Item>
                 <Menu.Item>Settings</Menu.Item>
               </Menu>
             </HStack>

@@ -29,7 +29,7 @@ import DashboardLayout from 'components/DashboardLayout'
 function ListItem({ item }: { item: any }) {
   return (
     <Pressable p={2}>
-      <HStack alignItems="space-between" w="100%">
+      <HStack justifyContent="space-between" w="100%">
         <HStack alignItems="center" space={4} w="70%">
           <VStack>
             <Text

@@ -21,6 +21,7 @@ export default function App({
           name="Home"
           component={Home}
           options={{ headerShown: false }}
+          initialParams={{ user, signOut }}
         />
         <RootStack.Screen
           name="FormList"
