@@ -23,7 +23,20 @@ import { default as ResearcherApp } from 'screens/researcher/App'
 
 import { NativeBaseProvider } from 'native-base'
 
+// NB Remove me eventually
 import 'styling'
+
+import * as Localization from 'expo-localization'
+import i18n from 'i18n-js'
+import en from 'localization/en'
+
+i18n.translations = {
+  en,
+}
+
+i18n.locale = Localization.locale
+i18n.fallbacks = true
+i18n.defaultLocale = 'en'
 
 // NB The types here are terrible because we get different types depending on
 // which of .native.js or .web.js is included

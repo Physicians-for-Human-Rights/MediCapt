@@ -18,7 +18,10 @@
     "platforms": ["ios", "android", "web"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "click.medicapt.medicaptapp"
+      "bundleIdentifier": "click.medicapt.medicaptapp",
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true
+      }
     },
     "android": {
       "package": "click.medicapt.medicaptapp"
