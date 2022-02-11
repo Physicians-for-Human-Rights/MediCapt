@@ -16,7 +16,6 @@ import {
 import CodeMirror from '@uiw/react-codemirror'
 import { StreamLanguage } from '@codemirror/stream-parser'
 import { yaml as yamlLang } from '@codemirror/legacy-modes/mode/yaml'
-import { css as cssLang } from '@codemirror/legacy-modes/mode/css'
 import { format as formatDate } from 'date-fns'
 import { nameFormSections } from 'utils/forms'
 import { FormType } from 'utils/formTypes'
@@ -229,7 +228,7 @@ export default function ({
             height={Math.round(window.height * 0.8) + 'px'}
             width={Math.round(window.width * 0.4) + 'px'}
             extensions={[
-              StreamLanguage.define(cssLang),
+              StreamLanguage.define(yamlLang),
               defaultHighlightStyle.fallback,
               lineNumbers(),
               highlightActiveLineGutter(),
