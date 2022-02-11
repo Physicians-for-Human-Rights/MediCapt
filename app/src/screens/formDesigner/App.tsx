@@ -1,12 +1,9 @@
 import React from 'react'
-import { NativeBaseProvider, Box, Button } from 'native-base'
 import { NavigationContainer } from '@react-navigation/native'
-import {
-  RootStackScreenProps,
-  RootStackParamList,
-} from 'utils/formDesigner/navigation'
 import { createStackNavigator } from '@react-navigation/stack'
 import Home from 'screens/formDesigner/Home'
+import FormList from 'screens/common/FormList'
+import { RootStackParamList } from 'utils/formDesigner/navigation'
 
 const RootStack = createStackNavigator<RootStackParamList>()
 
@@ -23,6 +20,11 @@ export default function App({
         <RootStack.Screen
           name="Home"
           component={Home}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name="FormList"
+          component={FormList}
           options={{ headerShown: false }}
         />
       </RootStack.Navigator>

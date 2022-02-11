@@ -307,7 +307,7 @@ function MainContent(props: any) {
   )
 }
 
-export function MobileHeader(props: any) {
+export function MobileHeader({ title, backButton, navigation }: any) {
   return (
     <Box
       px="1"
@@ -328,10 +328,11 @@ export function MobileHeader(props: any) {
         >
           <>
             <HStack alignItems="center" space="1">
-              {props.backButton && (
+              {backButton ? (
                 <IconButton
                   variant="ghost"
                   colorScheme="light"
+                  onPress={() => navigation.goBack()}
                   icon={
                     <Icon
                       size="6"
@@ -341,10 +342,12 @@ export function MobileHeader(props: any) {
                     />
                   }
                 />
+              ) : (
+                <Box w={10} />
               )}
 
               <Text color="coolGray.50" fontSize="lg">
-                {props.title}
+                {title}
               </Text>
             </HStack>
             <HStack space="1">
@@ -402,15 +405,12 @@ export function MobileHeader(props: any) {
 }
 
 export default function DashboardLayout({
+  navigation,
   scrollable = true,
   displayScreenTitle = true,
   displaySidebar = true,
-  header = {
-    searchbar: false,
-  },
-  mobileHeader = {
-    backButton: true,
-  },
+  searchbar = false,
+  backButton = true,
   ...props
 }: any) {
   const [isSidebarVisible, setIsSidebarVisible] = React.useState(true)
@@ -433,7 +433,8 @@ export default function DashboardLayout({
           <Hidden from="md">
             <MobileHeader
               title={props.title}
-              backButton={mobileHeader.backButton}
+              backButton={backButton}
+              navigation={navigation}
             />
           </Hidden>
           <Hidden till="md">
@@ -441,7 +442,7 @@ export default function DashboardLayout({
               toggleSidebar={toggleSidebar}
               title={props.title}
               menuButton={displaySidebar}
-              searchbar={header.searchbar}
+              searchbar={searchbar}
             />
           </Hidden>
 
