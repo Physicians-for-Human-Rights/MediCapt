@@ -25,6 +25,7 @@ import {
 import { format as formatDate } from 'date-fns'
 import { t } from 'i18n-js'
 import DashboardLayout from 'components/DashboardLayout'
+import _ from 'lodash'
 
 function ListItem({ item }: { item: any }) {
   return (
@@ -111,8 +112,9 @@ function ListItemDesktop({ item }: { item: any }) {
   )
 }
 
-export default function ContactList({ navigation }: any) {
-  const { colorMode } = useColorMode()
+export default function FormList({ navigation }: any) {
+  const page = 1
+  const numberOfPages = 3
   const forms = [
     {
       title: 'Post-rape care form',
@@ -265,6 +267,33 @@ export default function ContactList({ navigation }: any) {
             </ScrollView>
           </Box>
         </VStack>
+        {numberOfPages !== 1 && (
+          <HStack
+            display={{ base: 'none', md: 'flex' }}
+            space="2"
+            alignItems="center"
+            mt="2"
+            justifyContent="flex-end"
+          >
+            {_.range(1, numberOfPages + 1).map((n: number) => (
+              <Pressable
+                height={8}
+                width={8}
+                borderRadius={4}
+                bg="white"
+                color="coolGray.500"
+                textAlign="center"
+                justifyContent="center"
+                borderColor={n === page ? 'primary.700' : undefined}
+                borderWidth={n === page ? 1 : undefined}
+              >
+                <Text color="coolGray.500" fontSize="sm">
+                  {n}
+                </Text>
+              </Pressable>
+            ))}
+          </HStack>
+        )}
       </DashboardLayout>
     </>
   )
