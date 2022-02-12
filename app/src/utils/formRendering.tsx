@@ -1,6 +1,29 @@
 import React, { useState, useEffect } from 'react'
+
 import {
+  Box,
+  VStack,
+  StatusBar,
+  ScrollView,
+  HStack,
+  Pressable,
+  // Icon,
+  // Image,
   Text,
+  Hidden,
+  useColorMode,
+  IconButton,
+  Divider,
+  Menu,
+  Avatar,
+  Button as BButton,
+  Input,
+  Center,
+  useBreakpointValue,
+  Modal,
+} from 'native-base'
+
+import {
   TextInput,
   View,
   TouchableOpacity,
@@ -24,6 +47,7 @@ import CardWrap from 'components/CardWrap'
 import { FormDefinition, FormKVRawType } from 'utils/formTypes'
 import { resolveRef } from 'utils/forms'
 import { FormFns } from 'utils/formTypesHelpers'
+import Signature from 'components/Signature'
 
 /*
   Render all of the components of a form recursively. This function is applied
@@ -35,7 +59,6 @@ export default function renderFnsWrapper(
   setDynamicState: (newState: Record<string, boolean>) => void,
   files: Record<string, any>,
   common: Record<string, FormDefinition>,
-  fnSignature: (valuePath: string, value: any) => any,
   fnBody: (valuePath: string) => any,
   formPaths: any,
   formGetPath: any,
@@ -171,34 +194,18 @@ export default function renderFnsWrapper(
       }
     },
     signature: (entry, part, index, formPath, valuePath) => {
-      let icon = null
-      let title = null
-      let buttonStyle = {}
-      let image = null
-      if (getPath(valuePath, _.isString, '')) {
-        title = ' Replace signature'
-        image = (
-          <Image
-            resizeMode="contain"
-            style={{ width: 200, height: 200 }}
-            source={{ uri: getPath(valuePath, _.isString, '') }}
-          />
-        )
-      } else {
-        title = ' Sign here'
-        icon = <Icon name="edit" size={15} color="white" />
-        buttonStyle = { backgroundColor: 'red' }
-      }
       return (
-        <View>
-          {image}
-          <Button
-            icon={icon}
-            title={title}
-            buttonStyle={buttonStyle}
-            onPress={() => fnSignature(valuePath)}
-          />
-        </View>
+        <Signature
+          imageURI={getPath(valuePath, _.isString, null)}
+          openSignature={() =>
+            setDynamicState({ ['isVisible_signature_' + valuePath]: true })
+          }
+          closeSignature={() =>
+            setDynamicState({ ['isVisible_signature_' + valuePath]: false })
+          }
+          isOpenSignature={dynamicState['isVisible_signature_' + valuePath]}
+          setSignature={(dataURI: string) => formSetPath(valuePath, dataURI)}
+        />
       )
     },
     'body-image': (entry, part, index, formPath, valuePath) => {

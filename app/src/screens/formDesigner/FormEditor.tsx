@@ -235,6 +235,57 @@ export default function ({
       </HStack>
     </VStack>
   )
+}
+
+const FormMemo = React.memo(Form)
+
+export default function FormEditor({
+  route,
+  navigation,
+}: RootStackScreenProps<'FormEditor'>) {
+  const [tabName, setTabName] = React.useState('Overview')
+  const [form, setForm] = React.useState({
+    name: 'New form',
+    subtitle: 'A subtitle',
+    description: 'Describe the form',
+    'official-name': 'Official form name',
+    'official-code': 'Official code',
+    country: 'US',
+    language: 'en',
+    date: new Date(),
+    tags: 'sexual-assault',
+    common: {
+      gender: [
+        { key: 'male', value: 'Male' },
+        { key: 'female', value: 'Female' },
+        { key: 'transgender', value: 'Transgender' },
+      ],
+    },
+    sections: [
+      {
+        consent: {
+          title: 'Consent',
+          parts: [
+            {
+              'medical-exam': {
+                title: 'Authorizing medical exam',
+                description:
+                  'I AUTHORIZE the clinician to conduct a medical examination including a pelvic exam.',
+                type: 'bool',
+              },
+            },
+            {
+              signature: {
+                title: 'Authorizing medical exam',
+                type: 'signature',
+              },
+            },
+          ],
+        },
+      },
+    ],
+  } as FormType)
+
   return (
     <DashboardLayout
       title={'Form Editor'}

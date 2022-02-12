@@ -1,93 +1,113 @@
-import React, { useRef, useState, useEffect, useCallback } from "react";
-import { StyleSheet, View } from "react-native";
-import { Button } from "react-native-elements";
-import styles_ from "../styles";
+import React, { useRef, useState, useEffect, useCallback } from 'react'
+import { StyleSheet, View } from 'react-native'
+import styles_ from '../styles'
+
+import {
+  Box,
+  VStack,
+  StatusBar,
+  ScrollView,
+  HStack,
+  Pressable,
+  Icon,
+  Image,
+  Text,
+  Hidden,
+  useColorMode,
+  IconButton,
+  Divider,
+  Menu,
+  Avatar,
+  Button,
+  Input,
+  Center,
+  useBreakpointValue,
+  Modal,
+} from 'native-base'
+
+import {
+  AntDesign,
+  FontAwesome,
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from '@expo/vector-icons'
+
 // https://www.npmjs.com/package/react-signature-pad-wrapper
-import SignatureCanvas from "react-signature-pad-wrapper";
+import SignatureCanvas from 'react-signature-pad-wrapper'
 
-const Signature = props => {
-    // code for correctly rendering SignatureCanvas size within it's container
-    const canvasContainerRef = useRef();
-    const [canvasHeight, setCanvasHeight] = useState();
+function Signature({
+  imageURI,
+  openSignature,
+  closeSignature,
+  isOpenSignature,
+  setSignature,
+}) {
+  // code for correctly rendering SignatureCanvas size within it's container
+  const signatureRef = useRef()
 
-    const getCanvasSize = () => {
-        const newHeight = canvasContainerRef.current.clientHeight;
-        setCanvasHeight(newHeight);
-    };
-
-    useEffect(() => {
-        getCanvasSize();
-    });
-    useEffect(() => {
-        window.addEventListener("resize", getCanvasSize);
-        return () => {
-            window.removeEventListener("resize", getCanvasSize);
-        }
-    });
-
-    // code for handling sign buttons
-    const [canvas, setCanvas] = useState();
-
-    const canvasRef = useCallback(node => {
-        if (node !== null) {
-            node.clear();
-            setCanvas(node);
-        }
-    }, []);
-
-    const handleSave = () => {
-        if (!canvas) return;
-
-        if (canvas.isEmpty()) {
-            props.onCancel();
-        } else {
-            props.onSubmit(canvas.toDataURL());
-        }
+  const onSave = () => {
+    if (!signatureRef.current.isEmpty()) {
+      setSignature(signatureRef.current.toDataURL())
+    } else {
+      setSignature(null)
     }
+    closeSignature()
+  }
 
-    return (
-        <View style={styles_.container}>
-            <View style={styles.sketchContainer} ref={canvasContainerRef}>
-                {canvasHeight &&
-                    <SignatureCanvas redrawOnResize height={canvasHeight} ref={canvasRef} />
-                }
-            </View>
-            <View style={styles.buttonsContainer}>
-                <Button
-                    title="Submit signature"
-                    style={styles.button}
-                    onPress={handleSave}
-                />
-                <Button
-                    title="Don't sign"
-                    buttonStyle={{ backgroundColor: "#d5001c" }}
-                    style={styles.button}
-                    onPress={props.onCancel}
-                />
-            </View>
-        </View>
-    )
-};
+  const onCancel = () => {
+    setSignature(null)
+    closeSignature()
+  }
 
-const styles = StyleSheet.create({
-    sketchContainer: {
-        flex: 1,
-        width: "100%"
-    },
-    buttonsContainer: {
-        flex: 0.2,
-        flexDirection: "row",
-        justifyContent: "space-around",
-        alignItems: "center",
-        backgroundColor: "#EDEDED",
-        width: "100%"
-    },
-    button: {
-        zIndex: 1,
-        padding: 12,
-        minWidth: 56,
-        minHeight: 48
-    }
-});
+  return (
+    <>
+      <Center>
+        {imageURI && (
+          <Image
+            resizeMode="contain"
+            size={150}
+            source={{
+              uri: imageURI,
+            }}
+            alt="The recorded siganture"
+          />
+        )}
+        <Button
+          bg="info.500"
+          w="100%"
+          leftIcon={
+            <Icon
+              as={AntDesign}
+              name={imageURI ? 'closecircleo' : 'edit'}
+              size="sm"
+            />
+          }
+          onPress={openSignature}
+        >
+          {imageURI ? 'Clear and sign again' : 'Sign'}
+        </Button>
+      </Center>
+      <Modal isOpen={isOpenSignature} onClose={closeSignature}>
+        <Modal.Content maxWidth="400px">
+          <Modal.Header>Sign here</Modal.Header>
+          <Modal.Body>
+            <Box h="210px" w="410px" p={5}>
+              <SignatureCanvas height={200} width={400} ref={signatureRef} />
+            </Box>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button.Group space={2}>
+              <Button variant="ghost" colorScheme="blueGray" onPress={onCancel}>
+                Cancel and clear
+              </Button>
+              <Button onPress={onSave}>Save</Button>
+            </Button.Group>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
+    </>
+  )
+}
 
-export default Signature;
+export default Signature

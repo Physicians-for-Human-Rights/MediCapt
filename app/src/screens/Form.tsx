@@ -153,11 +153,6 @@ export default function Form({ route, navigation }: Props) {
         },
         previousAnnotations: value.annotations,
       }),
-    (valuePath: string) =>
-      navigation.navigate('Signature', {
-        signed: dataImage => setFormPath(valuePath, dataImage),
-        cancelSignature: () => setFormPath(valuePath, ''),
-      }),
     formPaths,
     (value, default_) => formGetPath(formPaths, value, default_),
     setFormPath,
