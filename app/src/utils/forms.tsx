@@ -256,7 +256,18 @@ export function mapSectionWithPaths<Return>(
         }
       }
       //
-      return fns.post(entry, part, index, formPath, pre, inner, subparts)
+      const skippedPath =
+        'optional' in part && part.optional ? formPath + '.skipped' : null
+      return fns.post(
+        entry,
+        part,
+        index,
+        formPath,
+        pre,
+        inner,
+        subparts,
+        skippedPath
+      )
     }
   }
   if (shouldSkipConditional(section, getValue)) {
@@ -333,44 +344,43 @@ export function isSectionComplete(
   common: Record<string, FormDefinition>,
   getValue: GetValueFn
 ) {
-  let complete = true
-  mapSectionWithPaths<boolean>(section, common, true, getValue, {
+  return mapSectionWithPaths<boolean>(section, common, true, getValue, {
     pre: () => true,
     selectMultiple: (entry, obj, index, formPath, valuePaths) =>
       // NB This checks not that getValue exists, but that at least one of them is also true.
-      (complete = complete && _.some(valuePaths, x => getValue(x))),
+      _.some(valuePaths, x => getValue(x)),
     signature: (entry, obj, index, formPath, valuePath) =>
-      (complete = complete && getValue(valuePath) != null),
+      getValue(valuePath) != null,
     bool: (entry, obj, index, formPath, valuePath) =>
-      (complete = complete && getValue(valuePath) != null),
+      getValue(valuePath) != null,
     gender: (entry, obj, index, formPath, valuePath) =>
-      (complete = complete && getValue(valuePath) != null),
+      getValue(valuePath) != null,
     sex: (entry, obj, index, formPath, valuePath) =>
-      (complete = complete && getValue(valuePath) != null),
+      getValue(valuePath) != null,
     text: (entry, obj, index, formPath, valuePath) =>
-      (complete = complete && getValue(valuePath) != null),
+      getValue(valuePath) != null,
     'long-text': (entry, obj, index, formPath, valuePath) =>
-      (complete = complete && getValue(valuePath) != null),
+      getValue(valuePath) != null,
     number: (entry, obj, index, formPath, valuePath) =>
-      (complete = complete && getValue(valuePath) != null),
+      getValue(valuePath) != null,
     date: (entry, obj, index, formPath, valuePath) =>
-      (complete = complete && getValue(valuePath) != null),
+      getValue(valuePath) != null,
     'date-time': (entry, obj, index, formPath, valuePath) =>
-      (complete = complete && getValue(valuePath) != null),
+      getValue(valuePath) != null,
     list: (entry, obj, index, formPath, valuePath) =>
-      (complete = complete && getValue(valuePath) != null),
+      getValue(valuePath) != null,
     'list-with-labels': (entry, obj, index, formPath, valuePath) =>
-      (complete = complete && getValue(valuePath) != null),
+      getValue(valuePath) != null,
     'list-with-parts': (entry, obj, index, formPath, valuePath) =>
-      (complete = complete && getValue(valuePath) != null),
+      getValue(valuePath) != null,
     'phone-number': (entry, obj, index, formPath, valuePath) =>
-      (complete = complete && getValue(valuePath) != null),
+      getValue(valuePath) != null,
     'body-image': (entry, obj, index, formPath, valuePath) =>
-      (complete = complete && getValue(valuePath) != null),
+      getValue(valuePath) != null,
     address: (entry, obj, index, formPath, valuePath) =>
-      (complete = complete && getValue(valuePath) != null),
+      getValue(valuePath) != null,
     photo: (entry, obj, index, formPath, valuePath) =>
-      (complete = complete && getValue(valuePath) != null),
+      getValue(valuePath) != null,
     combinePlainParts: (formPath, index, subparts) =>
       _.reduce(subparts, (a, b) => a && b)!,
     combineSmartParts: (
@@ -386,10 +396,14 @@ export function isSectionComplete(
       if (r === undefined) return true
       else return false
     },
-    post: (entry, obj, index, formPath, pre, inner, subparts) =>
-      (inner === null ? true : inner) && (subparts === null ? true : subparts),
+    post: (entry, obj, index, formPath, pre, inner, subparts, skippedPath) => {
+      return (
+        (skippedPath && getValue(skippedPath) == true) ||
+        ((inner === null ? true : inner) &&
+          (subparts === null ? true : subparts))
+      )
+    },
   })
-  return complete
 }
 
 export function blobToBase64(blob: Blob) {

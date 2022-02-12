@@ -410,7 +410,7 @@ sections:
             filename: bottom.png
         - comments:
             title: Comments
-            required: false
+            optional: true
             type: long-text
   - ob-gyn-history:
       title: OB/GYN history
@@ -469,11 +469,11 @@ sections:
             type: long-text
         - other:
             title: Other significant orifices
-            required: false
+            optional: true
             type: long-text
         - comments:
             title: Comments
-            required: false
+            optional: true
             type: long-text
   - forensic:
       title: Forensic exam
@@ -545,7 +545,7 @@ sections:
                   type: long-text
         - other:
             title: Any other treatment or medication given?
-            required: false
+            optional: true
             type: long-text
   - referrals:
       title: Referrals
@@ -703,7 +703,7 @@ sections:
                         title: Date
                         type: date
               - to:
-                  required: false
+                  optional: true
                   title: To
                   parts:
                     - name:
@@ -813,7 +813,7 @@ sections:
                   title: Date
                   type: date
         - to:
-            required: false
+            optional: true
             title: To
             parts:
               - name:

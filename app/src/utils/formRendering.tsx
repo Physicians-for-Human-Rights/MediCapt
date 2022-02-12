@@ -58,7 +58,7 @@ export default function renderFnsWrapper(
     pre: () => {
       return null
     },
-    post: (entry, part, index, formPath, pre, inner, subparts) => {
+    post: (entry, part, index, formPath, pre, inner, subparts, skippedPath) => {
       return (
         <CardWrap
           index={index}
@@ -75,6 +75,11 @@ export default function renderFnsWrapper(
           subparts={subparts}
           changedPaths={changedPaths}
           keepAlive={keepAlive}
+          skippable={skippedPath !== null}
+          skipped={formGetPath(skippedPath, false)}
+          toggleSkip={() => {
+            formSetPath(skippedPath, !formGetPath(skippedPath))
+          }}
         />
       )
     },

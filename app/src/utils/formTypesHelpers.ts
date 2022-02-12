@@ -52,7 +52,8 @@ export type FormFns<Return> = {
     pre: Return | null,
     inner: Return | null,
     // The subparts are already combined
-    subparts: Return | null
+    subparts: Return | null,
+    skippedPath: string | null
   ) => Return
   combinePlainParts: (
     // This combination of parts doesn't know what its enclosing form type is

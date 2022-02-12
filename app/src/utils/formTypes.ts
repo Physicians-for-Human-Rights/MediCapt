@@ -10,8 +10,6 @@ export type FormType = {
   country: string
   language: string
   date: Date
-  // Are fields that aren't marked as required, optional or required?
-  'required-by-default'?: boolean
   // A consent entry must exist and must be the first entry unless this is set.
   skipConsent?: boolean
   // Main contents
@@ -80,7 +78,7 @@ export type FormOnlyWhen = {
 export type FormRef = { Ref: string }
 
 export type FormConditional = {
-  required?: boolean
+  optional?: boolean
   'only-when'?: FormOnlyWhen
   'only-not'?: FormOnlyWhen
   'only-sex'?: 'male' | 'female' | 'intersex' | 'any'
