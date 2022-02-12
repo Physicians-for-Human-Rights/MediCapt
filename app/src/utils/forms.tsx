@@ -139,7 +139,7 @@ export function mapSectionWithPaths<Return>(
   function process(
     entry: FormPartRecord,
     index: number,
-    formPath: FormPath
+    oldFormPath: FormPath
   ): Return {
     {
       if (_.isNil(entry)) return identity
@@ -150,7 +150,7 @@ export function mapSectionWithPaths<Return>(
         Object.keys(entry)[0] === ''
       )
         return identity
-      formPath = formPath + '.' + Object.keys(entry)[0]
+      const formPath = oldFormPath + '.' + Object.keys(entry)[0]
       let inner: Return | null = null
       let subparts: Return | null = null
       //

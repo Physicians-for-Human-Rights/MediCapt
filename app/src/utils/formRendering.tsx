@@ -210,7 +210,7 @@ export default function renderFnsWrapper(
       const value = getPath(valuePath, _.isPlainObject, {})
       let imageUri: string | null = null
       icon = <Icon name="edit" size={15} color="white" />
-      if (value) {
+      if (value && formGetPath(valuePath)) {
         title = ' Edit diagram'
         imageUri = null
         image = (
@@ -603,6 +603,7 @@ export default function renderFnsWrapper(
     },
     'list-with-labels': (entry, part, index, formPath, valuePath) => {
       let options = resolveRef(part.options, common)
+      if (!options) return <></>
       let items = options.map((e, i) => {
         return (
           <Picker.Item
