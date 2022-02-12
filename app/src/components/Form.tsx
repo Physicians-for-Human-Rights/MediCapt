@@ -72,10 +72,11 @@ export default function Form({
   hasBottom = true,
 }: {
   files: Record<string, any>
-  form: FormType
+  form: FormType | undefined
   hasSideMenu: boolean
   hasBottom: boolean
 }) {
+  if (form === undefined) return null
   const formSections = nameFormSections(form.sections)
   const [currentSection, setCurrentSection] = useState(0)
 
@@ -222,31 +223,4 @@ export default function Form({
       </ScrollView>
     </>
   )
-
-  // return (
-  //   <View style={styles.container}>
-  //     <SideMenu
-  //       ref={sideMenu}
-  //       menu={
-  //         <Menu
-  //           formSections={formSections}
-  //           changeSection={menuChangeSection}
-  //           isSectionCompleteList={isSectionCompleteList}
-  //         />
-  //       }
-  //     >
-  //       {top}
-  //       <ScrollView
-  //         ref={scrollView}
-  //         style={styles.wideContainer}
-  //         keyboardDismissMode="on-drag"
-  //         accessible={false}
-  //         keyboardShouldPersistTaps="handled"
-  //       >
-  //         {sectionContent}
-  //         {bottom}
-  //       </ScrollView>
-  //     </SideMenu>
-  //   </View>
-  // )
 }

@@ -45,6 +45,15 @@ export default function renderFnsWrapper(
   removeKeepAlive: any,
   addKeepAlive: any
 ): FormFns<JSX.Element> {
+  function getPath(
+    valuePath: string | null | undefined,
+    checkTy?: (o: any) => boolean,
+    _default: any = undefined
+  ) {
+    const r = formGetPath(valuePath)
+    if (checkTy !== undefined && !checkTy(r)) return _default
+    return r
+  }
   return {
     pre: () => {
       return null
@@ -77,30 +86,36 @@ export default function renderFnsWrapper(
     },
     selectMultiple: (entry, part, index, formPath, valuePaths, otherPath) => {
       if ('select-multiple' in part) {
-        let items = part.options.map((e, i) => {
-          let valuePath = valuePaths[i]
-          let fn = () => {
-            if (formGetPath(valuePath)) {
-              formSetPath(valuePath, false)
-            } else {
-              formSetPath(valuePath, true)
-            }
-          }
-          return (
-            <ListItem
-              key={i}
-              Component={TouchableOpacity}
-              onPress={fn}
-              containerStyle={styles.noTopBottomBorders}
-            >
-              <ListItem.CheckBox
-                checked={formGetPath(valuePath)}
-                onPress={fn}
-              />
-              <ListItem.Title>{_.upperFirst(e)}</ListItem.Title>
-            </ListItem>
-          )
-        })
+        let items =
+          'options' in part && _.isArray(part.options)
+            ? // @ts-ignore TODO type this
+              part.options.map((e: string, i: number) => {
+                let valuePath = valuePaths[i]
+                let fn = () => {
+                  if (formGetPath(valuePath)) {
+                    formSetPath(valuePath, false)
+                  } else {
+                    formSetPath(valuePath, true)
+                  }
+                }
+                return (
+                  <ListItem
+                    key={i}
+                    Component={TouchableOpacity}
+                    onPress={fn}
+                    containerStyle={styles.noTopBottomBorders}
+                  >
+                    <ListItem.Content>
+                      <ListItem.CheckBox
+                        checked={formGetPath(valuePath)}
+                        onPress={fn}
+                      />
+                      <ListItem.Title>{_.upperFirst(e)}</ListItem.Title>
+                    </ListItem.Content>
+                  </ListItem>
+                )
+              })
+            : []
         if (part.other) {
           let fn = () => {
             if (formGetPath(otherPath)) {
@@ -134,7 +149,7 @@ export default function renderFnsWrapper(
               multiline={true}
               numberOfLines={5}
               onChangeText={text => formSetPath(otherPath, text)}
-              value={formGetPath(otherPath, '')}
+              value={getPath(otherPath, _.isString, '')}
             />
           )
         }
@@ -153,13 +168,13 @@ export default function renderFnsWrapper(
       let title = null
       let buttonStyle = {}
       let image = null
-      if (formGetPath(valuePath)) {
+      if (getPath(valuePath, _.isString, '')) {
         title = ' Replace signature'
         image = (
           <Image
             resizeMode="contain"
             style={{ width: 200, height: 200 }}
-            source={{ uri: formGetPath(valuePath) }}
+            source={{ uri: getPath(valuePath, _.isString, '') }}
           />
         )
       } else {
@@ -184,7 +199,8 @@ export default function renderFnsWrapper(
       let image = null
       let icon = null
       let buttonStyle = {}
-      const value = formGetPath(valuePath)
+      // TODO narrow this type
+      const value = getPath(valuePath, _.isPlainObject, {})
       let imageUri: string | null = null
       icon = <Icon name="edit" size={15} color="white" />
       if (value) {
@@ -230,7 +246,8 @@ export default function renderFnsWrapper(
         title = ' Mark and annotate'
         buttonStyle = { backgroundColor: '#d5001c' }
         const genderOrSex: string =
-          formGetPath('inferred.sex') || formGetPath('inferred.gender')
+          getPath('inferred.sex', _.isString, '') ||
+          getPath('inferred.gender', _.isString, '')
         if ('filename' in part && part.filename) {
           imageUri = files[part.filename]
         } else if (
@@ -289,11 +306,8 @@ export default function renderFnsWrapper(
       )
     },
     bool: (entry, part, index, formPath, valuePath) => {
-      let selected = _.has(formPaths, valuePath)
-        ? formPaths[valuePath]
-          ? 0
-          : 1
-        : null
+      const value = getPath(valuePath, _.isBoolean, null)
+      let selected = value === null ? null : value ? 0 : 1
       return (
         <ButtonGroup
           selectedIndex={selected}
@@ -342,7 +356,7 @@ export default function renderFnsWrapper(
           textAlign={'center'}
           editable={true}
           onChangeText={text => formSetPath(valuePath, text)}
-          value={formGetPath(valuePath, '')}
+          value={getPath(valuePath, _.isString, '')}
         />
       )
     },
@@ -364,7 +378,7 @@ export default function renderFnsWrapper(
           multiline={true}
           numberOfLines={5}
           onChangeText={text => formSetPath(valuePath, text)}
-          value={formGetPath(valuePath, '')}
+          value={getPath(valuePath, _.isString, '')}
         />
       )
     },
@@ -384,7 +398,7 @@ export default function renderFnsWrapper(
           editable={true}
           placeholder={part.placeholder}
           onChangeText={text => formSetPath(valuePath, text)}
-          value={formGetPath(valuePath, '')}
+          value={getPath(valuePath, _.isString, '')}
         />
       )
     },
@@ -405,7 +419,7 @@ export default function renderFnsWrapper(
           editable={true}
           placeholder={part.placeholder}
           onChangeText={text => formSetPath(valuePath, text)}
-          value={formGetPath(valuePath, '')}
+          value={getPath(valuePath, _.isString, '')}
         />
       )
     },
@@ -425,12 +439,12 @@ export default function renderFnsWrapper(
           textAlign={'center'}
           editable={true}
           onChangeText={text => formSetPath(valuePath, text)}
-          value={formGetPath(valuePath, '')}
+          value={getPath(valuePath, _.isString, '')}
         />
       )
     },
     date: (entry, part, index, formPath, valuePath) => {
-      const current_value = formGetPath(valuePath)
+      const current_value = getPath(valuePath, _.isDate)
       let buttonStyle = {}
       if (!current_value) {
         buttonStyle = { backgroundColor: '#d5001c' }
@@ -493,7 +507,7 @@ export default function renderFnsWrapper(
       }
     },
     'date-time': (entry, part, index, formPath, valuePath) => {
-      const current_value = formGetPath(valuePath)
+      const current_value = getPath(valuePath, _.isDate)
       let buttonStyle = {}
       if (!current_value) {
         buttonStyle = { backgroundColor: '#d5001c' }
@@ -567,7 +581,7 @@ export default function renderFnsWrapper(
       return <></>
     },
     photo: (entry, part, index, formPath, valuePath) => {
-      const photos: Array<string> = formGetPath(valuePath)
+      const photos: Array<string> = getPath(valuePath, _.isArray, [])
         ? formGetPath(valuePath).photos
         : []
       const setPhotos: (
@@ -591,7 +605,7 @@ export default function renderFnsWrapper(
           />
         )
       })
-      const current_value = formGetPath(valuePath)
+      const current_value = getPath(valuePath, _.isString)
       if (!current_value) {
         items = [
           <Picker.Item key={-1} label="Select a value" value={null} />,

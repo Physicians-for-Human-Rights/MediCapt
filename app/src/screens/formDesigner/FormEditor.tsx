@@ -16,8 +16,6 @@ import {
 import CodeMirror from '@uiw/react-codemirror'
 import { StreamLanguage } from '@codemirror/stream-parser'
 import { yaml as yamlLang } from '@codemirror/legacy-modes/mode/yaml'
-import { format as formatDate } from 'date-fns'
-import { nameFormSections } from 'utils/forms'
 import { FormType } from 'utils/formTypes'
 import yaml from 'js-yaml'
 import { useWindowDimensions } from 'react-native'

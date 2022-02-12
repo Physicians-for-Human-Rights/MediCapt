@@ -131,6 +131,7 @@ export function mapSectionWithPaths<Return>(
     index: number,
     formPath: FormPath
   ): Return[] {
+    if (_.isNil(entry)) return []
     return entry.map((e, i) => {
       return process(e, i, formPath)
     })
@@ -141,7 +142,14 @@ export function mapSectionWithPaths<Return>(
     formPath: FormPath
   ): Return {
     {
+      if (_.isNil(entry)) return identity
       const part = Object.values(entry)[0]
+      if (
+        !_.isObject(part) ||
+        !_.isString(Object.keys(entry)[0]) ||
+        Object.keys(entry)[0] === ''
+      )
+        return identity
       formPath = formPath + '.' + Object.keys(entry)[0]
       let inner: Return | null = null
       let subparts: Return | null = null
@@ -213,18 +221,20 @@ export function mapSectionWithPaths<Return>(
               }
               break
           }
-          // @ts-ignore TODO Errors out with expression produces a union type that is too complex to represent
-          if (part && fns[part.type]) {
-            inner = fns[part.type](
-              entry,
-              // @ts-ignore TODO Typescript doesn't seem willing to represent this type
-              part,
-              index,
-              formPath,
-              formPath + '.value'
-            )
-          } else {
-            console.log('UNSUPPORTED FIELD TYPE', part)
+          if (!inner) {
+            // @ts-ignore TODO Errors out with expression produces a union type that is too complex to represent
+            if (part && fns[part.type]) {
+              inner = fns[part.type](
+                entry,
+                // @ts-ignore TODO Typescript doesn't seem willing to represent this type
+                part,
+                index,
+                formPath,
+                formPath + '.value'
+              )
+            } else {
+              console.log('UNSUPPORTED FIELD TYPE', part)
+            }
           }
         }
         if ('parts' in part && part.parts && part.parts !== undefined) {
@@ -252,6 +262,8 @@ export function mapSectionWithPaths<Return>(
   if (shouldSkipConditional(section, getValue)) {
     return identity
   }
+  if (_.isNil(section) || _.isNil(section.parts) || _.isNil(section.name))
+    return identity
   return fns.combinePlainParts(
     'sections.' + section.name,
     0,
@@ -473,7 +485,7 @@ export async function loadForm(formMetadata: FormMetadata) {
 export function nameFormSections(
   sections: FormSectionRecord[]
 ): NamedFormSection[] {
-  return sections.map(e => {
+  return _.filter(sections, _.negate(_.isNil)).map(e => {
     return {
       name: Object.keys(e)[0],
       ...Object.values(e)[0],
