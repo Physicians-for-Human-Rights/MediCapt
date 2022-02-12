@@ -32,7 +32,12 @@ export default function App({
         <RootStack.Screen
           name="FormEditor"
           component={FormEditor}
-          options={{ headerShown: false }}
+          options={{
+            headerShown: false,
+            // TODO The signature component causes crashes in SkSurface::getCanvas unless we enable this
+            // https://github.com/react-navigation/react-navigation/issues/9061
+            animationEnabled: false,
+          }}
         />
       </RootStack.Navigator>
     </NavigationContainer>

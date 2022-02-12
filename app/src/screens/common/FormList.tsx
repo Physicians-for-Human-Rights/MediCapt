@@ -112,7 +112,7 @@ function ListItemDesktop({ item }: { item: any }) {
   )
 }
 
-export default function FormList({ navigation }: any) {
+export default function FormList({ route, navigation }: any) {
   const page = 1
   const numberOfPages = 3
   const forms = [
@@ -164,6 +164,8 @@ export default function FormList({ navigation }: any) {
         displaySidebar={false}
         displayScreenTitle={false}
         title="Select a form"
+        signOut={route.params.signOut}
+        user={route.params.user}
       >
         <HStack
           pt={{ md: 5, base: 2 }}
@@ -178,7 +180,7 @@ export default function FormList({ navigation }: any) {
             py={3}
             mx={{ base: 4, md: 0 }}
             mr={{ base: 4, md: 4, lg: 30, xl: 40 }}
-            _light={{ bg: 'white' }}
+            bg="white"
             InputLeftElement={
               <Icon
                 as={<AntDesign name="search1" />}
@@ -190,7 +192,8 @@ export default function FormList({ navigation }: any) {
                 }}
               />
             }
-            color="coolGray.400"
+            size="lg"
+            color="black"
             placeholder="Search for form names, ids, tags, or locations"
           />
         </HStack>

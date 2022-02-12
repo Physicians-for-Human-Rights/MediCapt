@@ -10,7 +10,6 @@ import {
   Image,
   Text,
   Hidden,
-  useColorMode,
   IconButton,
   Divider,
   Menu,
@@ -26,13 +25,14 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from '@expo/vector-icons'
+import { Auth } from 'aws-amplify'
 
 import medicapt_logo from '../../assets/medicapt.png'
 import phr_logo from '../../assets/phr_small.png'
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
-export function Sidebar() {
+export function Sidebar(signOut) {
   const list = [
     {
       iconName: 'person-outline',
@@ -141,7 +141,13 @@ export function Sidebar() {
         </VStack>
         <Divider />
         <Box px="4" py="2">
-          <Button variant="ghost" justifyContent="flex-start" py="4" px="5">
+          <Button
+            variant="ghost"
+            justifyContent="flex-start"
+            py="4"
+            px="5"
+            onPress={signOut}
+          >
             <HStack space="4" alignItems="center">
               <Icon
                 size="6"
@@ -270,8 +276,6 @@ export function Header(props: any) {
               closeOnSelect={false}
               w="200"
               placement="bottom right"
-              onOpen={() => console.log('opened')}
-              onClose={() => console.log('closed')}
               trigger={triggerProps => {
                 return (
                   <IconButton
@@ -285,11 +289,12 @@ export function Header(props: any) {
             >
               <Menu.Group title="Profile">
                 <Menu.Item>Account</Menu.Item>
+                <Menu.Item>Settings</Menu.Item>
               </Menu.Group>
               <Divider mt="3" w="100%" />
               <Menu.Group title="Shortcuts">
-                <Menu.Item>Settings</Menu.Item>
-                <Menu.Item>Logout</Menu.Item>
+                <Menu.Item>Lock</Menu.Item>
+                <Menu.Item onPress={props.signOut}>Log out</Menu.Item>
               </Menu.Group>
             </Menu>
           </HStack>
@@ -299,10 +304,21 @@ export function Header(props: any) {
   )
 }
 
-function MainContent(props: any) {
+// TODO Type this
+function MainContent({
+  displayScreenTitle,
+  title,
+  children,
+  fullWidth,
+}: {
+  displayScreenTitle: boolean
+  title: string
+  children: JSX.Element
+  fullWidth: boolean
+}) {
   return (
-    <VStack maxW="1016px" flex={1} width="100%">
-      {props.displayScreenTitle && (
+    <VStack maxW={fullWidth ? undefined : '1016px'} flex={1} width="100%">
+      {displayScreenTitle && (
         <Hidden till="md">
           <HStack mb="4" space={2} alignItems="center">
             <Pressable>
@@ -314,17 +330,17 @@ function MainContent(props: any) {
               />
             </Pressable>
             <Text fontSize="lg" _light={{ color: 'coolGray.800' }}>
-              {props.title}
+              {title}
             </Text>
           </HStack>
         </Hidden>
       )}
-      {props.children}
+      {children}
     </VStack>
   )
 }
 
-export function MobileHeader({ title, backButton, navigation }: any) {
+export function MobileHeader({ title, backButton, navigation, signOut }: any) {
   return (
     <Box
       px="1"
@@ -403,8 +419,11 @@ export function MobileHeader({ title, backButton, navigation }: any) {
                 }}
                 placement="bottom right"
               >
-                <Menu.Item>Log out</Menu.Item>
+                <Menu.Item>Account</Menu.Item>
                 <Menu.Item>Settings</Menu.Item>
+                <Divider mt="3" w="100%" />
+                <Menu.Item>Lock</Menu.Item>
+                <Menu.Item onPress={signOut}>Log out</Menu.Item>
               </Menu>
             </HStack>
           </>
@@ -414,8 +433,16 @@ export function MobileHeader({ title, backButton, navigation }: any) {
   )
 }
 
+function authSignOut() {
+  Auth.signOut()
+}
+
 export default function DashboardLayout({
   navigation,
+  children,
+  title,
+  signOut,
+  user,
   scrollable = true,
   displayScreenTitle = true,
   displayHeaderTitle = true,
@@ -423,13 +450,27 @@ export default function DashboardLayout({
   searchbar = false,
   backButton = true,
   middlebar = null,
-  ...props
-}: any) {
+  fullWidth = false,
+}: {
+  navigation: any
+  children: JSX.Element
+  title: string
+  signOut: () => any
+  user: any
+  scrollable?: boolean
+  displayScreenTitle?: boolean
+  displayHeaderTitle?: boolean
+  displaySidebar?: boolean
+  searchbar?: boolean
+  backButton?: boolean
+  middlebar?: JSX.Element
+  fullWidth?: boolean
+}) {
+  if (!signOut) signOut = authSignOut
   const [isSidebarVisible, setIsSidebarVisible] = React.useState(true)
   function toggleSidebar() {
     setIsSidebarVisible(!isSidebarVisible)
   }
-
   return (
     <>
       <StatusBar
@@ -444,21 +485,23 @@ export default function DashboardLayout({
         >
           <Hidden from="md">
             <MobileHeader
-              title={props.title}
+              title={title}
               backButton={backButton}
               navigation={navigation}
+              signOut={signOut}
             />
           </Hidden>
           <Hidden till="md">
             <Header
               toggleSidebar={toggleSidebar}
-              title={props.title}
+              title={title}
               menuButton={displaySidebar}
               searchbar={searchbar}
               middlebar={middlebar}
               displayHeaderTitle={displayHeaderTitle}
               backButton={backButton}
               navigation={navigation}
+              signOut={signOut}
             />
           </Hidden>
 
@@ -470,25 +513,32 @@ export default function DashboardLayout({
           >
             {isSidebarVisible && displaySidebar && (
               <Hidden till="md">
-                <Sidebar />
+                <Sidebar signOut={signOut} />
               </Hidden>
             )}
 
             <Hidden till="md">
               <ScrollView
                 flex={1}
-                p={{ md: 8 }}
+                p={{ md: fullWidth ? 0 : 8 }}
                 contentContainerStyle={{ alignItems: 'center', flexGrow: 1 }}
               >
                 <MainContent
-                  {...props}
+                  fullWidth={fullWidth}
+                  title={title}
                   displayScreenTitle={displayScreenTitle}
+                  children={children}
                 />
               </ScrollView>
             </Hidden>
 
             <Hidden from="md">
-              <MainContent {...props} displayScreenTitle={displayScreenTitle} />
+              <MainContent
+                fullWidth={fullWidth}
+                title={title}
+                displayScreenTitle={displayScreenTitle}
+                children={children}
+              />
             </Hidden>
           </Box>
         </KeyboardAwareScrollView>

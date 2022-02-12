@@ -1,51 +1,124 @@
 import React from 'react'
-import { ScrollView, TouchableOpacity } from 'react-native'
-import { Header, ListItem, Badge } from 'react-native-elements'
 import styles from 'styles'
+import {
+  Box,
+  VStack,
+  StatusBar,
+  ScrollView,
+  HStack,
+  Pressable,
+  Icon,
+  Image,
+  Text,
+  Hidden,
+  useColorMode,
+  IconButton,
+  Divider,
+  Menu,
+  Avatar,
+  Button,
+  Input,
+  Center,
+  Badge,
+  useBreakpointValue,
+  FlatList,
+} from 'native-base'
+
+import {
+  AntDesign,
+  FontAwesome,
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from '@expo/vector-icons'
 
 import _ from 'lodash'
+import { NamedFormSection, NamedFormPart } from 'utils/formTypesHelpers'
 
-function Menu({ formSections, changeSection, isSectionCompleteList }) {
-  let sectionItems = []
-  if (formSections) {
-    sectionItems = formSections.map((e, i) => (
-      <ListItem
-        key={i}
-        containerStyle={styles.topBorder}
-        Component={TouchableOpacity}
-        onPress={x => {
-          changeSection(i)
-        }}
-      >
-        <Badge
-          value={i + 1}
-          status={isSectionCompleteList[i] ? 'success' : 'error'}
-        />
-        <ListItem.Title>{e.title}</ListItem.Title>
-      </ListItem>
-    ))
-  }
+function FormMenu({
+  formSections,
+  changeSection,
+  isSectionCompleteList,
+  toggleMenu,
+}: {
+  formSections: NamedFormSection[]
+  changeSection: (i: number) => any
+  isSectionCompleteList: boolean[]
+  toggleMenu: () => any
+}) {
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: '#b3d9ff' }}
-      scrollsToTop={false}
-    >
-      <Header
-        centerComponent={{
-          text: 'Form sections',
-          style: { color: '#000' },
-        }}
-        containerStyle={{
-          backgroundColor: '#b3d9ff',
-          justifyContent: 'space-around',
-        }}
+    <ScrollView scrollsToTop={false} stickyHeaderIndices={[0]}>
+      <HStack space="3" py="3" justifyContent="center" pb={4}>
+        <Button
+          bg="info.500"
+          leftIcon={<Icon as={AntDesign} name="printer" size="sm" />}
+        >
+          Print
+        </Button>
+        <Button
+          bg="info.500"
+          leftIcon={<Icon as={AntDesign} name="save" size="sm" />}
+        >
+          Save and Exit
+        </Button>
+        <Button
+          bg={
+            _.every(isSectionCompleteList, (a: boolean) => a)
+              ? 'success.600'
+              : 'primary.800'
+          }
+          leftIcon={<Icon as={AntDesign} name="staro" size="sm" />}
+        >
+          Complete record
+        </Button>
+      </HStack>
+      <FlatList
+        data={formSections}
+        renderItem={({
+          item,
+          index,
+        }: {
+          item: NamedFormSection
+          index: number
+        }) => (
+          <Pressable
+            onPress={() => {
+              changeSection(index)
+              toggleMenu()
+            }}
+          >
+            <Box
+              borderBottomWidth="1"
+              borderColor="coolGray.200"
+              pl="4"
+              pr="5"
+              py="2"
+            >
+              <HStack space={3} justifyContent="flex-start">
+                <Badge
+                  px={2}
+                  colorScheme={isSectionCompleteList[index] ? 'success' : 'red'}
+                >
+                  {index + 1}
+                </Badge>
+                <Text
+                  color={
+                    isSectionCompleteList[index] ? 'success.600' : 'primary.800'
+                  }
+                >
+                  {item.title}
+                </Text>
+              </HStack>
+            </Box>
+          </Pressable>
+        )}
+        keyExtractor={(_item: NamedFormSection, idx: number) => idx + ''}
       />
-      {sectionItems}
     </ScrollView>
   )
 }
 
-const RerenderIfNecessary = React.memo(Menu, (prevProps, nextProps) => {
+const RerenderIfNecessary = React.memo(FormMenu, (prevProps, nextProps) => {
   return (
     prevProps.formSections === nextProps.formSections &&
     _.isEqual(prevProps.isSectionCompleteList, nextProps.isSectionCompleteList)

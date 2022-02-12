@@ -13,32 +13,11 @@ import {
   Square,
   Circle,
 } from 'native-base'
-import CodeMirror from '@uiw/react-codemirror'
-import { StreamLanguage } from '@codemirror/stream-parser'
-import { yaml as yamlLang } from '@codemirror/legacy-modes/mode/yaml'
 import { FormType } from 'utils/formTypes'
 import yaml from 'js-yaml'
 import { useWindowDimensions } from 'react-native'
-import { defaultHighlightStyle } from '@codemirror/highlight'
-import { lineNumbers, highlightActiveLineGutter } from '@codemirror/gutter'
-import { searchKeymap, highlightSelectionMatches } from '@codemirror/search'
-import { autocompletion, completionKeymap } from '@codemirror/autocomplete'
-import { commentKeymap } from '@codemirror/comment'
-import {
-  keymap,
-  highlightSpecialChars,
-  drawSelection,
-  highlightActiveLine,
-  dropCursor,
-} from '@codemirror/view'
-import { closeBrackets, closeBracketsKeymap } from '@codemirror/closebrackets'
-import { defaultKeymap } from '@codemirror/commands'
-import { indentOnInput } from '@codemirror/language'
-import { history, historyKeymap } from '@codemirror/history'
-import { lintGutter, lintKeymap } from '@codemirror/lint'
-import { foldGutter, foldKeymap } from '@codemirror/fold'
-
 import useDebounce from 'react-use/lib/useDebounce'
+import { Platform } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
 import DashboardLayout from 'components/DashboardLayout'
 import Form from 'components/Form'
@@ -46,6 +25,7 @@ import {
   RootStackScreenProps,
   RootStackParamList,
 } from 'utils/formDesigner/navigation'
+import CodeEditor from '../../components/CodeEditor'
 
 function Tabs({
   tabName,
@@ -60,7 +40,7 @@ function Tabs({
       _dark={{ bg: 'coolGray.900' }}
       _light={{ bg: { base: 'primary.900', md: 'white' } }}
     >
-      <HStack px={{ base: 4, md: 4 }} mt="2" justifyContent="start">
+      <HStack px={{ base: 4, md: 4 }} mt="2" justifyContent="flex-start">
         <Pressable
           px="5"
           onPress={() => {
@@ -147,11 +127,10 @@ function Tabs({
   )
 }
 
-export default function ({
-  route,
+function InnerFormEditor({
+  initialContents,
   navigation,
 }: RootStackScreenProps<'FormEditor'>) {
-  const window = useWindowDimensions()
   const [tabName, setTabName] = React.useState('Overview')
   const [files, setFiles] = React.useState([] as Record<string, any>)
   const [form, setForm] = React.useState({
@@ -190,14 +169,19 @@ export default function ({
     ],
   } as FormType)
 
-  const [contents, setContents] = React.useState(yaml.dump(form))
+  const [contents, setContents] = React.useState(initialContents)
   useEffect(() => {
     try {
       setForm(yaml.load(contents) as FormType)
     } catch (e) {
+      // TODO Error handling
       console.log(e)
     }
   }, [contents])
+
+  const window = useWindowDimensions()
+  const padding = Platform.OS === 'web' ? 0.03 : 0
+  const ratio = Platform.OS === 'web' ? (window.width > 1000 ? 0.6 : 0.45) : 0
 
   const [rawContents, setRawContents] = React.useState(contents)
   useDebounce(
@@ -207,6 +191,7 @@ export default function ({
     1000,
     [rawContents]
   )
+
   return (
     <VStack>
       {Platform.OS !== 'web' ? (
@@ -294,6 +279,9 @@ export default function FormEditor({
       backButton={true}
       navigation={navigation}
       middlebar={<Tabs tabName={tabName} setTabName={setTabName} />}
+      fullWidth={true}
+      signOut={route.params.signOut}
+      user={route.params.user}
     >
       <VStack
         safeAreaBottom
@@ -301,51 +289,16 @@ export default function FormEditor({
         borderRadius={{ md: '8' }}
         _light={{
           borderColor: 'coolGray.200',
-          bg: { base: 'white' },
         }}
         px={{
           base: 4,
           md: 32,
         }}
       >
-        <HStack pt="5" space={3} justifyContent="center">
-          <CodeMirror
-            value={contents}
-            height={Math.round(window.height * 0.8) + 'px'}
-            width={Math.round(window.width * 0.4) + 'px'}
-            extensions={[
-              StreamLanguage.define(yamlLang),
-              defaultHighlightStyle.fallback,
-              lineNumbers(),
-              highlightActiveLineGutter(),
-              indentOnInput(),
-              foldGutter(),
-              lintGutter(),
-              keymap.of([
-                ...closeBracketsKeymap,
-                ...defaultKeymap,
-                ...searchKeymap,
-                ...historyKeymap,
-                ...commentKeymap,
-                ...completionKeymap,
-                ...lintKeymap,
-                ...foldKeymap,
-              ]),
-            ]}
-            onChange={value => setContents(value)}
-          />
-          <Box
-            h={Math.round(window.height * 0.8) + 'px'}
-            w={Math.round(window.width * 0.4) + 'px'}
-          >
-            <Form
-              files={files}
-              form={form}
-              hasSideMenu={false}
-              hasBottom={false}
-            />
-          </Box>
-        </HStack>
+        <InnerFormEditor
+          initialContents={yaml.dump(form)}
+          navigation={navigation}
+        />
       </VStack>
     </DashboardLayout>
   )

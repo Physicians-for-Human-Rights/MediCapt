@@ -1,72 +1,127 @@
 import React from 'react'
-import { Text, View } from 'react-native'
-import { Header, Icon, Button } from 'react-native-elements'
+import {
+  Box,
+  VStack,
+  StatusBar,
+  ScrollView,
+  HStack,
+  Pressable,
+  Icon,
+  Image,
+  Text,
+  Hidden,
+  useColorMode,
+  IconButton,
+  Divider,
+  Menu,
+  Avatar,
+  Button,
+  Input,
+  Center,
+  useBreakpointValue,
+} from 'native-base'
+
+import {
+  AntDesign,
+  FontAwesome,
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from '@expo/vector-icons'
+
+// TODO Do we need to use one here?
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const FormTop = ({
   sectionOffset,
   currentSection,
-  openSideMenu,
-  hasSideMenu,
+  isMenuVisible,
+  toggleMenu,
   title,
   lastSection,
   isSectionCompleted,
+  overrideTitle,
+}: {
+  sectionOffset: (n: number) => any
+  currentSection: number
+  isMenuVisible: boolean
+  toggleMenu: () => any
+  title: string
+  lastSection: number
+  isSectionCompleted: boolean
+  overrideTitle?: string
 }) => {
   return (
-    <Header
-      leftComponent={
-        hasSideMenu
-          ? {
-              icon: 'menu',
-              color: '#fff',
-              onPress: openSideMenu,
-            }
-          : {}
-      }
-      centerComponent={
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
+    <Box
+      px="1"
+      bg={isSectionCompleted ? 'success.600' : 'primary.800'}
+      borderColor="coolGray.200"
+    >
+      <HStack space="3" justifyContent="space-between" pr="4">
+        <HStack
+          py="4"
+          pl="2"
+          space="1"
+          justifyContent="space-between"
+          alignItems="center"
         >
-          <Button
-            title=""
-            icon={<Icon name="arrow-back" size={15} color="white" />}
-            disabled={currentSection == 0}
+          <IconButton
+            bg="info.500"
+            onPress={toggleMenu}
+            icon={
+              <Icon
+                size="6"
+                name={isMenuVisible ? 'close' : 'menu'}
+                as={MaterialCommunityIcons}
+                color="coolGray.50"
+              />
+            }
+          />
+        </HStack>
+        <HStack pt="4" pb="4" space="1" justifyContent="space-between">
+          <IconButton
+            _disabled={{ bg: 'white' }}
+            _hover={{ bg: 'white' }}
+            bg={currentSection !== 0 ? 'info.500' : 'trueGray.500'}
+            disabled={currentSection === 0}
             onPress={() => sectionOffset(-1)}
+            icon={
+              <Icon
+                size="6"
+                as={AntDesign}
+                name="arrowleft"
+                color={currentSection !== 0 ? 'coolGray.50' : 'trueGray.300'}
+              />
+            }
           />
-          <Text
-            style={{
-              width: '60%',
-              marginLeft: '10%',
-              marginRight: '10%',
-              color: '#fff',
-            }}
-            textAlign="center"
-          >
+        </HStack>
+        <VStack flex="3" justifyContent="center" alignItems="center" maxW={56}>
+          <Text color="coolGray.50" fontSize="lg" isTruncated maxW={56}>
             Section {currentSection + 1}
-            {'\n'}
-            {title ? title : ''}
           </Text>
-          <Button
-            title=""
-            disabled={currentSection == lastSection}
+          <Text color="coolGray.50" fontSize="lg" isTruncated maxW={56}>
+            {title}
+          </Text>
+        </VStack>
+        <HStack pt="4" pb="4" space="1" justifyContent="space-between">
+          <IconButton
+            _disabled={{ bg: 'white' }}
+            _hover={{ bg: 'white' }}
+            bg={currentSection !== lastSection ? 'info.500' : 'trueGray.500'}
+            disabled={currentSection === lastSection}
             onPress={() => sectionOffset(1)}
-            icon={<Icon name="arrow-forward" size={15} color="white" />}
-            iconRight
+            icon={
+              <Icon
+                size="6"
+                as={AntDesign}
+                name="arrowright"
+                color={currentSection !== 0 ? 'coolGray.50' : 'trueGray.300'}
+              />
+            }
           />
-        </View>
-      }
-      rightComponent={
-        // TODO Change this to a submit button
-        { text: '30%', style: { color: '#fff' } }
-      }
-      containerStyle={{
-        backgroundColor: isSectionCompleted ? '#1cd500' : '#d5001c',
-        justifyContent: 'space-around',
-      }}
-    />
+        </HStack>
+      </HStack>
+    </Box>
   )
 }
 

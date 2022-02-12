@@ -2,19 +2,41 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import useMap from 'react-use/lib/useMap'
 import usePrevious from 'react-use/lib/usePrevious'
 import useSet from 'react-use/lib/useSet'
-import { View, ScrollView, Keyboard } from 'react-native'
+import useToggle from 'react-use/lib/useToggle'
+import { Keyboard } from 'react-native'
 // @ts-ignore TODO Why doesn't typescript know about this module?
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import SideMenu from 'react-native-side-menu'
 import _ from 'lodash'
 
+import {
+  Box,
+  VStack,
+  StatusBar,
+  ScrollView,
+  HStack,
+  Pressable,
+  Icon,
+  Image,
+  Text,
+  Hidden,
+  useColorMode,
+  IconButton,
+  Divider,
+  Menu,
+  Avatar,
+  Button,
+  Input,
+  Center,
+  useBreakpointValue,
+} from 'native-base'
+
 import styles from 'styles'
-import Menu from 'components/FormMenu'
-import Top from 'components/FormTop'
+import FormMenu from 'components/FormMenu'
+import FromTop from 'components/FormTop'
 import Bottom from 'components/FormBottom'
 
-import { loadForm } from 'utils/forms'
 import { FormType } from 'utils/formTypes'
+import formGetPath from 'utils/formInferences'
 import renderFnsWrapper from 'utils/formRendering'
 import {
   nameFormSections,
@@ -23,64 +45,26 @@ import {
 } from 'utils/forms'
 import { NamedFormSection, NamedFormPart } from 'utils/formTypesHelpers'
 
-type Props = NativeStackScreenProps
-
-function formGetPath(
-  formPaths: Record<string, any>,
-  valuePath: string,
-  default_: any = null
-) {
-  if (_.startsWith(valuePath, 'inferred.')) {
-    switch (valuePath) {
-      case 'inferred.sex': {
-        let value = _.find(
-          formPaths,
-          (v, k) =>
-            _.includes(k, '.sex.value') ||
-            // These two are definitely not equivalent, but some forms may not
-            // include both
-            _.includes(k, '.gender.value')
-        )
-        if (typeof value === 'string') {
-          return value
-        }
-        return default_
-      }
-      case 'inferred.age-of-majority': {
-        // TODO Should this vary by country?
-        return 18
-      }
-      case 'inferred.age': {
-        let value = _.find(formPaths, (v, k) => _.includes(k, '.age.value'))
-        if (typeof value === 'number') {
-          return value
-        }
-        return default_
-      }
-      default:
-        // TODO Error handling
-        console.log("Don't know how to compute this inferred value", valuePath)
-    }
-  }
-  return _.has(formPaths, valuePath) ? formPaths[valuePath] : default_
-}
-
 export default function Form({
   files,
   form,
   hasSideMenu,
-  hasBottom = true,
   noRenderCache = false,
 }: {
   files: Record<string, any>
   form: FormType | undefined
   hasSideMenu: boolean
-  hasBottom: boolean
   noRenderCache: boolean
 }) {
+  // This can happen when editing forms live
   if (form === undefined) return null
+
   const formSections = nameFormSections(form.sections)
   const [currentSection, setCurrentSection] = useState(0)
+  const setSectionOffset = useCallback(
+    (offset: number) => setCurrentSection(currentSection + offset),
+    [currentSection]
+  )
 
   // This is state about the current properties of widgets, like if a date-time
   // picker is open or not.
@@ -92,6 +76,10 @@ export default function Form({
   // wanting to rerender them a lot. This allows us to cut off the process early
   // by checking which parts of the from were updated and which parts want to be
   // rerendered unconditionally.
+  //
+  // formPaths stores the content of the form. What we also call the record as a
+  // map from strings to whatever values each particular field of a record wants
+  // to store
   const [formPaths, { set: setFormPath }] = useMap({} as Record<string, any>)
   const [keepAlive, { add: addKeepAlive, remove: removeKeepAlive }] = useSet(
     new Set([] as string[])
@@ -103,37 +91,29 @@ export default function Form({
       changedPaths.push(key)
     }
   }
-
   const isSectionCompleteList = form
     ? _.map(formSections, section =>
-        isSectionComplete(
-          section,
-          form.common,
-          (value: string) => formGetPath(formPaths, value, null)
-          // TODO defaults
-          // (value: string, default_: any) =>
-          // formGetPath(formPaths, value, default_)
+        isSectionComplete(section, form.common, (value: string) =>
+          formGetPath(formPaths, value, null)
         )
       )
     : []
 
-  const sideMenu = useRef(null)
-  const scrollView = useRef(null)
-
-  const setSectionOffset = useCallback(
-    (offset: number) => setCurrentSection(currentSection + offset),
-    [currentSection]
-  )
-
-  const openSideMenu = useCallback(() => {
+  // The side menu, although depending on the size of the viewport we sometimes
+  // display it on top
+  const [isMenuVisible, rawToggleMenu] = useToggle(false)
+  const scrollView = useRef(null as any)
+  const toggleMenu = useCallback(() => {
+    // Users are very likely to be editing a field
     Keyboard.dismiss()
-    sideMenu.current.openMenu(true)
-  }, [sideMenu.current])
+    rawToggleMenu()
+  }, [])
 
   const menuChangeSection = useCallback(
-    i => {
+    (i: number) => {
       setCurrentSection(i)
-      scrollView.current.scrollTo({ x: 0, y: 0, animated: true })
+      scrollView.current &&
+        scrollView.current.scrollTo({ x: 0, y: 0, animated: true })
     },
     [currentSection, scrollView.current]
   )
@@ -167,62 +147,34 @@ export default function Form({
     )
   }
 
-  let top = null
-  let bottom = null
-  if (!_.isEmpty(formSections)) {
-    top = (
-      <Top
-        sectionOffset={setSectionOffset}
-        currentSection={currentSection}
-        openSideMenu={openSideMenu}
-        hasSideMenu={hasSideMenu}
-        title={formSections[currentSection].title}
-        lastSection={formSections.length - 1}
-        isSectionCompleted={isSectionCompleteList[currentSection]}
-      />
-    )
-    bottom = hasBottom && (
-      <Bottom
-        sectionOffset={setSectionOffset}
-        currentSection={currentSection}
-        title={formSections[currentSection].title}
-        lastSection={formSections.length - 1}
-        isSectionCompleted={isSectionCompleteList[currentSection]}
-      />
-    )
-  }
-
-  const wrapper = (inner: JSX.Element) =>
-    hasSideMenu ? (
-      <SideMenu
-        ref={sideMenu}
-        menu={
-          <Menu
-            formSections={formSections}
-            changeSection={menuChangeSection}
-            isSectionCompleteList={isSectionCompleteList}
-          />
-        }
-      >
-        {inner}
-      </SideMenu>
-    ) : (
-      inner
-    )
-
-  return wrapper(
+  return (
     <>
-      {top}
-      <ScrollView
-        ref={scrollView}
-        style={styles.wideContainer}
-        keyboardDismissMode="on-drag"
-        accessible={false}
-        keyboardShouldPersistTaps="handled"
-      >
-        {sectionContent}
-        {bottom}
-      </ScrollView>
+      <FromTop
+        sectionOffset={setSectionOffset}
+        currentSection={currentSection}
+        toggleMenu={toggleMenu}
+        title={formSections[currentSection].title}
+        lastSection={formSections.length - 1}
+        isSectionCompleted={isSectionCompleteList[currentSection]}
+        isMenuVisible={isMenuVisible}
+      />
+      {isMenuVisible ? (
+        <FormMenu
+          formSections={formSections}
+          changeSection={menuChangeSection}
+          toggleMenu={toggleMenu}
+          isSectionCompleteList={isSectionCompleteList}
+        />
+      ) : (
+        <ScrollView
+          ref={scrollView}
+          keyboardDismissMode="on-drag"
+          accessible={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {sectionContent}
+        </ScrollView>
+      )}
     </>
   )
 }
