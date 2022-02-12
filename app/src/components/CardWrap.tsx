@@ -29,6 +29,7 @@ function CardWrap({
 const RerenderFieldAsNecessary = React.memo(
   CardWrap,
   (prevProps, nextProps) => {
+    if (nextProps.noRenderCache) return false
     return (
       prevProps.title === nextProps.title &&
       prevProps.formPath === nextProps.formPath &&

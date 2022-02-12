@@ -70,11 +70,13 @@ export default function Form({
   form,
   hasSideMenu,
   hasBottom = true,
+  noRenderCache = false,
 }: {
   files: Record<string, any>
   form: FormType | undefined
   hasSideMenu: boolean
   hasBottom: boolean
+  noRenderCache: boolean
 }) {
   if (form === undefined) return null
   const formSections = nameFormSections(form.sections)
@@ -150,7 +152,8 @@ export default function Form({
     changedPaths,
     keepAlive,
     removeKeepAlive,
-    addKeepAlive
+    addKeepAlive,
+    noRenderCache
   )
 
   let sectionContent: null | JSX.Element = null

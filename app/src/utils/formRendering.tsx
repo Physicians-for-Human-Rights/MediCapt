@@ -43,7 +43,8 @@ export default function renderFnsWrapper(
   changedPaths: any,
   keepAlive: any,
   removeKeepAlive: any,
-  addKeepAlive: any
+  addKeepAlive: any,
+  noRenderCache: boolean
 ): FormFns<JSX.Element> {
   function getPath(
     valuePath: string | null | undefined,
@@ -80,6 +81,7 @@ export default function renderFnsWrapper(
           toggleSkip={() => {
             formSetPath(skippedPath, !formGetPath(skippedPath))
           }}
+          noRenderCache={noRenderCache}
         />
       )
     },
