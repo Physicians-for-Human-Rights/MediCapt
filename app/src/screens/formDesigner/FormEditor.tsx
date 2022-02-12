@@ -38,6 +38,7 @@ import { history, historyKeymap } from '@codemirror/history'
 import { lintGutter, lintKeymap } from '@codemirror/lint'
 import { foldGutter, foldKeymap } from '@codemirror/fold'
 
+import useDebounce from 'react-use/lib/useDebounce'
 import { MaterialIcons } from '@expo/vector-icons'
 import DashboardLayout from 'components/DashboardLayout'
 import Form from 'components/Form'
@@ -198,6 +199,42 @@ export default function ({
     }
   }, [contents])
 
+  const [rawContents, setRawContents] = React.useState(contents)
+  useDebounce(
+    () => {
+      setContents(rawContents)
+    },
+    1000,
+    [rawContents]
+  )
+  return (
+    <VStack>
+      {Platform.OS !== 'web' ? (
+        <Center py={2}>
+          <Text>Preview: Editing is web-only</Text>
+        </Center>
+      ) : null}
+      <HStack pt="0" space={3} justifyContent="center">
+        <CodeEditor
+          ratio={ratio}
+          contents={contents}
+          window={window}
+          setRawContents={setRawContents}
+        />
+        <Box
+          h={Math.round(window.height * 0.85) + 'px'}
+          w={Math.round(window.width * (1 - ratio - padding)) + 'px'}
+        >
+          <FormMemo
+            files={files}
+            form={form}
+            hasSideMenu={false}
+            noRenderCache={true}
+          />
+        </Box>
+      </HStack>
+    </VStack>
+  )
   return (
     <DashboardLayout
       title={'Form Editor'}
