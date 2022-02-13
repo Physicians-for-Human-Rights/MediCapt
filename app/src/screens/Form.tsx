@@ -13,13 +13,10 @@ import Menu from 'components/FormMenu'
 import Top from 'components/FormTop'
 import Bottom from 'components/FormBottom'
 
-import { loadForm } from 'utils/forms'
+import { mapSectionWithPaths, isSectionComplete, loadForm } from 'utils/forms'
 import { FormType, FormMetadata } from 'utils/formTypes'
 import renderFnsWrapper from 'utils/formRendering'
-import { mapSectionWithPaths, isSectionComplete } from 'utils/forms'
-import { NamedFormSection, NamedFormPart } from 'utils/formTypesHelpers'
-
-type Props = NativeStackScreenProps
+import { NamedFormSection } from 'utils/formTypesHelpers'
 
 function formGetPath(
   formPaths: Record<string, any>,
@@ -29,7 +26,7 @@ function formGetPath(
   if (_.startsWith(valuePath, 'inferred.')) {
     switch (valuePath) {
       case 'inferred.sex': {
-        let value = _.find(
+        const value = _.find(
           formPaths,
           (v, k) =>
             _.includes(k, '.sex.value') ||
@@ -47,7 +44,7 @@ function formGetPath(
         return 18
       }
       case 'inferred.age': {
-        let value = _.find(formPaths, (v, k) => _.includes(k, '.age.value'))
+        const value = _.find(formPaths, (v, k) => _.includes(k, '.age.value'))
         if (typeof value === 'number') {
           return value
         }
@@ -61,7 +58,7 @@ function formGetPath(
   return _.has(formPaths, valuePath) ? formPaths[valuePath] : default_
 }
 
-export default function Form({ route, navigation }: Props) {
+export default function Form({ route, navigation }: NativeStackScreenProps) {
   const { formMetadata }: { formMetadata: FormMetadata } = route.params
 
   const [loadedForm, setLoadedForm] = useState({
@@ -88,7 +85,7 @@ export default function Form({ route, navigation }: Props) {
     new Set([] as string[])
   )
   const previousFormPaths = usePrevious(formPaths)
-  let changedPaths = []
+  const changedPaths = []
   for (const key of _.union(_.keys(formPaths), _.keys(previousFormPaths))) {
     if (previousFormPaths && formPaths[key] !== previousFormPaths[key]) {
       changedPaths.push(key)
@@ -116,7 +113,7 @@ export default function Form({ route, navigation }: Props) {
       setLoadedForm(await loadForm(formMetadata))
     }
     fn()
-  }, [])
+  }, [formMetadata])
 
   const setSectionOffset = useCallback(
     (offset: number) => setCurrentSection(currentSection + offset),

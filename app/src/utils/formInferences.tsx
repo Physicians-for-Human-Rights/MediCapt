@@ -1,9 +1,4 @@
 import _ from 'lodash'
-import {
-  nameFormSections,
-  mapSectionWithPaths,
-  isSectionComplete,
-} from 'utils/forms'
 
 // Make inferences about the form so that you can access more abstract values
 // like someone's age without needing to specify the exact path to the age field
@@ -16,9 +11,9 @@ export default function formGetPath(
   if (_.startsWith(valuePath, 'inferred.')) {
     switch (valuePath) {
       case 'inferred.sex': {
-        let value = _.find(
+        const value = _.find(
           formPaths,
-          (v, k) =>
+          (_v, k) =>
             _.includes(k, '.sex.value') ||
             // These two are definitely not equivalent, but some forms may not
             // include both
@@ -34,7 +29,7 @@ export default function formGetPath(
         return 18
       }
       case 'inferred.age': {
-        let value = _.find(formPaths, (v, k) => _.includes(k, '.age.value'))
+        const value = _.find(formPaths, (v, k) => _.includes(k, '.age.value'))
         if (typeof value === 'number') {
           return value
         }

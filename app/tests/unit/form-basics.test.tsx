@@ -1,30 +1,15 @@
-import { Platform } from 'react-native'
 import fs from 'fs'
 import yaml from 'js-yaml'
-import {
-  FormSection,
-  FormValueType,
-  FormType,
-  FormPath,
-  FormPart,
-  FormMetadata,
-  FormPartRecord,
-  FormDefinition,
-  FormRef,
-} from 'utils/formTypes'
-import { FormsMetadata } from 'utils/formTypesHelpers'
-import { loadForm } from 'utils/forms'
+import { FormType } from 'utils/formTypes'
 import _ from 'lodash'
-import { mapSectionWithPaths, isSectionComplete } from 'utils/forms'
-import { nameFormSections } from 'utils/forms'
+import { nameFormSections, isSectionComplete } from 'utils/forms'
 
 const form: FormType = yaml.load(
   fs.readFileSync('assets/forms/ke-moh-363-2019/form.yaml', 'utf8')
 ) as FormType
 
 describe('Basic operations on forms', () => {
-  it('Loading forms', async () => {
-    const { common } = form
+  it('Loading forms', () => {
     const sections = nameFormSections(form.sections)
     expect(
       _.reduce(

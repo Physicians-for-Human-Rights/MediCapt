@@ -1,37 +1,6 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react'
-import { StyleSheet, View } from 'react-native'
-import styles_ from '../styles'
-
-import {
-  Box,
-  VStack,
-  StatusBar,
-  ScrollView,
-  HStack,
-  Pressable,
-  Icon,
-  Image,
-  Text,
-  Hidden,
-  useColorMode,
-  IconButton,
-  Divider,
-  Menu,
-  Avatar,
-  Button,
-  Input,
-  Center,
-  useBreakpointValue,
-  Modal,
-} from 'native-base'
-
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  MaterialCommunityIcons,
-  MaterialIcons,
-} from '@expo/vector-icons'
+import React, { useRef } from 'react'
+import { Box, Icon, Image, Button, Center, Modal } from 'native-base'
+import { AntDesign } from '@expo/vector-icons'
 
 // https://www.npmjs.com/package/react-signature-pad-wrapper
 import SignatureCanvas from 'react-signature-pad-wrapper'

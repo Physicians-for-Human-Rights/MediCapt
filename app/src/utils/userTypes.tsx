@@ -1,6 +1,5 @@
-import Amplify from 'aws-amplify'
-import { Auth } from 'aws-amplify'
-import config from './../../config.js'
+import Amplify, { Auth } from 'aws-amplify'
+import config from '../../config.js'
 
 export enum UserType {
   Provider = 'Provider',

@@ -1,6 +1,6 @@
 import fs from 'fs'
 import yaml from 'js-yaml'
-import { createGenerator, Schema } from 'ts-json-schema-generator'
+import { createGenerator } from 'ts-json-schema-generator'
 import Ajv from 'ajv'
 import addFormats from 'ajv-formats'
 

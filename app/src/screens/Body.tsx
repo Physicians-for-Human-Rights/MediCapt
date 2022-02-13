@@ -21,7 +21,7 @@ export interface Marker {
   coordinates: Coordinates
 }
 
-const Body = ({ route, navigation }) => {
+function Body({ route, navigation }) {
   const { enterData, baseImage, previousAnnotations } = route.params
 
   const [annotations, setAnnotations] = useState<Array<Annotation>>(

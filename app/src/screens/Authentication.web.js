@@ -1,12 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import * as Linking from 'expo-linking'
-import { Amplify } from 'aws-amplify'
-import { Auth } from 'aws-amplify'
 import {
   Heading,
-  Text,
-  Tabs,
-  TabItem,
   Flex,
   View,
   Image,
@@ -71,7 +66,6 @@ function Header(userType, setAccountType) {
 }
 
 function Footer() {
-  const { tokens } = useTheme()
   return (
     <Card>
       <Button
@@ -83,7 +77,7 @@ function Footer() {
 }
 
 export default function withAuthenticator(Component) {
-  const AppWithAuthenticator: FunctionComponent<T> = props => {
+  const AppWithAuthenticator = props => {
     const [userType, setAccountType] = useState(null)
     useMemo(async () => {
       let r = await AsyncStorage.getItem('@last_account_selection')
@@ -94,14 +88,17 @@ export default function withAuthenticator(Component) {
       reconfigureAmplifyForUserType(r)
       return r
     }, [])
-    useEffect(async () => {
-      if (userType !== null) {
-        reconfigureAmplifyForUserType(UserTypeList[userType])
-        await AsyncStorage.setItem(
-          '@last_account_selection',
-          UserTypeList[userType]
-        )
+    useEffect(() => {
+      async function fn() {
+        if (userType !== null) {
+          reconfigureAmplifyForUserType(UserTypeList[userType])
+          await AsyncStorage.setItem(
+            '@last_account_selection',
+            UserTypeList[userType]
+          )
+        }
       }
+      fn()
     })
 
     const defaultComponents = {
@@ -117,7 +114,7 @@ export default function withAuthenticator(Component) {
       return <></>
     } else {
       return (
-        <Authenticator components={defaultComponents} variation={'modal'}>
+        <Authenticator components={defaultComponents} variation="modal">
           {({ signOut, user }) => (
             <Component
               signOut={signOut}

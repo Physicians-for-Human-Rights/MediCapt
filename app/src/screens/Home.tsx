@@ -1,44 +1,51 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import { ActivityIndicator, Text, Image, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { Icon, Button } from 'react-native-elements'
 import { API, Auth } from 'aws-amplify'
-import medicapt_logo from '../../assets/medicapt.png'
-import phr_logo from '../../assets/phr.png'
 import styles from 'styles'
 import isEmpty from 'lodash/isEmpty'
-
 import { useUser, useSignOut } from 'utils/store'
 
-const ButtonWithIconBackground = ({ label, onPress, iconName, iconType }) => (
-  <View style={{ flex: 1 }}>
-    <View style={{ zIndex: 1 }}>
-      <Button
-        title={label}
-        containerViewStyle={{
-          image: "imgUrl('../../assets/medicapt.png')",
-        }}
-        onPress={onPress}
-        buttonStyle={styles.largeTileButton}
-        titleStyle={{ color: '#d5001c' }}
-        type="outline"
-      />
+import medicapt_logo from '../../assets/medicapt.png'
+import phr_logo from '../../assets/phr.png'
+
+function ButtonWithIconBackground({ label, onPress, iconName, iconType }) {
+  return (
+    <View style={{ flex: 1 }}>
+      <View style={{ zIndex: 1 }}>
+        <Button
+          title={label}
+          containerViewStyle={{
+            image: "imgUrl('../../assets/medicapt.png')",
+          }}
+          onPress={onPress}
+          buttonStyle={styles.largeTileButton}
+          titleStyle={{ color: '#d5001c' }}
+          type="outline"
+        />
+      </View>
+      <View style={{ zIndex: 0, position: 'absolute', width: '100%' }}>
+        <Button
+          style={{ alignSelf: 'stretch' }}
+          onPress={onPress}
+          buttonStyle={styles.largeTileButton}
+          titleStyle={{ color: '#d5001c' }}
+          type="outline"
+          icon={
+            <Icon
+              name={iconName}
+              type={iconType}
+              size={100}
+              color="#0039d515"
+            />
+          }
+        />
+      </View>
     </View>
-    <View style={{ zIndex: 0, position: 'absolute', width: '100%' }}>
-      <Button
-        style={{ alignSelf: 'stretch' }}
-        onPress={onPress}
-        buttonStyle={styles.largeTileButton}
-        titleStyle={{ color: '#d5001c' }}
-        type="outline"
-        icon={
-          <Icon name={iconName} type={iconType} size={100} color="#0039d515" />
-        }
-      />
-    </View>
-  </View>
-)
+  )
+}
 
 type Props = NativeStackScreenProps
 
@@ -56,7 +63,7 @@ export default function HomeScreen({ navigation }: Props) {
   const signOutEverywhere = () => {
     signOut()
     Auth.signOut({ global: true })
-      .then(data => navigation.navigate('Authentication'))
+      .then(() => navigation.navigate('Authentication'))
       .catch(err => {
         console.log('Auth error', err)
       }) // TODO What else can we do on error?

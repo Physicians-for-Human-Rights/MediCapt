@@ -2,9 +2,10 @@ import React from 'react'
 import { StyleSheet, View } from 'react-native'
 import { Header } from 'react-native-elements'
 import styles_ from 'styles'
+// @ts-ignore typescript doesn't do well with native/web modules
 import SignatureComponent from 'components/Signature'
 
-const Signature = ({ route, navigation }) => {
+function Signature({ route, navigation }) {
   const { signed, cancelSignature } = route.params
 
   const onCancel = () => {

@@ -1,36 +1,6 @@
 import React from 'react'
-import {
-  Box,
-  VStack,
-  StatusBar,
-  ScrollView,
-  HStack,
-  Pressable,
-  Icon,
-  Image,
-  Text,
-  Hidden,
-  useColorMode,
-  IconButton,
-  Divider,
-  Menu,
-  Avatar,
-  Button,
-  Input,
-  Center,
-  useBreakpointValue,
-} from 'native-base'
-
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  MaterialCommunityIcons,
-  MaterialIcons,
-} from '@expo/vector-icons'
-
-// TODO Do we need to use one here?
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { Box, VStack, HStack, Icon, Text, IconButton } from 'native-base'
+import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'
 
 const FormTop = ({
   sectionOffset,

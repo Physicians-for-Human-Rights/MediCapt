@@ -1,39 +1,15 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useRef, useCallback } from 'react'
 import useMap from 'react-use/lib/useMap'
 import usePrevious from 'react-use/lib/usePrevious'
 import useSet from 'react-use/lib/useSet'
 import useToggle from 'react-use/lib/useToggle'
 import { Keyboard } from 'react-native'
-// @ts-ignore TODO Why doesn't typescript know about this module?
-import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import _ from 'lodash'
 
-import {
-  Box,
-  VStack,
-  StatusBar,
-  ScrollView,
-  HStack,
-  Pressable,
-  Icon,
-  Image,
-  Text,
-  Hidden,
-  useColorMode,
-  IconButton,
-  Divider,
-  Menu,
-  Avatar,
-  Button,
-  Input,
-  Center,
-  useBreakpointValue,
-} from 'native-base'
+import { ScrollView } from 'native-base'
 
-import styles from 'styles'
 import FormMenu from 'components/FormMenu'
 import FromTop from 'components/FormTop'
-import Bottom from 'components/FormBottom'
 
 import { FormType } from 'utils/formTypes'
 import formGetPath from 'utils/formInferences'
@@ -43,17 +19,14 @@ import {
   mapSectionWithPaths,
   isSectionComplete,
 } from 'utils/forms'
-import { NamedFormSection, NamedFormPart } from 'utils/formTypesHelpers'
 
 export default function Form({
   files,
   form,
-  hasSideMenu,
   noRenderCache = false,
 }: {
   files: Record<string, any>
   form: FormType | undefined
-  hasSideMenu: boolean
   noRenderCache: boolean
 }) {
   // This can happen when editing forms live

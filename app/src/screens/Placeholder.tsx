@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import styles from 'styles'
 import { useSignOut } from 'utils/store'
 
-const Placeholder = () => {
+function Placeholder() {
   const [signOut] = useSignOut()
   return (
     <SafeAreaView style={styles.container}>
