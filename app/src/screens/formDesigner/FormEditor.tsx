@@ -2,39 +2,25 @@ import React, { useEffect } from 'react'
 import {
   Box,
   HStack,
-  Icon,
   Text,
   VStack,
-  Center,
-  Button,
   Pressable,
   Divider,
   Hidden,
-  Square,
-  Circle,
   Select,
   CheckIcon,
 } from 'native-base'
 import { FormType } from 'utils/formTypes'
 import yaml from 'js-yaml'
-import { useWindowDimensions } from 'react-native'
-import useDebounce from 'react-use/lib/useDebounce'
-import { Platform } from 'react-native'
-import { MaterialIcons } from '@expo/vector-icons'
 import DashboardLayout from 'components/DashboardLayout'
-import Form from 'components/Form'
-import {
-  RootStackScreenProps,
-  RootStackParamList,
-} from 'utils/formDesigner/navigation'
+import { RootStackScreenProps } from 'utils/formDesigner/navigation'
 import FormEditorComponent from 'components/FormEditor'
 import FormEditorFiles from 'components/FormEditorFiles'
 import FormEditorPrinted from 'components/FormEditorPrinted'
 import FormEditorOverview from 'components/FormEditorOverview'
 import useMap from 'react-use/lib/useMap'
 import _ from 'lodash'
-import * as FileSystem from 'expo-file-system'
-import { isImage, readImage, readFile } from 'utils/forms'
+import { readFile } from 'utils/forms'
 
 function Tabs({
   tabName,
@@ -283,7 +269,10 @@ export default function FormEditor({
     const f = async () => {
       _.map(files, async (uri, filename) => {
         const data = await readFile(filename, uri)
-        if (data) setFileCache(filename, data)
+        if (data) {
+          setFileCache(filename, data)
+          if (filename === 'form.yaml') setForm(yaml.load(data))
+        }
       })
     }
     f()
@@ -345,5 +334,3 @@ export default function FormEditor({
     </DashboardLayout>
   )
 }
-
-// initialContents={yaml.dump(form)}
