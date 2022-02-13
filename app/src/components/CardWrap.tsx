@@ -2,28 +2,13 @@ import React from 'react'
 import {
   Box,
   VStack,
-  StatusBar,
-  ScrollView,
-  HStack,
   Pressable,
-  Icon,
-  Image,
   Text,
-  Hidden,
-  useColorMode,
-  IconButton,
-  Divider,
-  Menu,
-  Avatar,
-  Button,
-  Input,
   Center,
-  useBreakpointValue,
   Heading,
   Checkbox,
 } from 'native-base'
 import { StyleSheet } from 'react-native'
-
 import {
   AntDesign,
   FontAwesome,
