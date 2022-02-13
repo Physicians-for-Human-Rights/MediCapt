@@ -442,6 +442,48 @@ export function isImage(filename: string) {
   )
 }
 
+export async function readFile(filename: string, localUri: string) {
+  let content = null
+  switch (filename.split('.').pop()) {
+    case 'yaml':
+      if (Platform.OS === 'web') {
+        content = await fetch(localUri)
+        content = await content.text()
+      } else {
+        content = await FileSystem.readAsStringAsync(localUri)
+      }
+      break
+    case 'svg':
+      content = await readImage(localUri, 'data:image/svg+xml;base64,')
+      // TODO Error handling
+      console.error(
+        "SVG Support was removed because it doesn't work well on Android"
+      )
+      break
+    case 'pdf':
+      content = await readImage(localUri, 'data:application/pdf;base64,')
+      content = _.replace(
+        content,
+        'data:application/pdf; charset=utf-8;base64,',
+        'data:application/pdf;base64,'
+      )
+      break
+    case 'png':
+      content = await readImage(localUri, 'data:image/png;base64,')
+      break
+    case 'jpg':
+      content = await readImage(localUri, 'data:image/jpg;base64,')
+      break
+    default:
+      // TODO Error handling
+      console.error('Trying to read unknown file type', filename, localUri)
+      content = await FileSystem.readAsStringAsync(localUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      })
+  }
+  return content
+}
+
 // NB formInfo comes from forms.json rihgt now
 export async function loadForm(formMetadata: FormMetadata) {
   // TODO Error handling

@@ -43,6 +43,7 @@ import useMap from 'react-use/lib/useMap'
 import * as FileSystem from 'expo-file-system'
 import { isImage, readImage } from 'utils/forms'
 import _ from 'lodash'
+import NecessaryItem from 'components/NecessaryItem'
 
 import { Button as NButton, Image as NImage, View as NView } from 'react-native'
 
@@ -92,7 +93,6 @@ export default function FormEditorFiles({
       // TODO It doesn't seem like we can get file names :(
       let nr = _.size(files)
       for (const uploaded of result.selected) {
-        console.log('image' + nr + '.png', isImage('image' + nr + '.png'))
         setFile('image' + nr + '.png', uploaded.uri)
         setFileCache('image' + nr + '.png', uploaded.uri)
         nr++
@@ -100,10 +100,7 @@ export default function FormEditorFiles({
     }
   }
 
-  console.log(_.keys(files), _.pickBy(files, isImage), files)
-
   const removePdf = () => {
-    console.log('remove')
     removeFile('form.pdf')
   }
 
@@ -156,17 +153,12 @@ export default function FormEditorFiles({
             justifyContent="flex-end"
           >
             <HStack w="100%" space={3} alignItems="center">
-              {pdfHasAnnotations ? (
-                <>
-                  <CheckIcon size="4" mx={3} color="emerald.500" />
-                  <Text>PDF has annotations</Text>
-                </>
-              ) : (
-                <>
-                  <CloseIcon size="4" mx={3} color="error.500" />
-                  <Text color="error.500">PDF has no annotations!</Text>
-                </>
-              )}
+              <NecessaryItem
+                isDone={pdfHasAnnotations}
+                todoText="PDF has no annotations!"
+                doneText="PDF has annotations"
+                size={4}
+              />
               <Popover
                 trigger={triggerProps => {
                   return (

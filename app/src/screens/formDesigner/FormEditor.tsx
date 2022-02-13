@@ -32,6 +32,9 @@ import FormEditorFiles from 'components/FormEditorFiles'
 import FormEditorPrinted from 'components/FormEditorPrinted'
 import FormEditorOverview from 'components/FormEditorOverview'
 import useMap from 'react-use/lib/useMap'
+import _ from 'lodash'
+import * as FileSystem from 'expo-file-system'
+import { isImage, readImage, readFile } from 'utils/forms'
 
 function Tabs({
   tabName,
@@ -274,7 +277,17 @@ export default function FormEditor({
       remove: removeFileCache,
       reset: resetFileCache,
     },
-  ] = useMap(rawFiles as Record<string, string>)
+  ] = useMap({} as Record<string, string>)
+
+  useEffect(() => {
+    const f = async () => {
+      _.map(files, async (uri, filename) => {
+        const data = await readFile(filename, uri)
+        if (data) setFileCache(filename, data)
+      })
+    }
+    f()
+  }, [])
 
   let page = null
   switch (tabName) {
@@ -298,7 +311,9 @@ export default function FormEditor({
       )
       break
     case 'Printed':
-      page = <FormEditorPrinted files={files} form={form} setForm={setForm} />
+      page = (
+        <FormEditorPrinted files={fileCache} form={form} setForm={setForm} />
+      )
       break
   }
   return (
