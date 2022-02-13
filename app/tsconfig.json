@@ -11,8 +11,7 @@
     "noEmit": true,
     "skipLibCheck": true,
     "strict": true,
-    "noErrorTruncation": true,
-    "allowUnionTypes": true
+    "noErrorTruncation": true
   },
   "include": ["src/index.d.ts", "src/**/*", "tests/**/*"],
   "extends": "expo/tsconfig.base"
