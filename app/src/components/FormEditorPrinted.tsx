@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Box,
   HStack,
@@ -12,6 +12,7 @@ import {
   Hidden,
   Square,
   Circle,
+  View,
 } from 'native-base'
 import { FormType } from 'utils/formTypes'
 import yaml from 'js-yaml'
@@ -25,6 +26,8 @@ import {
   RootStackScreenProps,
   RootStackParamList,
 } from 'utils/formDesigner/navigation'
+// @ts-ignore typescript doesn't do native/web modules
+import DisplayPDF from './DisplayPDF'
 
 export default function FormEditorPrinted({
   files,
@@ -35,9 +38,31 @@ export default function FormEditorPrinted({
   form: FormType
   setForm: React.Dispatch<React.SetStateAction<FormType>>
 }) {
-  return (
-    <VStack>
-      <Text>Printed</Text>
-    </VStack>
-  )
+  const [width, setWidth] = useState(null as number | null)
+  console.log('W', width)
+  let inner
+  if (width) {
+    console.log('pdf', width)
+    inner = <DisplayPDF width={width} file={files['form.pdf']} />
+  } else {
+    inner = null
+  }
+  if ('form.pdf' in files) {
+    return (
+      <View
+        onLayout={event => {
+          console.log('L', event.nativeEvent.layout.width)
+          setWidth(event.nativeEvent.layout.width)
+        }}
+      >
+        {inner}
+      </View>
+    )
+  } else {
+    return (
+      <VStack>
+        <Text>Printed</Text>
+      </VStack>
+    )
+  }
 }
