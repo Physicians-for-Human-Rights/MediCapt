@@ -340,7 +340,19 @@ function MainContent({
   )
 }
 
-export function MobileHeader({ title, backButton, navigation, signOut }: any) {
+export function MobileHeader({
+  title,
+  backButton,
+  navigation,
+  signOut,
+  mobileMiddlebar,
+}: {
+  title: string
+  backButton: boolean
+  navigation: any
+  signOut: () => any
+  mobileMiddlebar: JSX.Element | null
+}) {
   return (
     <Box
       px="1"
@@ -382,6 +394,7 @@ export function MobileHeader({ title, backButton, navigation, signOut }: any) {
                 {title}
               </Text>
             </HStack>
+            {mobileMiddlebar}
             <HStack space="1">
               <IconButton
                 variant="ghost"
@@ -450,6 +463,7 @@ export default function DashboardLayout({
   searchbar = false,
   backButton = true,
   middlebar = null,
+  mobileMiddlebar = null,
   fullWidth = false,
 }: {
   navigation: any
@@ -463,7 +477,8 @@ export default function DashboardLayout({
   displaySidebar?: boolean
   searchbar?: boolean
   backButton?: boolean
-  middlebar?: JSX.Element
+  middlebar?: JSX.Element | null
+  mobileMiddlebar?: JSX.Element | null
   fullWidth?: boolean
 }) {
   if (!signOut) signOut = authSignOut
@@ -488,6 +503,7 @@ export default function DashboardLayout({
               title={title}
               backButton={backButton}
               navigation={navigation}
+              mobileMiddlebar={mobileMiddlebar}
               signOut={signOut}
             />
           </Hidden>

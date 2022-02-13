@@ -36,10 +36,8 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
         safeAreaBottom
         height="90%"
         borderRadius={{ md: '8' }}
-        _light={{
-          borderColor: 'coolGray.200',
-          bg: { base: 'white' },
-        }}
+        borderColor="coolGray.200"
+        bg="white"
         px={{
           base: 4,
           md: 32,

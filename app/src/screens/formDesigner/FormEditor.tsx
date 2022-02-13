@@ -12,6 +12,8 @@ import {
   Hidden,
   Square,
   Circle,
+  Select,
+  CheckIcon,
 } from 'native-base'
 import { FormType } from 'utils/formTypes'
 import yaml from 'js-yaml'
@@ -26,6 +28,10 @@ import {
   RootStackParamList,
 } from 'utils/formDesigner/navigation'
 import FormEditorComponent from 'components/FormEditor'
+import FormEditorFiles from 'components/FormEditorFiles'
+import FormEditorPrinted from 'components/FormEditorPrinted'
+import FormEditorOverview from 'components/FormEditorOverview'
+import useMap from 'react-use/lib/useMap'
 
 function Tabs({
   tabName,
@@ -37,92 +43,142 @@ function Tabs({
   return (
     <Box
       width={{ md: '50%', base: '50%' }}
-      _dark={{ bg: 'coolGray.900' }}
       _light={{ bg: { base: 'primary.900', md: 'white' } }}
     >
-      <HStack px={{ base: 4, md: 4 }} mt="2" justifyContent="flex-start">
-        <Pressable
-          px="5"
-          onPress={() => {
-            setTabName('Overview')
-          }}
-          maxW="40%"
-        >
-          <Text
-            fontSize="md"
-            fontWeight="medium"
-            color={tabName == 'Overview' ? 'black' : 'coolGray.400'}
-            selectable={false}
+      <Hidden from="lg">
+        <Box pl="10" w="2/4" maxW="300">
+          <Select
+            selectedValue={tabName}
+            minWidth="100"
+            accessibilityLabel="Select page"
+            placeholder="Select page"
+            bg="white"
+            _selectedItem={{
+              bg: 'teal.600',
+              endIcon: <CheckIcon size="5" />,
+            }}
+            mt={1}
+            onValueChange={itemValue => setTabName(itemValue)}
           >
-            Overview
-          </Text>
-          <Box mt="2">
-            <Divider
-              py="0.5"
-              _light={{
-                bg: {
-                  base: tabName == 'Overview' ? 'white' : 'primary.900',
-                  md: tabName == 'Overview' ? 'primary.900' : 'white',
-                },
-              }}
-            />
-          </Box>
-        </Pressable>
-        <Pressable
-          px="5"
-          maxW="25%"
-          onPress={() => {
-            setTabName('Files')
-          }}
-        >
-          <Text
-            fontSize="md"
-            fontWeight="medium"
-            color={tabName == 'Files' ? 'black' : 'coolGray.400'}
-            selectable={false}
+            <Select.Item label="Overview" value="Overview" />
+            <Select.Item label="Files" value="Files" />
+            <Select.Item label="Editor" value="Editor" />
+            <Select.Item label="Print preview" value="Print preview" />
+          </Select>
+        </Box>
+      </Hidden>
+      <Hidden till="lg">
+        <HStack px={{ base: 4, md: 4 }} mt="2" justifyContent="flex-start">
+          <Pressable
+            px="5"
+            onPress={() => {
+              setTabName('Overview')
+            }}
+            maxW="40%"
           >
-            Files
-          </Text>
-          <Box mt="2">
-            <Divider
-              py="0.5"
-              _light={{
-                bg: {
-                  base: tabName == 'Files' ? 'white' : 'primary.900',
-                  md: tabName == 'Files' ? 'primary.900' : 'white',
-                },
-              }}
-            />
-          </Box>
-        </Pressable>
-        <Pressable
-          maxW="25%"
-          onPress={() => {
-            setTabName('Editor')
-          }}
-          px="5"
-        >
-          <Text
-            fontSize="md"
-            fontWeight="medium"
-            color={tabName == 'Editor' ? 'black' : 'coolGray.400'}
-            selectable={false}
+            <Text
+              fontSize="md"
+              fontWeight="medium"
+              color={tabName === 'Overview' ? 'black' : 'coolGray.400'}
+              selectable={false}
+            >
+              Overview
+            </Text>
+            <Box mt="2">
+              <Divider
+                py="0.5"
+                _light={{
+                  bg: {
+                    base: tabName === 'Overview' ? 'white' : 'primary.900',
+                    md: tabName === 'Overview' ? 'primary.900' : 'white',
+                  },
+                }}
+              />
+            </Box>
+          </Pressable>
+          <Pressable
+            px="5"
+            maxW="25%"
+            onPress={() => {
+              setTabName('Files')
+            }}
           >
-            Editor
-          </Text>
-          <Box mt="2">
-            <Divider
-              py="0.5"
-              _light={{
-                bg: {
-                  base: tabName == 'Editor' ? 'white' : 'primary.900',
-                  md: tabName == 'Editor' ? 'primary.900' : 'white',
-                },
-              }}
-            />
-          </Box>
-        </Pressable>
-      </HStack>
+            <Text
+              fontSize="md"
+              fontWeight="medium"
+              color={tabName === 'Files' ? 'black' : 'coolGray.400'}
+              selectable={false}
+            >
+              Files
+            </Text>
+            <Box mt="2">
+              <Divider
+                py="0.5"
+                _light={{
+                  bg: {
+                    base: tabName === 'Files' ? 'white' : 'primary.900',
+                    md: tabName === 'Files' ? 'primary.900' : 'white',
+                  },
+                }}
+              />
+            </Box>
+          </Pressable>
+          <Pressable
+            maxW="25%"
+            onPress={() => {
+              setTabName('Editor')
+            }}
+            px="5"
+          >
+            <Text
+              fontSize="md"
+              fontWeight="medium"
+              color={tabName === 'Editor' ? 'black' : 'coolGray.400'}
+              selectable={false}
+            >
+              Editor
+            </Text>
+            <Box mt="2">
+              <Divider
+                py="0.5"
+                _light={{
+                  bg: {
+                    base: tabName === 'Editor' ? 'white' : 'primary.900',
+                    md: tabName === 'Editor' ? 'primary.900' : 'white',
+                  },
+                }}
+              />
+            </Box>
+          </Pressable>
+          <Pressable
+            maxW="25%"
+            onPress={() => {
+              setTabName('Printed')
+            }}
+            px="5"
+          >
+            <Text
+              fontSize="md"
+              fontWeight="medium"
+              color={tabName === 'Printed' ? 'black' : 'coolGray.400'}
+              selectable={false}
+            >
+              Printed
+            </Text>
+            <Box mt="2">
+              <Divider
+                py="0.5"
+                _light={{
+                  bg: {
+                    base: tabName === 'Printed' ? 'white' : 'primary.900',
+                    md: tabName === 'Printed' ? 'primary.900' : 'white',
+                  },
+                }}
+              />
+            </Box>
+          </Pressable>
+        </HStack>
+      </Hidden>
     </Box>
   )
 }
@@ -169,12 +225,82 @@ const defaultForm: FormType = {
   ],
 }
 
+const rawFiles: Record<string, string> = {
+  'form.yaml':
+    require('../../../assets/forms/ke-moh-363-2019/form.yaml') as string,
+  'form.pdf':
+    require('../../../assets/forms/ke-moh-363-2019/form.pdf') as string,
+  'anterior.png':
+    require('../../../assets/forms/ke-moh-363-2019/anterior.png') as string,
+  'bottom.png':
+    require('../../../assets/forms/ke-moh-363-2019/bottom.png') as string,
+  'female-1.png':
+    require('../../../assets/forms/ke-moh-363-2019/female-1.png') as string,
+  'female-2.png':
+    require('../../../assets/forms/ke-moh-363-2019/female-2.png') as string,
+  'female-3.png':
+    require('../../../assets/forms/ke-moh-363-2019/female-3.png') as string,
+  'male-1.png':
+    require('../../../assets/forms/ke-moh-363-2019/male-1.png') as string,
+  'male-2.png':
+    require('../../../assets/forms/ke-moh-363-2019/male-2.png') as string,
+  'posterior.png':
+    require('../../../assets/forms/ke-moh-363-2019/posterior.png') as string,
+  'male-3.png':
+    require('../../../assets/forms/ke-moh-363-2019/male-3.png') as string,
+  'top.png': require('../../../assets/forms/ke-moh-363-2019/top.png') as string,
+}
+
 export default function FormEditor({
   route,
   navigation,
 }: RootStackScreenProps<'FormEditor'>) {
   const [tabName, setTabName] = React.useState('Overview')
   const [form, setForm] = React.useState(defaultForm)
+  const [
+    files,
+    {
+      set: setFile,
+      setAll: setAllFiles,
+      remove: removeFile,
+      reset: resetFiles,
+    },
+  ] = useMap(rawFiles)
+  const [
+    fileCache,
+    {
+      set: setFileCache,
+      setAll: setAllFileCache,
+      remove: removeFileCache,
+      reset: resetFileCache,
+    },
+  ] = useMap(rawFiles as Record<string, string>)
+
+  let page = null
+  switch (tabName) {
+    case 'Overview':
+      page = <FormEditorOverview files={files} form={form} setForm={setForm} />
+      break
+    case 'Editor':
+      page = <FormEditorComponent files={files} form={form} setForm={setForm} />
+      break
+    case 'Files':
+      page = (
+        <FormEditorFiles
+          fileCache={fileCache}
+          setFileCache={setFileCache}
+          files={files}
+          setFile={setFile}
+          removeFile={removeFile}
+          form={form}
+          setForm={setForm}
+        />
+      )
+      break
+    case 'Printed':
+      page = <FormEditorPrinted files={files} form={form} setForm={setForm} />
+      break
+  }
   return (
     <DashboardLayout
       title={'Form Editor'}
@@ -183,24 +309,26 @@ export default function FormEditor({
       backButton={true}
       navigation={navigation}
       middlebar={<Tabs tabName={tabName} setTabName={setTabName} />}
-      fullWidth={true}
+      mobileMiddlebar={<Tabs tabName={tabName} setTabName={setTabName} />}
+      fullWidth={tabName === 'Editor'}
       signOut={route.params.signOut}
       user={route.params.user}
     >
       <VStack
         safeAreaBottom
-        height="100%"
+        height="95%"
         borderRadius={{ md: '8' }}
-        _light={{
-          borderColor: 'coolGray.200',
-        }}
+        borderColor="coolGray.200"
+        bg={tabName !== 'Editor' ? 'white' : null}
         px={{
           base: 4,
           md: 32,
         }}
       >
-        <FormEditorComponent initialContents={yaml.dump(form)} />
+        {page}
       </VStack>
     </DashboardLayout>
   )
 }
+
+// initialContents={yaml.dump(form)}

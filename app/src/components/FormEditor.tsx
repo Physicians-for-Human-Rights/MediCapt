@@ -65,15 +65,15 @@ const defaultForm: FormType = {
 }
 
 export default function FormEditor({
-  initialContents,
+  files,
+  form,
+  setForm,
 }: {
-  initialContents: string
+  files: Record<string, any>
+  form: FormType
+  setForm: React.Dispatch<React.SetStateAction<FormType>>
 }) {
-  const [tabName, setTabName] = React.useState('Overview')
-  const [files, setFiles] = React.useState([] as Record<string, any>)
-  const [form, setForm] = React.useState(defaultForm)
-
-  const [contents, setContents] = React.useState(initialContents)
+  const [contents, setContents] = React.useState(yaml.dump(form))
   useEffect(() => {
     try {
       setForm(yaml.load(contents) as FormType)
@@ -114,12 +114,7 @@ export default function FormEditor({
           h={Math.round(window.height * 0.85) + 'px'}
           w={Math.round(window.width * (1 - ratio - padding)) + 'px'}
         >
-          <FormMemo
-            files={files}
-            form={form}
-            hasSideMenu={false}
-            noRenderCache={true}
-          />
+          <FormMemo files={files} form={form} noRenderCache={true} />
         </Box>
       </HStack>
     </VStack>

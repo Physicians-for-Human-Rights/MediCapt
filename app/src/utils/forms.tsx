@@ -406,7 +406,7 @@ export function isSectionComplete(
   })
 }
 
-export function blobToBase64(blob: Blob) {
+export function blobToBase64(blob: Blob): string {
   return new Promise((resolve, _) => {
     const reader = new FileReader()
     reader.onloadend = () => resolve(reader.result)
@@ -414,7 +414,10 @@ export function blobToBase64(blob: Blob) {
   })
 }
 
-export async function readImage(uri: string, mimePrefix: string) {
+export async function readImage(
+  uri: string,
+  mimePrefix: string
+): Promise<string | null> {
   let content = null
   if (Platform.OS === 'web') {
     content = await fetch(uri)
@@ -426,9 +429,17 @@ export async function readImage(uri: string, mimePrefix: string) {
     })
     content = mimePrefix + content
   } else {
-    console.log('File reading failed')
+    console.error('File reading failed', uri, mimePrefix)
   }
   return content
+}
+
+export function isImage(filename: string) {
+  return (
+    _.endsWith(filename, '.png') ||
+    _.endsWith(filename, '.jpg') ||
+    _.endsWith(filename, '.webp')
+  )
 }
 
 // NB formInfo comes from forms.json rihgt now
