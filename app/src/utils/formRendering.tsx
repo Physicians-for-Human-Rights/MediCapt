@@ -47,6 +47,7 @@ import CardWrap from 'components/CardWrap'
 import { FormDefinition, FormKVRawType } from 'utils/formTypes'
 import { resolveRef } from 'utils/forms'
 import { FormFns } from 'utils/formTypesHelpers'
+// @ts-ignore typescript doesn't like platform-specific modules
 import Signature from 'components/Signature'
 
 /*

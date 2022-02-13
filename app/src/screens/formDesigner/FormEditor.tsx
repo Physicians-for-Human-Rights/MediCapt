@@ -25,7 +25,7 @@ import {
   RootStackScreenProps,
   RootStackParamList,
 } from 'utils/formDesigner/navigation'
-import CodeEditor from '../../components/CodeEditor'
+import FormEditorComponent from 'components/FormEditor'
 
 function Tabs({
   tabName,
@@ -127,150 +127,54 @@ function Tabs({
   )
 }
 
-function InnerFormEditor({
-  initialContents,
-  navigation,
-}: RootStackScreenProps<'FormEditor'>) {
-  const [tabName, setTabName] = React.useState('Overview')
-  const [files, setFiles] = React.useState([] as Record<string, any>)
-  const [form, setForm] = React.useState({
-    name: 'New form',
-    subtitle: 'A subtitle',
-    description: 'Describe the form',
-    'official-name': 'Official form name',
-    'official-code': 'Official code',
-    country: 'US',
-    language: 'en',
-    date: new Date(),
-    tags: 'sexual-assault',
-    common: {
-      gender: [
-        { key: 'male', value: 'Male' },
-        { key: 'female', value: 'Female' },
-        { key: 'transgender', value: 'Transgender' },
-      ],
-    },
-    sections: [
-      {
-        consent: {
-          title: 'Consent',
-          parts: [
-            {
-              'medical-exam': {
-                title: 'Authorizing medical exam',
-                description:
-                  'I AUTHORIZE the clinician to conduct a medical examination including a pelvic exam.',
-                type: 'bool',
-              },
-            },
-          ],
-        },
-      },
+const defaultForm: FormType = {
+  name: 'New form',
+  subtitle: 'A subtitle',
+  description: 'Describe the form',
+  'official-name': 'Official form name',
+  'official-code': 'Official code',
+  country: 'US',
+  language: 'en',
+  date: new Date(),
+  tags: ['sexual-assault'],
+  common: {
+    gender: [
+      { key: 'male', value: 'Male' },
+      { key: 'female', value: 'Female' },
+      { key: 'transgender', value: 'Transgender' },
     ],
-  } as FormType)
-
-  const [contents, setContents] = React.useState(initialContents)
-  useEffect(() => {
-    try {
-      setForm(yaml.load(contents) as FormType)
-    } catch (e) {
-      // TODO Error handling
-      console.log(e)
-    }
-  }, [contents])
-
-  const window = useWindowDimensions()
-  const padding = Platform.OS === 'web' ? 0.03 : 0
-  const ratio = Platform.OS === 'web' ? (window.width > 1000 ? 0.6 : 0.45) : 0
-
-  const [rawContents, setRawContents] = React.useState(contents)
-  useDebounce(
-    () => {
-      setContents(rawContents)
+  },
+  sections: [
+    {
+      consent: {
+        title: 'Consent',
+        parts: [
+          {
+            'medical-exam': {
+              title: 'Authorizing medical exam',
+              description:
+                'I AUTHORIZE the clinician to conduct a medical examination including a pelvic exam.',
+              type: 'bool',
+            },
+          },
+          {
+            signature: {
+              title: 'Authorizing medical exam',
+              type: 'signature',
+            },
+          },
+        ],
+      },
     },
-    1000,
-    [rawContents]
-  )
-
-  return (
-    <VStack>
-      {Platform.OS !== 'web' ? (
-        <Center py={2}>
-          <Text>Preview: Editing is web-only</Text>
-        </Center>
-      ) : null}
-      <HStack pt="0" space={3} justifyContent="center">
-        <CodeEditor
-          ratio={ratio}
-          contents={contents}
-          window={window}
-          setRawContents={setRawContents}
-        />
-        <Box
-          h={Math.round(window.height * 0.85) + 'px'}
-          w={Math.round(window.width * (1 - ratio - padding)) + 'px'}
-        >
-          <FormMemo
-            files={files}
-            form={form}
-            hasSideMenu={false}
-            noRenderCache={true}
-          />
-        </Box>
-      </HStack>
-    </VStack>
-  )
+  ],
 }
-
-const FormMemo = React.memo(Form)
 
 export default function FormEditor({
   route,
   navigation,
 }: RootStackScreenProps<'FormEditor'>) {
   const [tabName, setTabName] = React.useState('Overview')
-  const [form, setForm] = React.useState({
-    name: 'New form',
-    subtitle: 'A subtitle',
-    description: 'Describe the form',
-    'official-name': 'Official form name',
-    'official-code': 'Official code',
-    country: 'US',
-    language: 'en',
-    date: new Date(),
-    tags: 'sexual-assault',
-    common: {
-      gender: [
-        { key: 'male', value: 'Male' },
-        { key: 'female', value: 'Female' },
-        { key: 'transgender', value: 'Transgender' },
-      ],
-    },
-    sections: [
-      {
-        consent: {
-          title: 'Consent',
-          parts: [
-            {
-              'medical-exam': {
-                title: 'Authorizing medical exam',
-                description:
-                  'I AUTHORIZE the clinician to conduct a medical examination including a pelvic exam.',
-                type: 'bool',
-              },
-            },
-            {
-              signature: {
-                title: 'Authorizing medical exam',
-                type: 'signature',
-              },
-            },
-          ],
-        },
-      },
-    ],
-  } as FormType)
-
+  const [form, setForm] = React.useState(defaultForm)
   return (
     <DashboardLayout
       title={'Form Editor'}
@@ -295,10 +199,7 @@ export default function FormEditor({
           md: 32,
         }}
       >
-        <InnerFormEditor
-          initialContents={yaml.dump(form)}
-          navigation={navigation}
-        />
+        <FormEditorComponent initialContents={yaml.dump(form)} />
       </VStack>
     </DashboardLayout>
   )
