@@ -85,6 +85,12 @@ export default function FormEditorOverview({
           doneText="Form definition is valid"
           size={4}
         />
+        <NecessaryItem
+          isDone={false}
+          todoText="Some parts of the PDF not filled out"
+          doneText="All PDF fields covered"
+          size={4}
+        />
       </VStack>
     </VStack>
   )
