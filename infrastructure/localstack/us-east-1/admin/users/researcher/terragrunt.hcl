@@ -78,6 +78,14 @@ EOF
     },
     {
       type     = "String"
+      name     = "formal_name"
+      required = true
+      mutable  = true
+      min_length = 1
+      max_length = 300
+    },
+    {
+      type     = "String"
       name     = "gender"
       required = true
       mutable  = true
