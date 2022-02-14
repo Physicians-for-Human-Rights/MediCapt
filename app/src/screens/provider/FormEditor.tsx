@@ -93,22 +93,30 @@ export default function FormEditor({
       navigation={navigation}
       displaySidebar={false}
       displayScreenTitle={false}
-      title="Find a record"
+      title="Fill out a record"
       signOut={route.params.signOut}
       user={route.params.user}
+      displayHeader={false}
+      fullWidth={true}
     >
       <VStack
         safeAreaBottom
-        height="95%"
+        flex={1}
         borderRadius={{ md: '8' }}
         borderColor="coolGray.200"
         bg={'white'}
         px={{
-          base: 4,
+          base: 0,
           md: 32,
         }}
       >
-        {form && <FormMemo files={files} form={form} />}
+        {form && (
+          <FormMemo
+            files={files}
+            form={form}
+            onCancel={() => navigation.goBack()}
+          />
+        )}
       </VStack>
     </DashboardLayout>
   )

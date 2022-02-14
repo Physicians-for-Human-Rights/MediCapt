@@ -480,6 +480,7 @@ export default function DashboardLayout({
   displayScreenTitle = true,
   displayHeaderTitle = true,
   displaySidebar = true,
+  displayHeader = true,
   searchbar = false,
   backButton = true,
   middlebar = null,
@@ -496,6 +497,7 @@ export default function DashboardLayout({
   displayScreenTitle?: boolean
   displayHeaderTitle?: boolean
   displaySidebar?: boolean
+  displayHeader?: boolean
   searchbar?: boolean
   backButton?: boolean
   middlebar?: JSX.Element | null
@@ -517,29 +519,33 @@ export default function DashboardLayout({
       />
       <Box safeAreaTop _light={{ bg: 'primary.900' }} />
       <VStack flex={1} bg="muted.50">
-        <Hidden from="md">
-          <MobileHeader
-            title={title}
-            backButton={backButton}
-            navigation={navigation}
-            mobileMiddlebar={mobileMiddlebar}
-            signOut={signOut}
-            showLogos={showLogos}
-          />
-        </Hidden>
-        <Hidden till="md">
-          <Header
-            toggleSidebar={toggleSidebar}
-            title={title}
-            menuButton={displaySidebar}
-            searchbar={searchbar}
-            middlebar={middlebar}
-            displayHeaderTitle={displayHeaderTitle}
-            backButton={backButton}
-            navigation={navigation}
-            signOut={signOut}
-          />
-        </Hidden>
+        {displayHeader && (
+          <Hidden from="md">
+            <MobileHeader
+              title={title}
+              backButton={backButton}
+              navigation={navigation}
+              mobileMiddlebar={mobileMiddlebar}
+              signOut={signOut}
+              showLogos={showLogos}
+            />
+          </Hidden>
+        )}
+        {displayHeader && (
+          <Hidden till="md">
+            <Header
+              toggleSidebar={toggleSidebar}
+              title={title}
+              menuButton={displaySidebar}
+              searchbar={searchbar}
+              middlebar={middlebar}
+              displayHeaderTitle={displayHeaderTitle}
+              backButton={backButton}
+              navigation={navigation}
+              signOut={signOut}
+            />
+          </Hidden>
+        )}
 
         <Box
           flex={1}

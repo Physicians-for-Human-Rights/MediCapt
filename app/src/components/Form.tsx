@@ -6,7 +6,7 @@ import useToggle from 'react-use/lib/useToggle'
 import { Keyboard } from 'react-native'
 import _ from 'lodash'
 
-import { Box, ScrollView } from 'native-base'
+import { Box, View, ScrollView } from 'native-base'
 
 import FormMenu from 'components/FormMenu'
 import FromTop from 'components/FormTop'
@@ -24,10 +24,12 @@ export default function Form({
   files,
   form,
   noRenderCache = false,
+  onCancel,
 }: {
   files: Record<string, any>
   form: FormType | undefined
   noRenderCache?: boolean
+  onCancel: () => any
 }) {
   // This can happen when editing forms live
   if (form === undefined) return null
@@ -121,7 +123,7 @@ export default function Form({
   }
 
   return (
-    <Box flex={1}>
+    <View flex={1}>
       <FromTop
         sectionOffset={setSectionOffset}
         currentSection={currentSection}
@@ -137,17 +139,23 @@ export default function Form({
           changeSection={menuChangeSection}
           toggleMenu={toggleMenu}
           isSectionCompleteList={isSectionCompleteList}
+          onCancel={onCancel}
+          onSaveAndExit={onCancel}
+          onCompleteRecord={onCancel}
+          onPrint={onCancel}
         />
       ) : (
         <ScrollView
+          h="80"
           ref={scrollView}
           keyboardDismissMode="on-drag"
           accessible={false}
           keyboardShouldPersistTaps="handled"
+          bg="white"
         >
           {sectionContent}
         </ScrollView>
       )}
-    </Box>
+    </View>
   )
 }

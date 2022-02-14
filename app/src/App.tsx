@@ -23,9 +23,6 @@ import { default as ResearcherApp } from 'screens/researcher/App'
 
 import { NativeBaseProvider } from 'native-base'
 
-// NB Remove me eventually
-import 'styling'
-
 import * as Localization from 'expo-localization'
 import i18n from 'i18n-js'
 import en from 'localization/en'
@@ -68,17 +65,19 @@ const AuthApp = withAuthenticator(App)
 function LoginScreen() {
   return (
     // TODO Remove SafeAreaProvider after the native base switch
-    <SafeAreaProvider>
-      <NativeBaseProvider theme={theme}>
-        <StoreProvider>
-          <Provider store={store}>
-            <ThemeProvider theme={oldTheme}>
-              <AuthApp />
-            </ThemeProvider>
-          </Provider>
-        </StoreProvider>
-      </NativeBaseProvider>
-    </SafeAreaProvider>
+    <React.StrictMode>
+      <SafeAreaProvider>
+        <NativeBaseProvider theme={theme}>
+          <StoreProvider>
+            <Provider store={store}>
+              <ThemeProvider theme={oldTheme}>
+                <AuthApp />
+              </ThemeProvider>
+            </Provider>
+          </StoreProvider>
+        </NativeBaseProvider>
+      </SafeAreaProvider>
+    </React.StrictMode>
   )
 }
 

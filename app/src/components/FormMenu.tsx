@@ -41,11 +41,19 @@ function FormMenu({
   changeSection,
   isSectionCompleteList,
   toggleMenu,
+  onCancel,
+  onSaveAndExit,
+  onCompleteRecord,
+  onPrint,
 }: {
   formSections: NamedFormSection[]
   changeSection: (i: number) => any
   isSectionCompleteList: boolean[]
   toggleMenu: () => any
+  onCancel: () => any
+  onSaveAndExit: () => any
+  onCompleteRecord: () => any
+  onPrint: () => any
 }) {
   const stackDirection = useBreakpointValue({
     base: 'column',
@@ -67,12 +75,14 @@ function FormMenu({
             <Button
               bg="info.500"
               leftIcon={<Icon as={AntDesign} name="printer" size="sm" />}
+              onPress={onPrint}
             >
               Print
             </Button>
             <Button
               leftIcon={<Icon as={AntDesign} name="close" size="sm" />}
               bg="info.500"
+              onPress={onCancel}
             >
               Cancel
             </Button>
@@ -81,6 +91,7 @@ function FormMenu({
             <Button
               bg="info.500"
               leftIcon={<Icon as={AntDesign} name="save" size="sm" />}
+              onPress={onSaveAndExit}
             >
               Save and Exit
             </Button>
@@ -91,6 +102,7 @@ function FormMenu({
                   : 'primary.800'
               }
               leftIcon={<Icon as={AntDesign} name="staro" size="sm" />}
+              onPress={onCompleteRecord}
             >
               Complete record
             </Button>

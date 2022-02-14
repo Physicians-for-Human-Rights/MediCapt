@@ -15,10 +15,12 @@ export default function FormEditor({
   files,
   form,
   setForm,
+  onCancel,
 }: {
   files: Record<string, any>
   form: FormType
   setForm: React.Dispatch<React.SetStateAction<FormType>>
+  onCancel: () => any
 }) {
   const [contents, setContents] = React.useState(yaml.dump(form))
   useEffect(() => {
@@ -61,7 +63,12 @@ export default function FormEditor({
           h={Math.round(window.height * 0.85) + 'px'}
           w={Math.round(window.width * (1 - ratio - padding)) + 'px'}
         >
-          <FormMemo files={files} form={form} noRenderCache={true} />
+          <FormMemo
+            files={files}
+            form={form}
+            noRenderCache={true}
+            onCancel={onCancel}
+          />
         </Box>
       </HStack>
     </VStack>
