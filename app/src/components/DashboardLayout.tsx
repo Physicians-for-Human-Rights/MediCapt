@@ -517,70 +517,66 @@ export default function DashboardLayout({
       />
       <Box safeAreaTop _light={{ bg: 'primary.900' }} />
       <VStack flex={1} bg="muted.50">
-        <KeyboardAwareScrollView
-          contentContainerStyle={{ width: '100%', height: '100%' }}
+        <Hidden from="md">
+          <MobileHeader
+            title={title}
+            backButton={backButton}
+            navigation={navigation}
+            mobileMiddlebar={mobileMiddlebar}
+            signOut={signOut}
+            showLogos={showLogos}
+          />
+        </Hidden>
+        <Hidden till="md">
+          <Header
+            toggleSidebar={toggleSidebar}
+            title={title}
+            menuButton={displaySidebar}
+            searchbar={searchbar}
+            middlebar={middlebar}
+            displayHeaderTitle={displayHeaderTitle}
+            backButton={backButton}
+            navigation={navigation}
+            signOut={signOut}
+          />
+        </Hidden>
+
+        <Box
+          flex={1}
+          safeAreaBottom
+          flexDirection={{ base: 'column', md: 'row' }}
+          borderTopColor="coolGray.200"
         >
-          <Hidden from="md">
-            <MobileHeader
-              title={title}
-              backButton={backButton}
-              navigation={navigation}
-              mobileMiddlebar={mobileMiddlebar}
-              signOut={signOut}
-              showLogos={showLogos}
-            />
-          </Hidden>
-          <Hidden till="md">
-            <Header
-              toggleSidebar={toggleSidebar}
-              title={title}
-              menuButton={displaySidebar}
-              searchbar={searchbar}
-              middlebar={middlebar}
-              displayHeaderTitle={displayHeaderTitle}
-              backButton={backButton}
-              navigation={navigation}
-              signOut={signOut}
-            />
-          </Hidden>
-
-          <Box
-            flex={1}
-            safeAreaBottom
-            flexDirection={{ base: 'column', md: 'row' }}
-            borderTopColor="coolGray.200"
-          >
-            {isSidebarVisible && displaySidebar && (
-              <Hidden till="md">
-                <Sidebar signOut={signOut} />
-              </Hidden>
-            )}
-
+          {isSidebarVisible && displaySidebar && (
             <Hidden till="md">
-              <ScrollView
-                flex={1}
-                p={{ md: fullWidth ? 0 : 8 }}
-                contentContainerStyle={{ alignItems: 'center', flexGrow: 1 }}
-              >
-                <MainContent
-                  fullWidth={fullWidth}
-                  title={title}
-                  displayScreenTitle={displayScreenTitle}
-                  children={children}
-                />
-              </ScrollView>
+              <Sidebar signOut={signOut} />
             </Hidden>
+          )}
 
-            <Hidden from="md">
+          <Hidden till="md">
+            <ScrollView
+              flex={1}
+              p={{ md: fullWidth ? 0 : 8 }}
+              contentContainerStyle={{ alignItems: 'center', flexGrow: 1 }}
+            >
               <MainContent
                 fullWidth={fullWidth}
                 title={title}
                 displayScreenTitle={displayScreenTitle}
                 children={children}
               />
-            </Hidden>
-          </Box>
-        </KeyboardAwareScrollView>
+            </ScrollView>
+          </Hidden>
+
+          <Hidden from="md">
+            <MainContent
+              fullWidth={fullWidth}
+              title={title}
+              displayScreenTitle={displayScreenTitle}
+              children={children}
+            />
+          </Hidden>
+        </Box>
       </VStack>
     </>
   )

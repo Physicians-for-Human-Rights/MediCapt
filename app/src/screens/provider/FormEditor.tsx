@@ -23,48 +23,6 @@ import _ from 'lodash'
 import { readFile } from 'utils/forms'
 import Form from 'components/Form'
 
-const defaultForm: FormType = {
-  name: 'New form',
-  subtitle: 'A subtitle',
-  description: 'Describe the form',
-  'official-name': 'Official form name',
-  'official-code': 'Official code',
-  country: 'US',
-  language: 'en',
-  date: new Date(),
-  tags: ['sexual-assault'],
-  common: {
-    gender: [
-      { key: 'male', value: 'Male' },
-      { key: 'female', value: 'Female' },
-      { key: 'transgender', value: 'Transgender' },
-    ],
-  },
-  sections: [
-    {
-      consent: {
-        title: 'Consent',
-        parts: [
-          {
-            'medical-exam': {
-              title: 'Authorizing medical exam',
-              description:
-                'I AUTHORIZE the clinician to conduct a medical examination including a pelvic exam.',
-              type: 'bool',
-            },
-          },
-          {
-            signature: {
-              title: 'Authorizing medical exam',
-              type: 'signature',
-            },
-          },
-        ],
-      },
-    },
-  ],
-}
-
 const rawFiles: Record<string, string> = {
   'form.yaml':
     require('../../../assets/forms/ke-moh-363-2019/form.yaml') as string,
@@ -97,7 +55,7 @@ export default function FormEditor({
   route,
   navigation,
 }: RootStackScreenProps<'FormEditor'>) {
-  const [form, setForm] = React.useState(defaultForm)
+  const [form, setForm] = React.useState(null)
   const [
     files,
     {
@@ -139,7 +97,19 @@ export default function FormEditor({
       signOut={route.params.signOut}
       user={route.params.user}
     >
-      <FormMemo files={files} form={form} />
+      <VStack
+        safeAreaBottom
+        height="95%"
+        borderRadius={{ md: '8' }}
+        borderColor="coolGray.200"
+        bg={'white'}
+        px={{
+          base: 4,
+          md: 32,
+        }}
+      >
+        {form && <FormMemo files={files} form={form} />}
+      </VStack>
     </DashboardLayout>
   )
 }

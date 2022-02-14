@@ -6,7 +6,7 @@ import useToggle from 'react-use/lib/useToggle'
 import { Keyboard } from 'react-native'
 import _ from 'lodash'
 
-import { ScrollView } from 'native-base'
+import { Box, ScrollView } from 'native-base'
 
 import FormMenu from 'components/FormMenu'
 import FromTop from 'components/FormTop'
@@ -121,7 +121,7 @@ export default function Form({
   }
 
   return (
-    <>
+    <Box flex={1}>
       <FromTop
         sectionOffset={setSectionOffset}
         currentSection={currentSection}
@@ -148,6 +148,6 @@ export default function Form({
           {sectionContent}
         </ScrollView>
       )}
-    </>
+    </Box>
   )
 }
