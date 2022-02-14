@@ -173,7 +173,7 @@ export default function withAuthenticator(Component) {
     if (userType === null || userType === undefined) {
       return <></>
     } else {
-      if (authState == 'signedIn') {
+      if (authState == 'signedIn' && user) {
         return <Component user={user} userType={UserTypeList[userType]} />
       } else {
         return (
