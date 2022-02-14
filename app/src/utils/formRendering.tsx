@@ -199,12 +199,14 @@ export default function renderFnsWrapper(
       return (
         <Signature
           imageURI={getPath(valuePath, _.isString, null)}
-          openSignature={() =>
+          openSignature={() => {
+            addKeepAlive(valuePath)
             setDynamicState({ ['isVisible_signature_' + valuePath]: true })
-          }
-          closeSignature={() =>
+          }}
+          closeSignature={() => {
             setDynamicState({ ['isVisible_signature_' + valuePath]: false })
-          }
+            removeKeepAlive(valuePath)
+          }}
           isOpenSignature={dynamicState['isVisible_signature_' + valuePath]}
           setSignature={(dataURI: string) => formSetPath(valuePath, dataURI)}
         />

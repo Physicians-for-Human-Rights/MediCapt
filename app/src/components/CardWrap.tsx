@@ -17,6 +17,14 @@ import {
   MaterialIcons,
 } from '@expo/vector-icons'
 import _ from 'lodash'
+import { someSet } from 'utils/set'
+
+const styles = StyleSheet.create({
+  checkbox: {
+    width: 13,
+    height: 13,
+  },
+})
 
 /* Wraps every collection of elements in a Form. Can be nested. Only renders the
  * contents if the form has updated. */
@@ -34,6 +42,7 @@ function CardWrap({
   skippable,
   skipped,
   toggleSkip,
+  noRenderCache,
 }: {
   index: number
   title: string
@@ -42,11 +51,12 @@ function CardWrap({
   subparts: JSX.Element
   changedPaths: string[]
   formPath: string
-  keepAlive: string[]
+  keepAlive: Set<string>
   rawDescription: string
   skippable: boolean | null
   skipped: boolean
   toggleSkip: () => any
+  noRenderCache?: boolean | null
 }) {
   // TODO We should compute section completed per card
   // color={isSectionCompleted ? 'success.600' : 'primary.800'}
@@ -109,16 +119,11 @@ const RerenderFieldAsNecessary = React.memo(
       !_.some(nextProps.changedPaths, vp =>
         vp.startsWith(nextProps.formPath)
       ) &&
-      !_.some(nextProps.keepAlive, vp => vp.startsWith(nextProps.formPath))
+      !someSet<string>(nextProps.keepAlive, vp =>
+        vp.startsWith(nextProps.formPath)
+      )
     )
   }
 )
-
-const styles = StyleSheet.create({
-  checkbox: {
-    width: 13,
-    height: 13,
-  },
-})
 
 export default RerenderFieldAsNecessary
