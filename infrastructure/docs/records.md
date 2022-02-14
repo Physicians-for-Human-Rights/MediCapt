@@ -36,6 +36,8 @@ government ID, Expiration date of government ID. This allows verifying and
 tracking users. While sensitive, this data is not patient PHI/PII and is not
 discussed further in this document.
 
+NB User managers and form designers have no access to patient PHI/PII
+
 ### Healthcare providers
 
 Providers have access to all data for all locations that they are registered
@@ -87,6 +89,7 @@ which records they need.
 
 `locationUUID`
 `recordUUID`
+`recordID`
 `createdDate`
 `providerCreatedUUID`
 `formUUID`
