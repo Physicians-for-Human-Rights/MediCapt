@@ -1,72 +1,65 @@
-import React, { useEffect } from 'react'
-import FormScreen from 'screens/Form'
-import SignatureScreen from 'screens/Signature'
-import FormOverviewScreen from 'screens/FormOverview'
-import SelectFormScreen from 'screens/SelectForm'
-import HomeScreen from 'screens/Home'
-import BodyScreen from 'screens/Body'
-import PlaceholderScreen from 'screens/Placeholder'
-import { useUser, useSignOut } from 'utils/store'
+import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
+import Home from 'screens/provider/Home'
+import FormEditor from 'screens/provider/FormEditor'
+import FindRecord from 'screens/provider/FindRecord'
+import { RootStackParamList } from 'utils/provider/navigation'
 
-import 'styling'
+const RootStack = createStackNavigator<RootStackParamList>()
 
-const Stack = createStackNavigator()
-
-// NB The types here are terrible because we get different types depending on
-// which of .native.js or .web.js is included
-function App({ signOut, user }: { signOut: () => any; user: any }) {
-  const [storeUser, setStoreUser] = useUser()
-  const [storeSignOut, setSignOutUser] = useSignOut()
-  useEffect(() => setStoreUser(user), [user])
-  useEffect(() => {
-    setSignOutUser(signOut)
-  }, [signOut])
+export default function App({
+  signOut,
+  user,
+}: {
+  signOut: () => any
+  user: any
+}) {
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Home"
-        screenOptions={{ gestureEnabled: false }}
-      >
-        <Stack.Screen
+      <RootStack.Navigator initialRouteName="Home">
+        <RootStack.Screen
           name="Home"
-          component={HomeScreen}
-          options={{ title: 'Medicapt', headerShown: false }}
+          component={Home}
+          options={{ headerShown: false }}
+          initialParams={{ user, signOut }}
         />
-        <Stack.Screen
-          name="Body"
-          component={BodyScreen}
-          options={{ title: 'Add marks on the diagram' }}
+        <RootStack.Screen
+          name="FormEditor"
+          component={FormEditor}
+          options={{
+            headerShown: false,
+            // TODO The signature component causes crashes in SkSurface::getCanvas unless we enable this
+            // https://github.com/react-navigation/react-navigation/issues/9061
+            animationEnabled: false,
+          }}
         />
-        <Stack.Screen
-          name="Other"
-          component={PlaceholderScreen}
-          options={{ title: 'Lots of features here' }}
+        <RootStack.Screen
+          name="FindRecord"
+          component={FindRecord}
+          options={{ headerShown: false }}
         />
-        <Stack.Screen
-          name="FormOverview"
-          component={FormOverviewScreen}
-          options={{ title: 'Form overview' }}
+        <RootStack.Screen
+          name="IncompleteRecords"
+          component={FindRecord}
+          options={{ headerShown: false }}
         />
-        <Stack.Screen
-          name="SelectForm"
-          component={SelectFormScreen}
-          options={{ title: 'Select a form' }}
+        <RootStack.Screen
+          name="Sharing"
+          component={FindRecord}
+          options={{ headerShown: false }}
         />
-        <Stack.Screen
-          name="Form"
-          component={FormScreen}
-          options={{ title: 'Fill out the form' }}
+        <RootStack.Screen
+          name="Settings"
+          component={FindRecord}
+          options={{ headerShown: false }}
         />
-        <Stack.Screen
-          name="Signature"
-          component={SignatureScreen}
-          options={{ title: 'Sign anywhere below' }}
+        <RootStack.Screen
+          name="Training"
+          component={FindRecord}
+          options={{ headerShown: false }}
         />
-      </Stack.Navigator>
+      </RootStack.Navigator>
     </NavigationContainer>
   )
 }
-
-export default App

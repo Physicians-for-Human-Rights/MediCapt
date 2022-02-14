@@ -9,6 +9,8 @@ import Form from 'components/Form'
 // @ts-ignore typescript doesn't support .web.js and .native.js files
 import CodeEditor from './CodeEditor'
 
+const FormMemo = React.memo(Form)
+
 export default function FormEditor({
   files,
   form,
@@ -65,5 +67,3 @@ export default function FormEditor({
     </VStack>
   )
 }
-
-const FormMemo = React.memo(Form)

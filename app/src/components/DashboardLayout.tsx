@@ -346,12 +346,14 @@ export function MobileHeader({
   navigation,
   signOut,
   mobileMiddlebar,
+  showLogos,
 }: {
   title: string
   backButton: boolean
   navigation: any
   signOut: () => any
   mobileMiddlebar: JSX.Element | null
+  showLogos: boolean
 }) {
   return (
     <Box
@@ -386,10 +388,28 @@ export function MobileHeader({
                     />
                   }
                 />
+              ) : showLogos ? (
+                <HStack>
+                  <Image
+                    h="10"
+                    w={10}
+                    mx={4}
+                    alt="MediCapt logo"
+                    resizeMode="cover"
+                    source={medicapt_logo}
+                  />
+                  <Image
+                    h="10"
+                    w={10}
+                    mx={4}
+                    alt="PHR logo"
+                    resizeMode="cover"
+                    source={phr_logo}
+                  />
+                </HStack>
               ) : (
                 <Box w={10} />
               )}
-
               <Text color="coolGray.50" fontSize="lg">
                 {title}
               </Text>
@@ -465,6 +485,7 @@ export default function DashboardLayout({
   middlebar = null,
   mobileMiddlebar = null,
   fullWidth = false,
+  showLogos = false,
 }: {
   navigation: any
   children: JSX.Element
@@ -480,6 +501,7 @@ export default function DashboardLayout({
   middlebar?: JSX.Element | null
   mobileMiddlebar?: JSX.Element | null
   fullWidth?: boolean
+  showLogos?: boolean
 }) {
   if (!signOut) signOut = authSignOut
   const [isSidebarVisible, setIsSidebarVisible] = React.useState(true)
@@ -505,6 +527,7 @@ export default function DashboardLayout({
               navigation={navigation}
               mobileMiddlebar={mobileMiddlebar}
               signOut={signOut}
+              showLogos={showLogos}
             />
           </Hidden>
           <Hidden till="md">

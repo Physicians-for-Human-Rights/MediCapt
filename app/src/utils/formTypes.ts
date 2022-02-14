@@ -19,7 +19,6 @@ export type FormType = {
 }
 
 export type FormMetadata = {
-  path: string
   country: string
   formUUID: string
   formID: string
@@ -38,7 +37,7 @@ export type FormMetadata = {
   enabledDate: Date
   enabledSetByUUID: string
   tags: string
-  formStorageVersion: string
+  formStorageVersion: '1.0.0'
 }
 
 /**
