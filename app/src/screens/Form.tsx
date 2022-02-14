@@ -139,9 +139,9 @@ export default function Form({ route, navigation }: NativeStackScreenProps) {
       setDynamicState(prevState => ({ ...prevState, ...newState })),
     loadedForm.files,
     loadedForm.form ? loadedForm.form.common : {},
-    (valuePath: string, value) =>
+    (valuePath: string, baseImage: string, value: any) => {
       navigation.navigate('Body', {
-        baseImage: value.image && value.image.imageUri,
+        baseImage: baseImage || value.image,
         enterData: (dataImage, annotations) => {
           setFormPath(valuePath, {
             image: dataImage,
@@ -149,7 +149,8 @@ export default function Form({ route, navigation }: NativeStackScreenProps) {
           })
         },
         previousAnnotations: value.annotations,
-      }),
+      })
+    },
     formPaths,
     (value, default_) => formGetPath(formPaths, value, default_),
     setFormPath,
