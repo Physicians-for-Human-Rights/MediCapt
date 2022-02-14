@@ -84,8 +84,8 @@ function Body({ route, navigation }) {
       <View style={styles.annotationContainer}>
         <BodyMarker
           baseImage={baseImage}
-          confirmMarker={marker => setSelectedMarker(marker)}
           annotations={annotations}
+          onPress={marker => setSelectedMarker(marker)}
         />
       </View>
       <View style={styles.buttonsContainer}>

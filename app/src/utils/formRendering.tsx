@@ -49,6 +49,7 @@ import { resolveRef } from 'utils/forms'
 import { FormFns } from 'utils/formTypesHelpers'
 // @ts-ignore typescript doesn't like platform-specific modules
 import Signature from 'components/Signature'
+import BodyMarker from 'components/BodyMarker'
 
 /*
   Render all of the components of a form recursively. This function is applied
@@ -220,42 +221,13 @@ export default function renderFnsWrapper(
       icon = <Icon name="edit" size={15} color="white" />
       if (value && formGetPath(valuePath)) {
         title = ' Edit diagram'
-        imageUri = null
         image = (
-          <ImageBackground
-            imageStyle={{ resizeMode: 'contain' }}
-            style={{ width: 200, height: 200 }}
-            source={{ uri: formGetPath(valuePath).image }}
-          >
-            {value.annotations.map((annotation, idx) => (
-              <View
-                key={idx}
-                style={{
-                  position: 'absolute',
-                  flexDirection: 'row',
-                  top: annotation.markerCoordinates.y * 200 - 2.5,
-                  left: annotation.markerCoordinates.x * 200 - 2.5,
-                }}
-              >
-                <View
-                  style={{
-                    backgroundColor: 'red',
-                    height: 5,
-                    width: 5,
-                  }}
-                />
-                <Text
-                  style={{
-                    color: 'red',
-                    fontWeight: 'bold',
-                    fontSize: 8,
-                  }}
-                >
-                  {idx}
-                </Text>
-              </View>
-            ))}
-          </ImageBackground>
+          <View style={{ width: 200, height: 200 }}>
+            <BodyMarker
+              baseImage={value.image}
+              annotations={value.annotations}
+            />
+          </View>
         )
       } else {
         title = ' Mark and annotate'
