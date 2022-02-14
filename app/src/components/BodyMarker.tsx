@@ -13,8 +13,8 @@ import { Marker, Annotation } from 'screens/Body'
 
 interface BodyMarkerProps {
   baseImage: any
-  confirmMarker: (marker: Marker) => void
   annotations: Array<Annotation>
+  onPress?: (marker: Marker) => void
 }
 
 const BodyMarker: React.FunctionComponent<BodyMarkerProps> = props => {
@@ -30,8 +30,10 @@ const BodyMarker: React.FunctionComponent<BodyMarkerProps> = props => {
       y = evt.nativeEvent.locationY / imageSquareSize
     }
 
-    props.confirmMarker({ coordinates: { x, y } })
+    props.onPress({ coordinates: { x, y } })
   }
+
+  const markerSize = props.onPress ? 10 : 5
 
   return (
     <View
@@ -42,7 +44,7 @@ const BodyMarker: React.FunctionComponent<BodyMarkerProps> = props => {
       }}
     >
       <View style={{ height: imageSquareSize, width: imageSquareSize }}>
-        <TouchableWithoutFeedback onPress={handlePress}>
+        <TouchableWithoutFeedback onPress={props.onPress && handlePress}>
           <ImageBackground
             style={styles.image}
             imageStyle={{ resizeMode: 'contain' }}
@@ -51,22 +53,42 @@ const BodyMarker: React.FunctionComponent<BodyMarkerProps> = props => {
             {props.annotations.map((annotation, idx) => (
               <TouchableWithoutFeedback
                 key={idx}
-                onPress={() =>
-                  props.confirmMarker({
-                    annotationIndex: idx,
-                    coordinates: annotation.markerCoordinates,
-                  })
+                onPress={
+                  props.onPress &&
+                  (() =>
+                    props.onPress({
+                      annotationIndex: idx,
+                      coordinates: annotation.markerCoordinates,
+                    }))
                 }
               >
                 <View
                   style={{
                     ...StyleSheet.flatten(styles.markerContainer),
-                    top: annotation.markerCoordinates.y * imageSquareSize - 5,
-                    left: annotation.markerCoordinates.x * imageSquareSize - 5,
+                    top:
+                      annotation.markerCoordinates.y * imageSquareSize -
+                      markerSize / 2,
+                    left:
+                      annotation.markerCoordinates.x * imageSquareSize -
+                      markerSize / 2,
                   }}
                 >
-                  <View style={styles.marker} />
-                  <Text style={styles.text}>{idx}</Text>
+                  <View
+                    style={{
+                      ...StyleSheet.flatten(styles.marker),
+                      height: markerSize,
+                      width: markerSize,
+                    }}
+                  />
+                  <Text
+                    style={{
+                      ...StyleSheet.flatten(styles.text),
+                      fontSize: props.onPress ? 14 : 9,
+                      marginRight: props.onPress ? 3 : 1,
+                    }}
+                  >
+                    {idx}
+                  </Text>
                 </View>
               </TouchableWithoutFeedback>
             ))}
@@ -88,14 +110,10 @@ const styles = StyleSheet.create({
   },
   marker: {
     backgroundColor: 'red',
-    height: 10,
-    width: 10,
-    marginRight: 3,
   },
   text: {
     color: 'red',
     fontWeight: 'bold',
-    fontSize: 14,
   },
 })
 
