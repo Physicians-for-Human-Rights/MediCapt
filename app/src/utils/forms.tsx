@@ -442,26 +442,30 @@ export function isImage(filename: string) {
   )
 }
 
-export async function readFile(filename: string, localUri: string) {
+export async function readFile(filename: string, virtualAsset: string) {
   let content = null
+  const f = Asset.fromModule(virtualAsset)
+  await f.downloadAsync()
+  if (!f.localUri)
+    throw new Error("Asset couldn't be downloaded to a local uri" + filename)
   switch (filename.split('.').pop()) {
     case 'yaml':
       if (Platform.OS === 'web') {
-        content = await fetch(localUri)
+        content = await fetch(f.localUri)
         content = await content.text()
       } else {
-        content = await FileSystem.readAsStringAsync(localUri)
+        content = await FileSystem.readAsStringAsync(f.localUri)
       }
       break
     case 'svg':
-      content = await readImage(localUri, 'data:image/svg+xml;base64,')
+      content = await readImage(f.localUri, 'data:image/svg+xml;base64,')
       // TODO Error handling
       console.error(
         "SVG Support was removed because it doesn't work well on Android"
       )
       break
     case 'pdf':
-      content = await readImage(localUri, 'data:application/pdf;base64,')
+      content = await readImage(f.localUri, 'data:application/pdf;base64,')
       content = _.replace(
         content,
         'data:application/pdf; charset=utf-8;base64,',
@@ -469,15 +473,15 @@ export async function readFile(filename: string, localUri: string) {
       )
       break
     case 'png':
-      content = await readImage(localUri, 'data:image/png;base64,')
+      content = await readImage(f.localUri, 'data:image/png;base64,')
       break
     case 'jpg':
-      content = await readImage(localUri, 'data:image/jpg;base64,')
+      content = await readImage(f.localUri, 'data:image/jpg;base64,')
       break
     default:
       // TODO Error handling
-      console.error('Trying to read unknown file type', filename, localUri)
-      content = await FileSystem.readAsStringAsync(localUri, {
+      console.error('Trying to read unknown file type', filename, f.localUri)
+      content = await FileSystem.readAsStringAsync(f.localUri, {
         encoding: FileSystem.EncodingType.Base64,
       })
   }
