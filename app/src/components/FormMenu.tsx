@@ -61,6 +61,7 @@ function FormMenu({
           space="2"
           justifyContent="center"
           bg="white"
+          key={'header'}
         >
           <HStack space="2" justifyContent="center">
             <Button
