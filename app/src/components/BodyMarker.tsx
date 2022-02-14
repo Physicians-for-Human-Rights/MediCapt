@@ -87,7 +87,7 @@ const BodyMarker: React.FunctionComponent<BodyMarkerProps> = props => {
                       marginRight: props.onPress ? 3 : 1,
                     }}
                   >
-                    {idx}
+                    {idx + 1}
                   </Text>
                 </View>
               </TouchableWithoutFeedback>
