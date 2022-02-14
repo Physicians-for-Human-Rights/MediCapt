@@ -27,7 +27,7 @@ export default function Form({
 }: {
   files: Record<string, any>
   form: FormType | undefined
-  noRenderCache: boolean
+  noRenderCache?: boolean
 }) {
   // This can happen when editing forms live
   if (form === undefined) return null

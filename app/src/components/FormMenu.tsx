@@ -22,6 +22,7 @@ import {
   Badge,
   useBreakpointValue,
   FlatList,
+  Stack,
 } from 'native-base'
 
 import {
@@ -46,32 +47,51 @@ function FormMenu({
   isSectionCompleteList: boolean[]
   toggleMenu: () => any
 }) {
+  const stackDirection = useBreakpointValue({
+    base: 'column',
+    sm: 'row',
+  })
   return (
     <ScrollView scrollsToTop={false} stickyHeaderIndices={[0]}>
-      <HStack space="3" py="3" justifyContent="center" pb={4}>
-        <Button
-          bg="info.500"
-          leftIcon={<Icon as={AntDesign} name="printer" size="sm" />}
-        >
-          Print
-        </Button>
-        <Button
-          bg="info.500"
-          leftIcon={<Icon as={AntDesign} name="save" size="sm" />}
-        >
-          Save and Exit
-        </Button>
-        <Button
-          bg={
-            _.every(isSectionCompleteList, (a: boolean) => a)
-              ? 'success.600'
-              : 'primary.800'
-          }
-          leftIcon={<Icon as={AntDesign} name="staro" size="sm" />}
-        >
-          Complete record
-        </Button>
-      </HStack>
+      <Stack
+        py="3"
+        direction={stackDirection}
+        space="2"
+        justifyContent="center"
+      >
+        <HStack space="2" justifyContent="center">
+          <Button
+            bg="info.500"
+            leftIcon={<Icon as={AntDesign} name="printer" size="sm" />}
+          >
+            Print
+          </Button>
+          <Button
+            leftIcon={<Icon as={AntDesign} name="close" size="sm" />}
+            bg="info.500"
+          >
+            Cancel
+          </Button>
+        </HStack>
+        <HStack space="2" justifyContent="center">
+          <Button
+            bg="info.500"
+            leftIcon={<Icon as={AntDesign} name="save" size="sm" />}
+          >
+            Save and Exit
+          </Button>
+          <Button
+            bg={
+              _.every(isSectionCompleteList, (a: boolean) => a)
+                ? 'success.600'
+                : 'primary.800'
+            }
+            leftIcon={<Icon as={AntDesign} name="staro" size="sm" />}
+          >
+            Complete record
+          </Button>
+        </HStack>
+      </Stack>
       <FlatList
         data={formSections}
         renderItem={({

@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import Home from 'screens/formDesigner/Home'
 import FormEditor from 'screens/formDesigner/FormEditor'
-import FormList from 'screens/common/FormList'
+import FormList from 'screens/formDesigner/FormList'
 import { RootStackParamList } from 'utils/formDesigner/navigation'
 
 const RootStack = createStackNavigator<RootStackParamList>()
