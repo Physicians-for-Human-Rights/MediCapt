@@ -60,7 +60,7 @@ export default function renderFnsWrapper(
   setDynamicState: (newState: Record<string, boolean>) => void,
   files: Record<string, any>,
   common: Record<string, FormDefinition>,
-  fnBody: (valuePath: string) => any,
+  fnBody: (valuePath: string, baseImage: string, value: any) => void,
   formPaths: any,
   formGetPath: any,
   formSetPath: any,
@@ -68,7 +68,7 @@ export default function renderFnsWrapper(
   keepAlive: any,
   removeKeepAlive: any,
   addKeepAlive: any,
-  noRenderCache: boolean
+  noRenderCache?: boolean
 ): FormFns<JSX.Element> {
   function getPath(
     valuePath: string | null | undefined,
@@ -315,7 +315,7 @@ export default function renderFnsWrapper(
             icon={icon}
             title={title}
             buttonStyle={buttonStyle}
-            onPress={() => fnBody(valuePath, value)}
+            onPress={() => fnBody(valuePath, imageUri, value)}
           />
         </View>
       )
