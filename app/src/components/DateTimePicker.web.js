@@ -1,45 +1,25 @@
 import React, { useState } from 'react'
-import {
-  Box,
-  VStack,
-  StatusBar,
-  ScrollView,
-  HStack,
-  Pressable,
-  // Icon,
-  // Image,
-  Text,
-  Hidden,
-  useColorMode,
-  IconButton,
-  Divider,
-  Menu,
-  Avatar,
-  Button,
-  Input,
-  Center,
-  useBreakpointValue,
-  Modal,
-  View,
-} from 'native-base'
+import { HStack, IconButton, Input, Center, Modal } from 'native-base'
 import _ from 'lodash'
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  MaterialCommunityIcons,
-  MaterialIcons,
-} from '@expo/vector-icons'
+import { AntDesign } from '@expo/vector-icons'
 import formatDate from 'utils/date.ts'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import DatePicker from 'react-datepicker'
-import { parse as dateParser } from 'date-fns'
+import { parseDate } from 'chrono-node'
 
-export default function DateTimePicker({ title, date, open, close, setDate }) {
+export default function DateTimePicker({
+  title,
+  date,
+  open,
+  close,
+  setDate,
+  time,
+}) {
+  const formatString = time ? 'yyyy-MM-dd h:mm a' : 'yyyy-MM-dd'
   const [modalVisible, setModalVisible] = useState(false)
   const [dateString, setDateString] = useState(
-    _.isDate(date) ? formatDate(date, 'yyyy-MM-dd') : ''
+    _.isDate(date) ? formatDate(date, formatString) : ''
   )
 
   const openInternal = () => {
@@ -49,7 +29,7 @@ export default function DateTimePicker({ title, date, open, close, setDate }) {
 
   const onSave = date => {
     setDate(date)
-    const dateString = formatDate(date, 'yyyy-MM-dd')
+    const dateString = formatDate(date, formatString)
     setDateString(dateString)
     setModalVisible(false)
     close()
@@ -57,12 +37,13 @@ export default function DateTimePicker({ title, date, open, close, setDate }) {
 
   const onSaveText = () => {
     try {
-      const date = dateParser(dateString, 'yyyy-MM-dd', new Date())
+      const date = parseDate(dateString)
       if (isNaN(date.valueOf())) {
         setDate(null)
         setDateString('')
       } else {
         setDate(date)
+        setDateString(formatDate(date, formatString))
       }
     } catch (e) {
       setDate(null)
@@ -84,7 +65,7 @@ export default function DateTimePicker({ title, date, open, close, setDate }) {
           <Input
             mx="3"
             size="md"
-            placeholder="Enter date"
+            placeholder={time ? 'Enter date and time' : 'Enter date'}
             w="75%"
             maxWidth="200px"
             onChangeText={setDateString}

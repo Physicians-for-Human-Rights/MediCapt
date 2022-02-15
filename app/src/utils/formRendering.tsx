@@ -433,15 +433,10 @@ export default function renderFnsWrapper(
       )
     },
     date: (entry, part, index, formPath, valuePath) => {
-      const current_value = getPath(valuePath, _.isDate)
-      let buttonStyle = {}
-      if (!current_value) {
-        buttonStyle = { backgroundColor: '#d5001c' }
-      }
       return (
         <DateTimePicker
           title={part.title}
-          date={current_value}
+          date={getPath(valuePath, _.isDate)}
           open={() => {
             addKeepAlive(valuePath)
           }}
@@ -453,66 +448,20 @@ export default function renderFnsWrapper(
       )
     },
     'date-time': (entry, part, index, formPath, valuePath) => {
-      const current_value = getPath(valuePath, _.isDate)
-      let buttonStyle = {}
-      if (!current_value) {
-        buttonStyle = { backgroundColor: '#d5001c' }
-      }
-      if (Platform.OS == 'web') {
-        return (
-          <DateTimePicker
-            clearIcon={null}
-            value={current_value}
-            onChange={date => {
-              formSetPath(valuePath, date)
-            }}
-            onCancel={() => {
-              setDynamicState({
-                ['isVisible_dateTime_' + valuePath]: false,
-              })
-              removeKeepAlive(valuePath)
-            }}
-          />
-        )
-      } else {
-        let picker = (
-          <DateTimePicker
-            isVisible={dynamicState['isVisible_dateTime_' + valuePath]}
-            value={current_value}
-            onConfirm={date => {
-              formSetPath(valuePath, date)
-              setDynamicState({
-                ['isVisible_dateTime_' + valuePath]: false,
-              })
-              removeKeepAlive(valuePath)
-            }}
-            mode="datetime"
-            onCancel={() => {
-              setDynamicState({
-                ['isVisible_dateTime_' + valuePath]: false,
-              })
-              removeKeepAlive(valuePath)
-            }}
-          />
-        )
-        return (
-          <>
-            <Button
-              title={
-                current_value
-                  ? current_value.toLocaleString()
-                  : 'Choose date and time'
-              }
-              buttonStyle={buttonStyle}
-              onPress={() => {
-                addKeepAlive(valuePath)
-                setDynamicState({ ['isVisible_dateTime_' + valuePath]: true })
-              }}
-            />
-            {dynamicState['isVisible_dateTime_' + valuePath] ? picker : null}
-          </>
-        )
-      }
+      return (
+        <DateTimePicker
+          title={part.title}
+          date={getPath(valuePath, _.isDate)}
+          open={() => {
+            addKeepAlive(valuePath)
+          }}
+          close={() => {
+            removeKeepAlive(valuePath)
+          }}
+          setDate={(date: Date) => formSetPath(valuePath, date)}
+          time
+        />
+      )
     },
     'list-with-parts': (entry, part, index, formPath, valuePath) => {
       // TODO

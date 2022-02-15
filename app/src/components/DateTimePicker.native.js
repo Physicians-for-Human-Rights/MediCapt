@@ -11,7 +11,14 @@ import {
   MaterialIcons,
 } from '@expo/vector-icons'
 
-export default function DateTimePicker({ title, date, open, close, setDate }) {
+export default function DateTimePicker({
+  title,
+  date,
+  open,
+  close,
+  setDate,
+  time,
+}) {
   const [modalVisible, setModalVisible] = useState(false)
 
   const openInternal = () => {
@@ -36,13 +43,19 @@ export default function DateTimePicker({ title, date, open, close, setDate }) {
         onPress={openInternal}
         bg={_.isDate(date) ? 'success.600' : 'primary.800'}
       >
-        {date ? date.toLocaleDateString() : 'Choose date'}
+        {date
+          ? time
+            ? date.toLocaleString()
+            : date.toLocaleDateString()
+          : time
+          ? 'Enter date and time'
+          : 'Enter date'}
       </Button>
       {modalVisible && (
         <Picker
           isVisible={modalVisible}
           value={date}
-          mode="date"
+          mode={time ? 'datetime' : 'date'}
           onConfirm={onSave}
           onCancel={onClose}
         />
