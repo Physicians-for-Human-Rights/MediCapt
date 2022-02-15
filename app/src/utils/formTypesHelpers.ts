@@ -18,17 +18,17 @@ export type NamedFormSection = Named<FormSection>
 export type NamedFormPart = Named<FormPart>
 
 export type StandardFormFn<Return, RestrictPart = {}> = (
-  // The entry in the form that we're processing
-  entry: FormPartRecord,
-  // The part that corresponds to that entry (an entry is a named part)
-  part: NonRefFormPart & (FormPartField & RestrictPart),
-  // The index within a list if we're contained in one. Zero otherwise
-  index: number,
-  // The path in the form to the current item
-  formPath: FormPath,
   // The path to the current value. We can be called multiple times with
   // different value paths when items are repeated
-  valuePath: FormPath
+  valuePath: FormPath,
+  // The part that corresponds to that entry (an entry is a named part)
+  part: NonRefFormPart & (FormPartField & RestrictPart),
+  // The path in the form to the current item
+  formPath: FormPath,
+  // The index within a list if we're contained in one. Zero otherwise
+  index: number,
+  // The entry in the form that we're processing
+  entry: FormPartRecord
 ) => Return
 
 export type FieldType = {
@@ -58,45 +58,45 @@ export type FieldType = {
 export type FormFns<Return> = {
   // utilities
   pre: (
-    entry: FormPartRecord,
     part: FormPart,
+    formPath: FormPath,
     index: number,
-    formPath: FormPath
+    entry: FormPartRecord
   ) => Return | null
   post: (
-    entry: FormPartRecord,
     part: FormPart,
-    index: number,
-    formPath: FormPath,
-    pre: Return | null,
-    inner: Return | null,
     // The subparts are already combined
     subparts: Return | null,
-    skippedPath: string | null
-  ) => Return
-  combinePlainParts: (
-    // This combination of parts doesn't know what its enclosing form type is
+    inner: Return | null,
     formPath: FormPath,
     index: number,
-    subparts: Return[]
+    pre: Return | null,
+    skippedPath: string | null,
+    entry: FormPartRecord
+  ) => Return
+  combinePlainParts: (
+    subparts: Return[],
+    // This combination of parts doesn't know what its enclosing form type is
+    formPath: FormPath,
+    index: number
   ) => Return
   combineSmartParts: (
-    // This part combination can know what its enclosing form type is
-    entry: FormPartRecord,
     part: FormPart,
-    index: number,
+    subparts: Return[],
     inner: Return | null,
     // The path to the parts and the parts we should combine together
     formPath: FormPath,
-    subparts: Return[]
+    // This part combination can know what its enclosing form type is
+    index: number,
+    entry: FormPartRecord
   ) => Return
   selectMultiple: (
-    entry: FormPartRecord,
-    part: FormPart,
-    index: number,
-    formPath: FormPath,
     valuePaths: string[],
-    otherPath: FormPath | null
+    part: FormPart,
+    formPath: FormPath,
+    index: number,
+    otherPath: FormPath | null,
+    entry: FormPartRecord
   ) => Return | null
   // parts
   //

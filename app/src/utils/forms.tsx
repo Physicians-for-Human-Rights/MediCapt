@@ -150,16 +150,16 @@ export function mapSectionWithPaths<Return>(
       return identity
     }
     //
-    const pre = fns.pre(entry, part, index, formPath)
+    const pre = fns.pre(part, formPath, index, entry)
     //
     if ('Ref' in part) {
       subparts = fns.combineSmartParts(
-        entry,
         part,
-        index,
+        processMultiple(lookupPartRef(part, common), index, formPath),
         null,
         formPath,
-        processMultiple(lookupPartRef(part, common), index, formPath)
+        index,
+        entry
       )
     } else {
       if ('type' in part) {
@@ -171,16 +171,16 @@ export function mapSectionWithPaths<Return>(
               getValue(formPath + '.value')
             ) {
               subparts = fns.combineSmartParts(
-                entry,
                 part,
-                index,
-                inner,
-                formPath,
                 processMultiple(
                   part['show-parts-when-true'],
                   0,
                   formPath + '.parts'
-                )
+                ),
+                inner,
+                formPath,
+                index,
+                entry
               )
             }
             break
@@ -189,14 +189,14 @@ export function mapSectionWithPaths<Return>(
               const resolved = resolveRef(part.options, common)
               if (resolved) {
                 inner = fns.selectMultiple(
-                  entry,
-                  part,
-                  index,
-                  formPath,
                   resolved.map((_e: any, i: number) => {
                     return formPath + '.value.' + i
                   }),
-                  part.other ? formPath + '.value.other' : null
+                  part,
+                  formPath,
+                  index,
+                  part.other ? formPath + '.value.other' : null,
+                  entry
                 )
               }
             }
@@ -206,14 +206,14 @@ export function mapSectionWithPaths<Return>(
               const resolved = resolveRef(part.options, common)
               if (resolved) {
                 inner = fns.selectMultiple(
-                  entry,
-                  part,
-                  index,
-                  formPath,
                   resolved.map((_e: any, i: number) => {
                     return formPath + '.value.' + i
                   }),
-                  part.other ? formPath + '.value.other' : null
+                  part,
+                  formPath,
+                  index,
+                  part.other ? formPath + '.value.other' : null,
+                  entry
                 )
               }
             }
@@ -222,13 +222,13 @@ export function mapSectionWithPaths<Return>(
         if (!inner) {
           // @ts-ignore TODO Errors out with expression produces a union type that is too complex to represent
           if (part && fns[part.type]) {
+            // @ts-ignore TODO Typescript doesn't seem willing to represent this type
             inner = fns[part.type](
-              entry,
-              // @ts-ignore TODO Typescript doesn't seem willing to represent this type
+              formPath + '.value',
               part,
-              index,
               formPath,
-              formPath + '.value'
+              index,
+              entry
             )
           } else {
             console.log('UNSUPPORTED FIELD TYPE', part)
@@ -239,15 +239,15 @@ export function mapSectionWithPaths<Return>(
         const parts = resolveRef(part.parts, common)
         if (parts) {
           subparts = fns.combineSmartParts(
-            entry,
             part,
-            index,
-            inner,
-            formPath,
             _.concat(
               processMultiple(parts, 0, formPath + '.parts'),
               subparts || []
-            )
+            ),
+            inner,
+            formPath,
+            index,
+            entry
           )
         }
       }
@@ -256,14 +256,14 @@ export function mapSectionWithPaths<Return>(
     const skippedPath =
       'optional' in part && part.optional ? formPath + '.skipped' : null
     return fns.post(
-      entry,
       part,
-      index,
-      formPath,
-      pre,
-      inner,
       subparts,
-      skippedPath
+      inner,
+      formPath,
+      index,
+      pre,
+      skippedPath,
+      entry
     )
   }
   if (shouldSkipConditional(section, getValue)) {
@@ -272,9 +272,9 @@ export function mapSectionWithPaths<Return>(
   if (_.isNil(section) || _.isNil(section.parts) || _.isNil(section.name))
     return identity
   return fns.combinePlainParts(
+    processMultiple(section.parts, 0, 'sections.' + section.name),
     'sections.' + section.name,
-    0,
-    processMultiple(section.parts, 0, 'sections.' + section.name)
+    0
   )
 }
 
@@ -287,51 +287,28 @@ export function allFormValuePathsForSection(
   // any is an ok type here because we're discarding the output
   mapSectionWithPaths<any>(section, common, [], getValue, {
     pre: () => null,
-    selectMultiple: (_entry, _obj, _index, _formPath, valuePaths) => {
+    selectMultiple: valuePaths => {
       allValuePaths = allValuePaths.concat(valuePaths)
     },
-    signature: (_entry, _obj, _index, _formPath, valuePath) =>
-      allValuePaths.push(valuePath),
-    bool: (_entry, _obj, _index, _formPath, valuePath) =>
-      allValuePaths.push(valuePath),
-    gender: (_entry, _obj, _index, _formPath, valuePath) =>
-      allValuePaths.push(valuePath),
-    sex: (_entry, _obj, _index, _formPath, valuePath) =>
-      allValuePaths.push(valuePath),
-    text: (_entry, _obj, _index, _formPath, valuePath) =>
-      allValuePaths.push(valuePath),
-    'long-text': (_entry, _obj, _index, _formPath, valuePath) =>
-      allValuePaths.push(valuePath),
-    number: (_entry, _obj, _index, _formPath, valuePath) =>
-      allValuePaths.push(valuePath),
-    date: (_entry, _obj, _index, _formPath, valuePath) =>
-      allValuePaths.push(valuePath),
-    'date-time': (_entry, _obj, _index, _formPath, valuePath) =>
-      allValuePaths.push(valuePath),
-    list: (_entry, _obj, _index, _formPath, valuePath) =>
-      allValuePaths.push(valuePath),
-    'list-with-labels': (_entry, _obj, _index, _formPath, valuePath) =>
-      allValuePaths.push(valuePath),
-    'list-with-parts': (_entry, _obj, _index, _formPath, valuePath) =>
-      allValuePaths.push(valuePath),
-    'phone-number': (_entry, _obj, _index, _formPath, valuePath) =>
-      allValuePaths.push(valuePath),
-    address: (_entry, _obj, _index, _formPath, valuePath) =>
-      allValuePaths.push(valuePath),
-    'body-image': (_entry, _obj, _index, _formPath, valuePath) =>
-      allValuePaths.push(valuePath),
-    photo: (_entry, _obj, _index, _formPath, valuePath) =>
-      allValuePaths.push(valuePath),
-    combinePlainParts: (_formPath, _index, _subparts) => null,
-    combineSmartParts: (
-      _entry,
-      _part,
-      _index,
-      _inner,
-      // The path to the parts and the parts we should combine together
-      _formPath
-    ) => null,
-    post: (_entry, _obj, _index, _formPath, _pre, _inner, _subparts) => null,
+    signature: valuePath => allValuePaths.push(valuePath),
+    bool: valuePath => allValuePaths.push(valuePath),
+    gender: valuePath => allValuePaths.push(valuePath),
+    sex: valuePath => allValuePaths.push(valuePath),
+    text: valuePath => allValuePaths.push(valuePath),
+    'long-text': valuePath => allValuePaths.push(valuePath),
+    number: valuePath => allValuePaths.push(valuePath),
+    date: valuePath => allValuePaths.push(valuePath),
+    'date-time': valuePath => allValuePaths.push(valuePath),
+    list: valuePath => allValuePaths.push(valuePath),
+    'list-with-labels': valuePath => allValuePaths.push(valuePath),
+    'list-with-parts': valuePath => allValuePaths.push(valuePath),
+    'phone-number': valuePath => allValuePaths.push(valuePath),
+    address: valuePath => allValuePaths.push(valuePath),
+    'body-image': valuePath => allValuePaths.push(valuePath),
+    photo: valuePath => allValuePaths.push(valuePath),
+    combinePlainParts: () => null,
+    combineSmartParts: () => null,
+    post: () => null,
   })
   return allValuePaths
 }
@@ -343,66 +320,33 @@ export function isSectionComplete(
 ) {
   return mapSectionWithPaths<boolean>(section, common, true, getValue, {
     pre: () => true,
-    selectMultiple: (_entry, _obj, _index, _formPath, valuePaths) =>
+    selectMultiple: valuePaths =>
       // NB This checks not that getValue exists, but that at least one of them is also true.
       _.some(valuePaths, x => getValue(x)),
-    signature: (_entry, _obj, _index, _formPath, valuePath) =>
-      getValue(valuePath) != null,
-    bool: (_entry, _obj, _index, _formPath, valuePath) =>
-      getValue(valuePath) != null,
-    gender: (_entry, _obj, _index, _formPath, valuePath) =>
-      getValue(valuePath) != null,
-    sex: (_entry, _obj, _index, _formPath, valuePath) =>
-      getValue(valuePath) != null,
-    text: (_entry, _obj, _index, _formPath, valuePath) =>
-      getValue(valuePath) != null,
-    'long-text': (_entry, _obj, _index, _formPath, valuePath) =>
-      getValue(valuePath) != null,
-    number: (_entry, _obj, _index, _formPath, valuePath) =>
-      getValue(valuePath) != null,
-    date: (_entry, _obj, _index, _formPath, valuePath) =>
-      getValue(valuePath) != null,
-    'date-time': (_entry, _obj, _index, _formPath, valuePath) =>
-      getValue(valuePath) != null,
-    list: (_entry, _obj, _index, _formPath, valuePath) =>
-      getValue(valuePath) != null,
-    'list-with-labels': (_entry, _obj, _index, _formPath, valuePath) =>
-      getValue(valuePath) != null,
-    'list-with-parts': (_entry, _obj, _index, _formPath, valuePath) =>
-      getValue(valuePath) != null,
-    'phone-number': (_entry, _obj, _index, _formPath, valuePath) =>
-      getValue(valuePath) != null,
-    'body-image': (_entry, _obj, _index, _formPath, valuePath) =>
-      getValue(valuePath) != null,
-    address: (_entry, _obj, _index, _formPath, valuePath) =>
-      getValue(valuePath) != null,
-    photo: (_entry, _obj, _index, _formPath, valuePath) =>
-      getValue(valuePath) != null,
-    combinePlainParts: (_formPath, _index, subparts) =>
+    signature: valuePath => getValue(valuePath) != null,
+    bool: valuePath => getValue(valuePath) != null,
+    gender: valuePath => getValue(valuePath) != null,
+    sex: valuePath => getValue(valuePath) != null,
+    text: valuePath => getValue(valuePath) != null,
+    'long-text': valuePath => getValue(valuePath) != null,
+    number: valuePath => getValue(valuePath) != null,
+    date: valuePath => getValue(valuePath) != null,
+    'date-time': valuePath => getValue(valuePath) != null,
+    list: valuePath => getValue(valuePath) != null,
+    'list-with-labels': valuePath => getValue(valuePath) != null,
+    'list-with-parts': valuePath => getValue(valuePath) != null,
+    'phone-number': valuePath => getValue(valuePath) != null,
+    'body-image': valuePath => getValue(valuePath) != null,
+    address: valuePath => getValue(valuePath) != null,
+    photo: valuePath => getValue(valuePath) != null,
+    combinePlainParts: (subparts, _formPath, _index) =>
       _.reduce(subparts, (a, b) => a && b, true as boolean),
-    combineSmartParts: (
-      _entry,
-      _part,
-      _index,
-      _inner,
-      // The path to the parts and the parts we should combine together
-      _formPath,
-      parts
-    ) => {
+    combineSmartParts: (_part, parts) => {
       const r = _.reduce(parts, (a, b) => a && b)
       if (r === undefined) return true
       else return false
     },
-    post: (
-      _entry,
-      _obj,
-      _index,
-      _formPath,
-      _pre,
-      inner,
-      subparts,
-      skippedPath
-    ) => {
+    post: (_part, subparts, inner, _formPath, _index, _pre, skippedPath) => {
       return (
         (skippedPath && getValue(skippedPath) === true) ||
         ((inner === null ? true : inner) &&

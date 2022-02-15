@@ -82,7 +82,7 @@ export default function renderFnsWrapper(
     pre: () => {
       return null
     },
-    post: (entry, part, index, formPath, pre, inner, subparts, skippedPath) => {
+    post: (part, subparts, inner, formPath, index, pre, skippedPath) => {
       return (
         <CardWrap
           index={index}
@@ -108,13 +108,13 @@ export default function renderFnsWrapper(
         />
       )
     },
-    combinePlainParts: (formPath, index, subparts) => {
-      return <View key={formPath}>{subparts}</View>
+    combinePlainParts: (subparts, formPath, index) => {
+      return <View key={formPath + index}>{subparts}</View>
     },
-    combineSmartParts: (entry, part, index, inner, formPath, subparts) => {
-      return <View key={formPath}>{subparts}</View>
+    combineSmartParts: (part, subparts, inner, formPath, index) => {
+      return <View key={formPath + index}>{subparts}</View>
     },
-    selectMultiple: (entry, part, index, formPath, valuePaths, otherPath) => {
+    selectMultiple: (valuePaths, part, formPath, index, otherPath) => {
       if ('select-multiple' in part) {
         let items =
           'options' in part && _.isArray(part.options)
@@ -193,7 +193,7 @@ export default function renderFnsWrapper(
         return null
       }
     },
-    signature: (entry, part, index, formPath, valuePath) => {
+    signature: valuePath => {
       return (
         <Signature
           imageURI={getPath(valuePath, _.isString, null)}
@@ -207,7 +207,7 @@ export default function renderFnsWrapper(
         />
       )
     },
-    'body-image': (entry, part, index, formPath, valuePath) => {
+    'body-image': (valuePath, part) => {
       let title = null
       let image = null
       let icon = null
@@ -289,7 +289,7 @@ export default function renderFnsWrapper(
         </View>
       )
     },
-    bool: (entry, part, index, formPath, valuePath) => {
+    bool: valuePath => {
       const value = getPath(valuePath, _.isBoolean, null)
       let selected = value === null ? null : value ? 0 : 1
       return (
@@ -300,7 +300,7 @@ export default function renderFnsWrapper(
         />
       )
     },
-    gender: (entry, part, index, formPath, valuePath) => {
+    gender: valuePath => {
       let options: Array<FormKVRawType> =
         'gender' in common
           ? // TODO Check this at runtime
@@ -325,7 +325,7 @@ export default function renderFnsWrapper(
         />
       )
     },
-    text: (entry, part, index, formPath, valuePath) => {
+    text: (valuePath, part) => {
       return (
         <TextInput
           style={{
@@ -344,7 +344,7 @@ export default function renderFnsWrapper(
         />
       )
     },
-    'long-text': (entry, part, index, formPath, valuePath) => {
+    'long-text': (valuePath, part) => {
       return (
         <TextInput
           style={{
@@ -366,7 +366,7 @@ export default function renderFnsWrapper(
         />
       )
     },
-    number: (entry, part, index, formPath, valuePath) => {
+    number: (valuePath, part) => {
       return (
         <TextInput
           style={{
@@ -386,7 +386,7 @@ export default function renderFnsWrapper(
         />
       )
     },
-    address: (entry, part, index, formPath, valuePath) => {
+    address: (valuePath, part) => {
       return (
         <TextInput
           style={{
@@ -407,7 +407,7 @@ export default function renderFnsWrapper(
         />
       )
     },
-    'phone-number': (entry, part, index, formPath, valuePath) => {
+    'phone-number': valuePath => {
       return (
         <TextInput
           style={{
@@ -427,7 +427,7 @@ export default function renderFnsWrapper(
         />
       )
     },
-    date: (entry, part, index, formPath, valuePath) => {
+    date: (valuePath, part) => {
       return (
         <DateTimePicker
           title={part.title}
@@ -442,7 +442,7 @@ export default function renderFnsWrapper(
         />
       )
     },
-    'date-time': (entry, part, index, formPath, valuePath) => {
+    'date-time': (valuePath, part) => {
       return (
         <DateTimePicker
           title={part.title}
@@ -458,19 +458,19 @@ export default function renderFnsWrapper(
         />
       )
     },
-    'list-with-parts': (entry, part, index, formPath, valuePath) => {
+    'list-with-parts': () => {
       // TODO
       return <></>
     },
-    list: (entry, part, index, formPath, valuePath) => {
+    list: () => {
       // TODO
       return <></>
     },
-    sex: (entry, part, index, formPath, valuePath) => {
+    sex: () => {
       // TODO
       return <></>
     },
-    photo: (entry, part, index, formPath, valuePath) => {
+    photo: valuePath => {
       const photos: Array<string> = getPath(valuePath, _.isArray, [])
         ? formGetPath(valuePath).photos
         : []
@@ -484,7 +484,7 @@ export default function renderFnsWrapper(
         </View>
       )
     },
-    'list-with-labels': (entry, part, index, formPath, valuePath) => {
+    'list-with-labels': (valuePath, part) => {
       let options = resolveRef(part.options, common)
       if (!options) return <></>
       let items = options.map((e, i) => {
