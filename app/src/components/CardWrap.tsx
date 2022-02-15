@@ -45,14 +45,14 @@ function CardWrap({
   noRenderCache,
 }: {
   index: number
-  title: string
-  description: string
-  inner: JSX.Element
-  subparts: JSX.Element
+  title: string | null
+  description: JSX.Element | null
+  inner: JSX.Element | null
+  subparts: JSX.Element | null
   changedPaths: string[]
   formPath: string
   keepAlive: Set<string>
-  rawDescription: string
+  rawDescription: string | null | undefined
   skippable: boolean | null
   skipped: boolean
   toggleSkip: () => any
