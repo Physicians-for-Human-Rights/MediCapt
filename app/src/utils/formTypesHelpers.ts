@@ -31,6 +31,29 @@ export type StandardFormFn<Return, RestrictPart = {}> = (
   valuePath: FormPath
 ) => Return
 
+export type FieldType = {
+  signature: string // data URI
+  'body-image': any // TODO
+  bool: boolean
+  gender: string
+  text: string
+  'long-text': string
+  number: number
+  address: number
+  'phone-number': number
+  date: Date // local TZ - need to convert before sending to remote machine
+  'date-time': Date // local TZ - need to convert before sending to remote machine
+  'list-with-parts': string // TODO
+  list: string // TODO
+  sex: string
+  photo: string // data URI
+  'list-with-labels': string // TODO
+  // an escape hatch
+  any: any
+  // this will cause type errors if nothing is specified
+  unknown: unknown
+}
+
 // A type to support walking over a form
 export type FormFns<Return> = {
   // utilities
