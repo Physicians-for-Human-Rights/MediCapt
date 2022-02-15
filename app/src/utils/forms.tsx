@@ -344,7 +344,7 @@ export function isSectionComplete(
     combineSmartParts: (_part, parts) => {
       const r = _.reduce(parts, (a, b) => a && b)
       if (r === undefined) return true
-      else return false
+      else return r
     },
     post: (_part, subparts, inner, _formPath, _index, _pre, skippedPath) => {
       return (
