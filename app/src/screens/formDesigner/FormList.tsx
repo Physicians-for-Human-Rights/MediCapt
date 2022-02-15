@@ -70,8 +70,6 @@ const forms = [
 ]
 
 export default function FormList({ route, navigation }: any) {
-  return <></>
-
   return (
     <DashboardLayout
       navigation={navigation}

@@ -2,8 +2,6 @@ import { Platform } from 'react-native'
 import * as FileSystem from 'expo-file-system'
 import _ from 'lodash'
 import { Asset } from 'expo-asset'
-import yaml from 'js-yaml'
-import allForms from 'allForms'
 import {
   FormValueType,
   FormType,
@@ -494,71 +492,6 @@ export async function readFile(filename: string, virtualAsset: string) {
       })
   }
   return content
-}
-
-// NB formInfo comes from forms.json rihgt now
-export async function loadForm(formMetadata: FormMetadata) {
-  // TODO Error handling
-  const files = _.fromPairs(
-    await Promise.all(
-      _.toPairs<string>(allForms[formMetadata.path]).map(
-        async (p: [string, string]) => {
-          const filename = p[0]
-          const f = Asset.fromModule(p[1])
-          await f.downloadAsync()
-          let content = null
-          if (!f.localUri)
-            throw new Error(
-              "Asset couldn't be downloaded to a local uri" + p[1]
-            )
-          switch (filename.split('.').pop()) {
-            case 'yaml':
-              if (Platform.OS === 'web') {
-                content = await fetch(f.localUri)
-                content = await content.text()
-              } else {
-                content = await FileSystem.readAsStringAsync(f.localUri)
-              }
-              break
-            case 'svg':
-              content = await readImage(
-                f.localUri,
-                'data:image/svg+xml;base64,'
-              )
-              // TODO Error handling
-              console.error(
-                "SVG Support was removed because it doesn't work well on Android"
-              )
-              break
-            case 'png':
-              content = await readImage(f.localUri, 'data:image/png;base64,')
-              break
-            case 'jpg':
-              content = await readImage(f.localUri, 'data:image/jpg;base64,')
-              break
-            default:
-              // TODO Error handling
-              console.error(
-                'Trying to read unknown file type',
-                filename,
-                f.localUri
-              )
-              content = await FileSystem.readAsStringAsync(f.localUri, {
-                encoding: FileSystem.EncodingType.Base64,
-              })
-          }
-          return [filename, content]
-        }
-      )
-    )
-  )
-  // @ts-ignore TODO need to have a typed loader
-  const form: FormType = yaml.load(files['form.yaml'])
-  return {
-    files,
-    form,
-    formSections: nameFormSections(form.sections),
-  }
 }
 
 export function nameFormSections(

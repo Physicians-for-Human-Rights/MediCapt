@@ -1,14 +1,11 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { ThemeProvider } from 'react-native-elements'
-
-import { Provider } from 'react-redux'
-import store from 'redux/store'
 
 // @ts-ignore TODO Typescript doesn't support platform-specific files
 // https://github.com/microsoft/TypeScript/issues/21926
 import withAuthenticator from 'screens/Authentication'
 
-import { StoreProvider, useUser, useSignOut } from 'utils/store'
+import { StoreProvider } from 'utils/store'
 
 import oldTheme, { theme } from 'theme'
 import { UserType } from 'utils/userTypes'
@@ -26,9 +23,11 @@ import { NativeBaseProvider } from 'native-base'
 import * as Localization from 'expo-localization'
 import i18n from 'i18n-js'
 import en from 'localization/en'
+import fr from 'localization/fr'
 
 i18n.translations = {
   en,
+  fr,
 }
 
 i18n.locale = Localization.locale
@@ -69,11 +68,9 @@ function LoginScreen() {
       <SafeAreaProvider>
         <NativeBaseProvider theme={theme}>
           <StoreProvider>
-            <Provider store={store}>
-              <ThemeProvider theme={oldTheme}>
-                <AuthApp />
-              </ThemeProvider>
-            </Provider>
+            <ThemeProvider theme={oldTheme}>
+              <AuthApp />
+            </ThemeProvider>
           </StoreProvider>
         </NativeBaseProvider>
       </SafeAreaProvider>
