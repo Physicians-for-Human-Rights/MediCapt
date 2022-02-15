@@ -171,9 +171,10 @@ sections:
                     value: true
                   type: list
                   select-multiple: true
+                  other: text
                   options:
-                    - minor
-                    - disabled
+                    - Minor
+                    - Disabled
         - coercion:
             title: My responses were reached without coercion or pressure from anyone.
             type: bool
