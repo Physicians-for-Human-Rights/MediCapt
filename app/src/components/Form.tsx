@@ -41,12 +41,6 @@ export default function Form({
     [currentSection]
   )
 
-  // This is state about the current properties of widgets, like if a date-time
-  // picker is open or not.
-  const [dynamicState, setDynamicState] = useState(
-    {} as Record<string, boolean>
-  )
-
   // This section handles caching. Since forms are so dynamic React ends up
   // wanting to rerender them a lot. This allows us to cut off the process early
   // by checking which parts of the from were updated and which parts want to be
@@ -94,9 +88,6 @@ export default function Form({
   )
 
   const renderFns = renderFnsWrapper(
-    dynamicState,
-    (newState: Record<string, boolean>) =>
-      setDynamicState(prevState => ({ ...prevState, ...newState })),
     files,
     form ? form.common : {},
     () => console.log('TODO body'),

@@ -1,17 +1,21 @@
-import React, { useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import { Box, Icon, Image, Button, Center, Modal } from 'native-base'
 import { AntDesign } from '@expo/vector-icons'
 
 // https://www.npmjs.com/package/react-signature-pad-wrapper
 import SignatureCanvas from 'react-signature-pad-wrapper'
 
-function Signature({
-  imageURI,
-  openSignature,
-  closeSignature,
-  isOpenSignature,
-  setSignature,
-}) {
+function Signature({ imageURI, open, close, setSignature }) {
+  const [isOpen, setOpen] = useState(false)
+  const internalClose = () => {
+    setOpen(false)
+    close()
+  }
+  const internalOpen = () => {
+    setOpen(true)
+    open()
+  }
+
   // code for correctly rendering SignatureCanvas size within it's container
   const signatureRef = useRef()
 
@@ -21,12 +25,12 @@ function Signature({
     } else {
       setSignature(null)
     }
-    closeSignature()
+    internalClose()
   }
 
   const onCancel = () => {
     setSignature(null)
-    closeSignature()
+    internalClose()
   }
 
   return (
@@ -52,12 +56,12 @@ function Signature({
               size="sm"
             />
           }
-          onPress={openSignature}
+          onPress={internalOpen}
         >
           {imageURI ? 'Clear and sign again' : 'Sign'}
         </Button>
       </Center>
-      <Modal isOpen={isOpenSignature} onClose={closeSignature}>
+      <Modal isOpen={isOpen} onClose={internalClose}>
         <Modal.Content maxWidth="400px">
           <Modal.Header>Sign here</Modal.Header>
           <Modal.Body>

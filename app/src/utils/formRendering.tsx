@@ -57,8 +57,6 @@ import BodyMarker from 'components/BodyMarker'
  */
 
 export default function renderFnsWrapper(
-  dynamicState: Record<string, boolean>,
-  setDynamicState: (newState: Record<string, boolean>) => void,
   files: Record<string, any>,
   common: Record<string, FormDefinition>,
   fnBody: (valuePath: string, baseImage: string, value: any) => void,
@@ -88,7 +86,7 @@ export default function renderFnsWrapper(
       return (
         <CardWrap
           index={index}
-          key={index}
+          key={formPath}
           title={'title' in part ? part.title : null}
           formPath={formPath}
           description={
@@ -111,10 +109,10 @@ export default function renderFnsWrapper(
       )
     },
     combinePlainParts: (formPath, index, subparts) => {
-      return <View>{subparts}</View>
+      return <View key={formPath}>{subparts}</View>
     },
     combineSmartParts: (entry, part, index, inner, formPath, subparts) => {
-      return <View>{subparts}</View>
+      return <View key={formPath}>{subparts}</View>
     },
     selectMultiple: (entry, part, index, formPath, valuePaths, otherPath) => {
       if ('select-multiple' in part) {
@@ -199,15 +197,12 @@ export default function renderFnsWrapper(
       return (
         <Signature
           imageURI={getPath(valuePath, _.isString, null)}
-          openSignature={() => {
+          open={() => {
             addKeepAlive(valuePath)
-            setDynamicState({ ['isVisible_signature_' + valuePath]: true })
           }}
-          closeSignature={() => {
-            setDynamicState({ ['isVisible_signature_' + valuePath]: false })
+          close={() => {
             removeKeepAlive(valuePath)
           }}
-          isOpenSignature={dynamicState['isVisible_signature_' + valuePath]}
           setSignature={(dataURI: string) => formSetPath(valuePath, dataURI)}
         />
       )

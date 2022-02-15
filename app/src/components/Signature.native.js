@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import { Box, Icon, Image, Button, Center, Modal } from 'native-base'
 import { AntDesign } from '@expo/vector-icons'
 
@@ -11,18 +11,22 @@ const canvasWebStyle = `.m-signature-pad {box-shadow: none; border: none; }
                             body,html {
                                 width: 100%; height: 100%;}`
 
-function Signature({
-  imageURI,
-  openSignature,
-  closeSignature,
-  isOpenSignature,
-  setSignature,
-}) {
+function Signature({ imageURI, open, close, setSignature }) {
+  const [isOpen, setOpen] = useState(false)
+  const internalClose = () => {
+    setOpen(false)
+    close()
+  }
+  const internalOpen = () => {
+    setOpen(true)
+    open()
+  }
+
   const ref = useRef()
 
   const onSave = signature => {
     setSignature(signature)
-    closeSignature()
+    internalClose()
   }
 
   const onSaveButton = () => {
@@ -31,12 +35,12 @@ function Signature({
 
   const onCancel = () => {
     setSignature(null)
-    closeSignature()
+    internalClose()
   }
 
   const onEmpty = () => {
     setSignature(null)
-    closeSignature()
+    internalClose()
   }
 
   return (
@@ -62,12 +66,12 @@ function Signature({
               size="sm"
             />
           }
-          onPress={openSignature}
+          onPress={internalOpen}
         >
           {imageURI ? 'Clear and sign again' : 'Sign'}
         </Button>
       </Center>
-      <Modal isOpen={isOpenSignature} onClose={closeSignature}>
+      <Modal isOpen={isOpen} onClose={internalClose}>
         <Modal.Content maxWidth="400px">
           <Modal.Header>Sign here</Modal.Header>
           <Modal.Body>
