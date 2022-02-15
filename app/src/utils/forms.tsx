@@ -103,7 +103,7 @@ export function lookupPartRef(
 export function resolveRef<T>(
   maybeRef: T | FormRef,
   common: Record<string, FormDefinition>
-): T {
+): T | null {
   if ('Ref' in maybeRef) {
     // @ts-ignore TODO How do narrow T so that it is part of FormDefinition?
     if (common && maybeRef.Ref in common) return common[maybeRef.Ref]
@@ -188,30 +188,36 @@ export function mapSectionWithPaths<Return>(
             break
           case 'list':
             if (part['select-multiple']) {
-              inner = fns.selectMultiple(
-                entry,
-                part,
-                index,
-                formPath,
-                resolveRef(part.options, common).map((_e: any, i: number) => {
-                  return formPath + '.value.' + i
-                }),
-                part.other ? formPath + '.value.other' : null
-              )
+              const resolved = resolveRef(part.options, common)
+              if (resolved) {
+                inner = fns.selectMultiple(
+                  entry,
+                  part,
+                  index,
+                  formPath,
+                  resolved.map((_e: any, i: number) => {
+                    return formPath + '.value.' + i
+                  }),
+                  part.other ? formPath + '.value.other' : null
+                )
+              }
             }
             break
           case 'list-with-labels':
             if (part['select-multiple']) {
-              inner = fns.selectMultiple(
-                entry,
-                part,
-                index,
-                formPath,
-                resolveRef(part.options, common).map((_e: any, i: number) => {
-                  return formPath + '.value.' + i
-                }),
-                part.other ? formPath + '.value.other' : null
-              )
+              const resolved = resolveRef(part.options, common)
+              if (resolved) {
+                inner = fns.selectMultiple(
+                  entry,
+                  part,
+                  index,
+                  formPath,
+                  resolved.map((_e: any, i: number) => {
+                    return formPath + '.value.' + i
+                  }),
+                  part.other ? formPath + '.value.other' : null
+                )
+              }
             }
             break
         }
@@ -232,21 +238,20 @@ export function mapSectionWithPaths<Return>(
         }
       }
       if ('parts' in part && part.parts && part.parts !== undefined) {
-        subparts = fns.combineSmartParts(
-          entry,
-          part,
-          index,
-          inner,
-          formPath,
-          _.concat(
-            processMultiple(
-              resolveRef(part.parts, common),
-              0,
-              formPath + '.parts'
-            ),
-            subparts || []
+        const parts = resolveRef(part.parts, common)
+        if (parts) {
+          subparts = fns.combineSmartParts(
+            entry,
+            part,
+            index,
+            inner,
+            formPath,
+            _.concat(
+              processMultiple(parts, 0, formPath + '.parts'),
+              subparts || []
+            )
           )
-        )
+        }
       }
     }
     //
