@@ -106,7 +106,10 @@ export function resolveRef<T>(
 ): T {
   if ('Ref' in maybeRef) {
     // @ts-ignore TODO How do narrow T so that it is part of FormDefinition?
-    return common[maybeRef.Ref]
+    if (common && maybeRef.Ref in common) return common[maybeRef.Ref]
+    // TODO Error handling
+    console.log('Could not resolve reference', maybeRef.Ref)
+    return null
   }
   return maybeRef
 }
