@@ -21,6 +21,7 @@ import {
   Center,
   useBreakpointValue,
   Modal,
+  Checkbox,
 } from 'native-base'
 
 import {
@@ -50,6 +51,7 @@ import { FormFns } from 'utils/formTypesHelpers'
 // @ts-ignore typescript doesn't like platform-specific modules
 import Signature from 'components/Signature'
 import BodyMarker from 'components/BodyMarker'
+import { ListSelectMultiple } from 'components/form-parts/List'
 
 /*
   Render all of the components of a form recursively. This function is applied
@@ -115,83 +117,18 @@ export default function renderFnsWrapper(
       return <View key={formPath + index}>{subparts}</View>
     },
     selectMultiple: (valuePaths, part, formPath, index, otherPath) => {
-      if ('select-multiple' in part) {
-        let items =
-          'options' in part && _.isArray(part.options)
-            ? // @ts-ignore TODO type this
-              part.options.map((e: string, i: number) => {
-                let valuePath = valuePaths[i]
-                let fn = () => {
-                  if (formGetPath(valuePath)) {
-                    formSetPath(valuePath, false)
-                  } else {
-                    formSetPath(valuePath, true)
-                  }
-                }
-                return (
-                  <ListItem
-                    key={i}
-                    Component={TouchableOpacity}
-                    onPress={fn}
-                    containerStyle={styles.noTopBottomBorders}
-                  >
-                    <ListItem.Content>
-                      <ListItem.CheckBox
-                        checked={formGetPath(valuePath)}
-                        onPress={fn}
-                      />
-                      <ListItem.Title>{_.upperFirst(e)}</ListItem.Title>
-                    </ListItem.Content>
-                  </ListItem>
-                )
-              })
-            : []
-        if (part.other) {
-          let fn = () => {
-            if (formGetPath(otherPath)) {
-              formSetPath(otherPath, null)
-            } else {
-              formSetPath(otherPath, '')
-            }
-          }
-          items.push(
-            <ListItem
-              Component={TouchableOpacity}
-              key={items.length}
-              title={'Other'}
-              checkBox={{
-                checked: formGetPath(otherPath) != null,
-                onPress: fn,
-              }}
-              onPress={fn}
-              containerStyle={styles.noTopBottomBorders}
-            />
-          )
-        }
-        if (formGetPath(otherPath) != null) {
-          items.push(
-            <TextInput
-              key={items.length}
-              style={styles.hugeTextInput}
-              placeholder={'Specify other'}
-              textAlign={'left'}
-              editable={true}
-              multiline={true}
-              numberOfLines={5}
-              onChangeText={text => formSetPath(otherPath, text)}
-              value={getPath(otherPath, _.isString, '')}
-            />
-          )
-        }
-        return <View>{items}</View>
-      } else {
-        // TODO Error handling
-        console.error(
-          'UNSUPPORTED FIELD TYPE LIST WITHOUT SELECT MUTLIPLE',
-          part
-        )
-        return null
-      }
+      return (
+        <ListSelectMultiple
+          valuePaths={valuePaths}
+          // @ts-ignore type too complex for ts
+          part={part}
+          formPath={formPath}
+          otherPath={otherPath}
+          otherPathValue={otherPath + '.value'}
+          getPath={getPath}
+          setPath={formSetPath}
+        />
+      )
     },
     signature: valuePath => {
       return (
@@ -291,13 +228,34 @@ export default function renderFnsWrapper(
     },
     bool: valuePath => {
       const value = getPath(valuePath, _.isBoolean, null)
-      let selected = value === null ? null : value ? 0 : 1
       return (
-        <ButtonGroup
-          selectedIndex={selected}
-          onPress={i => formSetPath(valuePath, i == 0)}
-          buttons={['Yes', 'No']}
-        />
+        <BButton.Group
+          isAttached
+          w="100%"
+          size="md"
+          colorScheme="blue"
+          flex={1}
+          justifyContent="center"
+        >
+          <BButton
+            flex={1}
+            _text={{ bold: true }}
+            maxW="30%"
+            onPress={() => formSetPath(valuePath, true)}
+            variant={value === true ? undefined : 'outline'}
+          >
+            Yes
+          </BButton>
+          <BButton
+            flex={1}
+            _text={{ bold: true }}
+            maxW="30%"
+            onPress={() => formSetPath(valuePath, false)}
+            variant={value === false ? undefined : 'outline'}
+          >
+            No
+          </BButton>
+        </BButton.Group>
       )
     },
     gender: valuePath => {
