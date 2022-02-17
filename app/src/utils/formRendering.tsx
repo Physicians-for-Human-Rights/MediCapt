@@ -37,9 +37,9 @@ export default function renderFnsWrapper(
   recordGetPath: any,
   recordSetPath: any,
   changedPaths: any,
-  keepAlive: any,
-  removeKeepAlive: any,
-  addKeepAlive: any,
+  keepAlive: Set<string>,
+  removeKeepAlive: (n: string) => any,
+  addKeepAlive: (n: string) => any,
   noRenderCache?: boolean
 ): FormFns<JSX.Element> {
   function getPath(
@@ -107,10 +107,10 @@ export default function renderFnsWrapper(
         <Signature
           imageURI={getPath(valuePath, _.isString, null)}
           open={() => {
-            addKeepAlive(valuePath)
+            addKeepAlive(_.join(valuePath, '.'))
           }}
           close={() => {
-            removeKeepAlive(valuePath)
+            removeKeepAlive(_.join(valuePath, '.'))
           }}
           setSignature={(dataURI: string) => recordSetPath(valuePath, dataURI)}
         />
@@ -326,10 +326,10 @@ export default function renderFnsWrapper(
           title={part.title}
           date={getPath(valuePath, _.isDate)}
           open={() => {
-            addKeepAlive(valuePath)
+            addKeepAlive(_.join(valuePath, '.'))
           }}
           close={() => {
-            removeKeepAlive(valuePath)
+            removeKeepAlive(_.join(valuePath, '.'))
           }}
           setDate={(date: Date) => recordSetPath(valuePath, date)}
         />
@@ -341,10 +341,10 @@ export default function renderFnsWrapper(
           title={part.title}
           date={getPath(valuePath, _.isDate)}
           open={() => {
-            addKeepAlive(valuePath)
+            addKeepAlive(_.join(valuePath, '.'))
           }}
           close={() => {
-            removeKeepAlive(valuePath)
+            removeKeepAlive(_.join(valuePath, '.'))
           }}
           setDate={(date: Date) => recordSetPath(valuePath, date)}
           time
