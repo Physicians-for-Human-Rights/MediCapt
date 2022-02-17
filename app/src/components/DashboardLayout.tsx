@@ -32,7 +32,7 @@ import phr_logo from '../../assets/phr_small.png'
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
-export function Sidebar(signOut) {
+export function Sidebar(signOut: any) {
   const list = [
     {
       iconName: 'person-outline',

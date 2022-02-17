@@ -28,6 +28,7 @@ import { default as RecordListComponent } from 'components/RecordList'
 import { RecordMetadata } from 'utils/recordTypes'
 
 const records: RecordMetadata[] = [
+  // @ts-ignore This is temporray anyway
   {
     recordID: 'MR3-LUK-9CD-FTR',
     locationUUID: '92cbcf9b-7e93-4726-9778-ef3ecb2a5728',
@@ -42,6 +43,7 @@ const records: RecordMetadata[] = [
     patientGender: 'transgender',
     patientAge: '22',
   },
+  // @ts-ignore This is temporray anyway
   {
     recordID: 'MR4-XUP-6CK-9ZF-XYZ',
     locationUUID: '92cbcf9b-7e93-4726-9778-ef3ecb2a5728',
@@ -56,6 +58,7 @@ const records: RecordMetadata[] = [
     patientGender: 'female',
     patientAge: '52',
   },
+  // @ts-ignore This is temporray anyway
   {
     recordID: 'MR3-HP8-34X-UEQ',
     locationUUID: '92cbcf9b-7e93-4726-9778-ef3ecb2a5728',

@@ -10,6 +10,7 @@ import {
   Input,
 } from 'native-base'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
+// @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
 import _ from 'lodash'
@@ -27,7 +28,7 @@ export function ListItem({ item }: { item: FormMetadata }) {
               fontSize="sm"
               _light={{ color: 'coolGray.900' }}
             >
-              {item.name}
+              {item.title}
             </Text>
             <Text
               pl={3}
@@ -58,7 +59,7 @@ export function ListItemDesktop({ item }: { item: FormMetadata }) {
       <HStack alignItems="center" flex={1} justifyContent="space-between">
         <VStack w="45%">
           <Text bold isTruncated>
-            {item.name}
+            {item.title}
           </Text>
           <Text isTruncated ml={2}>
             {item.subtitle}

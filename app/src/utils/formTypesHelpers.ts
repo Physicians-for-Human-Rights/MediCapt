@@ -2,11 +2,11 @@ import {
   FormMetadata,
   FormPart,
   FormPartField,
-  FormPartRecord,
-  FormPath,
+  FormPartMap,
   FormSection,
   NonRefFormPart,
 } from 'utils/formTypes'
+import { RecordPath } from 'utils/recordTypes'
 
 // Sections and fields are named by the key of the object they're stored in. The
 // name is not present inside the section or field.
@@ -17,18 +17,21 @@ export type Named<T> = T & { name: string }
 export type NamedFormSection = Named<FormSection>
 export type NamedFormPart = Named<FormPart>
 
+export type ArrayElement<ArrayType extends readonly unknown[]> =
+  ArrayType extends readonly (infer ElementType)[] ? ElementType : never
+
 export type StandardFormFn<Return, RestrictPart = {}> = (
   // The path to the current value. We can be called multiple times with
   // different value paths when items are repeated
-  valuePath: FormPath,
+  valuePath: RecordPath,
   // The part that corresponds to that entry (an entry is a named part)
   part: NonRefFormPart & (FormPartField & RestrictPart),
   // The path in the form to the current item
-  formPath: FormPath,
+  recordPath: RecordPath,
   // The index within a list if we're contained in one. Zero otherwise
   index: number,
   // The entry in the form that we're processing
-  entry: FormPartRecord
+  entry: FormPartMap
 ) => Return
 
 export type FieldType = {
@@ -54,30 +57,48 @@ export type FieldType = {
   unknown: unknown
 }
 
+export type FieldTypes =
+  | 'signature'
+  | 'body-image'
+  | 'bool'
+  | 'gender'
+  | 'text'
+  | 'long-text'
+  | 'number'
+  | 'address'
+  | 'phone-number'
+  | 'date'
+  | 'date-time'
+  | 'list-with-parts'
+  | 'list'
+  | 'sex'
+  | 'photo'
+  | 'list-with-labels'
+
 // A type to support walking over a form
 export type FormFns<Return> = {
   // utilities
   pre: (
     part: FormPart,
-    formPath: FormPath,
+    recordPath: RecordPath,
     index: number,
-    entry: FormPartRecord
+    entry: FormPartMap
   ) => Return | null
   post: (
     part: FormPart,
     // The subparts are already combined
     subparts: Return | null,
     inner: Return | null,
-    formPath: FormPath,
+    recordPath: RecordPath,
     index: number,
     pre: Return | null,
-    skippedPath: string | null,
-    entry: FormPartRecord
+    skippedPath: RecordPath | null,
+    entry: FormPartMap
   ) => Return
   combinePlainParts: (
     subparts: Return[],
     // This combination of parts doesn't know what its enclosing form type is
-    formPath: FormPath,
+    recordPath: RecordPath,
     index: number
   ) => Return
   combineSmartParts: (
@@ -85,18 +106,18 @@ export type FormFns<Return> = {
     subparts: Return[],
     inner: Return | null,
     // The path to the parts and the parts we should combine together
-    formPath: FormPath,
+    recordPath: RecordPath,
     // This part combination can know what its enclosing form type is
     index: number,
-    entry: FormPartRecord
+    entry: FormPartMap
   ) => Return
   selectMultiple: (
-    valuePaths: string[],
+    valuePaths: RecordPath[],
     part: FormPart,
-    formPath: FormPath,
+    recordPath: RecordPath,
     index: number,
-    otherPath: FormPath | null,
-    entry: FormPartRecord
+    otherPath: RecordPath | null,
+    entry: FormPartMap
   ) => Return | null
   // parts
   //

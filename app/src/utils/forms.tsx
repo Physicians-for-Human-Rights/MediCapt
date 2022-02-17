@@ -8,13 +8,21 @@ import {
   FormPath,
   FormPart,
   FormMetadata,
-  FormSectionRecord,
-  FormPartRecord,
+  FormSectionMap,
+  FormPartMap,
   FormDefinition,
   FormRef,
   FormConditional,
 } from 'utils/formTypes'
 import { NamedFormSection, FormFns } from 'utils/formTypesHelpers'
+import {
+  RecordType,
+  RecordPath,
+  RecordData,
+  RecordSections,
+  RecordDataContents,
+  RecordDataByType,
+} from 'utils/recordTypes'
 
 export function plainToFlattenObject(object: any) {
   const result: Record<string, FormValueType> = {}
@@ -46,21 +54,29 @@ export function objectPaths(object: any) {
   return result
 }
 
-export type GetValueFn = (path: string) => FormPart | FormValueType | undefined
+export type GetValueFn = (
+  path: RecordPath,
+  _default?: any
+) => FormPart | FormValueType | undefined
 
 export function shouldSkipConditional(
   part: FormConditional,
   getValue: GetValueFn
 ) {
   if ('only-when' in part && part['only-when']) {
-    if (getValue(part['only-when'].path) !== part['only-when'].value)
+    if (
+      getValue(_.split(part['only-when'].path, '.')) !== part['only-when'].value
+    )
       return true
   }
   if ('only-not' in part && part['only-not']) {
-    if (getValue(part['only-not'].path) === part['only-not'].value) return true
+    if (
+      getValue(_.split(part['only-not'].path, '.')) === part['only-not'].value
+    )
+      return true
   }
   if ('only-sex' in part) {
-    const sex = getValue('inferred.sex')
+    const sex = getValue(['inferred', 'sex'])
     switch (part['only-sex']) {
       case 'male':
         if (sex === 'female') return true
@@ -79,11 +95,11 @@ export function shouldSkipConditional(
     }
   }
   if ('only-gender' in part) {
-    if (getValue('inferred.gender') !== part['only-gender']) return true
+    if (getValue(['inferred', 'gender']) !== part['only-gender']) return true
   }
   if ('only-child' in part) {
-    const aom = getValue('inferred.age-of-majority')
-    const age = getValue('inferred.age')
+    const aom = getValue(['inferred', 'age-of-majority'])
+    const age = getValue(['inferred', 'age'])
     if (typeof aom === 'number' && typeof age === 'number' && aom >= age)
       return true
   }
@@ -92,19 +108,20 @@ export function shouldSkipConditional(
 
 export function lookupPartRef(
   obj: FormRef,
-  common: Record<string, FormDefinition>
-): Array<FormPartRecord> {
+  commonRefTable: Record<string, FormDefinition>
+): Array<FormPartMap> {
   // @ts-ignore TODO We need to do error checking here
-  return common[obj.Ref]
+  return commonRefTable[obj.Ref]
 }
 
 export function resolveRef<T>(
   maybeRef: T | FormRef,
-  common: Record<string, FormDefinition>
+  commonRefTable: Record<string, FormDefinition>
 ): T | null {
   if ('Ref' in maybeRef) {
-    // @ts-ignore TODO How do narrow T so that it is part of FormDefinition?
-    if (common && maybeRef.Ref in common) return common[maybeRef.Ref]
+    if (commonRefTable && maybeRef.Ref in commonRefTable)
+      // @ts-ignore TODO How do narrow T so that it is part of FormDefinition?
+      return commonRefTable[maybeRef.Ref]
     // TODO Error handling
     console.log('Could not resolve reference', maybeRef.Ref)
     return null
@@ -114,25 +131,24 @@ export function resolveRef<T>(
 
 export function mapSectionWithPaths<Return>(
   section: NamedFormSection,
-  common: Record<string, FormDefinition>,
+  commonRefTable: Record<string, FormDefinition>,
   identity: Return,
   getValue: GetValueFn,
   fns: FormFns<Return>
 ): Return {
   function processMultiple(
-    entry: Array<FormPartRecord>,
-    index: number,
-    formPath: FormPath
+    entry: Array<FormPartMap>,
+    recordPath: RecordPath
   ): Return[] {
     if (_.isNil(entry)) return []
     return entry.map((e, i) => {
-      return process(e, i, formPath)
+      return process(e, i, recordPath)
     })
   }
   function process(
-    entry: FormPartRecord,
+    entry: FormPartMap,
     index: number,
-    oldFormPath: FormPath
+    oldRecordPath: RecordPath
   ): Return {
     if (_.isNil(entry)) return identity
     const part = Object.values(entry)[0]
@@ -142,7 +158,7 @@ export function mapSectionWithPaths<Return>(
       Object.keys(entry)[0] === ''
     )
       return identity
-    const formPath = oldFormPath + '.' + Object.keys(entry)[0]
+    const recordPath = _.concat(oldRecordPath, Object.keys(entry)[0])
     let inner: Return | null = null
     let subparts: Return | null = null
     //
@@ -150,14 +166,14 @@ export function mapSectionWithPaths<Return>(
       return identity
     }
     //
-    const pre = fns.pre(part, formPath, index, entry)
+    const pre = fns.pre(part, recordPath, index, entry)
     //
     if ('Ref' in part) {
       subparts = fns.combineSmartParts(
         part,
-        processMultiple(lookupPartRef(part, common), index, formPath),
+        processMultiple(lookupPartRef(part, commonRefTable), recordPath),
         null,
-        formPath,
+        recordPath,
         index,
         entry
       )
@@ -168,51 +184,50 @@ export function mapSectionWithPaths<Return>(
             if (
               'show-parts-when-true' in part &&
               part['show-parts-when-true'] &&
-              getValue(formPath + '.value')
+              getValue(recordPath.concat('value'))
             ) {
               subparts = fns.combineSmartParts(
                 part,
                 processMultiple(
                   part['show-parts-when-true'],
-                  0,
-                  formPath + '.parts'
+                  recordPath.concat('parts')
                 ),
                 inner,
-                formPath,
+                recordPath,
                 index,
                 entry
               )
             }
             break
-          case 'list':
-            if (part['select-multiple']) {
-              const resolved = resolveRef(part.options, common)
+          case 'list-multiple':
+            {
+              const resolved = resolveRef(part.options, commonRefTable)
               if (resolved) {
                 inner = fns.selectMultiple(
                   resolved.map((_e: any, i: number) => {
-                    return formPath + '.value.' + i
+                    return recordPath.concat('value', i)
                   }),
                   part,
-                  formPath,
+                  recordPath,
                   index,
-                  part.other ? formPath + '.value.other' : null,
+                  part.other ? recordPath.concat('value', 'other') : null,
                   entry
                 )
               }
             }
             break
-          case 'list-with-labels':
-            if (part['select-multiple']) {
-              const resolved = resolveRef(part.options, common)
+          case 'list-with-labels-multiple':
+            {
+              const resolved = resolveRef(part.options, commonRefTable)
               if (resolved) {
                 inner = fns.selectMultiple(
                   resolved.map((_e: any, i: number) => {
-                    return formPath + '.value.' + i
+                    return recordPath.concat('value', i)
                   }),
                   part,
-                  formPath,
+                  recordPath,
                   index,
-                  part.other ? formPath + '.value.other' : null,
+                  part.other ? recordPath.concat('value', 'other') : null,
                   entry
                 )
               }
@@ -224,9 +239,9 @@ export function mapSectionWithPaths<Return>(
           if (part && fns[part.type]) {
             // @ts-ignore TODO Typescript doesn't seem willing to represent this type
             inner = fns[part.type](
-              formPath + '.value',
+              recordPath.concat('value'),
               part,
-              formPath,
+              recordPath,
               index,
               entry
             )
@@ -236,16 +251,16 @@ export function mapSectionWithPaths<Return>(
         }
       }
       if ('parts' in part && part.parts && part.parts !== undefined) {
-        const parts = resolveRef(part.parts, common)
+        const parts = resolveRef(part.parts, commonRefTable)
         if (parts) {
           subparts = fns.combineSmartParts(
             part,
             _.concat(
-              processMultiple(parts, 0, formPath + '.parts'),
+              processMultiple(parts, recordPath.concat('parts')),
               subparts || []
             ),
             inner,
-            formPath,
+            recordPath,
             index,
             entry
           )
@@ -254,12 +269,12 @@ export function mapSectionWithPaths<Return>(
     }
     //
     const skippedPath =
-      'optional' in part && part.optional ? formPath + '.skipped' : null
+      'optional' in part && part.optional ? recordPath.concat('skipped') : null
     return fns.post(
       part,
       subparts,
       inner,
-      formPath,
+      recordPath,
       index,
       pre,
       skippedPath,
@@ -272,20 +287,20 @@ export function mapSectionWithPaths<Return>(
   if (_.isNil(section) || _.isNil(section.parts) || _.isNil(section.name))
     return identity
   return fns.combinePlainParts(
-    processMultiple(section.parts, 0, 'sections.' + section.name),
-    'sections.' + section.name,
+    processMultiple(section.parts, ['sections', section.name]),
+    ['sections', section.name],
     0
   )
 }
 
 export function allFormValuePathsForSection(
   section: NamedFormSection,
-  common: Record<string, FormDefinition>,
+  commonRefTable: Record<string, FormDefinition>,
   getValue: GetValueFn
 ) {
-  let allValuePaths: string[] = []
+  let allValuePaths: RecordPath[] = []
   // any is an ok type here because we're discarding the output
-  mapSectionWithPaths<any>(section, common, [], getValue, {
+  mapSectionWithPaths<any>(section, commonRefTable, [], getValue, {
     pre: () => null,
     selectMultiple: valuePaths => {
       allValuePaths = allValuePaths.concat(valuePaths)
@@ -315,10 +330,10 @@ export function allFormValuePathsForSection(
 
 export function isSectionComplete(
   section: NamedFormSection,
-  common: Record<string, FormDefinition>,
+  commonRefTable: Record<string, FormDefinition>,
   getValue: GetValueFn
 ) {
-  return mapSectionWithPaths<boolean>(section, common, true, getValue, {
+  return mapSectionWithPaths<boolean>(section, commonRefTable, true, getValue, {
     pre: () => true,
     selectMultiple: valuePaths =>
       // NB This checks not that getValue exists, but that at least one of them is also true.
@@ -339,14 +354,14 @@ export function isSectionComplete(
     'body-image': valuePath => getValue(valuePath) != null,
     address: valuePath => getValue(valuePath) != null,
     photo: valuePath => getValue(valuePath) != null,
-    combinePlainParts: (subparts, _formPath, _index) =>
+    combinePlainParts: (subparts, _recordPath, _index) =>
       _.reduce(subparts, (a, b) => a && b, true as boolean),
     combineSmartParts: (_part, parts) => {
       const r = _.reduce(parts, (a, b) => a && b)
       if (r === undefined) return true
       else return r
     },
-    post: (_part, subparts, inner, _formPath, _index, _pre, skippedPath) => {
+    post: (_part, subparts, inner, _recordPath, _index, _pre, skippedPath) => {
       return (
         (skippedPath && getValue(skippedPath) === true) ||
         ((inner === null ? true : inner) &&
@@ -356,10 +371,10 @@ export function isSectionComplete(
   })
 }
 
-export function blobToBase64(blob: Blob): string {
+export function blobToBase64(blob: Blob): Promise<string | ArrayBuffer> {
   return new Promise((resolve, _) => {
     const reader = new FileReader()
-    reader.onloadend = () => resolve(reader.result)
+    reader.onloadend = () => reader.result && resolve(reader.result)
     reader.readAsDataURL(blob)
   })
 }
@@ -367,7 +382,7 @@ export function blobToBase64(blob: Blob): string {
 export async function readImage(
   uri: string,
   mimePrefix: string
-): Promise<string | null> {
+): Promise<string | ArrayBuffer | null> {
   let content = null
   if (Platform.OS === 'web') {
     content = await fetch(uri)
@@ -393,7 +408,7 @@ export function isImage(filename: string) {
 }
 
 export async function readFile(filename: string, virtualAsset: string) {
-  let content = null
+  let content = null as string | ArrayBuffer | null
   const f = Asset.fromModule(virtualAsset)
   await f.downloadAsync()
   if (!f.localUri)
@@ -401,8 +416,7 @@ export async function readFile(filename: string, virtualAsset: string) {
   switch (filename.split('.').pop()) {
     case 'yaml':
       if (Platform.OS === 'web') {
-        content = await fetch(f.localUri)
-        content = await content.text()
+        content = await (await fetch(f.localUri)).text()
       } else {
         content = await FileSystem.readAsStringAsync(f.localUri)
       }
@@ -416,6 +430,12 @@ export async function readFile(filename: string, virtualAsset: string) {
       break
     case 'pdf':
       content = await readImage(f.localUri, 'data:application/pdf;base64,')
+      if (content === null) {
+        throw new Error("Can't load file")
+      }
+      if (_.isArrayBuffer(content)) {
+        content = new TextDecoder().decode(content)
+      }
       content = _.replace(
         content,
         'data:application/pdf; charset=utf-8;base64,',
@@ -435,11 +455,15 @@ export async function readFile(filename: string, virtualAsset: string) {
         encoding: FileSystem.EncodingType.Base64,
       })
   }
+  // TODO Enable array buffers
+  if (_.isArrayBuffer(content)) {
+    content = new TextDecoder().decode(content)
+  }
   return content
 }
 
 export function nameFormSections(
-  sections: FormSectionRecord[]
+  sections: FormSectionMap[]
 ): NamedFormSection[] {
   return _.filter(sections, _.negate(_.isNil)).map(e => {
     return {

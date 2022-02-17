@@ -41,8 +41,6 @@ export default function FormEditorFiles({
   form: FormType
   setForm: React.Dispatch<React.SetStateAction<FormType>>
 }) {
-  const [image, setImage] = useState(null)
-
   const pickPdf = async () => {
     const result = await DocumentPicker.getDocumentAsync({
       type: 'application/pdf',

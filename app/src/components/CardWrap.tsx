@@ -18,6 +18,7 @@ import {
 } from '@expo/vector-icons'
 import _ from 'lodash'
 import { someSet } from 'utils/set'
+import { RecordPath } from 'utils/recordTypes'
 
 const styles = StyleSheet.create({
   checkbox: {
@@ -36,13 +37,14 @@ function CardWrap({
   inner,
   subparts,
   changedPaths,
-  formPath,
+  recordPath,
   keepAlive,
   rawDescription,
   skippable,
   skipped,
   toggleSkip,
   noRenderCache,
+  showBox = null,
 }: {
   index: number
   title: string | null
@@ -50,14 +52,26 @@ function CardWrap({
   inner: JSX.Element | null
   subparts: JSX.Element | null
   changedPaths: string[]
-  formPath: string
+  recordPath: RecordPath
   keepAlive: Set<string>
   rawDescription: string | null | undefined
   skippable: boolean | null
   skipped: boolean
   toggleSkip: () => any
   noRenderCache?: boolean | null
+  showBox?: boolean | null
 }) {
+  const size = recordPath.length < 4 ? 'md' : 'sm'
+  const fontWeight = recordPath.length < 6 ? 'bold' : 'normal'
+  const borderWidth =
+    showBox === null || showBox === undefined
+      ? recordPath.length < 8
+        ? 1
+        : 0
+      : showBox
+      ? 1
+      : 0
+  const padding = recordPath.length < 8 ? 2 : 0
   // TODO We should compute section completed per card
   // color={isSectionCompleted ? 'success.600' : 'primary.800'}
   return (
@@ -65,16 +79,18 @@ function CardWrap({
       key={index}
       rounded="lg"
       borderColor="coolGray.200"
-      borderWidth="1"
+      borderWidth={borderWidth}
       mt={4}
       py={2}
-      mx={2}
+      mx={1}
       px={2}
       bg="white"
     >
       <VStack space={2}>
         <Center>
-          <Heading size="md">{title}</Heading>
+          <Heading size={size} fontWeight={fontWeight}>
+            {title}
+          </Heading>
         </Center>
         {description}
         {inner}
@@ -112,16 +128,13 @@ const RerenderFieldAsNecessary = React.memo(
   CardWrap,
   (prevProps, nextProps) => {
     if (nextProps.noRenderCache) return false
+    const stingPath = _.join(nextProps.recordPath, '.')
     return (
       prevProps.title === nextProps.title &&
-      prevProps.formPath === nextProps.formPath &&
+      _.isEqual(prevProps.recordPath, nextProps.recordPath) &&
       prevProps.rawDescription === nextProps.rawDescription &&
-      !_.some(nextProps.changedPaths, vp =>
-        vp.startsWith(nextProps.formPath)
-      ) &&
-      !someSet<string>(nextProps.keepAlive, vp =>
-        vp.startsWith(nextProps.formPath)
-      )
+      !_.some(nextProps.changedPaths, vp => vp.startsWith(stingPath)) &&
+      !someSet<string>(nextProps.keepAlive, vp => vp.startsWith(stingPath))
     )
   }
 )

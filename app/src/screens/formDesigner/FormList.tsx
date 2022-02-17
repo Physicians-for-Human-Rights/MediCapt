@@ -25,45 +25,51 @@ import {
 import DashboardLayout from 'components/DashboardLayout'
 import _ from 'lodash'
 import { default as FormListComponent } from 'components/FormList'
+import { FormMetadata } from 'utils/formTypes'
 
-const forms = [
+const forms: FormMetadata[] = [
+  // @ts-ignore Missing fields, but it's temporray test data
   {
     title: 'Post-rape care form',
     subtitle: 'Keyna MOH 363',
     tags: 'sexual-assault',
-    date: new Date('2019-01-01T10:10:10.000Z'),
+    createdDate: new Date('2019-01-01T10:10:10.000Z'),
     enabled: true,
     formID: 'MF-DAK-D2A-LPF',
   },
+  // @ts-ignore Missing fields, but it's temporray test data
   {
     title: 'Post-rape care form',
     subtitle: 'Keyna MOH 363',
     tags: 'sexual-assault',
-    date: new Date('2019-01-01T10:10:10.000Z'),
+    createdDate: new Date('2019-01-01T10:10:10.000Z'),
     enabled: false,
     formID: 'MF-DAK-D2A-LPF',
   },
+  // @ts-ignore Missing fields, but it's temporray test data
   {
     title: 'Post-rape care form',
     subtitle: 'Keyna MOH 363',
     tags: 'sexual-assault',
-    date: new Date('2019-01-01T10:10:10.000Z'),
+    createdDate: new Date('2019-01-01T10:10:10.000Z'),
     enabled: true,
     formID: 'MF-DAK-D2A-LPF',
   },
+  // @ts-ignore Missing fields, but it's temporray test data
   {
     title: 'Post-rape care form',
     subtitle: 'Keyna MOH 363',
     tags: 'sexual-assault',
-    date: new Date('2019-01-01T10:10:10.000Z'),
+    createdDate: new Date('2019-01-01T10:10:10.000Z'),
     enabled: true,
     formID: 'MF-DAK-D2A-LPF',
   },
+  // @ts-ignore Missing fields, but it's temporray test data
   {
     title: 'Post-rape care form',
     subtitle: 'Keyna MOH 363',
     tags: 'sexual-assault',
-    date: new Date('2019-01-01T10:10:10.000Z'),
+    createdDate: new Date('2019-01-01T10:10:10.000Z'),
     enabled: true,
     formID: 'MF-DAK-D2A-LPF',
   },

@@ -1,5 +1,5 @@
 export type FormType = {
-  name: string
+  title: string
   subtitle?: string
   'official-name': string
   'official-code'?: string
@@ -15,7 +15,7 @@ export type FormType = {
   // Main contents
   // Definitions you can refernece with Ref
   common: Record<string, FormDefinition>
-  sections: Array<FormSectionRecord>
+  sections: Array<FormSectionMap>
 }
 
 export type FormMetadata = {
@@ -25,7 +25,7 @@ export type FormMetadata = {
   locationUUID: string
   lanugage: string
   officialName: string
-  name: string
+  title: string
   subtitle: string
   createdDate: Date
   formId: string
@@ -33,7 +33,7 @@ export type FormMetadata = {
   version: string
   createdByUUID: string
   approvedByUUID: string
-  enabled: string
+  enabled: boolean
   enabledDate: Date
   enabledSetByUUID: string
   tags: string
@@ -44,14 +44,14 @@ export type FormMetadata = {
    @minProperties 1
    @maxProperties 1
  */
-export type FormPartRecord = {
+export type FormPartMap = {
   [key: string]: FormPart
 }
 /**
    @minProperties 1
    @@maxProperties 1
  */
-export type FormSectionRecord = {
+export type FormSectionMap = {
   [key: string]: FormSection
 }
 export type FormKVRawType = { key: string; value: SingleFormValueType }
@@ -70,7 +70,7 @@ export type FormValueType =
   | boolean[]
 
 export type FormOnlyWhen = {
-  path: FormPath
+  path: string
   value: SingleFormValueType
 }
 
@@ -91,16 +91,56 @@ export type FormPartCommon = {
   help?: string
   repeated?: boolean
   'if-unknown'?: string
+  'show-box'?: boolean
 }
 
 export type FormSubparts = {
-  parts: Array<FormPartRecord> | FormRef
+  parts: Array<FormPartMap> | FormRef
+}
+
+export type FormPDF = {
+  'pdf-field': {
+    /**
+         @minimum 0
+         @maximum 10000
+         @type integer
+      */
+    page: number
+    name: string
+  }
+  'pdf-region': {
+    page: number
+    /**
+         @minimum 0
+         @maximum 10000
+         @type integer
+      */
+    x: number
+    /**
+         @minimum 0
+         @maximum 10000
+         @type integer
+      */
+    y: number
+    /**
+         @minimum 0
+         @maximum 10000
+         @type integer
+      */
+    w: number
+    /**
+         @minimum 0
+         @maximum 10000
+         @type integer
+      */
+    h: number
+  }
 }
 
 export type FormPartField =
   | {
       type: 'bool'
-      'show-parts-when-true'?: Array<FormPartRecord>
+      'show-parts-when-true'?: Array<FormPartMap>
     }
   | {
       type: 'signature'
@@ -132,13 +172,21 @@ export type FormPartField =
     }
   | {
       type: 'list'
-      'select-multiple'?: boolean
       other?: 'text' | 'long-text'
       options: MultipleFormValueTypes | FormRef
     }
   | {
       type: 'list-with-labels'
-      'select-multiple'?: boolean
+      other?: 'text' | 'long-text'
+      options: Array<FormKVRawType> | FormRef
+    }
+  | {
+      type: 'list-multiple'
+      other?: 'text' | 'long-text'
+      options: MultipleFormValueTypes | FormRef
+    }
+  | {
+      type: 'list-with-labels-multiple'
       other?: 'text' | 'long-text'
       options: Array<FormKVRawType> | FormRef
     }
@@ -152,12 +200,21 @@ export type FormPartField =
   | {
       type: 'long-text'
       placeholder?: string
+      /**
+         @minimum 1
+         @type integer
+      */
+      'number-of-lines'?: number
     }
   | {
       type: 'phone-number'
     }
   | {
       type: 'address'
+      placeholder?: string
+    }
+  | {
+      type: 'email'
       placeholder?: string
     }
   | {
@@ -170,25 +227,33 @@ export type FormPartField =
     }
   | {
       type: 'photo'
-      needsConsent: boolean
+      'needs-consent'?: boolean
       comment?: boolean | 'text' | 'long-text'
     }
 
 export type FormPart =
-  | (FormPartCommon & FormConditional & Partial<FormSubparts> & FormPartField)
+  | (FormPartCommon &
+      FormConditional &
+      Partial<FormSubparts> &
+      FormPartField &
+      Partial<FormPDF>)
   | (FormPartCommon & FormConditional & FormSubparts)
   | FormRef
 
 export type NonRefFormPart =
-  | (FormPartCommon & FormConditional & Partial<FormSubparts> & FormPartField)
+  | (FormPartCommon &
+      FormConditional &
+      Partial<FormSubparts> &
+      FormPartField &
+      Partial<FormPDF>)
   | (FormPartCommon & FormConditional & FormSubparts)
 
 export type FormSection = {
   title: string
-  parts: Array<FormPartRecord>
+  parts: Array<FormPartMap>
 } & FormConditional
 
 export type FormDefinition =
-  | Array<FormPartRecord>
+  | Array<FormPartMap>
   | Array<FormKVRawType>
   | MultipleFormValueTypes

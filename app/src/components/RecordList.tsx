@@ -10,6 +10,7 @@ import {
   Input,
 } from 'native-base'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
+// @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
 import _ from 'lodash'

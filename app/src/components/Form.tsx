@@ -5,6 +5,8 @@ import useSet from 'react-use/lib/useSet'
 import useToggle from 'react-use/lib/useToggle'
 import { Keyboard } from 'react-native'
 import _ from 'lodash'
+import fp from 'lodash/fp'
+import { diff } from 'deep-object-diff'
 
 import { Box, View, ScrollView } from 'native-base'
 
@@ -12,7 +14,8 @@ import FormMenu from 'components/FormMenu'
 import FromTop from 'components/FormTop'
 
 import { FormType } from 'utils/formTypes'
-import formGetPath from 'utils/formInferences'
+import { RecordType, RecordPath } from 'utils/recordTypes'
+import getRecordPath from 'utils/formInferences'
 import renderFnsWrapper from 'utils/formRendering'
 import {
   nameFormSections,
@@ -45,10 +48,6 @@ export default function Form({
   // wanting to rerender them a lot. This allows us to cut off the process early
   // by checking which parts of the from were updated and which parts want to be
   // rerendered unconditionally.
-  //
-  // formPaths stores the content of the form. What we also call the record as a
-  // map from strings to whatever values each particular field of a record wants
-  // to store
   const [formPaths, { set: setFormPath }] = useMap({} as Record<string, any>)
   const [keepAlive, { add: addKeepAlive, remove: removeKeepAlive }] = useSet(
     new Set([] as string[])
@@ -60,10 +59,20 @@ export default function Form({
       changedPaths.push(key)
     }
   }
+
+  // TODO Debugging until this is tested
+  if (0) {
+    if (changedPaths !== []) {
+      let record = {}
+      _.map(formPaths, (v, p) => _.set(record, p, v))
+      console.log('Record', record)
+    }
+  }
+
   const isSectionCompleteList = form
     ? _.map(formSections, section =>
-        isSectionComplete(section, form.common, (value: string) =>
-          formGetPath(formPaths, value, null)
+        isSectionComplete(section, form.common, (value: RecordPath) =>
+          getRecordPath(formPaths, value, null)
         )
       )
     : []
@@ -87,13 +96,20 @@ export default function Form({
     [currentSection, scrollView.current]
   )
 
+  const setRecordPath = useCallback(
+    (path: RecordPath, value: any) => {
+      setFormPath(_.join(path, '.'), value)
+    },
+    [formPaths]
+  )
+
   const renderFns = renderFnsWrapper(
     files,
     form ? form.common : {},
     () => console.log('TODO body'),
-    formPaths,
-    (value: any, default_: any) => formGetPath(formPaths, value, default_),
-    setFormPath,
+    (value: RecordPath, default_: any) =>
+      getRecordPath(formPaths, value, default_),
+    setRecordPath,
     changedPaths,
     keepAlive,
     removeKeepAlive,
@@ -108,7 +124,8 @@ export default function Form({
       current_section_content,
       form.common,
       <></>,
-      (path: string) => formGetPath(formPaths, path),
+      (value: RecordPath, default_: any) =>
+        getRecordPath(formPaths, value, default_),
       renderFns
     )
   }
@@ -116,6 +133,7 @@ export default function Form({
   return (
     <View flex={1}>
       <FromTop
+        key={'form-top'}
         sectionOffset={setSectionOffset}
         currentSection={currentSection}
         toggleMenu={toggleMenu}

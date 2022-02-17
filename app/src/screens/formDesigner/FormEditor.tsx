@@ -173,7 +173,7 @@ function Tabs({
 }
 
 const defaultForm: FormType = {
-  name: 'New form',
+  title: 'New form',
   subtitle: 'A subtitle',
   description: 'Describe the form',
   'official-name': 'Official form name',
@@ -271,7 +271,7 @@ export default function FormEditor({
         const data = await readFile(filename, uri)
         if (data) {
           setFileCache(filename, data)
-          if (filename === 'form.yaml') setForm(yaml.load(data))
+          if (filename === 'form.yaml') setForm(yaml.load(data) as FormType)
         }
       })
     }
@@ -284,7 +284,14 @@ export default function FormEditor({
       page = <FormEditorOverview files={files} form={form} setForm={setForm} />
       break
     case 'Editor':
-      page = <FormEditorComponent files={files} form={form} setForm={setForm} />
+      page = (
+        <FormEditorComponent
+          files={fileCache}
+          form={form}
+          setForm={setForm}
+          onCancel={() => null}
+        />
+      )
       break
     case 'Files':
       page = (

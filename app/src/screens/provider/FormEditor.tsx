@@ -55,7 +55,7 @@ export default function FormEditor({
   route,
   navigation,
 }: RootStackScreenProps<'FormEditor'>) {
-  const [form, setForm] = React.useState(null)
+  const [form, setForm] = React.useState(null as FormType | null)
   const [
     files,
     {
@@ -81,7 +81,7 @@ export default function FormEditor({
         const data = await readFile(filename, uri)
         if (data) {
           setFileCache(filename, data)
-          if (filename === 'form.yaml') setForm(yaml.load(data))
+          if (filename === 'form.yaml') setForm(yaml.load(data) as FormType)
         }
       })
     }
@@ -112,7 +112,7 @@ export default function FormEditor({
       >
         {form && (
           <FormMemo
-            files={files}
+            files={fileCache}
             form={form}
             onCancel={() => navigation.goBack()}
           />

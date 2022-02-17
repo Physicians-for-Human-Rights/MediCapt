@@ -76,6 +76,7 @@ function FormMenu({
               bg="info.500"
               leftIcon={<Icon as={AntDesign} name="printer" size="sm" />}
               onPress={onPrint}
+              _text={{ selectable: false }}
             >
               Print
             </Button>
@@ -83,6 +84,7 @@ function FormMenu({
               leftIcon={<Icon as={AntDesign} name="close" size="sm" />}
               bg="info.500"
               onPress={onCancel}
+              _text={{ selectable: false }}
             >
               Cancel
             </Button>
@@ -92,6 +94,7 @@ function FormMenu({
               bg="info.500"
               leftIcon={<Icon as={AntDesign} name="save" size="sm" />}
               onPress={onSaveAndExit}
+              _text={{ selectable: false }}
             >
               Save and Exit
             </Button>
@@ -103,6 +106,7 @@ function FormMenu({
               }
               leftIcon={<Icon as={AntDesign} name="staro" size="sm" />}
               onPress={onCompleteRecord}
+              _text={{ selectable: false }}
             >
               Complete record
             </Button>
@@ -141,6 +145,7 @@ function FormMenu({
                 color={
                   isSectionCompleteList[index] ? 'success.600' : 'primary.800'
                 }
+                selectable={false}
               >
                 {item.title}
               </Text>
