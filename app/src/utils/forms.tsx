@@ -4,10 +4,7 @@ import _ from 'lodash'
 import { Asset } from 'expo-asset'
 import {
   FormValueType,
-  FormType,
-  FormPath,
   FormPart,
-  FormMetadata,
   FormSectionMap,
   FormPartMap,
   FormDefinition,
@@ -15,14 +12,7 @@ import {
   FormConditional,
 } from 'utils/formTypes'
 import { NamedFormSection, FormFns } from 'utils/formTypesHelpers'
-import {
-  RecordType,
-  RecordPath,
-  RecordData,
-  RecordSections,
-  RecordDataContents,
-  RecordDataByType,
-} from 'utils/recordTypes'
+import { RecordPath } from 'utils/recordTypes'
 
 export function plainToFlattenObject(object: any) {
   const result: Record<string, FormValueType> = {}

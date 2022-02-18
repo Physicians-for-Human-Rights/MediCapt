@@ -245,7 +245,7 @@ export function Header(props: any) {
                 <Icon
                   px="2"
                   size="4"
-                  name={'search'}
+                  name="search"
                   as={FontAwesome}
                   _light={{
                     color: 'coolGray.400',
@@ -325,7 +325,7 @@ function MainContent({
               <Icon
                 size="6"
                 as={AntDesign}
-                name={'arrowleft'}
+                name="arrowleft"
                 _light={{ color: 'coolGray.800' }}
               />
             </Pressable>
@@ -443,7 +443,7 @@ export function MobileHeader({
                         <Icon
                           size="6"
                           color="coolGray.50"
-                          name={'dots-vertical'}
+                          name="dots-vertical"
                           as={MaterialCommunityIcons}
                         />
                       }

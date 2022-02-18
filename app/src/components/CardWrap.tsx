@@ -9,13 +9,6 @@ import {
   Checkbox,
 } from 'native-base'
 import { StyleSheet } from 'react-native'
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  MaterialCommunityIcons,
-  MaterialIcons,
-} from '@expo/vector-icons'
 import _ from 'lodash'
 import { someSet } from 'utils/set'
 import { RecordPath } from 'utils/recordTypes'
@@ -71,7 +64,6 @@ function CardWrap({
       : showBox
       ? 1
       : 0
-  const padding = recordPath.length < 8 ? 2 : 0
   // TODO We should compute section completed per card
   // color={isSectionCompleted ? 'success.600' : 'primary.800'}
   return (

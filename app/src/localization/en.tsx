@@ -12,6 +12,13 @@ export default {
     transgender: 'Trans',
   },
   tag: { 'sexual-assault': 'sexual assault' },
+  user: {
+    provider: 'Healthcare provider',
+    associate: 'Associate',
+    userManager: 'User manager',
+    FormDesigner: 'Form designer',
+    Researcher: 'Researcher',
+  },
   form: {
     Yes: 'Yes',
     No: 'No',

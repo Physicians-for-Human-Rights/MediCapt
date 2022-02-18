@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
-import { Animated } from 'react-native'
+import { Platform, Animated } from 'react-native'
 import { Input, Box } from 'native-base'
-import { Platform } from 'react-native'
 
 export class RawFloatingLabelInput extends Component<any, any> {
   private _animatedIsFocused: any

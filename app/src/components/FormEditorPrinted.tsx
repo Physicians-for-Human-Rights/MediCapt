@@ -14,12 +14,6 @@ export default function FormEditorPrinted({
   setForm: React.Dispatch<React.SetStateAction<FormType>>
 }) {
   const [width, setWidth] = useState(null as number | null)
-  let inner
-  if (width) {
-    inner = <DisplayPDF width={width} file={files['form.pdf']} />
-  } else {
-    inner = null
-  }
   if ('form.pdf' in files) {
     return (
       <View
@@ -27,14 +21,13 @@ export default function FormEditorPrinted({
           setWidth(event.nativeEvent.layout.width)
         }}
       >
-        {inner}
+        {width && <DisplayPDF width={width} file={files['form.pdf']} />}
       </View>
     )
-  } else {
-    return (
-      <VStack>
-        <Text>Printed</Text>
-      </VStack>
-    )
   }
+  return (
+    <VStack>
+      <Text>Printed</Text>
+    </VStack>
+  )
 }

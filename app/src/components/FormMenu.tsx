@@ -1,40 +1,21 @@
 import React from 'react'
-import styles from 'styles'
 import {
   Box,
-  VStack,
-  StatusBar,
-  ScrollView,
   HStack,
   Pressable,
   Icon,
-  Image,
   Text,
-  Hidden,
-  useColorMode,
-  IconButton,
-  Divider,
-  Menu,
-  Avatar,
   Button,
-  Input,
-  Center,
   Badge,
   useBreakpointValue,
   FlatList,
   Stack,
 } from 'native-base'
 
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  MaterialCommunityIcons,
-  MaterialIcons,
-} from '@expo/vector-icons'
+import { AntDesign } from '@expo/vector-icons'
 
 import _ from 'lodash'
-import { NamedFormSection, NamedFormPart } from 'utils/formTypesHelpers'
+import { NamedFormSection } from 'utils/formTypesHelpers'
 
 function FormMenu({
   formSections,
@@ -69,7 +50,7 @@ function FormMenu({
           space="2"
           justifyContent="center"
           bg="white"
-          key={'header'}
+          key="header"
         >
           <HStack space="2" justifyContent="center">
             <Button

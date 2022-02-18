@@ -10,7 +10,8 @@ import {
 } from '@aws-amplify/ui-react'
 import '@aws-amplify/ui-react/styles.css'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Button, Card, ButtonGroup } from 'react-native-elements'
+import ButtonGroup from 'components/form-parts/ButtonGroup'
+import { Button, Box } from 'native-base'
 
 import indexOf from 'lodash/indexOf'
 import medicapt_logo from '../../assets/medicapt.png'
@@ -21,6 +22,7 @@ import './Authentication.css'
 import {
   UserType,
   UserTypeList,
+  UserTypeNames,
   reconfigureAmplifyForUserType,
 } from 'utils/userTypes'
 
@@ -45,21 +47,31 @@ function Header(userType, setAccountType) {
         alignContent="center"
         wrap="nowrap"
       >
-        <Heading level={6} color="#d5001c" fontWeight="bold">
+        <Heading level={5} color="#d5001c" fontWeight="bold">
           Log in as
         </Heading>
       </Flex>
       <ButtonGroup
-        selectedButtonStyle={{ backgroundColor: '#d5001c' }}
-        selectedIndex={userType}
-        onPress={i => setAccountType(i)}
-        buttons={['Healthcare Provider', 'Associate']}
+        selected={userType}
+        options={{
+          [UserTypeNames[UserType.Provider]]: UserType.Provider,
+          [UserTypeNames[UserType.Associate]]: UserType.Associate,
+        }}
+        onPress={setAccountType}
+        pt={2}
+        pb={1}
+        colorScheme="red"
       />
       <ButtonGroup
-        selectedButtonStyle={{ backgroundColor: '#d5001c' }}
-        selectedIndex={userType > 1 ? userType - 2 : -1}
-        onPress={i => setAccountType(i + 2)}
-        buttons={['User Manager', 'Form Designer', 'Researcher']}
+        selected={userType}
+        options={{
+          [UserTypeNames[UserType.UserManager]]: UserType.UserManager,
+          [UserTypeNames[UserType.FormDesigner]]: UserType.FormDesigner,
+          [UserTypeNames[UserType.Researcher]]: UserType.Researcher,
+        }}
+        onPress={setAccountType}
+        pb={3}
+        colorScheme="red"
       />
     </View>
   )
@@ -67,12 +79,11 @@ function Header(userType, setAccountType) {
 
 function Footer() {
   return (
-    <Card>
-      <Button
-        onPress={() => Linking.openURL('mailto:help@medicapt.click')}
-        title="Ask for help from help@medicapt.click"
-      />
-    </Card>
+    <Box bg="#fff" p={4}>
+      <Button onPress={() => Linking.openURL('mailto:help@medicapt.click')}>
+        Ask for help from help@medicapt.click
+      </Button>
+    </Box>
   )
 }
 
@@ -84,18 +95,14 @@ export default function withAuthenticator(Component) {
       if (indexOf(UserTypeList, r) < 0) {
         r = UserType.Provider
       }
-      setAccountType(indexOf(UserTypeList, r))
+      setAccountType(r)
       reconfigureAmplifyForUserType(r)
-      return r
     }, [])
     useEffect(() => {
       async function fn() {
         if (userType !== null) {
-          reconfigureAmplifyForUserType(UserTypeList[userType])
-          await AsyncStorage.setItem(
-            '@last_account_selection',
-            UserTypeList[userType]
-          )
+          reconfigureAmplifyForUserType(userType)
+          await AsyncStorage.setItem('@last_account_selection', userType)
         }
       }
       fn()
@@ -116,11 +123,7 @@ export default function withAuthenticator(Component) {
       return (
         <Authenticator components={defaultComponents} variation="modal">
           {({ signOut, user }) => (
-            <Component
-              signOut={signOut}
-              user={user}
-              userType={UserTypeList[userType]}
-            />
+            <Component signOut={signOut} user={user} userType={userType} />
           )}
         </Authenticator>
       )

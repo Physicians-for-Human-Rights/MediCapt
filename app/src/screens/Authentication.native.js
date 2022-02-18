@@ -3,7 +3,7 @@ import * as Linking from 'expo-linking'
 import { Amplify, I18n, Logger } from 'aws-amplify'
 import { Auth } from 'aws-amplify'
 import { ActivityIndicator, Image, View } from 'react-native'
-import { Text } from 'react-native-elements'
+import { Button, Heading } from 'native-base'
 import {
   Greetings,
   SignIn,
@@ -22,8 +22,8 @@ import {
   ErrorRow,
 } from 'aws-amplify-react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Button, Card, ButtonGroup } from 'react-native-elements'
 import indexOf from 'lodash/indexOf'
+import ButtonGroup from 'components/form-parts/ButtonGroup'
 
 import awsConfig from '../../config.js'
 import medicapt_logo from '../../assets/medicapt.png'
@@ -33,6 +33,7 @@ import styles from '../styles'
 import {
   UserType,
   UserTypeList,
+  UserTypeNames,
   reconfigureAmplifyForUserType,
 } from 'utils/userTypes'
 
@@ -102,10 +103,9 @@ class CustomSignIn extends AuthPiece {
               {I18n.get('Forgot Password')}
             </LinkCell>
           </View>
-          <Button
-            onPress={() => Linking.openURL('mailto:help@medicapt.click')}
-            title="Ask for help from help@medicapt.click"
-          />
+          <Button onPress={() => Linking.openURL('mailto:help@medicapt.click')}>
+            Ask for help from help@medicapt.click
+          </Button>
           <View />
           <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
         </View>
@@ -122,20 +122,36 @@ function Header(userType, setAccountType) {
       }}
     >
       <View style={{ jusifyContent: 'center', alignItems: 'center' }}>
-        <Text h4 style={{ color: '#d5001c' }}>
+        <Heading size="md" color="#d5001c">
           Log in as
-        </Text>
+        </Heading>
         <ButtonGroup
-          selectedButtonStyle={{ backgroundColor: '#d5001c' }}
-          selectedIndex={userType - 1 + 1}
-          onPress={i => setAccountType(i)}
-          buttons={['Healthcare Provider', 'Associate']}
+          selected={userType}
+          options={{
+            [UserTypeNames[UserType.Provider]]: UserType.Provider,
+            [UserTypeNames[UserType.Associate]]: UserType.Associate,
+          }}
+          onPress={setAccountType}
+          pt={2}
+          pb={1}
+          colorScheme="red"
+          size="md"
+          flex={0}
+          maxW="40%"
         />
         <ButtonGroup
-          selectedButtonStyle={{ backgroundColor: '#d5001c' }}
-          selectedIndex={userType > 1 ? userType - 2 : -1}
-          onPress={i => setAccountType(i + 2)}
-          buttons={['User Manager', 'Form Designer', 'Researcher']}
+          selected={userType}
+          options={{
+            [UserTypeNames[UserType.UserManager]]: UserType.UserManager,
+            [UserTypeNames[UserType.FormDesigner]]: UserType.FormDesigner,
+            [UserTypeNames[UserType.Researcher]]: UserType.Researcher,
+          }}
+          onPress={setAccountType}
+          pb={3}
+          colorScheme="red"
+          size="md"
+          flex={0}
+          maxW="40%"
         />
       </View>
     </View>
@@ -143,27 +159,27 @@ function Header(userType, setAccountType) {
 }
 
 export default function withAuthenticator(Component) {
-  const AppWithAuthenticator = props => {
+  const AppWithAuthenticator = () => {
     const [authState, setAuthState] = useState(null)
     const [userType, setAccountType] = useState(null)
     const [user, setUser] = useState(null)
     useMemo(async () => {
-      const r = await AsyncStorage.getItem('@last_account_selection')
+      let r = await AsyncStorage.getItem('@last_account_selection')
+      if (indexOf(UserTypeList, r) < 0) {
+        r = UserType.Provider
+      }
+      setAccountType(r)
       reconfigureAmplifyForUserType(r)
-      setAccountType(indexOf(UserTypeList, r))
       return r
     }, [])
     useEffect(async () => {
       if (userType !== null) {
-        await AsyncStorage.setItem(
-          '@last_account_selection',
-          UserTypeList[userType]
-        )
-        reconfigureAmplifyForUserType(UserTypeList[userType])
+        await AsyncStorage.setItem('@last_account_selection', userType)
+        reconfigureAmplifyForUserType(userType)
       }
     })
     useEffect(async () => {
-      if (authState == 'signedIn') {
+      if (authState === 'signedIn') {
         setUser(await Auth.currentAuthenticatedUser())
       } else {
         setUser(null)
@@ -172,48 +188,46 @@ export default function withAuthenticator(Component) {
     const WrappedHeader = Header(userType, setAccountType)
     if (userType === null || userType === undefined) {
       return <></>
-    } else {
-      if (authState == 'signedIn' && user) {
-        return <Component user={user} userType={UserTypeList[userType]} />
-      } else {
-        return (
-          <>
-            <Authenticator
-              onStateChange={newAuthState => {
-                setAuthState(newAuthState)
-              }}
-              hide={[Greetings, SignIn, ForgotPassword]}
-              hideDefault={true}
-            >
-              <View
-                style={{
-                  height: '50%',
-                }}
-              >
-                <View
-                  style={{
-                    justifyContent: 'space-around',
-                    flex: 2,
-                    flexDirection: 'row',
-                    height: '10%',
-                  }}
-                >
-                  <Image source={medicapt_logo} style={styles.logo} />
-                  <Image source={phr_logo} style={styles.logo} />
-                </View>
-                <WrappedHeader override={'greetings'} />
-              </View>
-              <CustomSignIn />
-              <ConfirmSignIn />
-              <RequireNewPassword />
-              <VerifyContact />
-              <ForgotPassword />
-              <Loading />
-            </Authenticator>
-          </>
-        )
-      }
     }
+    if (authState == 'signedIn' && user) {
+      return <Component user={user} userType={userType} />
+    }
+    return (
+      <>
+        <Authenticator
+          onStateChange={newAuthState => {
+            setAuthState(newAuthState)
+          }}
+          hide={[Greetings, SignIn, ForgotPassword]}
+          hideDefault={true}
+        >
+          <View
+            style={{
+              height: '50%',
+            }}
+          >
+            <View
+              style={{
+                justifyContent: 'space-around',
+                flex: 2,
+                flexDirection: 'row',
+                height: '10%',
+              }}
+            >
+              <Image source={medicapt_logo} style={styles.logo} />
+              <Image source={phr_logo} style={styles.logo} />
+            </View>
+            <WrappedHeader override="greetings" />
+          </View>
+          <CustomSignIn />
+          <ConfirmSignIn />
+          <RequireNewPassword />
+          <VerifyContact />
+          <ForgotPassword />
+          <Loading />
+        </Authenticator>
+      </>
+    )
   }
   return AppWithAuthenticator
 }

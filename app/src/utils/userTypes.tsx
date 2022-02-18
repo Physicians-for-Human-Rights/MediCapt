@@ -9,6 +9,14 @@ export enum UserType {
   Researcher = 'Researcher',
 }
 
+export const UserTypeNames = {
+  [UserType.Provider]: 'Healthcare provider',
+  [UserType.Associate]: 'Associate',
+  [UserType.UserManager]: 'User manager',
+  [UserType.FormDesigner]: 'Form designer',
+  [UserType.Researcher]: 'Researcher',
+}
+
 export const UserTypeList = [
   UserType.Provider,
   UserType.Associate,

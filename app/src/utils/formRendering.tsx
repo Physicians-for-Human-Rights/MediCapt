@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { t } from 'i18n-js'
 
 import { Text } from 'native-base'
@@ -33,7 +33,6 @@ import BodyImage from 'components/form-parts/BodyImage'
 export default function renderFnsWrapper(
   files: Record<string, any>,
   common: Record<string, FormDefinition>,
-  fnBody: (valuePath: RecordPath, baseImage: string, value: any) => void,
   recordGetPath: any,
   recordSetPath: any,
   changedPaths: any,
@@ -278,7 +277,7 @@ export default function renderFnsWrapper(
           variant="filled"
           w="100%"
           textAlign="center"
-          keyboardType={'numeric'}
+          keyboardType="numeric"
         />
       )
     },
@@ -293,9 +292,9 @@ export default function renderFnsWrapper(
             borderRadius: 5,
             backgroundColor: '#F5F5F5',
           }}
-          textContentType={'fullStreetAddress'}
-          keyboardType={'default'}
-          textAlign={'center'}
+          textContentType="fullStreetAddress"
+          keyboardType="default"
+          textAlign="center"
           editable={true}
           placeholder={part.placeholder}
           onChangeText={text => recordSetPath(valuePath, text)}
@@ -315,8 +314,8 @@ export default function renderFnsWrapper(
           variant="filled"
           w="100%"
           textAlign="center"
-          textContentType={'telephoneNumber'}
-          keyboardType={'phone-pad'}
+          textContentType="telephoneNumber"
+          keyboardType="phone-pad"
         />
       )
     },

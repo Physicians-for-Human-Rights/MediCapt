@@ -13,20 +13,3 @@ export const theme = extendTheme({
 
 // NB Most similar to red.600
 export const medicaptRed = '#d5001c'
-
-// TODO Remove this after the nativebase switch
-
-export default {
-  ListItem: {
-    containerStyle: {
-      borderTopWidth: 2,
-      borderBottomWidth: 2,
-    },
-  },
-  Button: {
-    /* TODO */
-    /* buttonStyle: {
-     *     backgroundColor: "red"
-     * } */
-  },
-}

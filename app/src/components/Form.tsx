@@ -5,16 +5,14 @@ import useSet from 'react-use/lib/useSet'
 import useToggle from 'react-use/lib/useToggle'
 import { Keyboard } from 'react-native'
 import _ from 'lodash'
-import fp from 'lodash/fp'
-import { diff } from 'deep-object-diff'
 
-import { Box, View, ScrollView } from 'native-base'
+import { View, ScrollView } from 'native-base'
 
 import FormMenu from 'components/FormMenu'
 import FromTop from 'components/FormTop'
 
 import { FormType } from 'utils/formTypes'
-import { RecordType, RecordPath } from 'utils/recordTypes'
+import { RecordPath } from 'utils/recordTypes'
 import getRecordPath from 'utils/formInferences'
 import renderFnsWrapper from 'utils/formRendering'
 import {
@@ -106,7 +104,6 @@ export default function Form({
   const renderFns = renderFnsWrapper(
     files,
     form ? form.common : {},
-    () => console.log('TODO body'),
     (value: RecordPath, default_: any) =>
       getRecordPath(formPaths, value, default_),
     setRecordPath,
@@ -133,7 +130,7 @@ export default function Form({
   return (
     <View flex={1}>
       <FromTop
-        key={'form-top'}
+        key="form-top"
         sectionOffset={setSectionOffset}
         currentSection={currentSection}
         toggleMenu={toggleMenu}

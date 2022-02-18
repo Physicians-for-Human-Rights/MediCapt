@@ -1,5 +1,4 @@
 import React from 'react'
-import { ThemeProvider } from 'react-native-elements'
 
 // @ts-ignore TODO Typescript doesn't support platform-specific files
 // https://github.com/microsoft/TypeScript/issues/21926
@@ -7,7 +6,7 @@ import withAuthenticator from 'screens/Authentication'
 
 import { StoreProvider } from 'utils/store'
 
-import oldTheme, { theme } from 'theme'
+import { theme } from 'theme'
 import { UserType } from 'utils/userTypes'
 
 import { SafeAreaProvider } from 'react-native-safe-area-context'
@@ -68,9 +67,7 @@ function LoginScreen() {
       <SafeAreaProvider>
         <NativeBaseProvider theme={theme}>
           <StoreProvider>
-            <ThemeProvider theme={oldTheme}>
-              <AuthApp />
-            </ThemeProvider>
+            <AuthApp />
           </StoreProvider>
         </NativeBaseProvider>
       </SafeAreaProvider>

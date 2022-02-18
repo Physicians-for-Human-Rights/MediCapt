@@ -17,8 +17,6 @@
     "**/*.native.*"
   ],
   "ignoreUnimported": [],
-  "ignoreUnused": ["react", "react-dom", "react-native"],
-  "moduleDirectory": ["node_modules", "src"],
   "extensions": [
     ".ts",
     ".js",
@@ -28,6 +26,24 @@
     ".web.js",
     ".web.tsx",
     ".web.jsx"
+  ],
+  "ignoreUnused": [
+    "react",
+    "react-dom",
+    "react-native",
+    "aws-amplify-react-native",
+    "amazon-cognito-identity-js",
+    "expo-gl",
+    "expo-modules-core",
+    "expo-splash-screen",
+    "expo-status-bar",
+    "react-native-modal-datetime-picker",
+    "react-native-signature-canvas",
+    "react-native-view-shot",
+    "react-native-web",
+    "@react-native-community/netinfo",
+    "@react-navigation/native-stack",
+    "webpack"
   ],
   "ignoreUnresolved": []
 }

@@ -84,16 +84,11 @@ export function ListItemDesktop({ item }: { item: FormMetadata }) {
             <Icon
               color="success.400"
               size="6"
-              name={'check-circle'}
+              name="check-circle"
               as={MaterialIcons}
             />
           ) : (
-            <Icon
-              color="error.700"
-              size="6"
-              name={'cancel'}
-              as={MaterialIcons}
-            />
+            <Icon color="error.700" size="6" name="cancel" as={MaterialIcons} />
           )}
         </HStack>
       </HStack>
