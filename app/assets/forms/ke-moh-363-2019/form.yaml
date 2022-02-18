@@ -14,8 +14,7 @@ common:
   lab-sample-destination:
     - destination:
         title: Destination
-        type: list
-        select-multiple: true
+        type: list-multiple
         options:
           - National government lab
           - Health facility lab
@@ -169,8 +168,7 @@ sections:
                   only-when:
                     path: sections.consent.proxy.parts.is-proxy.value
                     value: true
-                  type: list
-                  select-multiple: true
+                  type: list-multiple
                   other: text
                   options:
                     - Minor
@@ -306,8 +304,7 @@ sections:
             type: long-text
         - type-of-violence:
             title: Type of sexual violence
-            type: list
-            select-multiple: true
+            type: list-multiple
             other: text
             options:
               - oral
@@ -487,8 +484,7 @@ sections:
             type: long-text
         - clothes-transported:
             title: How were the clothes transported?
-            type: list
-            select-multiple: true
+            type: list-multiple
             other: text
             options:
               - plastic bag
@@ -498,8 +494,7 @@ sections:
             type: bool
         - toilet:
             title: Did the survivor go the toilet?
-            type: list
-            select-multiple: true
+            type: list-multiple
             options:
               - short call
               - long call
@@ -553,8 +548,7 @@ sections:
       parts:
         - referral-list:
             title: none
-            type: list
-            select-multiple: true
+            type: list-multiple
             options:
               - police station
               - HIV test
