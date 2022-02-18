@@ -26,7 +26,7 @@ export function ListSelectMultiple({
   otherPathValue: RecordPath | null
   getPath: any
   setPath: any
-  part: FormPart & (FormPartField & { type: 'list'; 'select-multiple': true })
+  part: FormPart & (FormPartField & { type: 'list-multiple' })
 }) {
   const [rawContents, setRawContents] = React.useState(
     getPath(otherPathValue, _.isString, '')
@@ -39,61 +39,56 @@ export function ListSelectMultiple({
     [rawContents]
   )
 
-  if ('select-multiple' in part) {
-    const items =
-      'options' in part && _.isArray(part.options)
-        ? // @ts-ignore TODO type this
-          part.options.map((e: string, i: number) => {
-            let valuePath = valuePaths[i]
-            return (
-              <Checkbox
-                key={i}
-                colorScheme="blue"
-                isChecked={getPath(valuePath, _.isBoolean, false)}
-                value={_.join(valuePath, '.')}
-                my={2}
-                onChange={state => setPath(valuePath, state)}
-              >
-                {e}
-              </Checkbox>
-            )
-          })
-        : []
-    if (part.other && otherPath !== null) {
-      items.push(
-        <Checkbox
-          key={-1}
-          colorScheme="blue"
-          isChecked={getPath(otherPath, _.isBoolean, false)}
-          value={_.join(otherPath, '.')}
-          my={2}
-          onChange={state => setPath(otherPath, state)}
-        >
-          Other
-        </Checkbox>
-      )
-    }
-    return (
-      <Center key={_.join(formPath, '.')}>
-        <Checkbox.Group colorScheme="blue">{items}</Checkbox.Group>
-        {getPath(otherPath, _.isBoolean, false) && (
-          <Input
-            key={items.length}
-            w="80%"
-            size="md"
-            placeholder={'Details about other (optional)'}
-            multiline={true}
-            numberOfLines={5}
-            onChangeText={setRawContents}
-            value={rawContents}
-          />
-        )}
-      </Center>
+  const items =
+    'options' in part && _.isArray(part.options)
+      ? // @ts-ignore TODO type this
+        part.options.map((e: string, i: number) => {
+          let valuePath = valuePaths[i]
+          return (
+            <Checkbox
+              key={i}
+              colorScheme="blue"
+              isChecked={getPath(valuePath, _.isBoolean, false)}
+              value={_.join(valuePath, '.')}
+              my={2}
+              onChange={state => setPath(valuePath, state)}
+            >
+              {e}
+            </Checkbox>
+          )
+        })
+      : []
+  if (part.other && otherPath !== null) {
+    items.push(
+      <Checkbox
+        key={-1}
+        colorScheme="blue"
+        isChecked={getPath(otherPath, _.isBoolean, false)}
+        value={_.join(otherPath, '.')}
+        my={2}
+        onChange={state => setPath(otherPath, state)}
+      >
+        Other
+      </Checkbox>
     )
-  } else {
-    console.log('TODO Handle errors for bad forms')
-    return null
   }
+  return (
+    <Center key={_.join(formPath, '.')}>
+      <Checkbox.Group colorScheme="blue">{items}</Checkbox.Group>
+      {getPath(otherPath, _.isBoolean, false) && (
+        <Input
+          key={items.length}
+          w="80%"
+          size="md"
+          placeholder={'Details about other (optional)'}
+          multiline={true}
+          numberOfLines={5}
+          onChangeText={setRawContents}
+          value={rawContents}
+        />
+      )}
+    </Center>
+  )
 }
 
 // TODO Forbid all labels like ^__.*__$
