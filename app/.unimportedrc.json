@@ -1,0 +1,33 @@
+{
+  "entry": ["App.js"],
+  "aliases": {
+    "screens/*": ["./src/screens", "./src/screens/*"],
+    "components/*": ["./src/components", "./src/components/*"],
+    "src/*": ["./src", "./src/*"],
+    "utils/*": ["./src/utils", "./src/utils/*"]
+  },
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/*.tests.{js,jsx,ts,tsx}",
+    "**/*.test.{js,jsx,ts,tsx}",
+    "**/*.spec.{js,jsx,ts,tsx}",
+    "**/tests/**",
+    "**/__tests__/**",
+    "**/*.d.ts",
+    "**/*.native.*"
+  ],
+  "ignoreUnimported": [],
+  "ignoreUnused": ["react", "react-dom", "react-native"],
+  "moduleDirectory": ["node_modules", "src"],
+  "extensions": [
+    ".ts",
+    ".js",
+    ".tsx",
+    ".jsx",
+    ".web.ts",
+    ".web.js",
+    ".web.tsx",
+    ".web.jsx"
+  ],
+  "ignoreUnresolved": []
+}
