@@ -167,7 +167,7 @@ export function mapSectionWithPaths<Return>(
     }
     //
     const pre = fns.pre(part, recordPath, index, entry)
-    //
+    // References are always to a list of pats.
     if ('Ref' in part) {
       subparts = fns.combineSmartParts(
         part,
@@ -179,6 +179,7 @@ export function mapSectionWithPaths<Return>(
       )
     } else {
       if ('type' in part) {
+        // These parts have subparts that must be combined together
         switch (part.type) {
           case 'bool':
             if (
@@ -199,23 +200,10 @@ export function mapSectionWithPaths<Return>(
               )
             }
             break
+        }
+        // Some parts handle lists of results, all others handle single items
+        switch (part.type) {
           case 'list-multiple':
-            {
-              const resolved = resolveRef(part.options, commonRefTable)
-              if (resolved) {
-                inner = fns.selectMultiple(
-                  resolved.map((_e: any, i: number) => {
-                    return recordPath.concat('value', i)
-                  }),
-                  part,
-                  recordPath,
-                  index,
-                  part.other ? recordPath.concat('value', 'other') : null,
-                  entry
-                )
-              }
-            }
-            break
           case 'list-with-labels-multiple':
             {
               const resolved = resolveRef(part.options, commonRefTable)
@@ -233,21 +221,20 @@ export function mapSectionWithPaths<Return>(
               }
             }
             break
-        }
-        if (!inner) {
-          // @ts-ignore TODO Errors out with expression produces a union type that is too complex to represent
-          if (part && fns[part.type]) {
-            // @ts-ignore TODO Typescript doesn't seem willing to represent this type
-            inner = fns[part.type](
-              recordPath.concat('value'),
-              part,
-              recordPath,
-              index,
-              entry
-            )
-          } else {
-            console.log('UNSUPPORTED FIELD TYPE', part)
-          }
+          default:
+            // @ts-ignore TODO Errors out with expression produces a union type that is too complex to represent
+            if (part && fns[part.type]) {
+              // @ts-ignore TODO Typescript doesn't seem willing to represent this type
+              inner = fns[part.type](
+                recordPath.concat('value'),
+                part,
+                recordPath,
+                index,
+                entry
+              )
+            } else {
+              console.log('UNSUPPORTED FIELD TYPE', part)
+            }
         }
       }
       if ('parts' in part && part.parts && part.parts !== undefined) {
