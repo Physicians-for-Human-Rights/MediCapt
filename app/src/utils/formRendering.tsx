@@ -90,28 +90,48 @@ export default function renderFnsWrapper(
     selectMultiple: (valuePaths, part, recordPath, index, otherPath) => {
       return (
         <ListSelectMultiple
-          valuePaths={valuePaths}
-          // @ts-ignore type too complex for ts
-          part={part}
-          recordPath={recordPath}
-          otherPath={otherPath}
-          otherPathValue={otherPath && otherPath.concat('.value')}
-          getPath={getPath}
-          setPath={recordSetPath}
+          values={valuePaths.map((p: RecordPath) =>
+            getPath(p, _.isBoolean, false)
+          )}
+          otherChecked={getPath(otherPath, _.isBoolean, false)}
+          otherText={
+            otherPath && getPath(otherPath.concat('.value'), _.isString, '')
+          }
+          // @ts-ignore TODO Do we need to handle FormKVRawType[]?
+          options={
+            'options' in part && _.isArray(part.options) ? part.options : []
+          }
+          other={'other' in part ? part.other : undefined}
+          setPathValue={(idx: number, b: boolean) =>
+            recordSetPath(valuePaths[idx], b)
+          }
+          setOtherChecked={(b: boolean | null) =>
+            otherPath && recordSetPath(otherPath, b)
+          }
+          setOtherText={(s: string | undefined) =>
+            otherPath && recordSetPath(otherPath.concat('.value'), s)
+          }
         />
       )
     },
-    signature: valuePath => {
+    address: (valuePath, part) => {
       return (
-        <Signature
-          imageURI={getPath(valuePath, _.isString, null)}
-          open={() => {
-            addKeepAlive(_.join(valuePath, '.'))
+        <DebouncedTextInput
+          onChangeText={text => {
+            recordSetPath(valuePath, text)
           }}
-          close={() => {
-            removeKeepAlive(_.join(valuePath, '.'))
-          }}
-          setSignature={(dataURI: string) => recordSetPath(valuePath, dataURI)}
+          debounceMs={500}
+          size="md"
+          bg="coolGray.100"
+          variant="filled"
+          w="100%"
+          textAlign="center"
+          textContentType="fullStreetAddress"
+          keyboardType="default"
+          multiline={true}
+          numberOfLines={3}
+          placeholder={part.placeholder}
+          value={getPath(valuePath, _.isString, '')}
         />
       )
     },
@@ -173,149 +193,12 @@ export default function renderFnsWrapper(
         />
       )
     },
-    photo: valuePath => {
-      return (
-        <Photo
-          photos={getPath(valuePath, _.isArray, [])}
-          addPhoto={(
-            toAdd: ArrayElement<RecordDataByType['photo']['value']>
-          ) => {
-            recordSetPath(
-              valuePath,
-              getPath(valuePath, _.isArray, []).concat(toAdd)
-            )
-          }}
-          removePhoto={(n: number) => {
-            const r = _.cloneDeep(getPath(valuePath, _.isArray, []))
-            _.pullAt(r, [n])
-            recordSetPath(valuePath, r)
-          }}
-        />
-      )
-    },
     bool: valuePath => {
       return (
         <ButtonGroup<boolean>
           selected={getPath(valuePath, _.isBoolean, null)}
           options={{ Yes: true, No: false }}
           onPress={v => recordSetPath(valuePath, v)}
-        />
-      )
-    },
-    gender: valuePath => {
-      let options: Record<string, string> = _.fromPairs(
-        _.map(
-          'gender' in common
-            ? // TODO Check this at runtime
-              (common.gender as Array<FormKVRawType>)
-            : [
-                // TODO This is a conservative approach if no gender key is specified
-                // Do we want something else?
-                { key: 'male', value: t('gender.Male') },
-                { key: 'female', value: t('gender.Female') },
-                { key: 'transgender', value: t('gender.Transgender') },
-              ],
-          o => [o.value, o.key]
-        )
-      ) as Record<string, string>
-      return (
-        <ButtonGroup<string>
-          selected={recordGetPath(valuePath, null)}
-          options={options}
-          onPress={v => recordSetPath(valuePath, v)}
-        />
-      )
-    },
-    text: (valuePath, part) => {
-      return (
-        <DebouncedTextInput
-          onChangeText={text => {
-            recordSetPath(valuePath, text)
-          }}
-          debounceMs={500}
-          placeholder={part.placeholder}
-          size="md"
-          bg="coolGray.100"
-          variant="filled"
-          w="100%"
-          textAlign="center"
-        />
-      )
-    },
-    'long-text': (valuePath, part) => {
-      return (
-        <DebouncedTextInput
-          onChangeText={text => {
-            recordSetPath(valuePath, text)
-          }}
-          debounceMs={500}
-          placeholder={part.placeholder}
-          size="md"
-          bg="coolGray.100"
-          variant="filled"
-          w="100%"
-          multiline={true}
-          numberOfLines={
-            part['number-of-lines'] === null ||
-            part['number-of-lines'] === undefined
-              ? 5
-              : part['number-of-lines']
-          }
-        />
-      )
-    },
-    number: (valuePath, part) => {
-      return (
-        <DebouncedTextInput
-          onChangeText={text => {
-            recordSetPath(valuePath, text)
-          }}
-          debounceMs={500}
-          placeholder={part.placeholder}
-          size="md"
-          bg="coolGray.100"
-          variant="filled"
-          w="100%"
-          textAlign="center"
-          keyboardType="numeric"
-        />
-      )
-    },
-    address: (valuePath, part) => {
-      return (
-        <TextInput
-          style={{
-            width: '100%',
-            height: 40,
-            borderColor: 'gray',
-            borderBottomWidth: 1,
-            borderRadius: 5,
-            backgroundColor: '#F5F5F5',
-          }}
-          textContentType="fullStreetAddress"
-          keyboardType="default"
-          textAlign="center"
-          editable={true}
-          placeholder={part.placeholder}
-          onChangeText={text => recordSetPath(valuePath, text)}
-          value={getPath(valuePath, _.isString, '')}
-        />
-      )
-    },
-    'phone-number': valuePath => {
-      return (
-        <DebouncedTextInput
-          onChangeText={text => {
-            recordSetPath(valuePath, text)
-          }}
-          debounceMs={500}
-          size="md"
-          bg="coolGray.100"
-          variant="filled"
-          w="100%"
-          textAlign="center"
-          textContentType="telephoneNumber"
-          keyboardType="phone-pad"
         />
       )
     },
@@ -350,6 +233,163 @@ export default function renderFnsWrapper(
         />
       )
     },
+    email: (valuePath, part) => {
+      return (
+        <DebouncedTextInput
+          onChangeText={text => {
+            recordSetPath(valuePath, text)
+          }}
+          debounceMs={500}
+          size="md"
+          bg="coolGray.100"
+          variant="filled"
+          w="100%"
+          textAlign="center"
+          textContentType="emailAddress"
+          keyboardType="email-address"
+          placeholder={part.placeholder}
+          value={getPath(valuePath, _.isString, '')}
+        />
+      )
+    },
+    gender: valuePath => {
+      let options: Record<string, string> = _.fromPairs(
+        _.map(
+          'gender' in common
+            ? // TODO Check this at runtime
+              (common.gender as Array<FormKVRawType>)
+            : [
+                // TODO This is a conservative approach if no gender key is specified
+                // Do we want something else?
+                { key: 'male', value: t('gender.Male') },
+                { key: 'female', value: t('gender.Female') },
+                { key: 'transgender', value: t('gender.Transgender') },
+              ],
+          o => [o.value, o.key]
+        )
+      ) as Record<string, string>
+      return (
+        <ButtonGroup<string>
+          selected={recordGetPath(valuePath, null)}
+          options={options}
+          onPress={v => recordSetPath(valuePath, v)}
+        />
+      )
+    },
+    list: (valuePath, part, recordPath) => {
+      const options = resolveRef(part.options, common)
+      if (!options) return <></>
+      return (
+        <List
+          key={_.last(valuePath)}
+          options={options}
+          value={getPath(valuePath, isPrimitiveType, null)}
+          onSelect={s => recordSetPath(valuePath, s)}
+          other={part.other}
+          otherValue={getPath(recordPath.concat('other'), _.isString, null)}
+          onOtherValue={s => recordSetPath(recordPath.concat('other'), s)}
+        />
+      )
+    },
+    'list-with-labels': (valuePath, part, recordPath) => {
+      const options = resolveRef(part.options, common)
+      if (!options) return <></>
+      return (
+        <List
+          key={_.last(valuePath)}
+          withLabels
+          options={options}
+          value={getPath(valuePath, isPrimitiveType, null)}
+          onSelect={s => recordSetPath(valuePath, s)}
+          other={part.other}
+          otherValue={getPath(recordPath.concat('other'), _.isString, null)}
+          onOtherValue={s => recordSetPath(recordPath.concat('other'), s)}
+        />
+      )
+    },
+    'list-with-parts': () => {
+      // TODO
+      return <></>
+    },
+    'long-text': (valuePath, part) => {
+      return (
+        <DebouncedTextInput
+          onChangeText={text => {
+            recordSetPath(valuePath, text)
+          }}
+          debounceMs={500}
+          placeholder={part.placeholder}
+          size="md"
+          bg="coolGray.100"
+          variant="filled"
+          w="100%"
+          multiline={true}
+          numberOfLines={
+            part['number-of-lines'] === null ||
+            part['number-of-lines'] === undefined
+              ? 5
+              : part['number-of-lines']
+          }
+          value={getPath(valuePath, _.isString, '')}
+        />
+      )
+    },
+    number: (valuePath, part) => {
+      return (
+        <DebouncedTextInput
+          onChangeText={text => {
+            recordSetPath(valuePath, text)
+          }}
+          debounceMs={500}
+          placeholder={part.placeholder}
+          size="md"
+          bg="coolGray.100"
+          variant="filled"
+          w="100%"
+          textAlign="center"
+          keyboardType="numeric"
+          value={getPath(valuePath, _.isString, '')}
+        />
+      )
+    },
+    'phone-number': valuePath => {
+      return (
+        <DebouncedTextInput
+          onChangeText={text => {
+            recordSetPath(valuePath, text)
+          }}
+          debounceMs={500}
+          size="md"
+          bg="coolGray.100"
+          variant="filled"
+          w="100%"
+          textAlign="center"
+          textContentType="telephoneNumber"
+          keyboardType="phone-pad"
+          value={getPath(valuePath, _.isString, '')}
+        />
+      )
+    },
+    photo: valuePath => {
+      return (
+        <Photo
+          photos={getPath(valuePath, _.isArray, [])}
+          addPhoto={(
+            toAdd: ArrayElement<RecordDataByType['photo']['value']>
+          ) => {
+            recordSetPath(
+              valuePath,
+              getPath(valuePath, _.isArray, []).concat(toAdd)
+            )
+          }}
+          removePhoto={(n: number) => {
+            const r = _.cloneDeep(getPath(valuePath, _.isArray, []))
+            _.pullAt(r, [n])
+            recordSetPath(valuePath, r)
+          }}
+        />
+      )
+    },
     sex: valuePath => {
       let options: Record<string, string> = _.fromPairs(
         _.map(
@@ -374,40 +414,36 @@ export default function renderFnsWrapper(
         />
       )
     },
-    'list-with-labels': (valuePath, part, recordPath) => {
-      const options = resolveRef(part.options, common)
-      if (!options) return <></>
+    signature: valuePath => {
       return (
-        <List
-          key={_.last(valuePath)}
-          withLabels
-          options={options}
-          value={getPath(valuePath, isPrimitiveType, null)}
-          onSelect={s => recordSetPath(valuePath, s)}
-          other={part.other}
-          otherValue={getPath(recordPath.concat('other'), _.isString, null)}
-          onOtherValue={s => recordSetPath(recordPath.concat('other'), s)}
+        <Signature
+          imageURI={getPath(valuePath, _.isString, null)}
+          open={() => {
+            addKeepAlive(_.join(valuePath, '.'))
+          }}
+          close={() => {
+            removeKeepAlive(_.join(valuePath, '.'))
+          }}
+          setSignature={(dataURI: string) => recordSetPath(valuePath, dataURI)}
         />
       )
     },
-    list: (valuePath, part, recordPath) => {
-      const options = resolveRef(part.options, common)
-      if (!options) return <></>
+    text: (valuePath, part) => {
       return (
-        <List
-          key={_.last(valuePath)}
-          options={options}
-          value={getPath(valuePath, isPrimitiveType, null)}
-          onSelect={s => recordSetPath(valuePath, s)}
-          other={part.other}
-          otherValue={getPath(recordPath.concat('other'), _.isString, null)}
-          onOtherValue={s => recordSetPath(recordPath.concat('other'), s)}
+        <DebouncedTextInput
+          onChangeText={text => {
+            recordSetPath(valuePath, text)
+          }}
+          debounceMs={500}
+          placeholder={part.placeholder}
+          size="md"
+          bg="coolGray.100"
+          variant="filled"
+          w="100%"
+          textAlign="center"
+          value={getPath(valuePath, _.isString, '')}
         />
       )
-    },
-    'list-with-parts': () => {
-      // TODO
-      return <></>
     },
   }
 }

@@ -1,9 +1,14 @@
-import React, { useState, useRef, useCallback } from 'react'
+import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react'
 import useMap from 'react-use/lib/useMap'
 import usePrevious from 'react-use/lib/usePrevious'
 import useSet from 'react-use/lib/useSet'
 import useToggle from 'react-use/lib/useToggle'
-import { Keyboard } from 'react-native'
+import {
+  Dimensions,
+  Keyboard,
+  // Don't use the native-base FlatList. It's buggy!
+  FlatList as FlatList,
+} from 'react-native'
 import _ from 'lodash'
 
 import { View, ScrollView } from 'native-base'
@@ -16,10 +21,17 @@ import { RecordPath } from 'utils/recordTypes'
 import getRecordPath from 'utils/formInferences'
 import renderFnsWrapper from 'utils/formRendering'
 import {
+  allFormRenderCommands,
+  renderCommand,
+  RenderCommand,
+} from 'utils/formSplitRendering'
+import {
   nameFormSections,
   mapSectionWithPaths,
   isSectionComplete,
 } from 'utils/forms'
+
+const USE_SPLIT_RENDERER = true
 
 export default function Form({
   files,
@@ -63,7 +75,6 @@ export default function Form({
     if (changedPaths !== []) {
       let record = {}
       _.map(formPaths, (v, p) => _.set(record, p, v))
-      console.log('Record', record)
     }
   }
 
@@ -94,74 +105,131 @@ export default function Form({
     [currentSection, scrollView.current]
   )
 
-  const setRecordPath = useCallback(
-    (path: RecordPath, value: any) => {
-      setFormPath(_.join(path, '.'), value)
-    },
-    [formPaths]
+  const setRecordPath = useCallback((path: RecordPath, value: any) => {
+    setFormPath(_.join(path, '.'), value)
+  }, [])
+
+  // outside of the if so the # of hooks doesn't change
+  const [renderCommands, setRenderCommands] = useState([] as RenderCommand[])
+  const renderItem = useCallback(
+    ({ item }) =>
+      renderCommand(item, setRecordPath, addKeepAlive, removeKeepAlive),
+    []
   )
 
-  const renderFns = renderFnsWrapper(
-    files,
-    form ? form.common : {},
-    (value: RecordPath, default_: any) =>
-      getRecordPath(formPaths, value, default_),
-    setRecordPath,
-    changedPaths,
-    keepAlive,
-    removeKeepAlive,
-    addKeepAlive,
-    noRenderCache
-  )
-
-  let sectionContent: null | JSX.Element = null
-  if (!_.isEmpty(formSections) && form && 'common' in form) {
-    const current_section_content = formSections[currentSection]
-    sectionContent = mapSectionWithPaths<JSX.Element>(
-      current_section_content,
-      form.common,
-      <></>,
+  if (USE_SPLIT_RENDERER) {
+    if (!_.isEmpty(formSections) && form && 'common' in form) {
+      const current_section_content = formSections[currentSection]
+      const sectionCommands = allFormRenderCommands(
+        files,
+        current_section_content,
+        form.common,
+        (value: RecordPath, default_: any) =>
+          getRecordPath(formPaths, value, default_)
+      )
+      if (!_.isEqual(renderCommands, sectionCommands)) {
+        setRenderCommands(sectionCommands)
+      }
+    } else {
+      if (renderCommands !== []) setRenderCommands([])
+    }
+    return (
+      <View flex={1}>
+        <FromTop
+          key="form-top"
+          sectionOffset={setSectionOffset}
+          currentSection={currentSection}
+          toggleMenu={toggleMenu}
+          title={formSections[currentSection].title}
+          lastSection={formSections.length - 1}
+          isSectionCompleted={isSectionCompleteList[currentSection]}
+          isMenuVisible={isMenuVisible}
+        />
+        {isMenuVisible ? (
+          <FormMenu
+            formSections={formSections}
+            changeSection={menuChangeSection}
+            toggleMenu={toggleMenu}
+            isSectionCompleteList={isSectionCompleteList}
+            onCancel={onCancel}
+            onSaveAndExit={onCancel}
+            onCompleteRecord={onCancel}
+            onPrint={onCancel}
+          />
+        ) : (
+          <FlatList
+            style={style}
+            data={renderCommands}
+            renderItem={renderItem}
+            initialNumToRender={10}
+            windowSize={25}
+          />
+        )}
+      </View>
+    )
+  } else {
+    const renderFns = renderFnsWrapper(
+      files,
+      form ? form.common : {},
       (value: RecordPath, default_: any) =>
         getRecordPath(formPaths, value, default_),
-      renderFns
+      setRecordPath,
+      changedPaths,
+      keepAlive,
+      removeKeepAlive,
+      addKeepAlive,
+      noRenderCache
+    )
+    let sectionContent: null | JSX.Element = null
+    if (!_.isEmpty(formSections) && form && 'common' in form) {
+      const current_section_content = formSections[currentSection]
+      sectionContent = mapSectionWithPaths<JSX.Element>(
+        current_section_content,
+        form.common,
+        <></>,
+        (value: RecordPath, default_: any) =>
+          getRecordPath(formPaths, value, default_),
+        renderFns
+      )
+    }
+    return (
+      <View flex={1}>
+        <FromTop
+          key="form-top"
+          sectionOffset={setSectionOffset}
+          currentSection={currentSection}
+          toggleMenu={toggleMenu}
+          title={formSections[currentSection].title}
+          lastSection={formSections.length - 1}
+          isSectionCompleted={isSectionCompleteList[currentSection]}
+          isMenuVisible={isMenuVisible}
+        />
+        {isMenuVisible ? (
+          <FormMenu
+            formSections={formSections}
+            changeSection={menuChangeSection}
+            toggleMenu={toggleMenu}
+            isSectionCompleteList={isSectionCompleteList}
+            onCancel={onCancel}
+            onSaveAndExit={onCancel}
+            onCompleteRecord={onCancel}
+            onPrint={onCancel}
+          />
+        ) : (
+          <ScrollView
+            h="80"
+            ref={scrollView}
+            keyboardDismissMode="on-drag"
+            accessible={false}
+            keyboardShouldPersistTaps="handled"
+            bg="white"
+          >
+            {sectionContent}
+          </ScrollView>
+        )}
+      </View>
     )
   }
-
-  return (
-    <View flex={1}>
-      <FromTop
-        key="form-top"
-        sectionOffset={setSectionOffset}
-        currentSection={currentSection}
-        toggleMenu={toggleMenu}
-        title={formSections[currentSection].title}
-        lastSection={formSections.length - 1}
-        isSectionCompleted={isSectionCompleteList[currentSection]}
-        isMenuVisible={isMenuVisible}
-      />
-      {isMenuVisible ? (
-        <FormMenu
-          formSections={formSections}
-          changeSection={menuChangeSection}
-          toggleMenu={toggleMenu}
-          isSectionCompleteList={isSectionCompleteList}
-          onCancel={onCancel}
-          onSaveAndExit={onCancel}
-          onCompleteRecord={onCancel}
-          onPrint={onCancel}
-        />
-      ) : (
-        <ScrollView
-          h="80"
-          ref={scrollView}
-          keyboardDismissMode="on-drag"
-          accessible={false}
-          keyboardShouldPersistTaps="handled"
-          bg="white"
-        >
-          {sectionContent}
-        </ScrollView>
-      )}
-    </View>
-  )
 }
+
+const style = { height: '800px', backgroundColor: '#fff', padding: '10px' }

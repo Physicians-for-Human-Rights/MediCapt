@@ -2,80 +2,86 @@ import React from 'react'
 import { Box, Input, Center, Select, Checkbox } from 'native-base'
 import useDebounce from 'react-use/lib/useDebounce'
 import _ from 'lodash'
-import { FormPart, FormPartField } from 'utils/formTypes'
 import { RecordPath } from 'utils/recordTypes'
-import { FormDefinition, FormKVRawType } from 'utils/formTypes'
+import {
+  MultipleFormValueTypes,
+  FormPart,
+  FormPartField,
+  FormDefinition,
+  FormKVRawType,
+} from 'utils/formTypes'
 import { t } from 'i18n-js'
 
 export function isPrimitiveType(x: any) {
   return _.isString(x) || _.isBoolean(x) || _.isNumber(x)
 }
 
+// TODO Forbid all labels like ^__.*__$
+
 export function ListSelectMultiple({
-  valuePaths,
-  part,
-  formPath,
-  otherPath,
-  otherPathValue,
-  getPath,
-  setPath,
+  values,
+  otherChecked,
+  otherText,
+  options,
+  other,
+  setPathValue,
+  setOtherChecked,
+  setOtherText,
 }: {
-  valuePaths: RecordPath[]
-  formPath: RecordPath
-  otherPath: RecordPath | null
-  otherPathValue: RecordPath | null
-  getPath: any
-  setPath: any
-  part: FormPart & (FormPartField & { type: 'list-multiple' })
+  values: boolean[]
+  otherChecked: boolean | null
+  otherText: string | undefined
+  options: MultipleFormValueTypes | undefined
+  other: 'text' | 'long-text' | undefined
+  setPathValue: (idx: number, b: boolean) => any
+  setOtherChecked: (b: boolean | null) => any
+  setOtherText: (s: string | undefined) => any
 }) {
-  const [rawContents, setRawContents] = React.useState(
-    getPath(otherPathValue, _.isString, '')
-  )
+  const [rawContents, setRawContents] = React.useState(otherText)
   useDebounce(
     () => {
-      setPath(otherPathValue, rawContents)
+      setOtherText(rawContents)
     },
     300,
     [rawContents]
   )
-
   const items =
-    'options' in part && _.isArray(part.options)
+    options && _.isArray(options)
       ? // @ts-ignore TODO type this
-        part.options.map((e: string, i: number) => {
-          let valuePath = valuePaths[i]
+        options.map((e: string, i: number) => {
           return (
             <Checkbox
               key={i}
               colorScheme="blue"
-              isChecked={getPath(valuePath, _.isBoolean, false)}
-              value={_.join(valuePath, '.')}
+              isChecked={values[i]}
+              defaultIsChecked={values[i]}
+              value={_.toString(i)}
               my={2}
-              onChange={state => setPath(valuePath, state)}
+              onChange={state => setPathValue(i, state)}
             >
               {e}
             </Checkbox>
           )
         })
       : []
-  if (part.other && otherPath !== null) {
+  if (other && otherChecked !== null) {
     items.push(
       <Checkbox
         key={-1}
         colorScheme="blue"
-        isChecked={getPath(otherPath, _.isBoolean, false)}
-        value={_.join(otherPath, '.')}
+        isChecked={otherChecked}
+        value={'other'}
         my={2}
-        onChange={state => setPath(otherPath, state)}
+        onChange={setOtherChecked}
       >
         Other
       </Checkbox>
     )
   }
   return (
-    <Center key={_.join(formPath, '.')}>
+    <Center>
       <Checkbox.Group colorScheme="blue">{items}</Checkbox.Group>
-      {getPath(otherPath, _.isBoolean, false) && (
+      {otherChecked && (
         <Input
           key={items.length}
           w="80%"
@@ -91,10 +97,7 @@ export function ListSelectMultiple({
   )
 }
 
-// TODO Forbid all labels like ^__.*__$
-
 export function List({
-  key,
   withLabels = false,
   options,
   value,
@@ -104,7 +107,6 @@ export function List({
   onOtherValue,
   debounceMs = 300,
 }: {
-  key: string | number | undefined
   value: string | null
   onSelect: (s: string | null) => any
   other?: 'text' | 'long-text'
@@ -114,11 +116,11 @@ export function List({
 } & (
   | {
       withLabels?: true
-      options: FormKVRawType[]
+      options: FormKVRawType[] | null
     }
   | {
       withLabels?: false
-      options: string[] | boolean[] | number[]
+      options: string[] | boolean[] | number[] | null
     }
 )) {
   const [rawContents, setRawContents] = React.useState(
@@ -147,39 +149,40 @@ export function List({
           }
         }}
       >
-        {options
-          .map((e, i) => {
-            if (withLabels) {
-              return (
-                <Select.Item
-                  size="md"
-                  key={i}
-                  label={e.key + ' (' + e.value + ')'}
-                  value={_.toString(e.value)}
-                />
-              )
-            } else {
-              return (
-                <Select.Item
-                  size="md"
-                  label={_.toString(e)}
-                  value={_.toString(e)}
-                />
-              )
-            }
-          })
-          .concat(
-            other
-              ? [
+        {options &&
+          options
+            .map((e, i) => {
+              if (withLabels) {
+                return (
                   <Select.Item
-                    key={-1}
                     size="md"
-                    label="Other"
-                    value="__other__"
-                  />,
-                ]
-              : []
-          )}
+                    key={i}
+                    label={e.key + ' (' + e.value + ')'}
+                    value={_.toString(e.value)}
+                  />
+                )
+              } else {
+                return (
+                  <Select.Item
+                    size="md"
+                    label={_.toString(e)}
+                    value={_.toString(e)}
+                  />
+                )
+              }
+            })
+            .concat(
+              other
+                ? [
+                    <Select.Item
+                      key={-1}
+                      size="md"
+                      label="Other"
+                      value="__other__"
+                    />,
+                  ]
+                : []
+            )}
       </Select>
       {other && onOtherValue && value === '__other__' && (
         <Input
