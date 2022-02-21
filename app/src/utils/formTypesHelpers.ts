@@ -58,22 +58,25 @@ export type FieldType = {
 }
 
 export type FieldTypes =
-  | 'signature'
+  | 'address'
   | 'body-image'
   | 'bool'
-  | 'gender'
-  | 'text'
-  | 'long-text'
-  | 'number'
-  | 'address'
-  | 'phone-number'
   | 'date'
   | 'date-time'
-  | 'list-with-parts'
+  | 'email'
+  | 'gender'
   | 'list'
-  | 'sex'
-  | 'photo'
+  | 'list-multiple'
   | 'list-with-labels'
+  | 'list-with-labels-multiple'
+  | 'list-with-parts'
+  | 'long-text'
+  | 'number'
+  | 'phone-number'
+  | 'photo'
+  | 'sex'
+  | 'signature'
+  | 'text'
 
 // A type to support walking over a form
 export type FormFns<Return> = {
@@ -129,6 +132,7 @@ export type FormFns<Return> = {
   date: StandardFormFn<Return, { type: 'date' }>
   'date-time': StandardFormFn<Return, { type: 'date-time' }>
   gender: StandardFormFn<Return, { type: 'gender' }>
+  email: StandardFormFn<Return, { type: 'email' }>
   list: StandardFormFn<Return, { type: 'list' }>
   'list-with-labels': StandardFormFn<Return, { type: 'list-with-labels' }>
   'list-with-parts': StandardFormFn<Return, { type: 'list-with-parts' }>
