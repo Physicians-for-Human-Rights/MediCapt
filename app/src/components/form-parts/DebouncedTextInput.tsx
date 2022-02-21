@@ -16,8 +16,9 @@ export default function DebouncedTextInput(
   useDebounce(
     () => {
       if (
-        rawContents === '' &&
-        (props.value === undefined || props.value === null)
+        (rawContents === '' &&
+          (props.value === undefined || props.value === null)) ||
+        rawContents === props.value
       )
         return
       //@ts-ignore This is correct, we will have a value
