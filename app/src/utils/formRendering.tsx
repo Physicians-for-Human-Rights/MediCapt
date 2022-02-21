@@ -102,11 +102,15 @@ export default function renderFnsWrapper(
             'options' in part && _.isArray(part.options) ? part.options : []
           }
           other={'other' in part ? part.other : undefined}
-          setPathValue={(idx: number, b: boolean) =>
-            recordSetPath(valuePaths[idx], b)
+          togglePathValue={(idx: number) =>
+            recordSetPath(
+              valuePaths[idx],
+              !getPath(valuePaths[idx], _.isBoolean, false)
+            )
           }
-          setOtherChecked={(b: boolean | null) =>
-            otherPath && recordSetPath(otherPath, b)
+          toggleOtherChecked={() =>
+            otherPath &&
+            recordSetPath(otherPath, !getPath(otherPath, _.isBoolean, false))
           }
           setOtherText={(s: string | undefined) =>
             otherPath && recordSetPath(otherPath.concat('.value'), s)

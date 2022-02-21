@@ -309,10 +309,12 @@ export function renderCommand(
           otherText={command.otherText}
           options={command.options}
           other={command.other}
-          setPathValue={(idx: number, b: boolean) =>
-            setPath(command.valuePaths[idx], b)
+          togglePathValue={(idx: number) =>
+            setPath(command.valuePaths[idx], !command.values[idx])
           }
-          setOtherChecked={(b: boolean | null) => setPath(command.otherPath, b)}
+          toggleOtherChecked={() =>
+            setPath(command.otherPath, !command.otherChecked)
+          }
           setOtherText={(s: string | undefined) =>
             setPath(command.otherPathText, s)
           }

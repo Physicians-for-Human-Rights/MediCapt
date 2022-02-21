@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Input, Center, Select, Checkbox } from 'native-base'
+import { Box, Input, Center, Select, Checkbox, VStack } from 'native-base'
 import useDebounce from 'react-use/lib/useDebounce'
 import _ from 'lodash'
 import { RecordPath } from 'utils/recordTypes'
@@ -11,6 +11,7 @@ import {
   FormKVRawType,
 } from 'utils/formTypes'
 import { t } from 'i18n-js'
+import { CheckBox } from 'react-native-elements'
 
 export function isPrimitiveType(x: any) {
   return _.isString(x) || _.isBoolean(x) || _.isNumber(x)
@@ -24,8 +25,8 @@ export function ListSelectMultiple({
   otherText,
   options,
   other,
-  setPathValue,
-  setOtherChecked,
+  togglePathValue,
+  toggleOtherChecked,
   setOtherText,
 }: {
   values: boolean[]
@@ -33,8 +34,8 @@ export function ListSelectMultiple({
   otherText: string | undefined
   options: MultipleFormValueTypes | undefined
   other: 'text' | 'long-text' | undefined
-  setPathValue: (idx: number, b: boolean) => any
-  setOtherChecked: (b: boolean | null) => any
+  togglePathValue: (idx: number) => any
+  toggleOtherChecked: () => any
   setOtherText: (s: string | undefined) => any
 }) {
   const [rawContents, setRawContents] = React.useState(otherText)
@@ -57,7 +58,7 @@ export function ListSelectMultiple({
               defaultIsChecked={values[i]}
               value={_.toString(i)}
               my={2}
-              onChange={state => setPathValue(i, state)}
+              onChange={() => togglePathValue(i)}
             >
               {e}
             </Checkbox>
@@ -66,21 +67,19 @@ export function ListSelectMultiple({
       : []
   if (other && otherChecked !== null) {
     items.push(
-      <Checkbox
+      <CheckBox
         key={-1}
-        colorScheme="blue"
-        isChecked={otherChecked}
-        value={'other'}
-        my={2}
-        onChange={setOtherChecked}
+        checked={otherChecked}
+        title={other}
+        onPress={toggleOtherChecked}
       >
         Other
-      </Checkbox>
+      </CheckBox>
     )
   }
   return (
     <Center>
-      <Checkbox.Group colorScheme="blue">{items}</Checkbox.Group>
+      <VStack>{items}</VStack>
       {otherChecked && (
         <Input
           key={items.length}
