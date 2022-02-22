@@ -164,4 +164,4 @@ export default function Form({
   )
 }
 
-const style = { height: '800px', backgroundColor: '#fff', padding: '10px' }
+const style = { height: 800, backgroundColor: '#fff', padding: 10 }
