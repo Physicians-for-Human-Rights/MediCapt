@@ -19,7 +19,6 @@ import FromTop from 'components/FormTop'
 import { FormType } from 'utils/formTypes'
 import { RecordPath } from 'utils/recordTypes'
 import getRecordPath from 'utils/formInferences'
-import renderFnsWrapper from 'utils/formRendering'
 import { RenderCommand } from 'utils/formRendering/types'
 import { allFormRenderCommands } from 'utils/formRendering/commands'
 import { renderCommand } from 'utils/formRendering/renderer'
@@ -28,8 +27,6 @@ import {
   mapSectionWithPaths,
   isSectionComplete,
 } from 'utils/forms'
-
-const USE_SPLIT_RENDERER = true
 
 export default function Form({
   files,
@@ -116,119 +113,55 @@ export default function Form({
     []
   )
 
-  if (USE_SPLIT_RENDERER) {
-    if (!_.isEmpty(formSections) && form && 'common' in form) {
-      const current_section_content = formSections[currentSection]
-      const sectionCommands = allFormRenderCommands(
-        files,
-        current_section_content,
-        form.common,
-        (value: RecordPath, default_: any) =>
-          getRecordPath(formPaths, value, default_)
-      )
-      if (!_.isEqual(renderCommands, sectionCommands)) {
-        setRenderCommands(sectionCommands)
-      }
-    } else {
-      if (renderCommands !== []) setRenderCommands([])
-    }
-    return (
-      <View flex={1}>
-        <FromTop
-          key="form-top"
-          sectionOffset={setSectionOffset}
-          currentSection={currentSection}
-          toggleMenu={toggleMenu}
-          title={formSections[currentSection].title}
-          lastSection={formSections.length - 1}
-          isSectionCompleted={isSectionCompleteList[currentSection]}
-          isMenuVisible={isMenuVisible}
-        />
-        {isMenuVisible ? (
-          <FormMenu
-            formSections={formSections}
-            changeSection={menuChangeSection}
-            toggleMenu={toggleMenu}
-            isSectionCompleteList={isSectionCompleteList}
-            onCancel={onCancel}
-            onSaveAndExit={onCancel}
-            onCompleteRecord={onCancel}
-            onPrint={onCancel}
-          />
-        ) : (
-          <FlatList
-            style={style}
-            data={renderCommands}
-            renderItem={renderItem}
-            initialNumToRender={10}
-            windowSize={25}
-          />
-        )}
-      </View>
-    )
-  } else {
-    const renderFns = renderFnsWrapper(
+  if (!_.isEmpty(formSections) && form && 'common' in form) {
+    const current_section_content = formSections[currentSection]
+    const sectionCommands = allFormRenderCommands(
       files,
-      form ? form.common : {},
+      current_section_content,
+      form.common,
       (value: RecordPath, default_: any) =>
-        getRecordPath(formPaths, value, default_),
-      setRecordPath,
-      changedPaths,
-      keepAlive,
-      removeKeepAlive,
-      addKeepAlive,
-      noRenderCache
+        getRecordPath(formPaths, value, default_)
     )
-    let sectionContent: null | JSX.Element = null
-    if (!_.isEmpty(formSections) && form && 'common' in form) {
-      const current_section_content = formSections[currentSection]
-      sectionContent = mapSectionWithPaths<JSX.Element>(
-        current_section_content,
-        form.common,
-        <></>,
-        (value: RecordPath, default_: any) =>
-          getRecordPath(formPaths, value, default_),
-        renderFns
-      )
+    if (!_.isEqual(renderCommands, sectionCommands)) {
+      setRenderCommands(sectionCommands)
     }
-    return (
-      <View flex={1}>
-        <FromTop
-          key="form-top"
-          sectionOffset={setSectionOffset}
-          currentSection={currentSection}
-          toggleMenu={toggleMenu}
-          title={formSections[currentSection].title}
-          lastSection={formSections.length - 1}
-          isSectionCompleted={isSectionCompleteList[currentSection]}
-          isMenuVisible={isMenuVisible}
-        />
-        {isMenuVisible ? (
-          <FormMenu
-            formSections={formSections}
-            changeSection={menuChangeSection}
-            toggleMenu={toggleMenu}
-            isSectionCompleteList={isSectionCompleteList}
-            onCancel={onCancel}
-            onSaveAndExit={onCancel}
-            onCompleteRecord={onCancel}
-            onPrint={onCancel}
-          />
-        ) : (
-          <ScrollView
-            h="80"
-            ref={scrollView}
-            keyboardDismissMode="on-drag"
-            accessible={false}
-            keyboardShouldPersistTaps="handled"
-            bg="white"
-          >
-            {sectionContent}
-          </ScrollView>
-        )}
-      </View>
-    )
+  } else {
+    if (renderCommands !== []) setRenderCommands([])
   }
+  return (
+    <View flex={1}>
+      <FromTop
+        key="form-top"
+        sectionOffset={setSectionOffset}
+        currentSection={currentSection}
+        toggleMenu={toggleMenu}
+        title={formSections[currentSection].title}
+        lastSection={formSections.length - 1}
+        isSectionCompleted={isSectionCompleteList[currentSection]}
+        isMenuVisible={isMenuVisible}
+      />
+      {isMenuVisible ? (
+        <FormMenu
+          formSections={formSections}
+          changeSection={menuChangeSection}
+          toggleMenu={toggleMenu}
+          isSectionCompleteList={isSectionCompleteList}
+          onCancel={onCancel}
+          onSaveAndExit={onCancel}
+          onCompleteRecord={onCancel}
+          onPrint={onCancel}
+        />
+      ) : (
+        <FlatList
+          style={style}
+          data={renderCommands}
+          renderItem={renderItem}
+          initialNumToRender={10}
+          windowSize={25}
+        />
+      )}
+    </View>
+  )
 }
 
 const style = { height: '800px', backgroundColor: '#fff', padding: '10px' }
