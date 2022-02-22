@@ -9,6 +9,7 @@ export default function Button({
   colorScheme = 'blue',
   maxW = '30%',
   icon,
+  ...props
 }: {
   key: string
   text: string
@@ -25,6 +26,7 @@ export default function Button({
       maxW={maxW}
       onPress={onPress}
       leftIcon={icon}
+      {...props}
     >
       {text}
     </NButton>

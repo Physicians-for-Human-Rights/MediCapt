@@ -405,7 +405,7 @@ export function allFormRenderCommands(
         type: 'divider',
         valuePath: recordPath.concat('divider'),
         key: _.join(recordPath.concat('divider'), '.'),
-        thickness: 5,
+        thickness: 1,
       })
     },
   })

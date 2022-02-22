@@ -378,6 +378,7 @@ export function renderCommand(
                 command.repeatList.concat(uuid.v4() as string)
               )
             }}
+            mt={2}
             icon={<Icon as={MaterialIcons} name="add-box" size="sm" />}
           />
         </Center>
@@ -395,6 +396,7 @@ export function renderCommand(
                 _.difference(command.repeatList, [command.repeatId])
               )
             }
+            mt={2}
             icon={<Icon as={MaterialIcons} name="delete" size="sm" />}
             maxW="80%"
           />
