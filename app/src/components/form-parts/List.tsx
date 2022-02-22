@@ -11,7 +11,7 @@ import {
   FormKVRawType,
 } from 'utils/formTypes'
 import { t } from 'i18n-js'
-import { CheckBox } from 'react-native-elements'
+import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 
 export function isPrimitiveType(x: any) {
   return _.isString(x) || _.isBoolean(x) || _.isNumber(x)
@@ -55,7 +55,6 @@ export function ListSelectMultiple({
               key={i}
               colorScheme="blue"
               isChecked={values[i]}
-              defaultIsChecked={values[i]}
               value={_.toString(i)}
               my={2}
               onChange={() => togglePathValue(i)}
@@ -67,22 +66,25 @@ export function ListSelectMultiple({
       : []
   if (other && otherChecked !== null) {
     items.push(
-      <CheckBox
+      <Checkbox
         key={-1}
-        checked={otherChecked}
-        title={other}
-        onPress={toggleOtherChecked}
+        isChecked={otherChecked}
+        value="other"
+        onChange={toggleOtherChecked}
+        colorScheme="blue"
+        my={2}
       >
         Other
-      </CheckBox>
+      </Checkbox>
     )
   }
   return (
     <Center>
       <VStack>{items}</VStack>
       {otherChecked && (
-        <Input
+        <DebouncedTextInput
           key={items.length}
+          debounceMs={500}
           w="80%"
           size="md"
           placeholder={'Details about other (optional)'}
