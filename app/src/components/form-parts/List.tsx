@@ -144,6 +144,7 @@ export function List({
           value === undefined || value === null ? '' : _.toString(value)
         }
         placeholder={t('form.select-value')}
+        minWidth="200"
         onValueChange={itemValue => {
           if (itemValue != null) {
             onSelect(itemValue)
