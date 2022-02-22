@@ -122,6 +122,26 @@ export type FormFns<Return> = {
     otherPath: RecordPath | null,
     entry: FormPartMap
   ) => Return | null
+  // Handle repeats
+  preRepeat: (part: FormPart, recordPath: RecordPath) => Return | null
+  preEachRepeat: (
+    part: FormPart,
+    recordPath: RecordPath,
+    repeatId: ArrayElement<RecordPath>,
+    repeatPath: RecordPath
+  ) => Return | null
+  eachRepeat: (
+    result: Return,
+    part: FormPart,
+    recordPath: RecordPath,
+    repeatId: ArrayElement<RecordPath>,
+    repeatPath: RecordPath
+  ) => Return | null
+  postRepeated: (
+    list: { path: RecordPath; result: Return }[],
+    part: FormPart,
+    recordPath: RecordPath
+  ) => Return
   // parts
   //
   // The type restrictions here allow for cleaner code that knows which

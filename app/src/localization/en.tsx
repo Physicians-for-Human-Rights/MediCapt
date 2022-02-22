@@ -27,5 +27,11 @@ export default {
     'add-photo': 'Add a photo',
     'delete-photo': 'Delete photo',
     'mark-diagram': 'Annotate the diagram',
+    'repeated-one-time-below': 'repeated one time below',
+    'can-repeat-below': 'can repeat below',
+    repeated: 'repeated',
+    'times-below': 'times below',
+    'repeat-number': 'number',
+    'repeat-out-of': 'out of',
   },
 }

@@ -20,11 +20,9 @@ import { FormType } from 'utils/formTypes'
 import { RecordPath } from 'utils/recordTypes'
 import getRecordPath from 'utils/formInferences'
 import renderFnsWrapper from 'utils/formRendering'
-import {
-  allFormRenderCommands,
-  renderCommand,
-  RenderCommand,
-} from 'utils/formSplitRendering'
+import { RenderCommand } from 'utils/formRendering/types'
+import { allFormRenderCommands } from 'utils/formRendering/commands'
+import { renderCommand } from 'utils/formRendering/renderer'
 import {
   nameFormSections,
   mapSectionWithPaths,
@@ -75,6 +73,7 @@ export default function Form({
     if (changedPaths !== []) {
       let record = {}
       _.map(formPaths, (v, p) => _.set(record, p, v))
+      console.log('Record+paths', record, formPaths)
     }
   }
 

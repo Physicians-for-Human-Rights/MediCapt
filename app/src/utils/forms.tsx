@@ -135,28 +135,15 @@ export function mapSectionWithPaths<Return>(
       return process(e, i, recordPath)
     })
   }
-  function process(
-    entry: FormPartMap,
+  function handleOne(
+    part: FormPart,
+    recordPath: RecordPath,
     index: number,
-    oldRecordPath: RecordPath
+    entry: FormPartMap
   ): Return {
-    if (_.isNil(entry)) return identity
-    const part = Object.values(entry)[0]
-    if (
-      !_.isObject(part) ||
-      !_.isString(Object.keys(entry)[0]) ||
-      Object.keys(entry)[0] === ''
-    )
-      return identity
-    const recordPath = _.concat(oldRecordPath, Object.keys(entry)[0])
+    const pre = fns.pre(part, recordPath, index, entry)
     let inner: Return | null = null
     let subparts: Return | null = null
-    //
-    if (!('Ref' in part) && shouldSkipConditional(part, getValue)) {
-      return identity
-    }
-    //
-    const pre = fns.pre(part, recordPath, index, entry)
     // References are always to a list of pats.
     if ('Ref' in part) {
       subparts = fns.combineSmartParts(
@@ -244,7 +231,6 @@ export function mapSectionWithPaths<Return>(
         }
       }
     }
-    //
     const skippedPath =
       'optional' in part && part.optional ? recordPath.concat('skipped') : null
     return fns.post(
@@ -258,6 +244,66 @@ export function mapSectionWithPaths<Return>(
       entry
     )
   }
+  function handleRepeats(
+    part: FormPart,
+    recordPath: RecordPath,
+    index: number,
+    entry: FormPartMap,
+    repeats: string[]
+  ): Return {
+    fns.preRepeat(part, recordPath)
+    return fns.postRepeated(
+      _.filter(
+        _.map(repeats, r => {
+          const path = recordPath.concat(['repeat', r])
+          fns.preEachRepeat(part, recordPath, r, path)
+          return {
+            path,
+            result: fns.eachRepeat(
+              handleOne(part, path, index, entry),
+              part,
+              recordPath,
+              path
+            ),
+          }
+        }),
+        x => x.result !== null && x.result !== undefined
+      ),
+      part,
+      recordPath
+    )
+  }
+  function process(
+    entry: FormPartMap,
+    index: number,
+    oldRecordPath: RecordPath
+  ): Return {
+    if (_.isNil(entry)) return identity
+    const part = Object.values(entry)[0]
+    if (
+      !_.isObject(part) ||
+      !_.isString(Object.keys(entry)[0]) ||
+      Object.keys(entry)[0] === ''
+    )
+      return identity
+    const recordPath = _.concat(oldRecordPath, Object.keys(entry)[0])
+    //
+    if (!('Ref' in part) && shouldSkipConditional(part, getValue)) {
+      return identity
+    }
+    //
+    if ('repeated' in part) {
+      return handleRepeats(
+        part,
+        recordPath,
+        index,
+        entry,
+        getValue(recordPath.concat('repeat-list')) as string[]
+      )
+    } else {
+      return handleOne(part, recordPath, index, entry)
+    }
+  }
   if (shouldSkipConditional(section, getValue)) {
     return identity
   }
@@ -268,42 +314,6 @@ export function mapSectionWithPaths<Return>(
     ['sections', section.name],
     0
   )
-}
-
-export function allFormValuePathsForSection(
-  section: NamedFormSection,
-  commonRefTable: Record<string, FormDefinition>,
-  getValue: GetValueFn
-) {
-  let allValuePaths: RecordPath[] = []
-  // any is an ok type here because we're discarding the output
-  mapSectionWithPaths<any>(section, commonRefTable, [], getValue, {
-    pre: () => null,
-    selectMultiple: valuePaths => {
-      allValuePaths = allValuePaths.concat(valuePaths)
-    },
-    address: valuePath => allValuePaths.push(valuePath),
-    'body-image': valuePath => allValuePaths.push(valuePath),
-    bool: valuePath => allValuePaths.push(valuePath),
-    date: valuePath => allValuePaths.push(valuePath),
-    'date-time': valuePath => allValuePaths.push(valuePath),
-    email: valuePath => allValuePaths.push(valuePath),
-    gender: valuePath => allValuePaths.push(valuePath),
-    list: valuePath => allValuePaths.push(valuePath),
-    'list-with-labels': valuePath => allValuePaths.push(valuePath),
-    'list-with-parts': valuePath => allValuePaths.push(valuePath),
-    'long-text': valuePath => allValuePaths.push(valuePath),
-    number: valuePath => allValuePaths.push(valuePath),
-    'phone-number': valuePath => allValuePaths.push(valuePath),
-    photo: valuePath => allValuePaths.push(valuePath),
-    sex: valuePath => allValuePaths.push(valuePath),
-    signature: valuePath => allValuePaths.push(valuePath),
-    text: valuePath => allValuePaths.push(valuePath),
-    combinePlainParts: () => null,
-    combineSmartParts: () => null,
-    post: () => null,
-  })
-  return allValuePaths
 }
 
 export function isSectionComplete(
@@ -340,6 +350,15 @@ export function isSectionComplete(
       if (r === undefined) return true
       else return r
     },
+    preRepeat: () => null,
+    preEachRepeat: () => null,
+    eachRepeat: result => result,
+    postRepeated: list =>
+      _.reduce(
+        _.map(list, e => e.result),
+        (a, b) => a && b,
+        true as boolean
+      ),
     post: (_part, subparts, inner, _recordPath, _index, _pre, skippedPath) => {
       return (
         (skippedPath && getValue(skippedPath) === true) ||
