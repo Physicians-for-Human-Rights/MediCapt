@@ -379,7 +379,9 @@ export function renderCommand(
               )
             }}
             mt={2}
+            p={2}
             icon={<Icon as={MaterialIcons} name="add-box" size="sm" />}
+            maxW="80%"
           />
         </Center>
       )
@@ -397,6 +399,7 @@ export function renderCommand(
               )
             }
             mt={2}
+            p={2}
             icon={<Icon as={MaterialIcons} name="delete" size="sm" />}
             maxW="80%"
           />

@@ -192,6 +192,7 @@ export type FormPartField =
     }
   | {
       type: 'list-with-parts'
+      options: FormSubparts
     }
   | {
       type: 'text'

@@ -198,6 +198,41 @@ export function mapSectionWithPaths<Return>(
               }
             }
             break
+          case 'list-with-parts': {
+            const resolved = resolveRef(part.options, commonRefTable)
+            if (resolved) {
+              inner = fns.selectMultiple(
+                resolved.map((_e: any, i: number) => {
+                  return recordPath.concat('value', i)
+                }),
+                part,
+                recordPath,
+                index,
+                null,
+                entry
+              )
+              subparts = fns.combineSmartParts(
+                part,
+                processMultiple(
+                  _.filter(
+                    resolved.map((_e: any, i: number) => {
+                      if (getValue(recordPath.concat('value', i), false)) {
+                        return part.options[i]
+                      } else {
+                        return null
+                      }
+                    }),
+                    p => p
+                  ),
+                  recordPath.concat('parts')
+                ),
+                inner,
+                recordPath,
+                index,
+                entry
+              )
+            }
+          }
           default:
             // @ts-ignore TODO Errors out with expression produces a union type that is too complex to represent
             if (part && fns[part.type]) {

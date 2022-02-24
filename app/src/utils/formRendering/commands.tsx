@@ -67,10 +67,15 @@ export function allFormRenderCommands(
   mapSectionWithPaths<any>(section, commonRefTable, null, getValue, {
     pre: (part, recordPath) => {
       if ('title' in part) {
+        const isRepeated: boolean = 'repeated' in part && part.repeated
         const size = recordPath.length < 4 ? 'md' : 'sm'
-        const fontWeight = recordPath.length < 6 ? 'bold' : 'normal'
+        const fontWeight = isRepeated
+          ? '500'
+          : recordPath.length < 6
+          ? 'bold'
+          : 'normal'
         let suffix = ''
-        if ('repeated' in part && part.repeated) {
+        if (isRepeated) {
           const [repeatPathPart, repeatId] = _.takeRight(recordPath, 2)
           if (repeatPathPart === 'repeat') {
             const repeatList = getPath(
@@ -97,7 +102,7 @@ export function allFormRenderCommands(
           title: 'title' in part ? part.title + suffix : '',
           size,
           fontWeight,
-          italic: false,
+          italic: isRepeated,
         })
       }
       if ('description' in part) {
@@ -112,7 +117,7 @@ export function allFormRenderCommands(
         })
       }
     },
-    selectMultiple: (valuePaths, part, recordPath, index, otherPath) =>
+    selectMultiple: (valuePaths, part, recordPath, index, otherPath) => {
       renderCommands.push({
         type: 'list-multiple',
         valuePath: valuePaths[0],
@@ -132,7 +137,8 @@ export function allFormRenderCommands(
         // @ts-ignore TODO This combines two cases, split them
         options:
           'options' in part && _.isArray(part.options) ? part.options : [],
-      }),
+      })
+    },
     address: (valuePath, part) =>
       renderCommands.push({
         type: 'address',
@@ -377,7 +383,7 @@ export function allFormRenderCommands(
         title: 'title' in part ? part.title + suffix : '',
         size: 'sm',
         fontWeight: 'bold',
-        italic: true,
+        italic: false,
       })
     },
     preEachRepeat: (part, recordPath, repeatId, repeatPath) => {
