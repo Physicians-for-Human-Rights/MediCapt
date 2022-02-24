@@ -50,18 +50,34 @@ export function ListSelectMultiple({
     options && _.isArray(options)
       ? // @ts-ignore TODO type this
         options.map((e: string, i: number) => {
-          return (
-            <Checkbox
-              key={i}
-              colorScheme="blue"
-              isChecked={values[i]}
-              value={_.toString(i)}
-              my={2}
-              onChange={() => togglePathValue(i)}
-            >
-              {e}
-            </Checkbox>
-          )
+          if (_.isString(e) || _.isNumber(e)) {
+            return (
+              <Checkbox
+                key={i}
+                colorScheme="blue"
+                isChecked={values[i]}
+                value={_.toString(i)}
+                my={2}
+                onChange={() => togglePathValue(i)}
+              >
+                {e}
+              </Checkbox>
+            )
+          }
+          if (_.isObject(e)) {
+            return (
+              <Checkbox
+                key={i}
+                colorScheme="blue"
+                isChecked={values[i]}
+                value={_.toString(i)}
+                my={2}
+                onChange={() => togglePathValue(i)}
+              >
+                {e[Object.keys(e)[0]].title}
+              </Checkbox>
+            )
+          }
         })
       : []
   if (other && otherChecked !== null) {
