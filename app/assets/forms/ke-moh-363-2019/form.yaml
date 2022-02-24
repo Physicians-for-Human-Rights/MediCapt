@@ -218,7 +218,6 @@ sections:
       parts:
         - name:
             title: Name
-            repeated: true
             type: text
             if-unknown: Unknown
         - date:
@@ -564,16 +563,12 @@ sections:
         - samples:
             title: Sample
             type: list-with-parts
-            parts:
+            options:
               - outer-genital-swab:
                   title: Outer genital swab
                   parts:
                     Ref: lab-sample-type-a
               - anal-swab:
-                  title: Anal swab
-                  parts:
-                    Ref: lab-sample-type-a
-              - skin-swab:
                   title: Anal swab
                   parts:
                     Ref: lab-sample-type-a
