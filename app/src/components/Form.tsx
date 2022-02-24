@@ -98,7 +98,7 @@ export default function Form({
       scrollView.current &&
         scrollView.current.scrollTo({ x: 0, y: 0, animated: true })
     },
-    [currentSection, scrollView.current]
+    [scrollView.current]
   )
 
   const setRecordPath = useCallback((path: RecordPath, value: any) => {
