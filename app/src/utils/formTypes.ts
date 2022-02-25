@@ -89,7 +89,7 @@ export type FormPartCommon = {
   title: string | 'none'
   description?: string
   help?: string
-  repeated?: boolean
+  repeated?: boolean | 'at-least-one'
   'if-unknown'?: string
   'show-box'?: boolean
 }

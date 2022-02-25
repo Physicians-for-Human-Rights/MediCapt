@@ -45,6 +45,24 @@ import BodyImage from 'components/form-parts/BodyImage'
 import CustomButton from 'components/form-parts/Button'
 import { RenderCommand, URI } from 'utils/formRendering/types'
 
+function getRepeatList(
+  repeated: boolean | 'at-least-one',
+  getPath: (
+    valuePath: RecordPath | null | undefined,
+    checkTy?: ((o: any) => boolean) | undefined,
+    _default?: any
+  ) => any,
+  recordPath: RecordPath
+) {
+  if (repeated === 'at-least-one')
+    return _.uniq(
+      (getPath(recordPath.concat('repeat-list'), _.isArray, []) || []).concat(
+        'at-least-one'
+      )
+    )
+  return getPath(recordPath.concat('repeat-list'), _.isArray, []) || []
+}
+
 // Turn a section of a form into a list of flat render commands
 export function allFormRenderCommands(
   files: Record<string, any>,
@@ -78,10 +96,10 @@ export function allFormRenderCommands(
         if (isRepeated) {
           const [repeatPathPart, repeatId] = _.takeRight(recordPath, 2)
           if (repeatPathPart === 'repeat') {
-            const repeatList = getPath(
-              _.dropRight(recordPath, 2).concat('repeat-list'),
-              _.isArray,
-              []
+            const repeatList = getRepeatList(
+              part.repeated || false,
+              getPath,
+              _.dropRight(recordPath, 2)
             )
             suffix =
               ' (' +
@@ -356,10 +374,10 @@ export function allFormRenderCommands(
     preRepeat: (part, recordPath) => {
       let suffix = ''
       if ('repeated' in part && part.repeated) {
-        const nr = getPath(
-          recordPath.concat('repeat-list'),
-          _.isArray,
-          []
+        const nr = getRepeatList(
+          part.repeated || false,
+          getPath,
+          recordPath
         ).length
         if (nr === 1) {
           suffix = ' (' + t('form.repeated-one-time-below') + ')'
@@ -387,12 +405,15 @@ export function allFormRenderCommands(
       })
     },
     preEachRepeat: (part, recordPath, repeatId, repeatPath) => {
+      if (_.last(repeatPath) === 'at-least-one') {
+        return
+      }
       renderCommands.push({
         type: 'remove-repeat-button',
         valuePath: repeatPath.concat('add-repeat-button'),
         key: _.join(repeatPath.concat('add-repeat-button'), '.'),
         title: 'title' in part ? part.title : '',
-        repeatList: getPath(recordPath.concat('repeat-list'), _.isArray, []),
+        repeatList: getRepeatList(part.repeated || false, getPath, recordPath),
         repeatListPath: recordPath.concat('repeat-list'),
         repeatId: repeatId + '',
       })
@@ -404,14 +425,8 @@ export function allFormRenderCommands(
         valuePath: recordPath.concat('add-repeat-button'),
         key: _.join(recordPath.concat('add-repeat-button'), '.'),
         title: 'title' in part ? part.title : '',
-        repeatList: getPath(recordPath.concat('repeat-list'), _.isArray, []),
+        repeatList: getRepeatList(part.repeated || false, getPath, recordPath),
         repeatListPath: recordPath.concat('repeat-list'),
-      })
-      renderCommands.push({
-        type: 'divider',
-        valuePath: recordPath.concat('divider'),
-        key: _.join(recordPath.concat('divider'), '.'),
-        thickness: 1,
       })
     },
   })

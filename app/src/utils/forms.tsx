@@ -224,7 +224,7 @@ export function mapSectionWithPaths<Return>(
                     }),
                     p => p
                   ),
-                  recordPath.concat('parts')
+                  recordPath.concat('list-with-parts')
                 ),
                 inner,
                 recordPath,
@@ -280,6 +280,7 @@ export function mapSectionWithPaths<Return>(
     )
   }
   function handleRepeats(
+    repeated: true | 'at-least-one',
     part: FormPart,
     recordPath: RecordPath,
     index: number,
@@ -289,19 +290,26 @@ export function mapSectionWithPaths<Return>(
     fns.preRepeat(part, recordPath)
     return fns.postRepeated(
       _.filter(
-        _.map(repeats, r => {
-          const path = recordPath.concat(['repeat', r])
-          fns.preEachRepeat(part, recordPath, r, path)
-          return {
-            path,
-            result: fns.eachRepeat(
-              handleOne(part, path, index, entry),
-              part,
-              recordPath,
-              path
-            ),
+        _.map(
+          _.uniq(
+            repeated === 'at-least-one'
+              ? repeats.concat('at-least-one')
+              : repeats
+          ),
+          r => {
+            const path = recordPath.concat(['repeat', r])
+            fns.preEachRepeat(part, recordPath, r, path)
+            return {
+              path,
+              result: fns.eachRepeat(
+                handleOne(part, path, index, entry),
+                part,
+                recordPath,
+                path
+              ),
+            }
           }
-        }),
+        ),
         x => x.result !== null && x.result !== undefined
       ),
       part,
@@ -327,13 +335,14 @@ export function mapSectionWithPaths<Return>(
       return identity
     }
     //
-    if ('repeated' in part) {
+    if ('repeated' in part && part.repeated) {
       return handleRepeats(
+        part.repeated,
         part,
         recordPath,
         index,
         entry,
-        getValue(recordPath.concat('repeat-list')) as string[]
+        (getValue(recordPath.concat('repeat-list')) || []) as string[]
       )
     } else {
       return handleOne(part, recordPath, index, entry)

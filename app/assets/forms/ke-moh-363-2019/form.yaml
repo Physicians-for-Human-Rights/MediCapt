@@ -546,7 +546,6 @@ sections:
       title: Referrals
       parts:
         - referral-list:
-            title: none
             type: list-multiple
             options:
               - police station
@@ -566,6 +565,7 @@ sections:
             options:
               - outer-genital-swab:
                   title: Outer genital swab
+                  repeated: at-least-one
                   parts:
                     Ref: lab-sample-type-a
               - anal-swab:
