@@ -8,6 +8,7 @@ export default function ButtonGroup<T>({
   onPress,
   colorScheme = 'blue',
   maxW = '30%',
+  fullwidth = true,
   ...props
 }: {
   selected: T | null
@@ -15,14 +16,15 @@ export default function ButtonGroup<T>({
   onPress: (arg: T) => any
   colorScheme?: string
   maxW?: string
+  fullwidth?: boolean
 }) {
   return (
     <Button.Group
       isAttached
-      w="100%"
       size="md"
       colorScheme={colorScheme}
-      flex={1}
+      flex={fullwidth ? 1 : undefined}
+      w={fullwidth ? '100%' : '20%'}
       justifyContent="center"
       {...props}
     >
@@ -30,11 +32,12 @@ export default function ButtonGroup<T>({
         return (
           <Button
             key={k}
-            flex={1}
+            flex={fullwidth ? 1 : undefined}
             _text={{ bold: true }}
             maxW={maxW}
             onPress={() => onPress(v)}
             variant={selected === v ? undefined : 'outline'}
+            px={5}
           >
             {k}
           </Button>

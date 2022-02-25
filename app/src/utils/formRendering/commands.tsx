@@ -85,7 +85,18 @@ export function allFormRenderCommands(
   mapSectionWithPaths<any>(section, commonRefTable, null, getValue, {
     pre: (part, recordPath) => {
       if ('title' in part) {
-        const isRepeated: boolean = 'repeated' in part && part.repeated
+        const [recordPath1, _recordPart0] = _.takeRight(recordPath, 2)
+        // Look for list-with-parts.<something>
+        if (recordPath1 === 'list-with-parts') {
+          renderCommands.push({
+            type: 'divider',
+            valuePath: recordPath.concat('divider'),
+            key: _.join(recordPath.concat('divider'), '.'),
+            thickness: 1,
+            w: '50%',
+          })
+        }
+        const isRepeated = 'repeated' in part && part.repeated
         const size = recordPath.length < 4 ? 'md' : 'sm'
         const fontWeight = isRepeated
           ? '500'

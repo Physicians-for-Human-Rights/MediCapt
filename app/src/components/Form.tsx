@@ -11,7 +11,7 @@ import {
 } from 'react-native'
 import _ from 'lodash'
 
-import { View, ScrollView } from 'native-base'
+import { View, ScrollView, useBreakpointValue } from 'native-base'
 
 import FormMenu from 'components/FormMenu'
 import FromTop from 'components/FormTop'
@@ -22,6 +22,7 @@ import getRecordPath from 'utils/formInferences'
 import { RenderCommand } from 'utils/formRendering/types'
 import { allFormRenderCommands } from 'utils/formRendering/commands'
 import { renderCommand } from 'utils/formRendering/renderer'
+import { transformToLayout } from 'utils/formRendering/transformations'
 import {
   nameFormSections,
   mapSectionWithPaths,
@@ -41,6 +42,12 @@ export default function Form({
 }) {
   // This can happen when editing forms live
   if (form === undefined) return null
+
+  const layoutType = useBreakpointValue({
+    base: 'phone',
+    md: 'compact',
+    lg: 'large',
+  })
 
   const formSections = nameFormSections(form.sections)
   const [currentSection, setCurrentSection] = useState(0)
@@ -115,12 +122,15 @@ export default function Form({
 
   if (!_.isEmpty(formSections) && form && 'common' in form) {
     const current_section_content = formSections[currentSection]
-    const sectionCommands = allFormRenderCommands(
-      files,
-      current_section_content,
-      form.common,
-      (value: RecordPath, default_: any) =>
-        getRecordPath(formPaths, value, default_)
+    const sectionCommands = transformToLayout(
+      allFormRenderCommands(
+        files,
+        current_section_content,
+        form.common,
+        (value: RecordPath, default_: any) =>
+          getRecordPath(formPaths, value, default_)
+      ),
+      layoutType
     )
     if (!_.isEqual(renderCommands, sectionCommands)) {
       setRenderCommands(sectionCommands)

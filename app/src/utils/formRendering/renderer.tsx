@@ -27,7 +27,15 @@ import {
 } from '@expo/vector-icons'
 import uuid from 'react-native-uuid'
 
-import { Icon, Center, Divider, VStack, Text, Heading } from 'native-base'
+import {
+  Icon,
+  Center,
+  Divider,
+  VStack,
+  HStack,
+  Text,
+  Heading,
+} from 'native-base'
 import { TextInput, View } from 'react-native'
 // @ts-ignore TODO TS doesn't understand .native.tsx and .web.tsx files
 import DateTimePicker from 'components/DateTimePicker'
@@ -85,6 +93,8 @@ export function renderCommand(
             italic={command.italic}
             size={command.size}
             fontWeight={command.fontWeight}
+            maxW={command.maxW}
+            px={2}
           >
             {command.title}
           </Heading>
@@ -93,7 +103,11 @@ export function renderCommand(
     case 'description':
       return <Text pb={2}>{command.description}</Text>
     case 'divider':
-      return <Divider my={2} thickness={command.thickness} />
+      return (
+        <Center>
+          <Divider w={command.w} my={2} thickness={command.thickness} />
+        </Center>
+      )
     case 'address':
       return (
         <CDebouncedTextInput
@@ -147,6 +161,9 @@ export function renderCommand(
           selected={command.selected}
           options={{ Yes: true, No: false }}
           onPress={v => setPath(command.valuePath, v)}
+          fullwidth={command.fullwidth}
+          maxW={command.maxW}
+          py={1}
         />
       )
     case 'date':
@@ -198,6 +215,8 @@ export function renderCommand(
           selected={command.selected}
           options={command.options}
           onPress={v => setPath(command.valuePath, v)}
+          fullwidth={command.fullwidth}
+          maxW={command.maxW}
         />
       )
     case 'list':
@@ -285,6 +304,7 @@ export function renderCommand(
           textAlign="center"
           keyboardType="numeric"
           value={command.value}
+          maxW={command.maxW}
         />
       )
     case 'phone-number':
@@ -303,6 +323,7 @@ export function renderCommand(
           textContentType="telephoneNumber"
           keyboardType="phone-pad"
           value={command.value}
+          maxW={command.maxW}
         />
       )
     case 'photo':
@@ -329,6 +350,8 @@ export function renderCommand(
           selected={command.value}
           options={command.options}
           onPress={v => setPath(command.valuePath, v)}
+          fullwidth={command.fullwidth}
+          maxW={command.maxW}
         />
       )
     case 'signature':
@@ -363,6 +386,7 @@ export function renderCommand(
           w="100%"
           textAlign="center"
           value={command.text}
+          maxW={command.maxW}
         />
       )
     case 'add-repeat-button':
@@ -405,7 +429,39 @@ export function renderCommand(
           />
         </Center>
       )
+    case 'row':
+      return (
+        <HStack justifyContent="space-between">
+          {renderCommand(command.left, setPath, addKeepAlive, removeKeepAlive)}
+          {renderCommand(command.right, setPath, addKeepAlive, removeKeepAlive)}
+        </HStack>
+      )
+    case 'row-with-description':
+      return (
+        <VStack>
+          <HStack justifyContent="space-between">
+            {renderCommand(
+              command.left,
+              setPath,
+              addKeepAlive,
+              removeKeepAlive
+            )}
+            {renderCommand(
+              command.right,
+              setPath,
+              addKeepAlive,
+              removeKeepAlive
+            )}
+          </HStack>
+          {renderCommand(
+            command.description,
+            setPath,
+            addKeepAlive,
+            removeKeepAlive
+          )}
+        </VStack>
+      )
     default:
-      console.log('Unknown render command ' + command)
+      console.log('Unknown render command', command)
   }
 }

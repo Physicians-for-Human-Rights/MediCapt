@@ -107,7 +107,7 @@ export default function FormEditor({
         bg={'white'}
         px={{
           base: 0,
-          md: 32,
+          md: 0,
         }}
       >
         {form && (

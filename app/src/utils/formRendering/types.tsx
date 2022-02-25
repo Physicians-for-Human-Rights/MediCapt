@@ -55,6 +55,7 @@ export type RenderCommand =
         size: string
         fontWeight: string
         italic: boolean
+        maxW: string | undefined
       }
     | {
         type: 'description'
@@ -63,6 +64,7 @@ export type RenderCommand =
     | {
         type: 'divider'
         thickness: number
+        w: string | undefined
       }
     | {
         type: 'remove-repeat-button'
@@ -77,6 +79,17 @@ export type RenderCommand =
         repeatList: string[]
         repeatListPath: RecordPath
       }
+    | {
+        type: 'row'
+        left: RenderCommand
+        right: RenderCommand
+      }
+    | {
+        type: 'row-with-description'
+        left: RenderCommand
+        right: RenderCommand
+        description: RenderCommand
+      }
     // Commands that correspond to form components
     | {
         type: 'address'
@@ -89,7 +102,12 @@ export type RenderCommand =
         annotations: RecordDataByType['body-image']['annotations']
         annotationPath: RecordPath
       }
-    | { type: 'bool'; selected: boolean | null }
+    | {
+        type: 'bool'
+        selected: boolean | null
+        fullwidth: boolean | undefined
+        maxW: string | undefined
+      }
     | { type: 'date'; date: Date; title: string }
     | { type: 'date-time'; date: Date; title: string }
     | {
@@ -97,7 +115,13 @@ export type RenderCommand =
         text: string | undefined
         placeholder: string | undefined
       }
-    | { type: 'gender'; selected: string; options: Record<string, string> }
+    | {
+        type: 'gender'
+        selected: string
+        options: Record<string, string>
+        fullwidth: boolean | undefined
+        maxW: string | undefined
+      }
     | {
         type: 'list'
         value: string
@@ -143,10 +167,26 @@ export type RenderCommand =
         numberOfLines: number
         placeholder: string | undefined
       }
-    | { type: 'number'; value: string; placeholder: string | undefined }
-    | { type: 'phone-number'; value: string }
+    | {
+        type: 'number'
+        value: string
+        placeholder: string | undefined
+        maxW: string | undefined
+      }
+    | { type: 'phone-number'; value: string; maxW: string | undefined }
     | { type: 'photo'; photos: RecordPhoto[] }
-    | { type: 'sex'; value: string; options: Record<string, string> }
+    | {
+        type: 'sex'
+        value: string
+        options: Record<string, string>
+        fullwidth: boolean | undefined
+        maxW: string | undefined
+      }
     | { type: 'signature'; image: URI; date: Date }
-    | { type: 'text'; text: string; placeholder: string | undefined }
+    | {
+        type: 'text'
+        text: string
+        placeholder: string | undefined
+        maxW: string | undefined
+      }
   ) & { valuePath: RecordPath; key: string }
