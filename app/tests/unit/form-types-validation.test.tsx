@@ -3,6 +3,7 @@ import yaml from 'js-yaml'
 import { createGenerator } from 'ts-json-schema-generator'
 import Ajv from 'ajv'
 import addFormats from 'ajv-formats'
+import betterAjvErrors from 'better-ajv-errors'
 
 const schema = createGenerator({
   path: 'src/utils/formTypes.ts',
@@ -17,7 +18,7 @@ const dataProcessed = JSON.parse(JSON.stringify(data))
 
 describe('Form typescript definition', () => {
   it('The generated JSON schema is valid', () => {
-    const ajv = addFormats(new Ajv())
+    const ajv = addFormats(new Ajv()) //
     const valid = ajv.validateSchema(schemaProcessed)
     expect(valid).toBe(true)
     if (!valid) console.log(ajv.errors)
@@ -25,7 +26,15 @@ describe('Form typescript definition', () => {
   it('The KE form is valid', () => {
     const ajv = addFormats(new Ajv())
     const valid = ajv.validate(schemaProcessed, dataProcessed)
+    if (!valid) {
+      console.log(
+        betterAjvErrors(schemaProcessed, dataProcessed, ajv.errors, {
+          format: 'cli',
+          indent: 2,
+        })
+      )
+      // console.log(ajv.errors)
+    }
     expect(valid).toBe(true)
-    if (!valid) console.log(ajv.errors)
   })
 })
