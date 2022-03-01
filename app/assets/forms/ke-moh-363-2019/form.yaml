@@ -1,4 +1,4 @@
-name: Post Rape Care Form
+title: Post Rape Care Form
 official-name: MOH
 country: KE
 language: EN
@@ -546,7 +546,9 @@ sections:
       title: Referrals
       parts:
         - referral-list:
+            title: Referrals
             type: list-multiple
+            other: long-text
             options:
               - police station
               - HIV test
@@ -555,7 +557,6 @@ sections:
               - trauma counseling
               - safe shelter
               - OPD/CCC/HIV clinic
-            other: long-text
   - laboratory-samples:
       title: Laboratory samples
       parts:
