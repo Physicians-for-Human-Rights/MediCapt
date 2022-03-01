@@ -108,7 +108,7 @@ export function resolveRef<T>(
   maybeRef: T | FormRef,
   commonRefTable: Record<string, FormDefinition>
 ): T | null {
-  if ('Ref' in maybeRef) {
+  if (maybeRef && 'Ref' in maybeRef) {
     if (commonRefTable && maybeRef.Ref in commonRefTable)
       // @ts-ignore TODO How do narrow T so that it is part of FormDefinition?
       return commonRefTable[maybeRef.Ref]
