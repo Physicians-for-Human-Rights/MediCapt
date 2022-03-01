@@ -192,7 +192,7 @@ export type FormPartField =
     }
   | {
       type: 'list-with-parts'
-      options: FormSubparts
+      options: Array<FormPartMap> | FormRef
     }
   | {
       type: 'text'
@@ -202,9 +202,9 @@ export type FormPartField =
       type: 'long-text'
       placeholder?: string
       /**
-         @minimum 1
-         @type integer
-      */
+       @minimum 1
+       @type integer
+    */
       'number-of-lines'?: number
     }
   | {
