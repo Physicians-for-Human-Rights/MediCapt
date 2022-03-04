@@ -38,6 +38,7 @@ export default function ButtonGroup<T>({
             onPress={() => onPress(v)}
             variant={selected === v ? undefined : 'outline'}
             px={5}
+            accessibilityLabel={'button ' + k}
           >
             {k}
           </Button>

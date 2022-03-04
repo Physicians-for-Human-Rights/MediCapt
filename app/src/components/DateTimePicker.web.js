@@ -3,6 +3,7 @@ import { HStack, IconButton, Input, Center, Modal } from 'native-base'
 import _ from 'lodash'
 import { AntDesign } from '@expo/vector-icons'
 import formatDate from 'utils/date.ts'
+import { t } from 'i18n-js'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import DatePicker from 'react-datepicker'
@@ -65,13 +66,16 @@ export default function DateTimePicker({
           <Input
             mx="3"
             size="md"
-            placeholder={time ? 'Enter date and time' : 'Enter date'}
+            placeholder={t(time ? 'form.enter-date-time' : 'form.enter-date')}
             w="75%"
             maxWidth="200px"
             onChangeText={setDateString}
             value={dateString}
             onSubmitEditing={onSaveText}
             onEndEditing={onSaveText}
+            accessibilityLabel={t(
+              time ? 'form.enter-date-time' : 'form.enter-date'
+            )}
           />
           <IconButton
             onPress={openInternal}
@@ -82,6 +86,7 @@ export default function DateTimePicker({
               as: AntDesign,
               name: 'calendar',
             }}
+            accessibilityLabel={'Open calendar'}
           />
         </HStack>
       </Center>

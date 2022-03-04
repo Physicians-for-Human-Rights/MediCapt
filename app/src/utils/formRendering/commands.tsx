@@ -97,10 +97,10 @@ export function allFormRenderCommands(
           })
         }
         const isRepeated = 'repeated' in part && part.repeated
-        const size = recordPath.length < 4 ? 'md' : 'sm'
+        const size = recordPath.length < 5 ? 'md' : 'sm'
         const fontWeight = isRepeated
           ? '500'
-          : recordPath.length < 6
+          : recordPath.length < 7
           ? 'bold'
           : 'normal'
         let suffix = ''
@@ -373,7 +373,7 @@ export function allFormRenderCommands(
     combinePlainParts: () => null,
     combineSmartParts: () => null,
     post: (part, subparts, inner, recordPath) => {
-      if (recordPath.length === 3) {
+      if (recordPath.length === 4) {
         renderCommands.push({
           type: 'divider',
           valuePath: recordPath.concat('divider'),

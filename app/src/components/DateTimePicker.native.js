@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import Picker from 'react-native-modal-datetime-picker'
+import { t } from 'i18n-js'
 
 import { Button } from 'native-base'
 import _ from 'lodash'
@@ -42,14 +43,15 @@ export default function DateTimePicker({
       <Button
         onPress={openInternal}
         bg={_.isDate(date) ? 'success.600' : 'primary.800'}
+        accessibilityLabel={t(
+          time ? 'form.enter-date-time' : 'form.enter-date'
+        )}
       >
         {date
           ? time
             ? date.toLocaleString()
             : date.toLocaleDateString()
-          : time
-          ? 'Enter date and time'
-          : 'Enter date'}
+          : t(time ? 'form.enter-date-time' : 'form.enter-date')}
       </Button>
       {modalVisible && (
         <Picker

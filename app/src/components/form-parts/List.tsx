@@ -59,6 +59,7 @@ export function ListSelectMultiple({
                 value={_.toString(i)}
                 my={2}
                 onChange={() => togglePathValue(i)}
+                accessibilityLabel={t('form.select-the-option') + ' ' + e}
               >
                 {e}
               </Checkbox>
@@ -73,6 +74,9 @@ export function ListSelectMultiple({
                 value={_.toString(i)}
                 my={2}
                 onChange={() => togglePathValue(i)}
+                accessibilityLabel={
+                  t('form.select-the-option') + ' ' + e[Object.keys(e)[0]].title
+                }
               >
                 {e[Object.keys(e)[0]].title}
               </Checkbox>
@@ -89,6 +93,7 @@ export function ListSelectMultiple({
         onChange={toggleOtherChecked}
         colorScheme="blue"
         my={2}
+        accessibilityLabel={t('form.select-other-option')}
       >
         Other
       </Checkbox>
@@ -108,6 +113,7 @@ export function ListSelectMultiple({
           numberOfLines={5}
           onChangeText={setRawContents}
           value={rawContents}
+          accessibilityLabel={t('form.other-details')}
         />
       )}
     </Center>

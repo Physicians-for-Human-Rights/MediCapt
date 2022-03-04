@@ -64,16 +64,19 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
   const takePhoto = async () => {
     const permissionsGranted = await verifyPermissions()
     if (!permissionsGranted) {
+      console.error('TODO could not get permissions')
       return
     }
     const image = await ImagePicker.launchCameraAsync({
       base64: true,
     })
-    if (image.cancelled == false) {
+    if (image.cancelled === false) {
       addPhoto({
         uri: `data:image/jpeg;base64,${image.base64}`,
         'date-taken': new Date(),
       })
+    } else {
+      console.error('TODO do something here')
     }
   }
 
@@ -98,6 +101,7 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
             fontSize="md"
             leftIcon={<Icon as={MaterialIcons} name="delete" size="sm" />}
             onPress={() => removePhoto(index)}
+            accessibilityLabel={t('form.delete-photo')}
           >
             {t('form.delete-photo')}
           </Button>
@@ -112,6 +116,7 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
           fontSize="md"
           leftIcon={<Icon as={MaterialIcons} name="camera-alt" size="sm" />}
           onPress={takePhoto}
+          accessibilityLabel={t('form.add-photo')}
         >
           {t('form.add-photo')}
         </Button>

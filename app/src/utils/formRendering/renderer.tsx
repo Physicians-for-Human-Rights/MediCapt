@@ -127,6 +127,7 @@ export function renderCommand(
           numberOfLines={3}
           placeholder={command.placeholder}
           value={command.text}
+          accessibilityLabel={t('form.enter-address')}
         />
       )
     case 'body-image':
@@ -159,11 +160,12 @@ export function renderCommand(
         <CButtonGroup
           command={command}
           selected={command.selected}
-          options={{ Yes: true, No: false }}
+          options={{ [t('form.Yes')]: true, [t('form.No')]: false }}
           onPress={v => setPath(command.valuePath, v)}
           fullwidth={command.fullwidth}
           maxW={command.maxW}
           py={1}
+          accessibilityLabel="yes-no buttons"
         />
       )
     case 'date':
@@ -206,6 +208,7 @@ export function renderCommand(
           keyboardType="email-address"
           placeholder={command.placeholder}
           value={command.text}
+          accessibilityLabel={t('form.enter-email')}
         />
       )
     case 'gender':
@@ -240,15 +243,17 @@ export function renderCommand(
           otherText={command.otherText}
           options={command.options}
           other={command.other}
-          togglePathValue={(idx: number) =>
+          togglePathValue={(idx: number) => {
             setPath(command.valuePaths[idx], !command.values[idx])
-          }
-          toggleOtherChecked={() =>
+          }}
+          toggleOtherChecked={() => {
             setPath(command.otherPath, !command.otherChecked)
-          }
-          setOtherText={(s: string | undefined) =>
-            setPath(command.otherPathText, s)
-          }
+          }}
+          setOtherText={(s: string | undefined) => {
+            command.other &&
+              command.otherPathText &&
+              setPath(command.otherPathText, s)
+          }}
         />
       )
     case 'list-with-labels':
@@ -286,6 +291,7 @@ export function renderCommand(
           multiline={true}
           numberOfLines={command.numberOfLines}
           value={command.text}
+          accessibilityLabel={t('form.enter-long-text')}
         />
       )
     case 'number':
@@ -305,6 +311,7 @@ export function renderCommand(
           keyboardType="numeric"
           value={command.value}
           maxW={command.maxW}
+          accessibilityLabel={t('form.enter-number')}
         />
       )
     case 'phone-number':
@@ -324,6 +331,7 @@ export function renderCommand(
           keyboardType="phone-pad"
           value={command.value}
           maxW={command.maxW}
+          accessibilityLabel={t('form.enter-phone-number')}
         />
       )
     case 'photo':
@@ -387,6 +395,7 @@ export function renderCommand(
           textAlign="center"
           value={command.text}
           maxW={command.maxW}
+          accessibilityLabel={t('form.enter-text')}
         />
       )
     case 'add-repeat-button':

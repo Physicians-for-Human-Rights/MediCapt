@@ -7,7 +7,7 @@ import {
   Dimensions,
   Keyboard,
   // Don't use the native-base FlatList. It's buggy!
-  FlatList as FlatList,
+  FlatList,
 } from 'react-native'
 import _ from 'lodash'
 

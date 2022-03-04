@@ -162,7 +162,7 @@ export function mapSectionWithPaths<Return>(
             if (
               'show-parts-when-true' in part &&
               part['show-parts-when-true'] &&
-              getValue(recordPath.concat('value'))
+              getValue(recordPath.concat(part.type, 'value'))
             ) {
               subparts = fns.combineSmartParts(
                 part,
@@ -187,12 +187,14 @@ export function mapSectionWithPaths<Return>(
               if (resolved) {
                 inner = fns.selectMultiple(
                   resolved.map((_e: any, i: number) => {
-                    return recordPath.concat('value', i)
+                    return recordPath.concat(part.type, 'value', i)
                   }),
                   part,
                   recordPath,
                   index,
-                  part.other ? recordPath.concat('value', 'other') : null,
+                  part.other
+                    ? recordPath.concat(part.type, 'value', 'other')
+                    : null,
                   entry
                 )
               }
@@ -203,7 +205,7 @@ export function mapSectionWithPaths<Return>(
             if (resolved) {
               inner = fns.selectMultiple(
                 resolved.map((_e: any, i: number) => {
-                  return recordPath.concat('value', i)
+                  return recordPath.concat(part.type, 'value', i)
                 }),
                 part,
                 recordPath,
@@ -216,7 +218,12 @@ export function mapSectionWithPaths<Return>(
                 processMultiple(
                   _.filter(
                     resolved.map((_e: any, i: number) => {
-                      if (getValue(recordPath.concat('value', i), false)) {
+                      if (
+                        getValue(
+                          recordPath.concat(part.type, 'value', i),
+                          false
+                        )
+                      ) {
                         return part.options[i]
                       } else {
                         return null
@@ -238,7 +245,7 @@ export function mapSectionWithPaths<Return>(
             if (part && fns[part.type]) {
               // @ts-ignore TODO Typescript doesn't seem willing to represent this type
               inner = fns[part.type](
-                recordPath.concat('value'),
+                recordPath.concat(part.type, 'value'),
                 part,
                 recordPath,
                 index,
@@ -354,8 +361,8 @@ export function mapSectionWithPaths<Return>(
   if (_.isNil(section) || _.isNil(section.parts) || _.isNil(section.name))
     return identity
   return fns.combinePlainParts(
-    processMultiple(section.parts, ['sections', section.name]),
-    ['sections', section.name],
+    processMultiple(section.parts, ['sections', section.name, 'parts']),
+    ['sections', section.name, 'parts'],
     0
   )
 }

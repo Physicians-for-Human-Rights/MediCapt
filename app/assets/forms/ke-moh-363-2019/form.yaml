@@ -166,7 +166,7 @@ sections:
               - reason:
                   title: The person you are speaking for is
                   only-when:
-                    path: sections.consent.proxy.parts.is-proxy.value
+                    path: sections.consent.parts.proxy.parts.is-proxy.bool.value
                     value: true
                   type: list-multiple
                   other: text
@@ -306,9 +306,9 @@ sections:
             type: list-multiple
             other: text
             options:
-              - oral
-              - vaginal
-              - anal
+              - Oral
+              - Vaginal
+              - Anal
         - condom:
             title: Use of condom
             type: bool
@@ -335,25 +335,25 @@ sections:
               - name:
                   title: Name of facility
                   only-when:
-                    path: sections.incident-details.healthcare-facility.parts.did-attend.value
+                    path: sections.incident-details.parts.healthcare-facility.parts.did-attend.value
                     value: true
                   type: long-text
               - time:
                   title: Date and time facility was attended
                   only-when:
-                    path: sections.incident-details.healthcare-facility.parts.did-attend.value
+                    path: sections.incident-details.parts.healthcare-facility.parts.did-attend.value
                     value: true
                   type: date-time
               - was-treated:
                   title: Were you treated?
                   only-when:
-                    path: sections.incident-details.healthcare-facility.parts.did-attend.value
+                    path: sections.incident-details.parts.healthcare-facility.parts.did-attend.value
                     value: true
                   type: bool
               - referral:
                   title: Were you given referral notes?
                   only-when:
-                    path: sections.incident-details.healthcare-facility.parts.did-attend.value
+                    path: sections.incident-details.parts.healthcare-facility.parts.did-attend.value
                     value: true
                   type: bool
   - history:
@@ -549,13 +549,15 @@ sections:
             title: Referrals
             type: list-multiple
             other: long-text
+            optional: true
             options:
-              - police station
+              - None
+              - Police station
               - HIV test
-              - laboratory
-              - legal
-              - trauma counseling
-              - safe shelter
+              - Laboratory
+              - Legal
+              - Trauma counseling
+              - Safe shelter
               - OPD/CCC/HIV clinic
   - laboratory-samples:
       title: Laboratory samples
