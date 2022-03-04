@@ -65,7 +65,10 @@ function LoginScreen() {
     // TODO Remove SafeAreaProvider after the native base switch
     <React.StrictMode>
       <SafeAreaProvider>
-        <NativeBaseProvider theme={theme}>
+        <NativeBaseProvider
+          theme={theme}
+          config={{ suppressColorAccessibilityWarning: true }}
+        >
           <StoreProvider>
             <AuthApp />
           </StoreProvider>
