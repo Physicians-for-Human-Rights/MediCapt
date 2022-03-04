@@ -46,7 +46,6 @@ import CustomButton from 'components/form-parts/Button'
 import { RenderCommand, URI } from 'utils/formRendering/types'
 
 export function transformToPhoneLayout(commands: RenderCommand[]) {
-  console.log('phone')
   return commands
 }
 
@@ -146,7 +145,6 @@ export function transformToSmallerAllControls(
 }
 
 export function transformToCompactLayout(commands: RenderCommand[]) {
-  console.log('compact')
   return transformToSmallerAllControls(
     commands,
     '600px',
@@ -157,7 +155,6 @@ export function transformToCompactLayout(commands: RenderCommand[]) {
 }
 
 export function transformToLargeLayout(commands: RenderCommand[]) {
-  console.log('large')
   return transformToSmallerAllControls(
     commands,
     '600px',
@@ -171,7 +168,6 @@ export function transformToLayout(
   commands: RenderCommand[],
   layout: 'phone' | 'compact' | 'large'
 ) {
-  console.log(commands)
   switch (layout) {
     case 'phone':
       return transformToPhoneLayout(commands)
