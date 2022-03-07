@@ -824,7 +824,7 @@ sections:
         - record:
             title: I hereby attest that this medical record entry accurately reflects the history and physical examination that I obtained in my capacity as the evaluating clinician.
             type: bool
-        - record:
+        - information:
             title: I do hereby attest that this information is true, accurate and complete to the best of my knowledge.
             type: bool
         - signature:
