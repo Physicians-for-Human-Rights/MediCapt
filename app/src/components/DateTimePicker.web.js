@@ -4,6 +4,7 @@ import _ from 'lodash'
 import { AntDesign } from '@expo/vector-icons'
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
+import { disabledBackground } from 'utils/formRendering/utils'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import DatePicker from 'react-datepicker'
@@ -16,6 +17,7 @@ export default function DateTimePicker({
   close,
   setDate,
   time,
+  isDisabled,
 }) {
   const formatString = time ? 'yyyy-MM-dd h:mm a' : 'yyyy-MM-dd'
   const [modalVisible, setModalVisible] = useState(false)
@@ -61,9 +63,10 @@ export default function DateTimePicker({
 
   return (
     <>
-      <Center>
+      <Center bg={isDisabled ? disabledBackground : undefined}>
         <HStack>
           <Input
+            isDisabled={isDisabled}
             mx="3"
             size="md"
             placeholder={t(time ? 'form.enter-date-time' : 'form.enter-date')}
@@ -78,6 +81,7 @@ export default function DateTimePicker({
             )}
           />
           <IconButton
+            isDisabled={isDisabled}
             onPress={openInternal}
             size="sm"
             colorScheme="indigo"

@@ -14,36 +14,6 @@ import {
 import { NamedFormSection, FormFns } from 'utils/formTypesHelpers'
 import { RecordPath } from 'utils/recordTypes'
 
-export function plainToFlattenObject(object: any) {
-  const result: Record<string, FormValueType> = {}
-  function flatten(obj: any, prefix = '') {
-    _.forEach(obj, (value, key) => {
-      if (_.isObject(value)) {
-        flatten(value, `${prefix}${key}.`)
-      } else {
-        result[`${prefix}${key}`] = value
-      }
-    })
-  }
-  flatten(object)
-  return result
-}
-
-export function objectPaths(object: any) {
-  const result: Array<string> = []
-  function flatten(obj: any, prefix = '') {
-    _.forEach(obj, (value, key) => {
-      if (_.isObject(value)) {
-        flatten(value, `${prefix}${key}.`)
-      } else {
-        result.push(`${prefix}${key}`)
-      }
-    })
-  }
-  flatten(object)
-  return result
-}
-
 export type GetValueFn = (
   path: RecordPath,
   _default?: any
@@ -141,7 +111,9 @@ export function mapSectionWithPaths<Return>(
     index: number,
     entry: FormPartMap
   ): Return {
-    const pre = fns.pre(part, recordPath, index, entry)
+    const skippedPath =
+      'optional' in part && part.optional ? recordPath.concat('skipped') : null
+    const pre = fns.pre(part, recordPath, index, entry, skippedPath)
     let inner: Return | null = null
     let subparts: Return | null = null
     // References are always to a list of pats.
@@ -273,8 +245,6 @@ export function mapSectionWithPaths<Return>(
         }
       }
     }
-    const skippedPath =
-      'optional' in part && part.optional ? recordPath.concat('skipped') : null
     return fns.post(
       part,
       subparts,

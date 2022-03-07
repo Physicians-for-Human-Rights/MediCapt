@@ -63,6 +63,15 @@ function getRepeatList(
   return getPath(recordPath.concat('repeat-list'), _.isArray, []) || []
 }
 
+function isSkipped(path: RecordPath, skipping: RecordPath[]) {
+  return _.some(skipping, skip => _.isEqual(_.take(path, skip.length), skip))
+}
+
+function onlyDisableInner(path: RecordPath) {
+  // Only disable this inside a disabled section, not at its boundary
+  return _.dropRight(path, 2)
+}
+
 // Turn a section of a form into a list of flat render commands
 export function allFormRenderCommands(
   files: Record<string, any>,
@@ -81,15 +90,31 @@ export function allFormRenderCommands(
     return r
   }
   let renderCommands: RenderCommand[] = []
+  const skipping: RecordPath[] = []
   // any is an ok type here because we're discarding the output
   mapSectionWithPaths<any>(section, commonRefTable, null, getValue, {
-    pre: (part, recordPath) => {
+    pre: (part, recordPath, _index, _entry, skippedPath) => {
+      if (skippedPath) {
+        if (getPath(skippedPath, _.isBoolean, false)) {
+          skipping.push(_.dropRight(skippedPath))
+        }
+        renderCommands.push({
+          type: 'skip',
+          disable: isSkipped(recordPath, skipping),
+          valuePath: recordPath,
+          key: _.join(recordPath.concat('skip'), '.'),
+          skipped: getPath(skippedPath, _.isBoolean, false),
+          skippedPath,
+          direction: 'row',
+        })
+      }
       if ('title' in part) {
         const [recordPath1, _recordPart0] = _.takeRight(recordPath, 2)
         // Look for list-with-parts.<something>
         if (recordPath1 === 'list-with-parts') {
           renderCommands.push({
             type: 'divider',
+            disable: isSkipped(recordPath, skipping),
             valuePath: recordPath.concat('divider'),
             key: _.join(recordPath.concat('divider'), '.'),
             thickness: 1,
@@ -126,6 +151,7 @@ export function allFormRenderCommands(
         }
         renderCommands.push({
           type: 'title',
+          disable: isSkipped(recordPath, skipping),
           valuePath: recordPath.concat('title'),
           key: _.join(recordPath.concat('title'), '.'),
           title: 'title' in part ? part.title + suffix : '',
@@ -138,6 +164,7 @@ export function allFormRenderCommands(
         renderCommands.push({
           type: 'description',
           valuePath: recordPath.concat('description'),
+          disable: isSkipped(recordPath, skipping),
           key: _.join(recordPath.concat('description'), '.'),
           description:
             'description' in part && part.description !== undefined
@@ -149,6 +176,7 @@ export function allFormRenderCommands(
     selectMultiple: (valuePaths, part, recordPath, index, otherPath) => {
       renderCommands.push({
         type: 'list-multiple',
+        disable: isSkipped(recordPath, skipping),
         valuePath: valuePaths[0],
         key: _.join(valuePaths[0], '.'),
         values: valuePaths.map((p: RecordPath) =>
@@ -171,6 +199,7 @@ export function allFormRenderCommands(
     address: (valuePath, part) =>
       renderCommands.push({
         type: 'address',
+        disable: isSkipped(valuePath, skipping),
         valuePath,
         key: _.join(valuePath, '.'),
         placeholder: part.placeholder,
@@ -213,6 +242,7 @@ export function allFormRenderCommands(
       }
       renderCommands.push({
         type: 'body-image',
+        disable: isSkipped(valuePath, skipping),
         valuePath,
         key: _.join(valuePath, '.'),
         backgroundImage: backgroundImage,
@@ -223,6 +253,7 @@ export function allFormRenderCommands(
     bool: valuePath =>
       renderCommands.push({
         type: 'bool',
+        disable: isSkipped(valuePath, skipping),
         valuePath,
         key: _.join(valuePath, '.'),
         selected: getPath(valuePath, _.isBoolean, null),
@@ -230,6 +261,7 @@ export function allFormRenderCommands(
     date: (valuePath, part) =>
       renderCommands.push({
         type: 'date',
+        disable: isSkipped(valuePath, skipping),
         valuePath,
         key: _.join(valuePath, '.'),
         title: part.title,
@@ -238,6 +270,7 @@ export function allFormRenderCommands(
     'date-time': (valuePath, part) =>
       renderCommands.push({
         type: 'date-time',
+        disable: isSkipped(valuePath, skipping),
         valuePath,
         key: _.join(valuePath, '.'),
         title: part.title,
@@ -246,6 +279,7 @@ export function allFormRenderCommands(
     email: (valuePath, part) =>
       renderCommands.push({
         type: 'email',
+        disable: isSkipped(valuePath, skipping),
         valuePath,
         key: _.join(valuePath, '.'),
         placeholder: part.placeholder,
@@ -254,6 +288,7 @@ export function allFormRenderCommands(
     gender: valuePath =>
       renderCommands.push({
         type: 'gender',
+        disable: isSkipped(valuePath, skipping),
         valuePath,
         key: _.join(valuePath, '.'),
         selected: getPath(valuePath, _.isString, ''),
@@ -276,6 +311,7 @@ export function allFormRenderCommands(
     list: (valuePath, part, recordPath) =>
       renderCommands.push({
         type: 'list',
+        disable: isSkipped(valuePath, skipping),
         valuePath,
         key: _.join(valuePath, '.'),
         value: getPath(valuePath, isPrimitiveType, null),
@@ -287,6 +323,7 @@ export function allFormRenderCommands(
     'list-with-labels': (valuePath, part, recordPath) =>
       renderCommands.push({
         type: 'list-with-labels',
+        disable: isSkipped(valuePath, skipping),
         valuePath,
         key: _.join(valuePath, '.'),
         value: getPath(valuePath, isPrimitiveType, null),
@@ -300,6 +337,7 @@ export function allFormRenderCommands(
     'long-text': (valuePath, part) =>
       renderCommands.push({
         type: 'long-text',
+        disable: isSkipped(valuePath, skipping),
         valuePath,
         key: _.join(valuePath, '.'),
         placeholder: part.placeholder,
@@ -313,6 +351,7 @@ export function allFormRenderCommands(
     number: (valuePath, part) =>
       renderCommands.push({
         type: 'number',
+        disable: isSkipped(valuePath, skipping),
         valuePath,
         key: _.join(valuePath, '.'),
         placeholder: part.placeholder,
@@ -321,6 +360,7 @@ export function allFormRenderCommands(
     'phone-number': valuePath =>
       renderCommands.push({
         type: 'phone-number',
+        disable: isSkipped(valuePath, skipping),
         valuePath,
         key: _.join(valuePath, '.'),
         value: getPath(valuePath, _.isString, ''),
@@ -328,6 +368,7 @@ export function allFormRenderCommands(
     photo: valuePath =>
       renderCommands.push({
         type: 'photo',
+        disable: isSkipped(valuePath, skipping),
         valuePath,
         key: _.join(valuePath, '.'),
         photos: getPath(valuePath, _.isArray, []),
@@ -335,6 +376,7 @@ export function allFormRenderCommands(
     sex: valuePath =>
       renderCommands.push({
         type: 'gender',
+        disable: isSkipped(valuePath, skipping),
         valuePath,
         key: _.join(valuePath, '.'),
         selected: getPath(valuePath, _.isString, ''),
@@ -357,6 +399,7 @@ export function allFormRenderCommands(
     signature: (valuePath, part, recordPath) =>
       renderCommands.push({
         type: 'signature',
+        disable: isSkipped(valuePath, skipping),
         valuePath,
         key: _.join(valuePath, '.'),
         image: getPath(valuePath, _.isString, null),
@@ -365,6 +408,7 @@ export function allFormRenderCommands(
     text: (valuePath, part) =>
       renderCommands.push({
         type: 'text',
+        disable: isSkipped(valuePath, skipping),
         valuePath,
         key: _.join(valuePath, '.'),
         placeholder: part.placeholder,
@@ -376,6 +420,7 @@ export function allFormRenderCommands(
       if (recordPath.length === 4) {
         renderCommands.push({
           type: 'divider',
+          disable: isSkipped(onlyDisableInner(recordPath), skipping),
           valuePath: recordPath.concat('divider'),
           key: _.join(recordPath.concat('divider'), '.'),
           thickness: 1,
@@ -407,6 +452,7 @@ export function allFormRenderCommands(
       }
       renderCommands.push({
         type: 'title',
+        disable: isSkipped(recordPath, skipping),
         valuePath: recordPath.concat('title'),
         key: _.join(recordPath.concat('title'), '.'),
         title: 'title' in part ? part.title + suffix : '',
@@ -421,6 +467,7 @@ export function allFormRenderCommands(
       }
       renderCommands.push({
         type: 'remove-repeat-button',
+        disable: isSkipped(recordPath, skipping),
         valuePath: repeatPath.concat('add-repeat-button'),
         key: _.join(repeatPath.concat('add-repeat-button'), '.'),
         title: 'title' in part ? part.title : '',
@@ -433,6 +480,7 @@ export function allFormRenderCommands(
     postRepeated: (list, part, recordPath) => {
       renderCommands.push({
         type: 'add-repeat-button',
+        disable: isSkipped(recordPath, skipping),
         valuePath: recordPath.concat('add-repeat-button'),
         key: _.join(recordPath.concat('add-repeat-button'), '.'),
         title: 'title' in part ? part.title : '',

@@ -34,6 +34,7 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from '@expo/vector-icons'
+import { disabledBackground } from 'utils/formRendering/utils'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 
@@ -41,12 +42,17 @@ type PhotoSelectorProps = {
   photos: RecordDataByType['photo']['value']
   addPhoto: (photo: ArrayElement<RecordDataByType['photo']['value']>) => void
   removePhoto: (n: number) => void
+  isDisabled: boolean
 }
+
+const disabledStyle = { backgroundColor: disabledBackground }
+const goodStyle = {}
 
 const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
   photos,
   addPhoto,
   removePhoto,
+  isDisabled,
 }) => {
   const verifyPermissions = async () => {
     const cameraPermissions = await ImagePicker.requestCameraPermissionsAsync()
@@ -83,11 +89,13 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
   return (
     <FlatList
       data={photos}
+      style={isDisabled ? disabledStyle : goodStyle}
       renderItem={({ item, index }) => (
         <VStack>
           <Pressable
             py={2}
             w="100%"
+            isDisabled={isDisabled}
             alignItems="center"
             justifyContent="center"
             onPress={() => console.log('TODO add an annotation modal')}
@@ -96,6 +104,7 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
           </Pressable>
           <Button
             py={2}
+            isDisabled={isDisabled}
             fontWeight="bold"
             colorScheme="blue"
             fontSize="md"
@@ -113,6 +122,7 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
           my={2}
           fontWeight="bold"
           colorScheme="blue"
+          isDisabled={isDisabled}
           fontSize="md"
           leftIcon={<Icon as={MaterialIcons} name="camera-alt" size="sm" />}
           onPress={takePhoto}

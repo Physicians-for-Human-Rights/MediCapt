@@ -19,6 +19,7 @@ export default function DateTimePicker({
   close,
   setDate,
   time,
+  isDisabled,
 }) {
   const [modalVisible, setModalVisible] = useState(false)
 
@@ -41,6 +42,7 @@ export default function DateTimePicker({
   return (
     <>
       <Button
+        isDisabled={isDisabled}
         onPress={openInternal}
         bg={_.isDate(date) ? 'success.600' : 'primary.800'}
         accessibilityLabel={t(

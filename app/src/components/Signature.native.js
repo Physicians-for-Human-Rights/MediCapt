@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react'
 import { Box, Icon, Image, Button, Center, Modal } from 'native-base'
 import { AntDesign } from '@expo/vector-icons'
+import { disabled, disabledBackground } from 'utils/formRendering/utils'
 
 // https://www.npmjs.com/package/react-native-signature-canvas
 import SignatureCanvas from 'react-native-signature-canvas'
@@ -11,7 +12,7 @@ const canvasWebStyle = `.m-signature-pad {box-shadow: none; border: none; }
                             body,html {
                                 width: 100%; height: 100%;}`
 
-function Signature({ imageURI, open, close, setSignature }) {
+function Signature({ imageURI, open, close, setSignature, isDisabled }) {
   const [isOpen, setOpen] = useState(false)
   const internalClose = () => {
     setOpen(false)
@@ -45,7 +46,7 @@ function Signature({ imageURI, open, close, setSignature }) {
 
   return (
     <>
-      <Center>
+      <Center bg={isDisabled ? disabledBackground : undefined}>
         {imageURI && (
           <Image
             resizeMode="contain"
@@ -57,6 +58,7 @@ function Signature({ imageURI, open, close, setSignature }) {
           />
         )}
         <Button
+          isDisabled={isDisabled}
           bg="info.500"
           w="100%"
           leftIcon={

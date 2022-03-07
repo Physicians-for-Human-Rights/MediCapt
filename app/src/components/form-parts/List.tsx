@@ -12,6 +12,7 @@ import {
 } from 'utils/formTypes'
 import { t } from 'i18n-js'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
+import { disabled, disabledBackground } from 'utils/formRendering/utils'
 
 export function isPrimitiveType(x: any) {
   return _.isString(x) || _.isBoolean(x) || _.isNumber(x)
@@ -28,6 +29,7 @@ export function ListSelectMultiple({
   togglePathValue,
   toggleOtherChecked,
   setOtherText,
+  isDisabled,
 }: {
   values: boolean[]
   otherChecked: boolean | null
@@ -37,6 +39,7 @@ export function ListSelectMultiple({
   togglePathValue: (idx: number) => any
   toggleOtherChecked: () => any
   setOtherText: (s: string | undefined) => any
+  isDisabled: boolean
 }) {
   const [rawContents, setRawContents] = React.useState(otherText)
   useDebounce(
@@ -60,6 +63,7 @@ export function ListSelectMultiple({
                 my={2}
                 onChange={() => togglePathValue(i)}
                 accessibilityLabel={t('form.select-the-option') + ' ' + e}
+                isDisabled={isDisabled}
               >
                 {e}
               </Checkbox>
@@ -77,6 +81,7 @@ export function ListSelectMultiple({
                 accessibilityLabel={
                   t('form.select-the-option') + ' ' + e[Object.keys(e)[0]].title
                 }
+                isDisabled={isDisabled}
               >
                 {e[Object.keys(e)[0]].title}
               </Checkbox>
@@ -94,17 +99,19 @@ export function ListSelectMultiple({
         colorScheme="blue"
         my={2}
         accessibilityLabel={t('form.select-other-option')}
+        isDisabled={isDisabled}
       >
         Other
       </Checkbox>
     )
   }
   return (
-    <Center>
+    <Center bg={isDisabled ? disabledBackground : undefined}>
       <VStack>{items}</VStack>
       {otherChecked && (
         <DebouncedTextInput
           key={items.length}
+          isDisabled={isDisabled}
           debounceMs={500}
           w="80%"
           size="md"
@@ -129,6 +136,7 @@ export function List({
   otherValue,
   onOtherValue,
   debounceMs = 300,
+  isDisabled,
 }: {
   value: string | null
   onSelect: (s: string | null) => any
@@ -136,6 +144,7 @@ export function List({
   otherValue: string | null
   onOtherValue: (s: string) => any | null
   debounceMs?: number
+  isDisabled: boolean
 } & (
   | {
       withLabels?: true
@@ -159,8 +168,9 @@ export function List({
     [rawContents]
   )
   return (
-    <Center>
+    <Center bg={isDisabled ? disabledBackground : undefined}>
       <Select
+        isDisabled={isDisabled}
         size="md"
         selectedValue={
           value === undefined || value === null ? '' : _.toString(value)
@@ -210,6 +220,7 @@ export function List({
       </Select>
       {other && onOtherValue && value === '__other__' && (
         <Input
+          isDisabled={isDisabled}
           mt={2}
           w="80%"
           size="md"

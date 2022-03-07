@@ -85,7 +85,8 @@ export type FormFns<Return> = {
     part: FormPart,
     recordPath: RecordPath,
     index: number,
-    entry: FormPartMap
+    entry: FormPartMap,
+    skippedPath: RecordPath | null
   ) => Return | null
   post: (
     part: FormPart,

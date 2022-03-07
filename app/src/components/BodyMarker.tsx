@@ -45,6 +45,7 @@ function BodyMarker({
   onAnnotate,
   onDeleteAnnotation,
   onCoverPress,
+  isDisabled,
 }: {
   baseImage: RecordDataByType['body-image']['uri']
   annotations: RecordDataByType['body-image']['annotations']
@@ -54,6 +55,7 @@ function BodyMarker({
   ) => any
   onDeleteAnnotation?: (index: number) => any
   onCoverPress?: () => any
+  isDisabled: boolean
 }) {
   const [imageSquareSize, setImageSquareSize] = useState(0)
   const ref = useRef()
@@ -155,6 +157,7 @@ function BodyMarker({
           onPress={(onAnnotate || onCoverPress) && handlePress}
           accessibilityRole="image"
           style={{ zIndex: -1 }}
+          disabled={isDisabled}
         >
           <ImageBackground
             style={styles.image}

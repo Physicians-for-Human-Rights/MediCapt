@@ -55,7 +55,7 @@ export type RenderCommand =
         size: string
         fontWeight: string
         italic: boolean
-        maxW: string | undefined
+        maxW?: string | undefined
       }
     | {
         type: 'description'
@@ -65,6 +65,12 @@ export type RenderCommand =
         type: 'divider'
         thickness: number
         w: string | undefined
+      }
+    | {
+        type: 'skip'
+        skipped: boolean
+        skippedPath: RecordPath
+        direction: 'row' | 'column'
       }
     | {
         type: 'remove-repeat-button'
@@ -105,8 +111,8 @@ export type RenderCommand =
     | {
         type: 'bool'
         selected: boolean | null
-        fullwidth: boolean | undefined
-        maxW: string | undefined
+        fullwidth?: boolean | undefined
+        maxW?: string | undefined
       }
     | { type: 'date'; date: Date; title: string }
     | { type: 'date-time'; date: Date; title: string }
@@ -119,8 +125,8 @@ export type RenderCommand =
         type: 'gender'
         selected: string
         options: Record<string, string>
-        fullwidth: boolean | undefined
-        maxW: string | undefined
+        fullwidth?: boolean | undefined
+        maxW?: string | undefined
       }
     | {
         type: 'list'
@@ -171,16 +177,16 @@ export type RenderCommand =
         type: 'number'
         value: string
         placeholder: string | undefined
-        maxW: string | undefined
+        maxW?: string | undefined
       }
-    | { type: 'phone-number'; value: string; maxW: string | undefined }
+    | { type: 'phone-number'; value: string; maxW?: string | undefined }
     | { type: 'photo'; photos: RecordPhoto[] }
     | {
         type: 'sex'
         value: string
         options: Record<string, string>
-        fullwidth: boolean | undefined
-        maxW: string | undefined
+        fullwidth?: boolean | undefined
+        maxW?: string | undefined
       }
     | { type: 'signature'; image: URI; date: Date }
     | {
@@ -189,4 +195,4 @@ export type RenderCommand =
         placeholder: string | undefined
         maxW: string | undefined
       }
-  ) & { valuePath: RecordPath; key: string }
+  ) & { valuePath: RecordPath; key: string; disable: boolean }

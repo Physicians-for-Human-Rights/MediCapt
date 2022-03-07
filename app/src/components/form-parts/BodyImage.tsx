@@ -29,6 +29,7 @@ import { RecordPath, RecordDataByType } from 'utils/recordTypes'
 import { FormFns, ArrayElement } from 'utils/formTypesHelpers'
 import BodyMarker from 'components/BodyMarker'
 import { useWindowDimensions } from 'react-native'
+import { disabled, disabledBackground } from 'utils/formRendering/utils'
 
 import {
   AntDesign,
@@ -45,6 +46,7 @@ function BodyImage({
   annotations,
   addMarkerData,
   removeMarkerData,
+  isDisabled,
 }: {
   imageURI: string
   annotations: RecordDataByType['body-image']['annotations']
@@ -53,6 +55,7 @@ function BodyImage({
     index: number | null
   ) => void
   removeMarkerData: (n: number) => void
+  isDisabled: boolean
 }) {
   const window = useWindowDimensions()
   const modalSize = Math.min(window.height, window.width)
@@ -72,15 +75,17 @@ function BodyImage({
 
   return (
     <>
-      <Center>
+      <Center bg={isDisabled ? disabledBackground : undefined}>
         <Box h="200px" w="200px">
           <BodyMarker
             baseImage={image}
             annotations={annotations}
             onCoverPress={internalOpen}
+            isDisabled={isDisabled}
           />
         </Box>
         <Button
+          isDisabled={isDisabled}
           mt={2}
           colorScheme="blue"
           w="100%"

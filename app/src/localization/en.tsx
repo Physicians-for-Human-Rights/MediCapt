@@ -43,5 +43,6 @@ export default {
     'enter-address': 'Enter address',
     'select-other-option': 'Select other option',
     'select-the-option': 'Select the option',
+    'skip-question': 'Skip answering this question',
   },
 }

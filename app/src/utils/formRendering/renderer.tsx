@@ -35,6 +35,8 @@ import {
   HStack,
   Text,
   Heading,
+  ZStack,
+  Box,
 } from 'native-base'
 import { TextInput, View } from 'react-native'
 // @ts-ignore TODO TS doesn't understand .native.tsx and .web.tsx files
@@ -51,22 +53,9 @@ import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import Photo from 'components/form-parts/Photo'
 import BodyImage from 'components/form-parts/BodyImage'
 import CustomButton from 'components/form-parts/Button'
+import SkipButton from 'components/form-parts/SkipButton'
 import { RenderCommand, URI } from 'utils/formRendering/types'
-
-export function wrapCommandMemo<T extends object>(
-  component: React.FunctionComponent<T>
-): React.NamedExoticComponent<T & { command: RenderCommand }> {
-  return React.memo(
-    component,
-    (prev, next) =>
-      //@ts-ignore
-      next.keepAlive === true ||
-      //@ts-ignore
-      prev.command === next.command ||
-      //@ts-ignore
-      _.isEqual(prev.command, next.command)
-  )
-}
+import { wrapCommandMemo } from 'utils/memo'
 
 const CDebouncedTextInput = wrapCommandMemo(DebouncedTextInput)
 const CButtonGroup = wrapCommandMemo(ButtonGroup)
@@ -78,6 +67,9 @@ const CPhoto = wrapCommandMemo(Photo)
 const CSignature = wrapCommandMemo(Signature)
 const CCenter = wrapCommandMemo(Center)
 const CCustomButton = wrapCommandMemo(CustomButton)
+const CSkipButton = wrapCommandMemo(SkipButton)
+
+import { disabled, disabledBackground } from 'utils/formRendering/utils'
 
 export function renderCommand(
   command: RenderCommand,
@@ -88,52 +80,84 @@ export function renderCommand(
   switch (command.type) {
     case 'title':
       return (
-        <CCenter command={command} pt={4} pb={2}>
+        <CCenter
+          bg={disabled(command, disabledBackground)}
+          command={command}
+          pt={4}
+          pb={2}
+        >
           <Heading
             italic={command.italic}
             size={command.size}
             fontWeight={command.fontWeight}
             maxW={command.maxW}
             px={2}
+            color={disabled(command, 'coolGray.400')}
           >
             {command.title}
           </Heading>
         </CCenter>
       )
     case 'description':
-      return <Text pb={2}>{command.description}</Text>
+      return (
+        <Text bg={disabled(command, disabledBackground)} pb={2}>
+          {command.description}
+        </Text>
+      )
     case 'divider':
       return (
-        <Center>
+        <Center bg={disabled(command, disabledBackground)}>
           <Divider w={command.w} my={2} thickness={command.thickness} />
+        </Center>
+      )
+    case 'skip':
+      // NB isDisabled={false} means we always allow toggling skipping. If we
+      // don't do this, we would need to change this to work like divider so that
+      // it doesn't get stuck
+      return (
+        <Center bg={disabled(command, disabledBackground)}>
+          <CSkipButton
+            command={command}
+            isDisabled={false}
+            skippable={true}
+            skipped={command.skipped}
+            toggleSkip={() => {
+              setPath(command.skippedPath, !command.skipped)
+            }}
+            direction={command.direction}
+          />
         </Center>
       )
     case 'address':
       return (
-        <CDebouncedTextInput
-          command={command}
-          onChangeText={text => {
-            setPath(command.valuePath, text)
-          }}
-          debounceMs={500}
-          size="md"
-          bg="coolGray.100"
-          variant="filled"
-          w="100%"
-          textAlign="center"
-          textContentType="fullStreetAddress"
-          keyboardType="default"
-          multiline={true}
-          numberOfLines={3}
-          placeholder={command.placeholder}
-          value={command.text}
-          accessibilityLabel={t('form.enter-address')}
-        />
+        <Center bg={disabled(command, disabledBackground)}>
+          <CDebouncedTextInput
+            command={command}
+            isDisabled={command.disable}
+            onChangeText={text => {
+              setPath(command.valuePath, text)
+            }}
+            debounceMs={500}
+            size="md"
+            bg="coolGray.100"
+            variant="filled"
+            w="100%"
+            textAlign="center"
+            textContentType="fullStreetAddress"
+            keyboardType="default"
+            multiline={true}
+            numberOfLines={3}
+            placeholder={command.placeholder}
+            value={command.text}
+            accessibilityLabel={t('form.enter-address')}
+          />
+        </Center>
       )
     case 'body-image':
       return (
         <CBodyImage
           command={command}
+          isDisabled={command.disable}
           imageURI={command.backgroundImage}
           annotations={command.annotations}
           addMarkerData={(
@@ -159,6 +183,8 @@ export function renderCommand(
       return (
         <CButtonGroup
           command={command}
+          bg={disabled(command, disabledBackground)}
+          isDisabled={command.disable}
           selected={command.selected}
           options={{ [t('form.Yes')]: true, [t('form.No')]: false }}
           onPress={v => setPath(command.valuePath, v)}
@@ -172,6 +198,7 @@ export function renderCommand(
       return (
         <CDateTimePicker
           command={command}
+          isDisabled={command.disable}
           // @ts-ignore TODO Why not?
           title={command.title}
           date={command.date}
@@ -184,6 +211,7 @@ export function renderCommand(
       return (
         <CDateTimePicker
           command={command}
+          isDisabled={command.disable}
           // @ts-ignore TODO Why not?
           title={command.title}
           date={command.date}
@@ -195,26 +223,31 @@ export function renderCommand(
       )
     case 'email':
       return (
-        <CDebouncedTextInput
-          command={command}
-          onChangeText={text => setPath(command.valuePath, text)}
-          debounceMs={500}
-          size="md"
-          bg="coolGray.100"
-          variant="filled"
-          w="100%"
-          textAlign="center"
-          textContentType="emailAddress"
-          keyboardType="email-address"
-          placeholder={command.placeholder}
-          value={command.text}
-          accessibilityLabel={t('form.enter-email')}
-        />
+        <Center bg={disabled(command, disabledBackground)}>
+          <CDebouncedTextInput
+            command={command}
+            isDisabled={command.disable}
+            onChangeText={text => setPath(command.valuePath, text)}
+            debounceMs={500}
+            size="md"
+            bg="coolGray.100"
+            variant="filled"
+            w="100%"
+            textAlign="center"
+            textContentType="emailAddress"
+            keyboardType="email-address"
+            placeholder={command.placeholder}
+            value={command.text}
+            accessibilityLabel={t('form.enter-email')}
+          />
+        </Center>
       )
     case 'gender':
       return (
         <CButtonGroup
           command={command}
+          bg={disabled(command, disabledBackground)}
+          isDisabled={command.disable}
           selected={command.selected}
           options={command.options}
           onPress={v => setPath(command.valuePath, v)}
@@ -226,6 +259,7 @@ export function renderCommand(
       return (
         <CList
           command={command}
+          isDisabled={command.disable}
           options={command.options}
           value={command.value}
           onSelect={s => setPath(command.valuePath, s)}
@@ -238,6 +272,7 @@ export function renderCommand(
       return (
         <CListSelectMultiple
           command={command}
+          isDisabled={command.disable}
           values={command.values}
           otherChecked={command.otherChecked}
           otherText={command.otherText}
@@ -260,6 +295,7 @@ export function renderCommand(
       return (
         <CList
           command={command}
+          isDisabled={command.disable}
           withLabels
           options={command.options}
           value={command.value}
@@ -277,67 +313,77 @@ export function renderCommand(
       return <></>
     case 'long-text':
       return (
-        <CDebouncedTextInput
-          command={command}
-          onChangeText={text => {
-            setPath(command.valuePath, text)
-          }}
-          debounceMs={500}
-          placeholder={command.placeholder}
-          size="md"
-          bg="coolGray.100"
-          variant="filled"
-          w="100%"
-          multiline={true}
-          numberOfLines={command.numberOfLines}
-          value={command.text}
-          accessibilityLabel={t('form.enter-long-text')}
-        />
+        <Center bg={disabled(command, disabledBackground)}>
+          <CDebouncedTextInput
+            command={command}
+            isDisabled={command.disable}
+            onChangeText={text => {
+              setPath(command.valuePath, text)
+            }}
+            debounceMs={500}
+            placeholder={command.placeholder}
+            size="md"
+            bg="coolGray.100"
+            variant="filled"
+            w="100%"
+            multiline={true}
+            numberOfLines={command.numberOfLines}
+            value={command.text}
+            accessibilityLabel={t('form.enter-long-text')}
+          />
+        </Center>
       )
     case 'number':
       return (
-        <CDebouncedTextInput
-          command={command}
-          onChangeText={text => {
-            setPath(command.valuePath, text)
-          }}
-          debounceMs={500}
-          placeholder={command.placeholder}
-          size="md"
-          bg="coolGray.100"
-          variant="filled"
-          w="100%"
-          textAlign="center"
-          keyboardType="numeric"
-          value={command.value}
-          maxW={command.maxW}
-          accessibilityLabel={t('form.enter-number')}
-        />
+        <Center bg={disabled(command, disabledBackground)}>
+          <CDebouncedTextInput
+            command={command}
+            isDisabled={command.disable}
+            onChangeText={text => {
+              setPath(command.valuePath, text)
+            }}
+            debounceMs={500}
+            placeholder={command.placeholder}
+            size="md"
+            bg="coolGray.100"
+            variant="filled"
+            w="100%"
+            textAlign="center"
+            keyboardType="numeric"
+            value={command.value}
+            maxW={command.maxW}
+            accessibilityLabel={t('form.enter-number')}
+          />
+        </Center>
       )
     case 'phone-number':
       return (
-        <CDebouncedTextInput
-          command={command}
-          onChangeText={text => {
-            setPath(command.valuePath, text)
-          }}
-          debounceMs={500}
-          size="md"
-          bg="coolGray.100"
-          variant="filled"
-          w="100%"
-          textAlign="center"
-          textContentType="telephoneNumber"
-          keyboardType="phone-pad"
-          value={command.value}
-          maxW={command.maxW}
-          accessibilityLabel={t('form.enter-phone-number')}
-        />
+        <Center bg={disabled(command, disabledBackground)}>
+          <CDebouncedTextInput
+            command={command}
+            isDisabled={command.disable}
+            onChangeText={text => {
+              setPath(command.valuePath, text)
+            }}
+            debounceMs={500}
+            size="md"
+            bg="coolGray.100"
+            variant="filled"
+            w="100%"
+            textAlign="center"
+            textContentType="telephoneNumber"
+            keyboardType="phone-pad"
+            value={command.value}
+            maxW={command.maxW}
+            accessibilityLabel={t('form.enter-phone-number')}
+          />
+        </Center>
       )
     case 'photo':
       return (
         <CPhoto
           command={command}
+          isDisabled={command.disable}
           photos={command.photos}
           addPhoto={(
             toAdd: ArrayElement<RecordDataByType['photo']['value']>
@@ -355,6 +401,8 @@ export function renderCommand(
       return (
         <CButtonGroup
           command={command}
+          bg={disabled(command, disabledBackground)}
+          isDisabled={command.disable}
           selected={command.value}
           options={command.options}
           onPress={v => setPath(command.valuePath, v)}
@@ -366,6 +414,8 @@ export function renderCommand(
       return (
         <CSignature
           command={command}
+          // @ts-ignore Why isn't TS happy here?
+          isDisabled={command.disable}
           // @ts-ignore Why isn't TS happy here?
           imageURI={command.image}
           open={() => {
@@ -381,28 +431,32 @@ export function renderCommand(
       )
     case 'text':
       return (
-        <CDebouncedTextInput
-          command={command}
-          onChangeText={text => {
-            setPath(command.valuePath, text)
-          }}
-          debounceMs={500}
-          placeholder={command.placeholder}
-          size="md"
-          bg="coolGray.100"
-          variant="filled"
-          w="100%"
-          textAlign="center"
-          value={command.text}
-          maxW={command.maxW}
-          accessibilityLabel={t('form.enter-text')}
-        />
+        <Center bg={disabled(command, disabledBackground)}>
+          <CDebouncedTextInput
+            command={command}
+            isDisabled={command.disable}
+            onChangeText={text => {
+              setPath(command.valuePath, text)
+            }}
+            debounceMs={500}
+            placeholder={command.placeholder}
+            size="md"
+            bg="coolGray.100"
+            variant="filled"
+            w="100%"
+            textAlign="center"
+            value={command.text}
+            maxW={command.maxW}
+            accessibilityLabel={t('form.enter-text')}
+          />
+        </Center>
       )
     case 'add-repeat-button':
       return (
-        <Center>
+        <Center bg={disabled(command, disabledBackground)}>
           <CCustomButton
             command={command}
+            isDisabled={command.disable}
             key={command.key}
             text={'Add ' + _.lowerCase(command.title)}
             onPress={() => {
@@ -420,9 +474,10 @@ export function renderCommand(
       )
     case 'remove-repeat-button':
       return (
-        <Center>
+        <Center bg={disabled(command, disabledBackground)}>
           <CCustomButton
             command={command}
+            isDisabled={command.disable}
             key={command.key}
             text={'Remove ' + _.lowerCase(command.title)}
             onPress={() =>
@@ -440,15 +495,21 @@ export function renderCommand(
       )
     case 'row':
       return (
-        <HStack justifyContent="space-between">
+        <HStack
+          bg={disabled(command, disabledBackground)}
+          justifyContent="space-between"
+        >
           {renderCommand(command.left, setPath, addKeepAlive, removeKeepAlive)}
           {renderCommand(command.right, setPath, addKeepAlive, removeKeepAlive)}
         </HStack>
       )
     case 'row-with-description':
       return (
-        <VStack>
-          <HStack justifyContent="space-between">
+        <VStack bg={disabled(command, disabledBackground)}>
+          <HStack
+            justifyContent="space-between"
+            bg={disabled(command, disabledBackground)}
+          >
             {renderCommand(
               command.left,
               setPath,
