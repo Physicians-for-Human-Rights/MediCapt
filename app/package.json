@@ -8,9 +8,9 @@
     "web": "expo start --web",
     "eject": "expo eject",
     "prepare": "pre-commit install",
-    "test": "jest",
-    "test-watch": "jest --watch --coverage=false --changedSince=origin/master",
-    "test-debug": "jest -o --watch --coverage=false",
+    "test": "jest --verbose",
+    "test-watch": "jest --verbose --watch --coverage=false --changedSince=origin/master",
+    "test-debug": "jest --verbose -o --watch --coverage=false",
     "update-snapshots": "jest -u --coverage=false",
     "lint": "eslint src/**/*.{ts,js,tsx,jsx} tests/**/*.test.tsx"
   },
@@ -123,9 +123,10 @@
     },
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "**/*.{js,jsx,ts,tsx}",
+      "src/**/*.{js,jsx,ts,tsx}",
       "!**/coverage/**",
       "!**/node_modules/**",
+      "!**/web-build/**",
       "!**/babel.config.js",
       "!**/jest.setup.js"
     ]
