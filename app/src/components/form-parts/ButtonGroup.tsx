@@ -26,8 +26,8 @@ export default function ButtonGroup<T>({
       size="md"
       colorScheme={colorScheme}
       flex={fullwidth ? 1 : undefined}
-      w={fullwidth ? '100%' : '20%'}
-      justifyContent="center"
+      w={fullwidth ? '100%' : '30%'}
+      justifyContent="right"
       isDisabled={isDisabled}
       {...props}
     >
