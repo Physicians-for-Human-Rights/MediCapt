@@ -1,10 +1,10 @@
 {
   "entry": ["App.js"],
+  "rootDir": "./src",
   "aliases": {
-    "screens/*": ["./src/screens", "./src/screens/*"],
-    "components/*": ["./src/components", "./src/components/*"],
-    "src/*": ["./src", "./src/*"],
-    "utils/*": ["./src/utils", "./src/utils/*"]
+    "screens/*": ["screens", "screens/*"],
+    "components/*": ["components", "components/*"],
+    "utils/*": ["utils", "utils/*"]
   },
   "ignorePatterns": [
     "**/node_modules/**",
