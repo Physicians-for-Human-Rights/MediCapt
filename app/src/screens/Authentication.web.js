@@ -61,6 +61,7 @@ function Header(userType, setAccountType) {
         pt={2}
         pb={1}
         colorScheme="red"
+        justifyContent="center"
       />
       <ButtonGroup
         selected={userType}
@@ -72,6 +73,7 @@ function Header(userType, setAccountType) {
         onPress={setAccountType}
         pb={3}
         colorScheme="red"
+        justifyContent="center"
       />
     </View>
   )

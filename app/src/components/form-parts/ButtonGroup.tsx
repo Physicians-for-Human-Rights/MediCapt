@@ -10,6 +10,7 @@ export default function ButtonGroup<T>({
   maxW = '30%',
   fullwidth = true,
   isDisabled = false,
+  justifyContent = 'right',
   ...props
 }: {
   selected: T | null
@@ -19,6 +20,7 @@ export default function ButtonGroup<T>({
   maxW?: string
   fullwidth?: boolean
   isDisabled?: boolean
+  justifyContent?: string
 }) {
   return (
     <Button.Group
@@ -27,7 +29,7 @@ export default function ButtonGroup<T>({
       colorScheme={colorScheme}
       flex={fullwidth ? 1 : undefined}
       w={fullwidth ? '100%' : '30%'}
-      justifyContent="right"
+      justifyContent={justifyContent}
       isDisabled={isDisabled}
       {...props}
     >

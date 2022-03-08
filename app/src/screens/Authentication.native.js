@@ -138,6 +138,7 @@ function Header(userType, setAccountType) {
           size="md"
           flex={0}
           maxW="40%"
+          justifyContent="center"
         />
         <ButtonGroup
           selected={userType}
@@ -152,6 +153,7 @@ function Header(userType, setAccountType) {
           size="md"
           flex={0}
           maxW="40%"
+          justifyContent="center"
         />
       </View>
     </View>
