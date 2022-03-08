@@ -24,7 +24,10 @@ export default {
     No: 'No',
     'select-value': 'Select a value',
     'other-details': 'Describe other optional details',
-    'add-photo': 'Add a photo',
+    'add-photo': 'Add an existing photo',
+    'take-photo': 'Take a new photo',
+    'save-photo': 'Save',
+    'cancel-photo': 'Cancel',
     'delete-photo': 'Delete photo',
     'mark-diagram': 'Annotate the diagram',
     'repeated-one-time-below': 'repeated one time below',
@@ -44,5 +47,6 @@ export default {
     'select-other-option': 'Select other option',
     'select-the-option': 'Select the option',
     'skip-question': 'Skip answering this question',
+    'camera-viewer': 'Camera view',
   },
 }
