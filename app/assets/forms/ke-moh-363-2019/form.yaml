@@ -554,7 +554,6 @@ sections:
             other: long-text
             optional: true
             options:
-              - None
               - Police station
               - HIV test
               - Laboratory
