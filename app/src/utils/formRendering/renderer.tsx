@@ -493,6 +493,17 @@ export function renderCommand(
           />
         </Center>
       )
+    case 'padding':
+      return (
+        <Box px={command.padding} bg={disabled(command, disabledBackground)}>
+          {renderCommand(
+            command.contents,
+            setPath,
+            addKeepAlive,
+            removeKeepAlive
+          )}
+        </Box>
+      )
     case 'row':
       return (
         <HStack

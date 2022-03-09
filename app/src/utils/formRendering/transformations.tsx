@@ -125,13 +125,22 @@ export function transformToLargeLayout(commands: RenderCommand[]) {
 export function transformToLayout(
   commands: RenderCommand[],
   layout: 'phone' | 'compact' | 'large'
-) {
+): RenderCommand[] {
   switch (layout) {
     case 'phone':
       return transformToPhoneLayout(commands)
     case 'compact':
       return transformToCompactLayout(commands)
     case 'large':
-      return transformToLargeLayout(commands)
+      return _.map(transformToLargeLayout(commands), c => {
+        return {
+          type: 'padding',
+          padding: '15%',
+          contents: c,
+          valuePath: c.valuePath,
+          key: c.key,
+          disable: c.disable,
+        }
+      })
   }
 }

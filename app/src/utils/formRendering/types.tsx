@@ -86,6 +86,11 @@ export type RenderCommand =
         repeatListPath: RecordPath
       }
     | {
+        type: 'padding'
+        padding: string
+        contents: RenderCommand
+      }
+    | {
         type: 'row'
         left: RenderCommand
         right: RenderCommand
