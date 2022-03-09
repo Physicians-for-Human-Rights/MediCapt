@@ -104,6 +104,7 @@ function BodyImage({
             <Center flex={1}>
               <Box h={modalSize * 0.7} w={modalSize * 0.7}>
                 <BodyMarker
+                  isDisabled={false}
                   baseImage={image}
                   annotations={annotations}
                   onAnnotate={addMarkerData}

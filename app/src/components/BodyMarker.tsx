@@ -1,30 +1,5 @@
-import React, { useState, useRef } from 'react'
-import {
-  Box,
-  VStack,
-  StatusBar,
-  ScrollView,
-  HStack,
-  Pressable,
-  Icon,
-  Image,
-  Text,
-  Hidden,
-  useColorMode,
-  IconButton,
-  Divider,
-  Menu,
-  Avatar,
-  Button,
-  Input,
-  Center,
-  useBreakpointValue,
-  Modal,
-  Checkbox,
-  Select,
-  FlatList,
-  View,
-} from 'native-base'
+import React, { useState, useRef, useEffect } from 'react'
+import { Box, VStack, Image, Text, Button, Modal, View } from 'native-base'
 import {
   StyleSheet,
   ImageBackground,
@@ -32,12 +7,59 @@ import {
   Platform,
   GestureResponderEvent,
 } from 'react-native'
-import { RecordPath, RecordDataByType } from 'utils/recordTypes'
+import { RecordDataByType } from 'utils/recordTypes'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import { ArrayElement } from 'utils/formTypesHelpers'
 import Photo from 'components/form-parts/Photo'
+
+function squareToImageCoordinates(
+  p: {
+    x: number
+    y: number
+  },
+  imageDimensions: {
+    w: number
+    h: number
+  } | null
+): null | { x: number; y: number } {
+  if (imageDimensions) {
+    const ratiohw = imageDimensions.h / imageDimensions.w
+    const ratiowh = imageDimensions.w / imageDimensions.h
+    if (ratiohw > 1) {
+      const x = (p.x - 0.5) / ratiowh + 0.5
+      if (x < 0 || x >= 1) return null
+      return { x, y: p.y }
+    } else {
+      const y = (p.y - 0.5) / ratiowh + 0.5
+      if (y < 0 || y >= 1) return null
+      return { x: p.x, y }
+    }
+  }
+  return null
+}
+
+function imageToSquareCoordinates(
+  p: {
+    x: number
+    y: number
+  },
+  imageDimensions: {
+    w: number
+    h: number
+  }
+): { x: number; y: number } {
+  const ratiohw = imageDimensions.h / imageDimensions.w
+  const ratiowh = imageDimensions.w / imageDimensions.h
+  if (ratiohw > 1) {
+    const x = (p.x - 0.5) * ratiowh + 0.5
+    return { x, y: p.y }
+  } else {
+    const y = (p.y - 0.5) * ratiowh + 0.5
+    return { x: p.x, y }
+  }
+}
 
 function BodyMarker({
   baseImage,
@@ -58,6 +80,9 @@ function BodyMarker({
   isDisabled: boolean
 }) {
   const [imageSquareSize, setImageSquareSize] = useState(0)
+  const [imageDimensions, setImageDimensions] = useState(
+    null as null | { w: number; h: number }
+  )
   const ref = useRef()
 
   const [currentMarkerIndex, setCurrentMarkerIndex] = useState(
@@ -71,6 +96,15 @@ function BodyMarker({
     [] as ArrayElement<RecordDataByType['body-image']['annotations']>['photos']
   )
   const [isMarkerModalOpen, setMarkerModalOpen] = useState(false)
+
+  useEffect(() => {
+    Image.getSize(
+      baseImage,
+      // @ts-ignore TODO What's up here?
+      (x: number, y: number) => setImageDimensions({ w: x, h: y }),
+      console.error // TODO handle this error
+    )
+  }, [])
 
   const onPress = (
     location: { x: number; y: number },
@@ -131,13 +165,22 @@ function BodyMarker({
     if (onAnnotate) {
       let x, y
       if (Platform.OS === 'web') {
+        // @ts-ignore This property does exist
         x = evt.nativeEvent.offsetX / imageSquareSize
+        // @ts-ignore This property does exist
         y = evt.nativeEvent.offsetY / imageSquareSize
       } else {
         x = evt.nativeEvent.locationX / imageSquareSize
         y = evt.nativeEvent.locationY / imageSquareSize
       }
-      onPress({ x, y })
+      // Prevent clicking outside of the image
+      const imageCoordintes = squareToImageCoordinates(
+        { x, y },
+        imageDimensions
+      )
+      if (imageCoordintes) {
+        onPress(imageCoordintes)
+      }
     }
   }
 
@@ -164,42 +207,51 @@ function BodyMarker({
             imageStyle={{ resizeMode: 'contain' }}
             source={{ uri: baseImage }}
           >
-            {annotations.map((annotation, idx) => (
-              <TouchableWithoutFeedback
-                disabled={!onAnnotate}
-                key={idx}
-                onPress={
-                  onAnnotate &&
-                  (() =>
-                    onPress(
-                      annotation.location,
-                      annotation.text,
-                      annotation.photos,
-                      idx
-                    ))
-                }
-              >
-                <View
-                  position="absolute"
-                  flexDirection="row"
-                  top={
-                    annotation.location.y * imageSquareSize -
-                    markerSize / 2 +
-                    'px'
-                  }
-                  left={
-                    annotation.location.x * imageSquareSize -
-                    markerSize / 2 +
-                    'px'
+            {annotations.map((annotation, idx) => {
+              if (!imageDimensions) {
+                return null
+              }
+              const squareLocation = imageToSquareCoordinates(
+                annotation.location,
+                imageDimensions
+              )
+              return (
+                <TouchableWithoutFeedback
+                  disabled={!onAnnotate}
+                  key={idx}
+                  onPress={
+                    onAnnotate &&
+                    (() =>
+                      onPress(
+                        annotation.location,
+                        annotation.text,
+                        annotation.photos,
+                        idx
+                      ))
                   }
                 >
-                  <Box bg="#f00" w={markerSize + 'px'} h={markerSize + 'px'} />
-                  <Text bold color="red" selectable={false}>
-                    {idx + 1}
-                  </Text>
-                </View>
-              </TouchableWithoutFeedback>
-            ))}
+                  <View
+                    position="absolute"
+                    flexDirection="row"
+                    top={
+                      squareLocation.y * imageSquareSize - markerSize / 2 + 'px'
+                    }
+                    left={
+                      squareLocation.x * imageSquareSize - markerSize / 2 + 'px'
+                    }
+                  >
+                    <Box
+                      bg="#f00"
+                      w={markerSize + 'px'}
+                      h={markerSize + 'px'}
+                    />
+                    <Text bold color="red" selectable={false}>
+                      {idx + 1}
+                    </Text>
+                  </View>
+                </TouchableWithoutFeedback>
+              )
+            })}
           </ImageBackground>
         </TouchableWithoutFeedback>
       </View>
@@ -226,6 +278,7 @@ function BodyMarker({
                 w="100%"
               />
               <Photo
+                isDisabled={isDisabled}
                 photos={currentPhotos || []}
                 addPhoto={(
                   toAdd: ArrayElement<RecordDataByType['photo']['value']>
