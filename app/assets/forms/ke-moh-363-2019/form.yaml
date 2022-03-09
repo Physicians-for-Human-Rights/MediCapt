@@ -394,18 +394,22 @@ sections:
       parts:
         - anterior:
             title: Anterior
+            optional: true
             type: body-image
             filename: anterior.png
         - posterior:
             title: Posterior
+            optional: true
             type: body-image
             filename: posterior.png
         - top:
             title: Top
+            optional: true
             type: body-image
             filename: top.png
         - bottom:
             title: Bottom
+            optional: true
             type: body-image
             filename: bottom.png
         - comments:
@@ -438,16 +442,19 @@ sections:
         - image-1:
             title: none
             type: body-image
+            optional: true
             filename-female: female-1.png
             filename-male: male-1.png
         - image-2:
             title: none
             type: body-image
+            optional: true
             filename-female: female-2.png
             filename-male: male-2.png
         - image-3:
             title: none
             type: body-image
+            optional: true
             filename-female: female-3.png
             filename-male: male-3.png
         - physical-injuries:
