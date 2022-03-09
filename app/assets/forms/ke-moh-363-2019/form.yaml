@@ -573,6 +573,7 @@ sections:
       parts:
         - samples:
             title: Sample
+            optional: true
             type: list-with-parts
             options:
               - outer-genital-swab:
@@ -686,6 +687,7 @@ sections:
                         parts:
                           Ref: lab-sample-destination
         - chain-of-custody:
+            optional: true
             title: Chain of custody
             parts:
               - packed:
@@ -705,7 +707,6 @@ sections:
                         title: Date
                         type: date
               - to:
-                  optional: true
                   title: To
                   parts:
                     - name:
