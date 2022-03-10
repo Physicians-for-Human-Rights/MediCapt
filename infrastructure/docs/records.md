@@ -12,7 +12,7 @@
   files (text, images, etc.) that together fill out the form.
 - Addendum: A filled out form annex which is attached to a record.
 - Location: A logical grouping of people identified by a UUID, as determined by
-  user managers. Usually a physical location.
+  managers. Usually a physical location.
 
 While location are PHI/PII when they are attached to forms, on their own they
 are not PHI or PII.
@@ -27,7 +27,7 @@ Three kinds of users have access to PHI/PII data:
 - Researchers: users who have access to statistics about the system and
   patients. A subset of researchers with elevated privildges can unblind data.
 
-All users are authenticated by a user manager. Managers may enter records into
+All users are authenticated by a manager. Managers may enter records into
 the system, enable or disable users, assign or revoke permissions to specific
 locations (limited to those that the manager has access to), and update user
 attributes. Minimal data recorded for all users includes: Name, Phone number,
@@ -36,13 +36,13 @@ government ID, Expiration date of government ID. This allows verifying and
 tracking users. While sensitive, this data is not patient PHI/PII and is not
 discussed further in this document.
 
-NB User managers and form designers have no access to patient PHI/PII
+NB Managers and form designers have no access to patient PHI/PII
 
 ### Healthcare providers
 
 Providers have access to all data for all locations that they are registered
 with. Providers may review old records. All data access is logged and can be
-reviewed through the user manager account.
+reviewed through the manager account.
 
 A provider can be registered in multiple locations. Providers can share data
 with one another within location or across locations. When a record is shared
@@ -93,7 +93,9 @@ which records they need.
 `createdDate`
 `providerCreatedUUID`
 `formUUID`
-`formTag`
+`formName`
+`formTags`
+`formVersion`
 `completed`
 `completedDate`
 `providerCompletedUUID`
@@ -152,7 +154,7 @@ user's tag, in which case they would need to learn that locationUUID.
 While the above handles accessing data outside the priviledges that a provider
 account has, within location providers must have access to all
 records. Providers will be rate-limited and all accesses will be logged. Logs
-will be available to user managers.
+will be available to managers.
 
 ### 3. Sharing DynamoDB
 

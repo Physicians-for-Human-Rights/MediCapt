@@ -11,7 +11,7 @@ locals {
 }
 
 inputs = {
-  user_type = "usermanager"
+  user_type = "manager"
   #
   cognito_default_users = {}
   #
@@ -25,7 +25,7 @@ inputs = {
   # the system to adapt and after verying its actions.
   advanced_security_mode = "AUDIT" # "ENFORCED"
   #
-  invite_email_subject = "Invitation to MediCapt as a user manager"
+  invite_email_subject = "Invitation to MediCapt as a manager"
   invite_email_message = <<EOF
 Welcome to MediCapt!
 
@@ -79,7 +79,7 @@ EOF
     {
       type     = "String"
       name     = "formal_name"
-      required = true
+      required = false
       mutable  = true
       min_length = 1
       max_length = 300
@@ -152,7 +152,7 @@ EOF
     {
       type     = "String"
       # This date is stored as ISO 8601
-      name     = "expiryDate"
+      name     = "expiry_date"
       required = false
       mutable  = true
       min_length = 1
@@ -170,6 +170,30 @@ EOF
       # This is a comma separated list of location UUIDs where the account has permissions
       type     = "String"
       name     = "allowed_locations"
+      required = false
+      mutable  = true
+      min_length = 0
+      max_length = 2048
+    },
+    {
+      type     = "String"
+      name     = "created_by"
+      required = false
+      mutable  = true
+      min_length = 0
+      max_length = 2048
+    },
+    {
+      type     = "String"
+      name     = "updated_by"
+      required = false
+      mutable  = true
+      min_length = 0
+      max_length = 2048
+    },
+    {
+      type     = "String"
+      name     = "human_id"
       required = false
       mutable  = true
       min_length = 0

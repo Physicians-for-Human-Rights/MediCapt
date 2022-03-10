@@ -1,7 +1,7 @@
 # Medicapt backend infrastructure
 
-Overview of the deign of the app:
-https://app.cloudcraft.co/view/259c0a0b-21f3-4565-bf0e-9c5e5ab63e81?key=f99acf58-5ee2-479e-9756-f26006be7e66
+![](https://github.com/abarbu/medicapt-infrastructure/blob/master/docs/backend-overview-v5.png)
+    
 
 ## Terraform and terragrunt
 
@@ -207,7 +207,13 @@ commands like this for your stage
 
 or
 
+`terragrunt run-all init --terragrunt-working-dir us-east-1`
+
+and
+
 `terragrunt run-all plan --terragrunt-working-dir us-east-1`
+
+Ignore the errors about having no outputs when doing `run-all init`.
 
 ### Localstack can be slow
 

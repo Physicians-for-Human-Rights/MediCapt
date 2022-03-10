@@ -79,7 +79,7 @@ EOF
     {
       type     = "String"
       name     = "formal_name"
-      required = true
+      required = false
       mutable  = true
       min_length = 1
       max_length = 300
@@ -183,6 +183,40 @@ EOF
       mutable  = true
       min_length = 0
       max_length = 2048
+    },
+    {
+      type     = "String"
+      name     = "created_by"
+      required = false
+      mutable  = true
+      min_length = 0
+      max_length = 2048
+    },
+    {
+      type     = "String"
+      name     = "updated_by"
+      required = false
+      mutable  = true
+      min_length = 0
+      max_length = 2048
+    },
+    {
+      type     = "String"
+      name     = "human_id"
+      required = false
+      mutable  = true
+      min_length = 0
+      max_length = 2048
+    },
+    # TODO Delete this when we reinitialize the pools
+    {
+      type     = "String"
+      # This date is stored as ISO 8601
+      name     = "expiryDate"
+      required = false
+      mutable  = true
+      min_length = 1
+      max_length = 100
     }
   ]
 }

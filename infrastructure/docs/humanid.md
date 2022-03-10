@@ -12,9 +12,9 @@ A human id is a string `<prefix>3-xxx-xxx-xxc` or `<prefix>4-xxx-xxx-xxx-xxc` or
 part of the id, and `c` is check digit.
 
 A record (with prefix MR for Medicapt Record) could have an id like: 
-  MR3-XVP-6CK-9ZF
-  MR4-XVP-6CK-9ZF-DPA
-  MR5-XVP-6CK-9ZF-DPA-RFC
+  MR3-XUP-6CK-9ZF
+  MR4-XUP-6CK-9ZF-DPA
+  MR5-XUP-6CK-9ZF-DPA-RFC
 As opposed to the UUID which would be more like
       3dfa9e86-e905-475a-bb2c-de28d52e13de
 

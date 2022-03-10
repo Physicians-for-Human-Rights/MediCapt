@@ -152,7 +152,7 @@ EOF
     {
       type     = "String"
       # This date is stored as ISO 8601
-      name     = "expiryDate"
+      name     = "expiry_date"
       required = false
       mutable  = true
       min_length = 1
@@ -170,6 +170,30 @@ EOF
       # This is a comma separated list of location UUIDs where the account has permissions
       type     = "String"
       name     = "allowed_locations"
+      required = false
+      mutable  = true
+      min_length = 0
+      max_length = 2048
+    },
+    {
+      type     = "String"
+      name     = "created_by"
+      required = false
+      mutable  = true
+      min_length = 0
+      max_length = 2048
+    },
+    {
+      type     = "String"
+      name     = "updated_by"
+      required = false
+      mutable  = true
+      min_length = 0
+      max_length = 2048
+    },
+    {
+      type     = "String"
+      name     = "human_id"
       required = false
       mutable  = true
       min_length = 0

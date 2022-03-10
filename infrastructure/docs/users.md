@@ -24,10 +24,9 @@ only used in emergencies or when setting up a new location.
 There are 5 roles:
  - Providers: Healthcare providers of all types. These users enter records and share them.
  - Associates: Police, lawyers, etc. These users accept shared records.
- - User managers: 
+ - Managers: These can manage users and locations
  - Form designers: 
  - Researchers: 
-
 
 All users have a number of shared required properties:
 
@@ -49,6 +48,16 @@ All users have a number of shared required properties:
 | `expiry_date`         | When this user expires                                              |
 | `storage_version`     | The storage version of the user, see below                          |
 | `allowed_locations`   | The storage version of the user, see below                          |
+| `created_by`          | User ID that created this user                                      |
+| `modified_by`         | User ID that last modified this user                                |
+
+In addition, Cognito maintains a number of per-user properties automatically
+
+| `created_date`         | User ID that last modified this user                                |
+| `modified_date`        | User ID that last modified this user                                |
+
+Cognito stores other information, for example, that related to MFA, is also
+stored in Cognito but not included in our records.
 
 Users are versioned. A user is guaranteed to have storage_version as a
 property. Versioning follows semver/semschema rules, same as with records.
@@ -58,3 +67,7 @@ only have permissions in the listed locations. At most, a user can have
 permissions in 50 locations (since we store these locations as part of the user
 in Cognito).
 
+A record of every change to every user account is stored in a `user-logs`
+dynamodb table. That table contains the full updated user record as listed above
+with an additional field: `action_type` that can be `create`, `delete`,
+`update`.

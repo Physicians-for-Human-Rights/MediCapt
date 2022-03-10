@@ -21,7 +21,7 @@ A location is some logical entity defined in MediCapt.
 |`lastApprovedByUUID`                       | The person who approved this form                                                          | Y
 |`enabled`                                  | A number, 1 is enabled, 0 is diabled                                                       | Y
 |`enabledDate`                              | A number, 1 is enabled, 0 is diabled                                                       | Y
-|`EnabledSetByUUID`                         | The person who approved this form                                                          | Y
+|`enabledSetByUUID`                         | The person who approved this form                                                          | Y
 |`tags`                                     | A tag to help organize forms, tags are always in English and will be translated            | Y
 |`version`                                  | A version that describes how this form is laid out                                         | Y
 |`locationStorageVersion`                   | A version that describes how this form is laid out                                         | Y

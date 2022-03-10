@@ -183,6 +183,30 @@ EOF
       mutable  = true
       min_length = 0
       max_length = 2048
+    },
+    {
+      type     = "String"
+      name     = "created_by"
+      required = false
+      mutable  = true
+      min_length = 0
+      max_length = 2048
+    },
+    {
+      type     = "String"
+      name     = "updated_by"
+      required = false
+      mutable  = true
+      min_length = 0
+      max_length = 2048
+    },
+    {
+      type     = "String"
+      name     = "human_id"
+      required = false
+      mutable  = true
+      min_length = 0
+      max_length = 2048
     }
   ]
 }
