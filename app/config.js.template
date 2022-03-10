@@ -36,7 +36,7 @@ export default {
             IDENTITY_POOL_ID: $RESEARCHER_IDENTITY_POOL_ID,
             APP_CLIENT_ID: $RESEARCHER_APP_CLIENT_ID
         },
-        usermanager: {
+        manager: {
             REGION: "$REGION",
             USER_POOL_ID: $USERMANAGER_USER_POOL_ID,
             IDENTITY_POOL_ID: $USERMANAGER_IDENTITY_POOL_ID,
