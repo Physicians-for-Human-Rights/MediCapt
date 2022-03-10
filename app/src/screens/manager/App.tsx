@@ -1,10 +1,10 @@
 import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
-import Home from 'screens/userManager/Home'
-import FindUser from 'screens/userManager/FindUser'
-import FindLocation from 'screens/userManager/FindLocation'
-import { RootStackParamList } from 'utils/userManager/navigation'
+import Home from 'screens/manager/Home'
+import FindUser from 'screens/manager/FindUser'
+import FindLocation from 'screens/manager/FindLocation'
+import { RootStackParamList } from 'utils/manager/navigation'
 
 const RootStack = createStackNavigator<RootStackParamList>()
 

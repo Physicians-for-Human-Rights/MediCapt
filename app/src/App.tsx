@@ -13,7 +13,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import { default as ProviderApp } from 'screens/provider/App'
 import { default as AssociateApp } from 'screens/associate/App'
-import { default as UserManagerApp } from 'screens/userManager/App'
+import { default as ManagerApp } from 'screens/manager/App'
 import { default as FormDesignerApp } from 'screens/formDesigner/App'
 import { default as ResearcherApp } from 'screens/researcher/App'
 
@@ -49,8 +49,8 @@ function App({
       return <ProviderApp signOut={signOut} user={user} />
     case UserType.Associate:
       return <AssociateApp signOut={signOut} user={user} />
-    case UserType.UserManager:
-      return <UserManagerApp signOut={signOut} user={user} />
+    case UserType.Manager:
+      return <ManagerApp signOut={signOut} user={user} />
     case UserType.FormDesigner:
       return <FormDesignerApp signOut={signOut} user={user} />
     case UserType.Researcher:

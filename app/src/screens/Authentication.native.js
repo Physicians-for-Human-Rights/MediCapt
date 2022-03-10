@@ -143,7 +143,7 @@ function Header(userType, setAccountType) {
         <ButtonGroup
           selected={userType}
           options={{
-            [UserTypeNames[UserType.UserManager]]: UserType.UserManager,
+            [UserTypeNames[UserType.Manager]]: UserType.Manager,
             [UserTypeNames[UserType.FormDesigner]]: UserType.FormDesigner,
             [UserTypeNames[UserType.Researcher]]: UserType.Researcher,
           }}

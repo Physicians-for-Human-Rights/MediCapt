@@ -13,9 +13,9 @@ export default {
   },
   tag: { 'sexual-assault': 'sexual assault' },
   user: {
-    provider: 'Healthcare provider',
-    associate: 'Associate',
-    userManager: 'User manager',
+    Provider: 'Healthcare provider',
+    Associate: 'Associate',
+    Manager: 'Manager',
     FormDesigner: 'Form designer',
     Researcher: 'Researcher',
   },

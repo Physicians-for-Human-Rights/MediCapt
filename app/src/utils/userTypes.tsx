@@ -4,7 +4,7 @@ import config from '../../config.js'
 export enum UserType {
   Provider = 'Provider',
   Associate = 'Associate',
-  UserManager = 'UserManager',
+  Manager = 'Manager',
   FormDesigner = 'FormDesigner',
   Researcher = 'Researcher',
 }
@@ -12,7 +12,7 @@ export enum UserType {
 export const UserTypeNames = {
   [UserType.Provider]: 'Healthcare provider',
   [UserType.Associate]: 'Associate',
-  [UserType.UserManager]: 'User manager',
+  [UserType.Manager]: 'Manager',
   [UserType.FormDesigner]: 'Form designer',
   [UserType.Researcher]: 'Researcher',
 }
@@ -20,7 +20,7 @@ export const UserTypeNames = {
 export const UserTypeList = [
   UserType.Provider,
   UserType.Associate,
-  UserType.UserManager,
+  UserType.Manager,
   UserType.FormDesigner,
   UserType.Researcher,
 ]
@@ -145,14 +145,14 @@ export function reconfigureAmplifyForUserType(userType: UserType) {
         // }
       })
       return
-    case UserType.UserManager:
+    case UserType.Manager:
       Amplify.configure({
         Auth: {
           mandatorySignIn: true,
-          region: config.cognito.usermanager.REGION,
-          userPoolId: config.cognito.usermanager.USER_POOL_ID,
-          identityPoolId: config.cognito.usermanager.IDENTITY_POOL_ID,
-          userPoolWebClientId: config.cognito.usermanager.APP_CLIENT_ID,
+          region: config.cognito.manager.REGION,
+          userPoolId: config.cognito.manager.USER_POOL_ID,
+          identityPoolId: config.cognito.manager.IDENTITY_POOL_ID,
+          userPoolWebClientId: config.cognito.manager.APP_CLIENT_ID,
         },
         Analytics: {
           disabled: true,
@@ -161,9 +161,9 @@ export function reconfigureAmplifyForUserType(userType: UserType) {
         // API: {
         //   endpoints: [
         //     {
-        //       name: 'usermanager',
-        //       endpoint: config.apiGateway.usermanager.URL,
-        //       region: config.apiGateway.usermanager.REGION,
+        //       name: 'manager',
+        //       endpoint: config.apiGateway.manager.URL,
+        //       region: config.apiGateway.manager.REGION,
         //       custom_header: async () => {
         //         return {
         //           // @ts-ignore TODO This exists, why doesn't typescript know about it?
