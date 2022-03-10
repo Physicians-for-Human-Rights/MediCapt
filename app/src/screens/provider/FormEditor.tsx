@@ -1,23 +1,9 @@
 import React, { useEffect } from 'react'
-import {
-  Box,
-  HStack,
-  Text,
-  VStack,
-  Pressable,
-  Divider,
-  Hidden,
-  Select,
-  CheckIcon,
-} from 'native-base'
-import { FormType } from 'utils/formTypes'
+import { VStack } from 'native-base'
+import { FormType } from 'utils/types/form'
 import yaml from 'js-yaml'
 import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
-import FormEditorComponent from 'components/FormEditor'
-import FormEditorFiles from 'components/FormEditorFiles'
-import FormEditorPrinted from 'components/FormEditorPrinted'
-import FormEditorOverview from 'components/FormEditorOverview'
 import useMap from 'react-use/lib/useMap'
 import _ from 'lodash'
 import { readFile } from 'utils/forms'

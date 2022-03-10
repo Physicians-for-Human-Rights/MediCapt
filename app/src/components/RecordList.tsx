@@ -14,7 +14,7 @@ import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
 import _ from 'lodash'
-import { RecordMetadata } from 'utils/recordTypes'
+import { RecordMetadata } from 'utils/types/record'
 
 export function ListItem({ item }: { item: RecordMetadata }) {
   return (

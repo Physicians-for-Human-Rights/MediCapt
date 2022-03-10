@@ -25,7 +25,7 @@ import {
 import DashboardLayout from 'components/DashboardLayout'
 import _ from 'lodash'
 import { default as FormListComponent } from 'components/FormList'
-import { FormMetadata } from 'utils/formTypes'
+import { FormMetadata } from 'utils/types/form'
 
 const forms: FormMetadata[] = [
   // @ts-ignore Missing fields, but it's temporray test data

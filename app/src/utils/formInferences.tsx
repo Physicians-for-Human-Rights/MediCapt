@@ -1,4 +1,4 @@
-import { RecordPath } from 'utils/recordTypes'
+import { RecordPath } from 'utils/types/record'
 import _ from 'lodash'
 
 // Make inferences about the form so that you can access more abstract values

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { Box, HStack, Text, VStack, Center } from 'native-base'
-import { FormType } from 'utils/formTypes'
+import { FormType } from 'utils/types/form'
 import yaml from 'js-yaml'
 import { useWindowDimensions } from 'react-native'
 import useDebounce from 'react-use/lib/useDebounce'

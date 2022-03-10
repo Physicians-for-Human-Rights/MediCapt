@@ -3,32 +3,20 @@ import { Alert } from 'react-native'
 import {
   Box,
   VStack,
-  StatusBar,
-  ScrollView,
   HStack,
   Pressable,
   Icon,
   Image,
-  Text,
-  Hidden,
-  useColorMode,
-  IconButton,
   Divider,
-  Menu,
-  Avatar,
   Button,
-  Input,
   Center,
-  useBreakpointValue,
   Modal,
-  Checkbox,
-  Select,
   FlatList,
 } from 'native-base'
 import * as ImagePicker from 'expo-image-picker'
 import { Camera } from 'expo-camera'
-import { RecordPath, RecordDataByType } from 'utils/recordTypes'
-import { FormFns, ArrayElement } from 'utils/formTypesHelpers'
+import { RecordDataByType } from 'utils/types/record'
+import { ArrayElement } from 'utils/types/formHelpers'
 import {
   AntDesign,
   FontAwesome,

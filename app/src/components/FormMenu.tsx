@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import {
   Box,
   HStack,
@@ -15,7 +15,7 @@ import {
 import { AntDesign } from '@expo/vector-icons'
 
 import _ from 'lodash'
-import { NamedFormSection } from 'utils/formTypesHelpers'
+import { NamedFormSection } from 'utils/types/formHelpers'
 
 function Section({
   completed,

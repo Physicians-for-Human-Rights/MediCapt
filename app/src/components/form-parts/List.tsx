@@ -1,18 +1,11 @@
 import React from 'react'
-import { Box, Input, Center, Select, Checkbox, VStack } from 'native-base'
+import { Input, Center, Select, Checkbox, VStack } from 'native-base'
 import useDebounce from 'react-use/lib/useDebounce'
 import _ from 'lodash'
-import { RecordPath } from 'utils/recordTypes'
-import {
-  MultipleFormValueTypes,
-  FormPart,
-  FormPartField,
-  FormDefinition,
-  FormKVRawType,
-} from 'utils/formTypes'
+import { MultipleFormValueTypes, FormKVRawType } from 'utils/types/form'
 import { t } from 'i18n-js'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
-import { disabled, disabledBackground } from 'utils/formRendering/utils'
+import { disabledBackground } from 'utils/formRendering/utils'
 
 export function isPrimitiveType(x: any) {
   return _.isString(x) || _.isBoolean(x) || _.isNumber(x)

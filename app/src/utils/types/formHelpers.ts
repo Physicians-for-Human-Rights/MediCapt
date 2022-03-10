@@ -5,8 +5,8 @@ import {
   FormPartMap,
   FormSection,
   NonRefFormPart,
-} from 'utils/formTypes'
-import { RecordPath } from 'utils/recordTypes'
+} from 'utils/types/form'
+import { RecordPath } from 'utils/types/record'
 
 // Sections and fields are named by the key of the object they're stored in. The
 // name is not present inside the section or field.

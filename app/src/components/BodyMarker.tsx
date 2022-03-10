@@ -7,11 +7,11 @@ import {
   Platform,
   GestureResponderEvent,
 } from 'react-native'
-import { RecordDataByType } from 'utils/recordTypes'
+import { RecordDataByType } from 'utils/types/record'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
-import { ArrayElement } from 'utils/formTypesHelpers'
+import { ArrayElement } from 'utils/types/formHelpers'
 import Photo from 'components/form-parts/Photo'
 
 function squareToImageCoordinates(

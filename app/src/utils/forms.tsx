@@ -10,9 +10,9 @@ import {
   FormDefinition,
   FormRef,
   FormConditional,
-} from 'utils/formTypes'
-import { NamedFormSection, FormFns } from 'utils/formTypesHelpers'
-import { RecordPath } from 'utils/recordTypes'
+} from 'utils/types/form'
+import { NamedFormSection, FormFns } from 'utils/types/formHelpers'
+import { RecordPath } from 'utils/types/record'
 
 export type GetValueFn = (
   path: RecordPath,

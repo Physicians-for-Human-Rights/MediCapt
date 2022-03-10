@@ -1,4 +1,5 @@
 export type LocationType = {
+  'storage-version': '1.0.0'
   locationUUID: string
   locationID: string
   country: string
@@ -18,5 +19,4 @@ export type LocationType = {
   enabledSetByUUID: string
   tags: string
   version: string
-  locationStorageVersion: '1.0.0'
 }

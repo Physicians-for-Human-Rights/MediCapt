@@ -1,23 +1,6 @@
 import _ from 'lodash'
-import {
-  FormValueType,
-  FormPart,
-  FormSectionMap,
-  FormPartMap,
-  FormDefinition,
-  FormRef,
-  FormConditional,
-  FormPartCommon,
-  FormPartField,
-  FormKVRawType,
-  MultipleFormValueTypes,
-} from 'utils/formTypes'
-import { mapSectionWithPaths, GetValueFn } from 'utils/forms'
-import { ArrayElement, NamedFormSection, FormFns } from 'utils/formTypesHelpers'
-import { RecordPhoto, RecordPath, RecordDataByType } from 'utils/recordTypes'
-import React from 'react'
-import { t } from 'i18n-js'
-import { resolveRef } from 'utils/forms'
+import { FormKVRawType } from 'utils/types/form'
+import { RecordPhoto, RecordPath, RecordDataByType } from 'utils/types/record'
 import {
   AntDesign,
   FontAwesome,
@@ -25,24 +8,11 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from '@expo/vector-icons'
-import uuid from 'react-native-uuid'
-
-import { Icon, Center, Divider, VStack, Text, Heading } from 'native-base'
-import { TextInput, View } from 'react-native'
-// @ts-ignore TODO TS doesn't understand .native.tsx and .web.tsx files
-import DateTimePicker from 'components/DateTimePicker'
-// @ts-ignore typescript doesn't like platform-specific modules
-import Signature from 'components/Signature'
 import {
   List,
   ListSelectMultiple,
   isPrimitiveType,
 } from 'components/form-parts/List'
-import ButtonGroup from 'components/form-parts/ButtonGroup'
-import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
-import Photo from 'components/form-parts/Photo'
-import BodyImage from 'components/form-parts/BodyImage'
-import CustomButton from 'components/form-parts/Button'
 
 export type URI = string
 

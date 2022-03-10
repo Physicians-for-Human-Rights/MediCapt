@@ -11,13 +11,11 @@ import {
   FormPartField,
   FormKVRawType,
   MultipleFormValueTypes,
-} from 'utils/formTypes'
-import { mapSectionWithPaths, GetValueFn } from 'utils/forms'
-import { ArrayElement, NamedFormSection, FormFns } from 'utils/formTypesHelpers'
-import { RecordPhoto, RecordPath, RecordDataByType } from 'utils/recordTypes'
+} from 'utils/types/form'
+import { ArrayElement } from 'utils/types/formHelpers'
+import { RecordPath, RecordDataByType } from 'utils/types/record'
 import React from 'react'
 import { t } from 'i18n-js'
-import { resolveRef } from 'utils/forms'
 import {
   AntDesign,
   FontAwesome,

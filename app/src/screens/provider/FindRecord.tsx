@@ -25,7 +25,7 @@ import {
 import DashboardLayout from 'components/DashboardLayout'
 import _ from 'lodash'
 import { default as RecordListComponent } from 'components/RecordList'
-import { RecordMetadata } from 'utils/recordTypes'
+import { RecordMetadata } from 'utils/types/record'
 
 const records: RecordMetadata[] = [
   // @ts-ignore This is temporray anyway

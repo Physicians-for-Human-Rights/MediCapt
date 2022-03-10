@@ -4,30 +4,25 @@ import usePrevious from 'react-use/lib/usePrevious'
 import useSet from 'react-use/lib/useSet'
 import useToggle from 'react-use/lib/useToggle'
 import {
-  Dimensions,
   Keyboard,
   // Don't use the native-base FlatList. It's buggy!
   FlatList,
 } from 'react-native'
 import _ from 'lodash'
 
-import { View, ScrollView, useBreakpointValue } from 'native-base'
+import { View, useBreakpointValue } from 'native-base'
 
 import FormMenu from 'components/FormMenu'
 import FromTop from 'components/FormTop'
 
-import { FormType } from 'utils/formTypes'
-import { RecordPath } from 'utils/recordTypes'
+import { FormType } from 'utils/types/form'
+import { RecordPath } from 'utils/types/record'
 import getRecordPath from 'utils/formInferences'
 import { RenderCommand } from 'utils/formRendering/types'
 import { allFormRenderCommands } from 'utils/formRendering/commands'
 import { renderCommand } from 'utils/formRendering/renderer'
 import { transformToLayout } from 'utils/formRendering/transformations'
-import {
-  nameFormSections,
-  mapSectionWithPaths,
-  isSectionComplete,
-} from 'utils/forms'
+import { nameFormSections, isSectionComplete } from 'utils/forms'
 
 export default function Form({
   files,

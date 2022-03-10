@@ -16,7 +16,7 @@ import {
   FlatList,
   IconButton,
 } from 'native-base'
-import { FormType } from 'utils/formTypes'
+import { FormType } from 'utils/types/form'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import * as DocumentPicker from 'expo-document-picker'

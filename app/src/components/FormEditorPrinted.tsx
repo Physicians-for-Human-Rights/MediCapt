@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Text, VStack, View } from 'native-base'
-import { FormType } from 'utils/formTypes'
+import { FormType } from 'utils/types/form'
 // @ts-ignore typescript doesn't do native/web modules
 import DisplayPDF from './DisplayPDF'
 

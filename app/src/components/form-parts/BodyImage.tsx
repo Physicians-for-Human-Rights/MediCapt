@@ -1,36 +1,10 @@
 import React, { useState } from 'react'
-import {
-  Box,
-  VStack,
-  StatusBar,
-  ScrollView,
-  HStack,
-  Pressable,
-  Icon,
-  Image,
-  Text,
-  Hidden,
-  useColorMode,
-  IconButton,
-  Divider,
-  Menu,
-  Avatar,
-  Button,
-  Input,
-  Center,
-  useBreakpointValue,
-  Modal,
-  Checkbox,
-  Select,
-  FlatList,
-} from 'native-base'
-import * as ImagePicker from 'expo-image-picker'
-import { RecordPath, RecordDataByType } from 'utils/recordTypes'
-import { FormFns, ArrayElement } from 'utils/formTypesHelpers'
+import { Box, Icon, Button, Center, Modal } from 'native-base'
+import { RecordDataByType } from 'utils/types/record'
+import { ArrayElement } from 'utils/types/formHelpers'
 import BodyMarker from 'components/BodyMarker'
 import { useWindowDimensions } from 'react-native'
 import { disabled, disabledBackground } from 'utils/formRendering/utils'
-
 import {
   AntDesign,
   FontAwesome,

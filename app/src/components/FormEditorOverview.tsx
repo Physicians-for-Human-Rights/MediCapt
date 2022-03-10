@@ -1,6 +1,6 @@
 import React from 'react'
 import { HStack, VStack, Button, Badge, View } from 'native-base'
-import { FormType } from 'utils/formTypes'
+import { FormType } from 'utils/types/form'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 import NecessaryItem from 'components/NecessaryItem'
 

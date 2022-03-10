@@ -1,6 +1,4 @@
 import { StackScreenProps } from '@react-navigation/stack'
-import { FormMetadata } from 'utils/formTypes'
-import { FormsMetadata } from 'utils/formTypesHelpers'
 
 export type RootStackParamList = {
   Home: { signOut: () => any; user: any }

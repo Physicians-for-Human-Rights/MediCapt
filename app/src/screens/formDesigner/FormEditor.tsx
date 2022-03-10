@@ -10,7 +10,7 @@ import {
   Select,
   CheckIcon,
 } from 'native-base'
-import { FormType } from 'utils/formTypes'
+import { FormType } from 'utils/types/form'
 import yaml from 'js-yaml'
 import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
