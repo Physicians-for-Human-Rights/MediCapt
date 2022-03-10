@@ -28,11 +28,10 @@ export RESEARCHER_IDENTITY_POOL_ID=$(terragrunt output         --terragrunt-work
 # TODO This API doesn't exist yet
 #export RESEARCHER_URL=$(terragrunt output   --terragrunt-working-dir $P/api/researcher -json aws_api_gateway_domain_name_id|cut -d '"' -f 2)
 
-export USERMANAGER_USER_POOL_ID=$(terragrunt output             --terragrunt-working-dir $P/admin/users/usermanager cognito_user_pool_id)
-export USERMANAGER_APP_CLIENT_ID=$(terragrunt output            --terragrunt-working-dir $P/admin/users/usermanager -json cognito_user_pool_client_web|jq '.id')
-export USERMANAGER_IDENTITY_POOL_ID=$(terragrunt output         --terragrunt-working-dir $P/admin/users/usermanager -json cognito_identity_pool|jq '.id')
-# TODO This API doesn't exist yet
-#export USERMANAGER_URL=$(terragrunt output   --terragrunt-working-dir $P/api/usermanager -json aws_api_gateway_domain_name_id|cut -d '"' -f 2)
+export MANAGER_USER_POOL_ID=$(terragrunt output             --terragrunt-working-dir $P/admin/users/manager cognito_user_pool_id)
+export MANAGER_APP_CLIENT_ID=$(terragrunt output            --terragrunt-working-dir $P/admin/users/manager -json cognito_user_pool_client_web|jq '.id')
+export MANAGER_IDENTITY_POOL_ID=$(terragrunt output         --terragrunt-working-dir $P/admin/users/manager -json cognito_identity_pool|jq '.id')
+export MANAGER_URL=$(terragrunt output   --terragrunt-working-dir $P/api/manager -json aws_api_gateway_domain_name_id|cut -d '"' -f 2)
 
 
 envsubst < config.js.template > config.js

@@ -9,6 +9,10 @@ export default {
         associate: {
             REGION: "$REGION",
             URL: "https://$ASSOCIATE_URL"
+        },
+        manager: {
+            REGION: "$REGION",
+            URL: "https://$MANAGER_URL"
         }
     },
     cognito: {
@@ -38,9 +42,9 @@ export default {
         },
         manager: {
             REGION: "$REGION",
-            USER_POOL_ID: $USERMANAGER_USER_POOL_ID,
-            IDENTITY_POOL_ID: $USERMANAGER_IDENTITY_POOL_ID,
-            APP_CLIENT_ID: $USERMANAGER_APP_CLIENT_ID
+            USER_POOL_ID: $MANAGER_USER_POOL_ID,
+            IDENTITY_POOL_ID: $MANAGER_IDENTITY_POOL_ID,
+            APP_CLIENT_ID: $MANAGER_APP_CLIENT_ID
         },
     }
 };

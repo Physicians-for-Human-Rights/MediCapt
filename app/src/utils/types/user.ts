@@ -1,7 +1,7 @@
 export type UserType = {
   'storage-version': '1.0.0'
-  // This is the unique id you get from cognito
-  sub: string
+  userUUID: string
+  userID: string
   created_time: Date
   last_updated_time: Date
   email: string
