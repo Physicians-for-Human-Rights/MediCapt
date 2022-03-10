@@ -25,27 +25,28 @@ security:
 schemes:
 - https
 paths:
-  /provider/record/image/byId/{recordId}:
-    post:
+  /provider/share/record/image/byId/{shareId}/{imageId}:
+    get:
       security:
       - CognitoUserProvider: []
       tags:
-      - Record
-      summary: Upload an image for a record
-      operationId: providerUploadImageForRecordBy
+      - Share
+      summary: Get an image in a record
+      operationId: providerGetSharedRecordImageByImageId
       consumes:
-       - multipart/form-data
+      - application/json
       produces:
       - application/json
       parameters:
-      - in: formData
-        name: upfile
-        type: file
-        required: true
-        description: The file to upload.
-      - name: recordId
+      - name: shareId
         in: path
-        description: ID of record to return
+        description: The share id
+        required: true
+        type: string
+        format: uuid
+      - name: imageId
+        in: path
+        description: The uuid of the image
         required: true
         type: string
         format: uuid
@@ -53,11 +54,11 @@ paths:
         400:
           description: Record already sealed
         404:
-          description: Record not found
+          description: Record or image not found
         405:
           description: Validation exception
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerUploadImageForRecordBy}
+        uri: ${lambda_uri_providerGetSharedRecordImageByImageId}
         responses:
           default:
             statusCode: "200"

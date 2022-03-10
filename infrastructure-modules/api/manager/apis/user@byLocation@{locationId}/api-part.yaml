@@ -1,15 +1,15 @@
 swagger: '2.0'
 info:
   description: |
-    Medicapt API for healthcare providers
+    Medicapt API for user managers
   version: 1.0.0
-  title: Medicapt API - Providers
+  title: Medicapt API - User managers
   termsOfService: TODO
   contact:
     email: TODO@TODO.TODO
   license:
     name: TODO
-    url: https://provider-api.dev.medicapt.click
+    url: https://manager-api.dev.medicapt.click
 securityDefinitions:
   CognitoUserProvider:
     type: apiKey
@@ -25,39 +25,53 @@ security:
 schemes:
 - https
 paths:
-  /provider/share/record/image/byId/{shareId}/{formTag}:
+  /manager/user/byLocation/{locationId}:
     get:
       security:
       - CognitoUserProvider: []
       tags:
-      - Share
-      summary: Get an image in a record
-      operationId: providerGetSharedRecordImageByFormTag
-      consumes:
-      - application/json
+      - User
+      summary: List users at a location
+      operationId: managerGetUsersByLocationId
       produces:
       - application/json
+      - application/xml
       parameters:
-      - name: shareId
+      - name: locationId
         in: path
-        description: The share id
+        description: ID of location to search
         required: true
         type: string
         format: uuid
-      - name: formTag
-        in: path
-        description: The form tag for this image
-        required: true
-        type: string
+      - in: query
+        name: offset
+        type: integer
+        required: false
+        default: 0
+        minimum: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: limit
+        type: integer
+        required: false
+        default: 20
+        minimum: 1
+        maximum: 100
+        description: The numbers of items to return.
       responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
         400:
-          description: Record already sealed
-        404:
-          description: Record or image not found
-        405:
-          description: Validation exception
+          description: Invalid status value
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerGetSharedRecordImageByFormTag}
+        uri: ${lambda_uri_managerGetUsersByLocationId}
         responses:
           default:
             statusCode: "200"
@@ -103,67 +117,19 @@ paths:
               type: "string"
 definitions:
   Empty: {}
-  RecordMetadata:
+  User:
     type: object
     properties:
-      form_id:
+      userUUID:
         type: string
         format: uuid
-      createdAt:
-        type: string
-        format: date
-      name:
-        type: string
-      age:
-        type: number
-      editedAt:
-        type: string
-        format: date
-      form_contents:
-        type: object
-  Record:
+  Location:
     type: object
     properties:
-      form_uuid:
+      locationUUID:
         type: string
         format: uuid
       name:
         type: string
       form_contents:
-        type: object
-  FormMetadata:
-    type: object
-    properties:
-      form_uuid:
-        type: string
-        format: uuid
-      name:
-        type: string
-      subtitle:
-        type: string
-      country:
-        type: string
-      version:
-        type: string
-      tag:
-        type: string
-      form_id:
-        type: string
-  Form:
-    type: object
-    properties:
-      form_uuid:
-        type: string
-        format: uuid
-      form_details:
-        type: object
-  Share:
-    type: object
-    properties:
-      shareUUID:
-        type: string
-        format: uuid
-      formMetadata:
-        type: object
-      form:
         type: object

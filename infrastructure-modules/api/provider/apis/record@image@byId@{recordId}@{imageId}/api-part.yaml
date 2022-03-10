@@ -25,14 +25,14 @@ security:
 schemes:
 - https
 paths:
-  /provider/record/image/byId/{recordId}/{formTag}:
+  /provider/record/image/byId/{recordId}/{imageId}:
     get:
       security:
       - CognitoUserProvider: []
       tags:
       - Record
       summary: Get an image in a record
-      operationId: providerGetImageByFormTag
+      operationId: providerGetImageByImageId
       consumes:
       - application/json
       produces:
@@ -44,11 +44,12 @@ paths:
         required: true
         type: string
         format: uuid
-      - name: formTag
+      - name: imageId
         in: path
-        description: The form tag for this image
+        description: The uuid of the image
         required: true
         type: string
+        format: uuid
       responses:
         400:
           description: Record already sealed
@@ -57,7 +58,7 @@ paths:
         405:
           description: Validation exception
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerGetImageByFormTag}
+        uri: ${lambda_uri_providerGetImageByImageId}
         responses:
           default:
             statusCode: "200"
@@ -70,7 +71,7 @@ paths:
       tags:
       - Record
       summary: Delete an image in a record
-      operationId: providerDeleteImageByFormTag
+      operationId: providerDeleteImageByImageId
       consumes:
       - application/json
       produces:
@@ -82,11 +83,12 @@ paths:
         required: true
         type: string
         format: uuid
-      - name: formTag
+      - name: imageId
         in: path
-        description: The form tag for this image
+        description: The uuid of the image
         required: true
         type: string
+        format: uuid
       responses:
         400:
           description: Record already sealed
@@ -95,7 +97,7 @@ paths:
         405:
           description: Validation exception
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerDeleteImageByFormTag}
+        uri: ${lambda_uri_providerDeleteImageByImageId}
         responses:
           default:
             statusCode: "200"

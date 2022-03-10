@@ -31,3 +31,5 @@ bower_components
 Thumbs.db
 yarn.lock
 .log
+dist-lambda/
+*.jar

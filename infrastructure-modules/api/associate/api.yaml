@@ -127,14 +127,14 @@ paths:
               type: "string"
             Access-Control-Allow-Origin:
               type: "string"
-  /associate/share/record/image/byId/{shareId}/{formTag}:
+  /associate/share/record/image/byId/{shareId}/{imageId}:
     get:
       security:
       - CognitoUserProvider: []
       tags:
       - share
       summary: Get an image in a record
-      operationId: associateGetSharedRecordImageByFormTag
+      operationId: associateGetSharedRecordImageByImageId
       consumes:
       - application/json
       produces:
@@ -146,11 +146,12 @@ paths:
         required: true
         type: string
         format: uuid
-      - name: formTag
+      - name: imageId
         in: path
-        description: The form tag for this image
+        description: The uuid of the image
         required: true
         type: string
+        format: uuid
       responses:
         400:
           description: Record already sealed
@@ -159,7 +160,7 @@ paths:
         405:
           description: Validation exception
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_associateGetSharedRecordImageByFormTag}
+        uri: ${lambda_uri_associateGetSharedRecordImageByImageId}
         responses:
           default:
             statusCode: "200"
@@ -203,7 +204,7 @@ paths:
               type: "string"
             Access-Control-Allow-Origin:
               type: "string"
-  /associate/share/with-user:
+  /associate/share/withUser:
     get:
       security:
       - CognitoUserProvider: []

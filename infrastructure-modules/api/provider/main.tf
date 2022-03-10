@@ -29,8 +29,8 @@ resource "aws_api_gateway_rest_api" "provider" {
       lambda_uri_providerDeleteRecordById              = aws_lambda_function.lambdas["providerDeleteRecordById"].invoke_arn
       lambda_uri_providerSealRecordById                = aws_lambda_function.lambdas["providerSealRecordById"].invoke_arn
       lambda_uri_providerUploadImageForRecordBy        = aws_lambda_function.lambdas["providerUploadImageForRecordBy"].invoke_arn
-      lambda_uri_providerGetImageByFormTag             = aws_lambda_function.lambdas["providerGetImageByFormTag"].invoke_arn
-      lambda_uri_providerDeleteImageByFormTag          = aws_lambda_function.lambdas["providerDeleteImageByFormTag"].invoke_arn
+      lambda_uri_providerGetImageByImageId             = aws_lambda_function.lambdas["providerGetImageByImageId"].invoke_arn
+      lambda_uri_providerDeleteImageByImageId          = aws_lambda_function.lambdas["providerDeleteImageByImageId"].invoke_arn
       lambda_uri_providerGetOwnRecords                 = aws_lambda_function.lambdas["providerGetOwnRecords"].invoke_arn
       lambda_uri_providerGetFormsByCountry             = aws_lambda_function.lambdas["providerGetFormsByCountry"].invoke_arn
       lambda_uri_providerGetFormByUUID                 = aws_lambda_function.lambdas["providerGetFormByUUID"].invoke_arn
@@ -38,7 +38,7 @@ resource "aws_api_gateway_rest_api" "provider" {
       lambda_uri_providerGetRecordSharesById           = aws_lambda_function.lambdas["providerGetRecordSharesById"].invoke_arn
       lambda_uri_providerGetSharedRecordById           = aws_lambda_function.lambdas["providerGetSharedRecordById"].invoke_arn
       lambda_uri_providerDeleteSharedRecordById        = aws_lambda_function.lambdas["providerDeleteSharedRecordById"].invoke_arn
-      lambda_uri_providerGetSharedRecordImageByFormTag = aws_lambda_function.lambdas["providerGetSharedRecordImageByFormTag"].invoke_arn
+      lambda_uri_providerGetSharedRecordImageByImageId = aws_lambda_function.lambdas["providerGetSharedRecordImageByImageId"].invoke_arn
       lambda_uri_providerGetSharedRecordsByUser        = aws_lambda_function.lambdas["providerGetSharedRecordsByUser"].invoke_arn
       lambda_uri_providerGetSharedRecordsWithUser      = aws_lambda_function.lambdas["providerGetSharedRecordsWithUser"].invoke_arn
     })
@@ -57,8 +57,8 @@ resource "aws_api_gateway_deployment" "api" {
     aws_lambda_function.lambdas["providerDeleteRecordById"],
     aws_lambda_function.lambdas["providerSealRecordById"],
     aws_lambda_function.lambdas["providerUploadImageForRecordBy"],
-    aws_lambda_function.lambdas["providerGetImageByFormTag"],
-    aws_lambda_function.lambdas["providerDeleteImageByFormTag"],
+    aws_lambda_function.lambdas["providerGetImageByImageId"],
+    aws_lambda_function.lambdas["providerDeleteImageByImageId"],
     aws_lambda_function.lambdas["providerGetOwnRecords"],
     aws_lambda_function.lambdas["providerGetFormsByCountry"],
     aws_lambda_function.lambdas["providerGetFormByUUID"],
@@ -66,7 +66,7 @@ resource "aws_api_gateway_deployment" "api" {
     aws_lambda_function.lambdas["providerGetRecordSharesById"],
     aws_lambda_function.lambdas["providerGetSharedRecordById"],
     aws_lambda_function.lambdas["providerDeleteSharedRecordById"],
-    aws_lambda_function.lambdas["providerGetSharedRecordImageByFormTag"],
+    aws_lambda_function.lambdas["providerGetSharedRecordImageByImageId"],
     aws_lambda_function.lambdas["providerGetSharedRecordsByUser"],
     aws_lambda_function.lambdas["providerGetSharedRecordsWithUser"]
   ]
@@ -94,8 +94,8 @@ resource "aws_api_gateway_stage" "api" {
     aws_lambda_function.lambdas["providerDeleteRecordById"],
     aws_lambda_function.lambdas["providerSealRecordById"],
     aws_lambda_function.lambdas["providerUploadImageForRecordBy"],
-    aws_lambda_function.lambdas["providerGetImageByFormTag"],
-    aws_lambda_function.lambdas["providerDeleteImageByFormTag"],
+    aws_lambda_function.lambdas["providerGetImageByImageId"],
+    aws_lambda_function.lambdas["providerDeleteImageByImageId"],
     aws_lambda_function.lambdas["providerGetOwnRecords"],
     aws_lambda_function.lambdas["providerGetFormsByCountry"],
     aws_lambda_function.lambdas["providerGetFormByUUID"],
@@ -103,7 +103,7 @@ resource "aws_api_gateway_stage" "api" {
     aws_lambda_function.lambdas["providerGetRecordSharesById"],
     aws_lambda_function.lambdas["providerGetSharedRecordById"],
     aws_lambda_function.lambdas["providerDeleteSharedRecordById"],
-    aws_lambda_function.lambdas["providerGetSharedRecordImageByFormTag"],
+    aws_lambda_function.lambdas["providerGetSharedRecordImageByImageId"],
     aws_lambda_function.lambdas["providerGetSharedRecordsByUser"],
     aws_lambda_function.lambdas["providerGetSharedRecordsWithUser"]
   ]

@@ -25,7 +25,7 @@ resource "aws_api_gateway_rest_api" "associate" {
       # NB: Is there a way to pass in a map and do a lookup?
       lambda_uri_associateGetSharedRecordById           = aws_lambda_function.lambdas["associateGetSharedRecordById"].invoke_arn
       lambda_uri_associateDeleteSharedRecordById        = aws_lambda_function.lambdas["associateDeleteSharedRecordById"].invoke_arn
-      lambda_uri_associateGetSharedRecordImageByFormTag = aws_lambda_function.lambdas["associateGetSharedRecordImageByFormTag"].invoke_arn
+      lambda_uri_associateGetSharedRecordImageByImageId = aws_lambda_function.lambdas["associateGetSharedRecordImageByImageId"].invoke_arn
       lambda_uri_associateGetSharedRecordsWithUser      = aws_lambda_function.lambdas["associateGetSharedRecordsWithUser"].invoke_arn
     })
   endpoint_configuration {
@@ -39,7 +39,7 @@ resource "aws_api_gateway_deployment" "api" {
     aws_api_gateway_rest_api.associate,
     aws_lambda_function.lambdas["associateGetSharedRecordById"],
     aws_lambda_function.lambdas["associateDeleteSharedRecordById"],
-    aws_lambda_function.lambdas["associateGetSharedRecordImageByFormTag"],
+    aws_lambda_function.lambdas["associateGetSharedRecordImageByImageId"],
     aws_lambda_function.lambdas["associateGetSharedRecordsWithUser"]
   ]
   rest_api_id = aws_api_gateway_rest_api.associate.id
@@ -62,7 +62,7 @@ resource "aws_api_gateway_stage" "api" {
     aws_api_gateway_rest_api.associate,
     aws_lambda_function.lambdas["associateGetSharedRecordById"],
     aws_lambda_function.lambdas["associateDeleteSharedRecordById"],
-    aws_lambda_function.lambdas["associateGetSharedRecordImageByFormTag"],
+    aws_lambda_function.lambdas["associateGetSharedRecordImageByImageId"],
     aws_lambda_function.lambdas["associateGetSharedRecordsWithUser"]
   ]
   rest_api_id    = aws_api_gateway_rest_api.associate.id

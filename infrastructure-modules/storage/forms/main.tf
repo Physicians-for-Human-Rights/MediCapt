@@ -117,17 +117,7 @@ module "dynamodb_table" {
       hash_key           = "country_locationUUID_enabled"
       range_key          = null
       projection_type    = "INCLUDE"
-      non_key_attributes = ["Tag"]
-      #
-      read_capacity      = null
-      write_capacity     = null
-    },
-    {
-      name               = "AllLocationsByCountry"
-      hash_key           = "country"
-      range_key          = null
-      projection_type    = "INCLUDE"
-      non_key_attributes = ["locationUUID"]
+      non_key_attributes = ["Tags"]
       #
       read_capacity      = null
       write_capacity     = null
@@ -173,31 +163,6 @@ module "dynamodb_table" {
       write_capacity     = null
     }
   ]
-}
-
-resource "aws_dynamodb_table_item" "example" {
-  table_name = module.dynamodb_table.table_name
-  hash_key   = "country"
-  range_key  = "formUUID"
-  item = <<ITEM
-{
-   "country": { "S": "KE" },
-   "formUUID": { "S": "617a8795-229c-4aa2-bdb1-e4b8fb344e32" },
-   "locationUUID": { "S": "" },
-   "name": { "S": "Post-rape care form" },
-   "subtitle": { "S": "Keyna MOH 363" },
-   "dateEntered": { "S": "2019-01-01" },
-   "dateCreated": { "S": "2019-01-01" },
-   "formId": { "S": "Keyna MOH 363" },
-   "tag": { "S": "sexual-assault" },
-   "priority": { "S": "1" },
-   "version": { "S": "1" },
-   "enabled": { "S": "1" },
-   "country_locationUUID": { "S": "KE!" },
-   "country_locationUUID_enabled": { "S": "KE!!1" },
-   "country_locationUUID_enabled_tag": { "S": "KE!!1!sexual-assault" }
-}
-ITEM
 }
 
 output "forms_s3_bucket" {

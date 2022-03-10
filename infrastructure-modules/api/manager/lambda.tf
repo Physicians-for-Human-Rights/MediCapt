@@ -1,75 +1,51 @@
 locals {
   lambdas = {
-    providerCreateRecord = {
-      path = "record/post"
+    managerCreateUser = {
+      path = "user/post"
       reserved_concurrent_executions = null
     }
-    providerGetRecordById = {
-      path = "record@byId@{recordId}/get"
+    managerGetUserById = {
+      path = "user@byId@{userId}/get"
       reserved_concurrent_executions = null
     }
-    providerUpdateRecordById = {
-      path = "record@byId@{recordId}/post"
+    managerUpdateUserById = {
+      path = "user@byId@{userId}/post"
       reserved_concurrent_executions = null
     }
-    providerDeleteRecordById = {
-      path = "record@byId@{recordId}/delete"
+    managerDeleteUserById = {
+      path = "user@byId@{userId}/delete"
       reserved_concurrent_executions = null
     }
-    providerSealRecordById = {
-      path = "record@seal@{recordId}/post"
+    managerGetOwnUsers = {
+      path = "user@byUser/get"
       reserved_concurrent_executions = null
     }
-    providerUploadImageForRecordBy = {
-      path = "record@image@byId@{recordId}/post"
+    managerGetUsersByLocationId = {
+      path = "user@byLocation@{locationId}/get"
       reserved_concurrent_executions = null
     }
-    providerGetImageByImageId = {
-      path = "record@image@byId@{recordId}@{imageId}/get"
+    managerCreateLocation = {
+      path = "location/post"
       reserved_concurrent_executions = null
     }
-    providerDeleteImageByImageId = {
-      path = "record@image@byId@{recordId}@{imageId}/delete"
+    managerGetLocationById = {
+      path = "location@byId@{locationId}/get"
       reserved_concurrent_executions = null
     }
-    providerGetOwnRecords = {
-      path = "record@by-user/get"
+    managerUpdateLocationById = {
+      path = "location@byId@{locationId}/post"
       reserved_concurrent_executions = null
     }
-    providerGetFormsByCountry = {
-      path = "form@byCountry@{country}/get"
+    managerDeleteLocationById = {
+      path = "location@byId@{locationId}/delete"
       reserved_concurrent_executions = null
     }
-    providerGetFormByUUID = {
-      path = "form@byId@{formId}/get"
+    managerGetLocationsByCountry = {
+      path = "location@byCountry@{countryCode}/get"
       reserved_concurrent_executions = null
     }
-    providerPutSharedRecordById = {
-      path = "record@share@byId@{recordId}/post"
-      reserved_concurrent_executions = null
-    }
-    providerGetRecordSharesById = {
-      path = "record@share@byId@{recordId}/get"
-      reserved_concurrent_executions = null
-    }
-    providerGetSharedRecordById = {
-      path = "share@record@byId@{shareId}/get"
-      reserved_concurrent_executions = null
-    }
-    providerDeleteSharedRecordById = {
-      path = "share@record@byId@{shareId}/delete"
-      reserved_concurrent_executions = null
-    }
-    providerGetSharedRecordImageByImageId = {
-      path = "share@record@image@byId@{shareId}@{imageId}/get"
-      reserved_concurrent_executions = null
-    }
-    providerGetSharedRecordsByUser = {
-      path = "share@record@by-user/get"
-      reserved_concurrent_executions = null
-    }
-    providerGetSharedRecordsWithUser = {
-      path = "share@record@with-user/get"
+    managerGetCountries = {
+      path = "country/get"
       reserved_concurrent_executions = null
     }
   }
@@ -79,8 +55,8 @@ data "archive_file" "srcs" {
   for_each = local.lambdas
   #
   type        = "zip"
-  source_dir  = "../../dist-lambda/api/provider/apis/${each.value.path}/src/"
-  output_path = "${path.module}/api/provider/apis/${each.value.path}/src.zip"
+  source_dir  = "../../dist-lambda/api/manager/apis/${each.value.path}/src/"
+  output_path = "${path.module}/api/manager/apis/${each.value.path}/src.zip"
 }
 
 resource "aws_lambda_function" "lambdas" {

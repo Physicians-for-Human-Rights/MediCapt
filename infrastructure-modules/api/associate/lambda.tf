@@ -8,8 +8,8 @@ locals {
       path = "share@record@byId@{shareId}/delete"
       reserved_concurrent_executions = null
     }
-    associateGetSharedRecordImageByFormTag = {
-      path = "share@record@image@byId@{shareId}@{formTag}/get"
+    associateGetSharedRecordImageByImageId = {
+      path = "share@record@image@byId@{shareId}@{imageId}/get"
       reserved_concurrent_executions = null
     }
     associateGetSharedRecordsWithUser = {

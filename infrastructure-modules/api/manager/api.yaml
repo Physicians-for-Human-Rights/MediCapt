@@ -1,15 +1,15 @@
 swagger: '2.0'
 info:
   description: |
-    Medicapt API for healthcare providers
+    Medicapt API for user managers
   version: 1.0.0
-  title: Medicapt API - Providers
+  title: Medicapt API - User managers
   termsOfService: TODO
   contact:
     email: TODO@TODO.TODO
   license:
     name: TODO
-    url: https://provider-api.dev.medicapt.click
+    url: https://manager-api.dev.medicapt.click
 securityDefinitions:
   CognitoUserProvider:
     type: apiKey
@@ -19,38 +19,38 @@ securityDefinitions:
     x-amazon-apigateway-authorizer:
       type: cognito_user_pools
       providerARNs:
-      - ${cognito_user_pool_provider_arn}
+      - ${cognito_user_pool_manager_arn}
 security:
   - CognitoUserProvider: []
 schemes:
 - https
 paths:
-  /provider/record:
+  /manager/user:
     post:
       security:
       - CognitoUserProvider: []
       tags:
-      - Record
-      summary: Add a new record
+      - User
+      summary: Add a new user
       consumes:
       - application/json
       produces:
       - application/json
-      operationId: providerCreateRecord
+      operationId: managerCreateUser
       parameters:
       - in: body
         name: body
-        description: Create a new record
+        description: Create a new user
         required: true
         schema:
-          $ref: '#/definitions/Record'
+          $ref: '#/definitions/User'
       responses:
         405:
           description: Invalid input
           schema:
-            $ref: '#/definitions/Record'
+            $ref: '#/definitions/User'
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerCreateRecord}
+        uri: ${lambda_uri_managerCreateUser}
         responses:
           default:
             statusCode: "200"
@@ -94,21 +94,21 @@ paths:
               type: "string"
             Access-Control-Allow-Origin:
               type: "string"
-  /provider/record/byId/{recordId}:
+  /manager/user/byId/{userId}:
     get:
       security:
       - CognitoUserProvider: []
       tags:
-      - Record
-      summary: Get a record by ID
-      operationId: providerGetRecordById
+      - User
+      summary: Get a user by ID
+      operationId: managerGetUserById
       produces:
       - application/json
       - application/xml
       parameters:
-      - name: recordId
+      - name: userId
         in: path
-        description: ID of the record to return
+        description: ID of the user to return
         required: true
         type: string
         format: uuid
@@ -116,13 +116,13 @@ paths:
         200:
           description: successful operation
           schema:
-            $ref: '#/definitions/Record'
+            $ref: '#/definitions/User'
         400:
           description: Invalid ID supplied
         404:
-          description: Record not found
+          description: User not found
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerGetRecordById}
+        uri: ${lambda_uri_managerGetUserById}
         responses:
           default:
             statusCode: "200"
@@ -133,35 +133,33 @@ paths:
       security:
       - CognitoUserProvider: []
       tags:
-      - Record
-      summary: Update an existing record
-      operationId: providerUpdateRecordById
+      - User
+      summary: Update an existing user
+      operationId: managerUpdateUserById
       consumes:
       - application/x-www-form-urlencoded
       produces:
       - application/json
       parameters:
-      - name: recordId
+      - name: userId
         in: path
-        description: ID of the record to return
+        description: ID of the user to return
         required: true
         type: string
         format: uuid
       - in: body
         name: body
-        description: Updated record
+        description: Updated user
         required: true
         schema:
-          $ref: '#/definitions/Record'
+          $ref: '#/definitions/User'
       responses:
-        400:
-          description: Record already sealed
         404:
-          description: Record not found
+          description: User not found
         405:
           description: Validation exception
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerUpdateRecordById}
+        uri: ${lambda_uri_managerUpdateUserById}
         responses:
           default:
             statusCode: "200"
@@ -172,28 +170,26 @@ paths:
       security:
       - CognitoUserProvider: []
       tags:
-      - Record
-      summary: Deletes a record
-      operationId: providerDeleteRecordById
+      - User
+      summary: Deletes a sssser
+      operationId: managerDeleteUserById
       produces:
       - application/json
       - application/xml
       parameters:
-      - name: recordId
+      - name: userId
         in: path
-        description: ID of record to delete
+        description: ID of user to delete
         required: true
         type: string
         format: uuid
       responses:
-        400:
-          description: Invalid ID supplied
         404:
           description: Record not found
         405:
           description: Record already sealed
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerDeleteRecordById}
+        uri: ${lambda_uri_managerDeleteUserById}
         responses:
           default:
             statusCode: "200"
@@ -237,187 +233,315 @@ paths:
               type: "string"
             Access-Control-Allow-Origin:
               type: "string"
-  /provider/record/seal/{recordId}:
+  /manager/user/byUser:
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - User
+      summary: List your own users
+      operationId: managerGetOwnUsers
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - in: query
+        name: offset
+        type: integer
+        required: false
+        default: 0
+        minimum: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: limit
+        type: integer
+        required: false
+        default: 20
+        minimum: 1
+        maximum: 100
+        description: The numbers of items to return.
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+        400:
+          description: Invalid status value
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_managerGetOwnUsers}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+  /manager/user/byLocation/{locationId}:
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - User
+      summary: List users at a location
+      operationId: managerGetUsersByLocationId
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - name: locationId
+        in: path
+        description: ID of location to search
+        required: true
+        type: string
+        format: uuid
+      - in: query
+        name: offset
+        type: integer
+        required: false
+        default: 0
+        minimum: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: limit
+        type: integer
+        required: false
+        default: 20
+        minimum: 1
+        maximum: 100
+        description: The numbers of items to return.
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+        400:
+          description: Invalid status value
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_managerGetUsersByLocationId}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+  /manager/location:
     post:
       security:
       - CognitoUserProvider: []
       tags:
-      - Record
-      summary: Update an existing record
-      operationId: providerSealRecordById
+      - Location
+      summary: Add a new location
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      operationId: managerCreateLocation
+      parameters:
+      - in: body
+        name: body
+        description: Create a new location
+        required: true
+        schema:
+          $ref: '#/definitions/Location'
+      responses:
+        405:
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/Location'
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_managerCreateLocation}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+  /manager/location/byId/{locationId}:
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - Location
+      summary: Get a location by ID
+      operationId: managerGetLocationById
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - name: locationId
+        in: path
+        description: ID of the location to return
+        required: true
+        type: string
+        format: uuid
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Location'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Location not found
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_managerGetLocationById}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    post:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - Location
+      summary: Update an existing location
+      operationId: managerUpdateLocationById
       consumes:
       - application/x-www-form-urlencoded
       produces:
       - application/json
       parameters:
-      - name: recordId
+      - name: locationId
         in: path
-        description: ID of record to return
+        description: ID of the location to return
         required: true
         type: string
         format: uuid
+      - in: body
+        name: body
+        description: Updated location
+        required: true
+        schema:
+          $ref: '#/definitions/Location'
       responses:
-        400:
-          description: Record already sealed
         404:
-          description: Record not found
+          description: Location not found
         405:
           description: Validation exception
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerSealRecordById}
-        responses:
-          default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
-    options:
-      summary: CORS support
-      description: |
-        Enable CORS by returning correct headers
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      tags:
-        - CORS
-      x-amazon-apigateway-integration:
-        type: mock
-        requestTemplates:
-          application/json: |
-            {
-              "statusCode" : 200
-            }
-        responses:
-          "default":
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
-            responseTemplates:
-              application/json: |
-                {}
-      responses:
-        200:
-          description: Default response for CORS method
-          headers:
-            Access-Control-Allow-Headers:
-              type: "string"
-            Access-Control-Allow-Methods:
-              type: "string"
-            Access-Control-Allow-Origin:
-              type: "string"
-  /provider/record/image/byId/{recordId}:
-    post:
-      security:
-      - CognitoUserProvider: []
-      tags:
-      - Record
-      summary: Upload an image for a record
-      operationId: providerUploadImageForRecordBy
-      consumes:
-       - multipart/form-data
-      produces:
-      - application/json
-      parameters:
-      - in: formData
-        name: upfile
-        type: file
-        required: true
-        description: The file to upload.
-      - name: recordId
-        in: path
-        description: ID of record to return
-        required: true
-        type: string
-        format: uuid
-      responses:
-        400:
-          description: Record already sealed
-        404:
-          description: Record not found
-        405:
-          description: Validation exception
-      x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerUploadImageForRecordBy}
-        responses:
-          default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
-    options:
-      summary: CORS support
-      description: |
-        Enable CORS by returning correct headers
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      tags:
-        - CORS
-      x-amazon-apigateway-integration:
-        type: mock
-        requestTemplates:
-          application/json: |
-            {
-              "statusCode" : 200
-            }
-        responses:
-          "default":
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
-            responseTemplates:
-              application/json: |
-                {}
-      responses:
-        200:
-          description: Default response for CORS method
-          headers:
-            Access-Control-Allow-Headers:
-              type: "string"
-            Access-Control-Allow-Methods:
-              type: "string"
-            Access-Control-Allow-Origin:
-              type: "string"
-  /provider/record/image/byId/{recordId}/{imageId}:
-    get:
-      security:
-      - CognitoUserProvider: []
-      tags:
-      - Record
-      summary: Get an image in a record
-      operationId: providerGetImageByImageId
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - name: recordId
-        in: path
-        description: The record id
-        required: true
-        type: string
-        format: uuid
-      - name: imageId
-        in: path
-        description: The uuid of the image
-        required: true
-        type: string
-        format: uuid
-      responses:
-        400:
-          description: Record already sealed
-        404:
-          description: Record or image not found
-        405:
-          description: Validation exception
-      x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerGetImageByImageId}
+        uri: ${lambda_uri_managerUpdateLocationById}
         responses:
           default:
             statusCode: "200"
@@ -428,90 +552,87 @@ paths:
       security:
       - CognitoUserProvider: []
       tags:
-      - Record
-      summary: Delete an image in a record
-      operationId: providerDeleteImageByImageId
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - name: recordId
-        in: path
-        description: The record id
-        required: true
-        type: string
-        format: uuid
-      - name: imageId
-        in: path
-        description: The uuid of the image
-        required: true
-        type: string
-        format: uuid
-      responses:
-        400:
-          description: Record already sealed
-        404:
-          description: Record or image not found
-        405:
-          description: Validation exception
-      x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerDeleteImageByImageId}
-        responses:
-          default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
-    options:
-      summary: CORS support
-      description: |
-        Enable CORS by returning correct headers
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      tags:
-        - CORS
-      x-amazon-apigateway-integration:
-        type: mock
-        requestTemplates:
-          application/json: |
-            {
-              "statusCode" : 200
-            }
-        responses:
-          "default":
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
-            responseTemplates:
-              application/json: |
-                {}
-      responses:
-        200:
-          description: Default response for CORS method
-          headers:
-            Access-Control-Allow-Headers:
-              type: "string"
-            Access-Control-Allow-Methods:
-              type: "string"
-            Access-Control-Allow-Origin:
-              type: "string"
-  /provider/record/byUser:
-    get:
-      security:
-      - CognitoUserProvider: []
-      tags:
-      - Record
-      summary: List your own records
-      operationId: providerGetOwnRecords
+      - Location
+      summary: Deletes a sssser
+      operationId: managerDeleteLocationById
       produces:
       - application/json
       - application/xml
       parameters:
+      - name: locationId
+        in: path
+        description: ID of location to delete
+        required: true
+        type: string
+        format: uuid
+      responses:
+        404:
+          description: Record not found
+        405:
+          description: Record already sealed
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_managerDeleteLocationById}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+  /manager/location/byCountry/{countryCode}:
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - Location
+      summary: Get locations by country code
+      operationId: managerGetLocationsByCountry
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - name: countryCode
+        in: path
+        description: Country code of the location
+        required: true
+        type: string
+        format: uuid
       - in: query
         name: offset
         type: integer
@@ -533,282 +654,13 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/RecordMetadata'
-          headers:
-            Access-Control-Allow-Origin:
-              type: "string"
-        400:
-          description: Invalid status value
-      x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerGetOwnRecords}
-        responses:
-          default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
-    options:
-      summary: CORS support
-      description: |
-        Enable CORS by returning correct headers
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      tags:
-        - CORS
-      x-amazon-apigateway-integration:
-        type: mock
-        requestTemplates:
-          application/json: |
-            {
-              "statusCode" : 200
-            }
-        responses:
-          "default":
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
-            responseTemplates:
-              application/json: |
-                {}
-      responses:
-        200:
-          description: Default response for CORS method
-          headers:
-            Access-Control-Allow-Headers:
-              type: "string"
-            Access-Control-Allow-Methods:
-              type: "string"
-            Access-Control-Allow-Origin:
-              type: "string"
-  /provider/form/byCountry/{country}:
-    get:
-      security:
-      - CognitoUserProvider: []
-      tags:
-      - Form
-      summary: List all forms for a country
-      operationId: providerGetFormsByCountry
-      produces:
-      - application/json
-      parameters:
-      - in: query
-        name: offset
-        type: integer
-        required: false
-        default: 0
-        minimum: 0
-        description: The number of items to skip before starting to collect the result set.
-      - in: query
-        name: limit
-        type: integer
-        required: false
-        default: 20
-        minimum: 1
-        maximum: 100
-        description: The numbers of items to return.
-      - in: path
-        name: country
-        type: string
-        required: true
-        description: The ISO 2 letter country code from which forms should be listed
-      responses:
-        200:
-          description: successful operation
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/FormMetadata'
-        400:
-          description: Invalid status value
-      x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerGetFormsByCountry}
-        responses:
-          default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
-    options:
-      summary: CORS support
-      description: |
-        Enable CORS by returning correct headers
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      tags:
-        - CORS
-      x-amazon-apigateway-integration:
-        type: mock
-        requestTemplates:
-          application/json: |
-            {
-              "statusCode" : 200
-            }
-        responses:
-          "default":
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
-            responseTemplates:
-              application/json: |
-                {}
-      responses:
-        200:
-          description: Default response for CORS method
-          headers:
-            Access-Control-Allow-Headers:
-              type: "string"
-            Access-Control-Allow-Methods:
-              type: "string"
-            Access-Control-Allow-Origin:
-              type: "string"
-  /provider/form/byId/{formId}:
-    get:
-      security:
-      - CognitoUserProvider: []
-      tags:
-      - Form
-      summary: Get the details on a form
-      operationId: providerGetFormByUUID
-      produces:
-      - application/json
-      parameters:
-      - in: query
-        name: offset
-        type: integer
-        required: false
-        default: 0
-        minimum: 0
-        description: The number of items to skip before starting to collect the result set.
-      - in: query
-        name: limit
-        type: integer
-        required: false
-        default: 20
-        minimum: 1
-        maximum: 100
-        description: The numbers of items to return.
-      - in: path
-        name: formId
-        type: string
-        required: true
-        description: The UUID of the form
-      responses:
-        200:
-          description: successful operation
-          schema:
-            $ref: '#/definitions/Form'
-        400:
-          description: Invalid status value
-      x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerGetFormByUUID}
-        responses:
-          default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
-    options:
-      summary: CORS support
-      description: |
-        Enable CORS by returning correct headers
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      tags:
-        - CORS
-      x-amazon-apigateway-integration:
-        type: mock
-        requestTemplates:
-          application/json: |
-            {
-              "statusCode" : 200
-            }
-        responses:
-          "default":
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
-            responseTemplates:
-              application/json: |
-                {}
-      responses:
-        200:
-          description: Default response for CORS method
-          headers:
-            Access-Control-Allow-Headers:
-              type: "string"
-            Access-Control-Allow-Methods:
-              type: "string"
-            Access-Control-Allow-Origin:
-              type: "string"
-  /provider/record/share/byId/{recordId}:
-    post:
-      security:
-      - CognitoUserProvider: []
-      tags:
-      - Share
-      summary: Share a record
-      operationId: providerPutSharedRecordById
-      produces:
-      - application/json
-      parameters:
-      - name: recordId
-        in: path
-        description: ID of record to share
-        required: true
-        type: string
-        format: uuid
-      responses:
+              $ref: '#/definitions/Location'
         400:
           description: Invalid ID supplied
         404:
-          description: Record not found
-        405:
-          description: Record already sealed
+          description: Location not found
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerPutSharedRecordById}
-        responses:
-          default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
-    get:
-      security:
-      - CognitoUserProvider: []
-      tags:
-      - Share
-      summary: Get the sharing status of this record
-      operationId: providerGetRecordSharesById
-      produces:
-      - application/json
-      parameters:
-      - name: recordId
-        in: path
-        description: ID of record to share
-        required: true
-        type: string
-        format: uuid
-      responses:
-        400:
-          description: Invalid ID supplied
-        404:
-          description: Record not found
-        405:
-          description: Record already sealed
-      x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerGetRecordSharesById}
+        uri: ${lambda_uri_managerGetLocationsByCountry}
         responses:
           default:
             statusCode: "200"
@@ -852,196 +704,24 @@ paths:
               type: "string"
             Access-Control-Allow-Origin:
               type: "string"
-  /provider/share/record/byId/{shareId}:
+  /manager/country:
     get:
       security:
       - CognitoUserProvider: []
       tags:
-      - Share
-      summary: Get a shared record by share ID
-      operationId: providerGetSharedRecordById
+      - Location
+      summary: Get all countries
+      operationId: managerGetCountries
       produces:
       - application/json
+      - application/xml
       parameters:
-      - name: shareId
+      - name: countryCode
         in: path
-        description: ID of the record to return
+        description: Country code of the location
         required: true
         type: string
         format: uuid
-      responses:
-        200:
-          description: successful operation
-          schema:
-            $ref: '#/definitions/Share'
-        400:
-          description: Invalid ID supplied
-        404:
-          description: Record not found
-      x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerGetSharedRecordById}
-        responses:
-          default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
-    delete:
-      security:
-      - CognitoUserProvider: []
-      tags:
-      - Share
-      summary: Deletes a record share.
-      operationId: providerDeleteSharedRecordById
-      produces:
-      - application/json
-      parameters:
-      - name: shareId
-        in: path
-        description: ID of share to delete
-        required: true
-        type: string
-        format: uuid
-      responses:
-        400:
-          description: Invalid ID supplied
-        404:
-          description: Record not found
-        405:
-          description: Record already sealed
-      x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerDeleteRecordById}
-        responses:
-          default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
-    options:
-      summary: CORS support
-      description: |
-        Enable CORS by returning correct headers
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      tags:
-        - CORS
-      x-amazon-apigateway-integration:
-        type: mock
-        requestTemplates:
-          application/json: |
-            {
-              "statusCode" : 200
-            }
-        responses:
-          "default":
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
-            responseTemplates:
-              application/json: |
-                {}
-      responses:
-        200:
-          description: Default response for CORS method
-          headers:
-            Access-Control-Allow-Headers:
-              type: "string"
-            Access-Control-Allow-Methods:
-              type: "string"
-            Access-Control-Allow-Origin:
-              type: "string"
-  /provider/share/record/image/byId/{shareId}/{imageId}:
-    get:
-      security:
-      - CognitoUserProvider: []
-      tags:
-      - Share
-      summary: Get an image in a record
-      operationId: providerGetSharedRecordImageByImageId
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - name: shareId
-        in: path
-        description: The share id
-        required: true
-        type: string
-        format: uuid
-      - name: imageId
-        in: path
-        description: The uuid of the image
-        required: true
-        type: string
-        format: uuid
-      responses:
-        400:
-          description: Record already sealed
-        404:
-          description: Record or image not found
-        405:
-          description: Validation exception
-      x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerGetSharedRecordImageByImageId}
-        responses:
-          default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
-    options:
-      summary: CORS support
-      description: |
-        Enable CORS by returning correct headers
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      tags:
-        - CORS
-      x-amazon-apigateway-integration:
-        type: mock
-        requestTemplates:
-          application/json: |
-            {
-              "statusCode" : 200
-            }
-        responses:
-          "default":
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
-            responseTemplates:
-              application/json: |
-                {}
-      responses:
-        200:
-          description: Default response for CORS method
-          headers:
-            Access-Control-Allow-Headers:
-              type: "string"
-            Access-Control-Allow-Methods:
-              type: "string"
-            Access-Control-Allow-Origin:
-              type: "string"
-  /provider/share/record/withUser:
-    get:
-      security:
-      - CognitoUserProvider: []
-      tags:
-      - Share
-      summary: List records shared with you
-      operationId: providerGetSharedRecordsWithUser
-      produces:
-      - application/json
-      parameters:
       - in: query
         name: offset
         type: integer
@@ -1063,97 +743,13 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/Share'
-          headers:
-            Access-Control-Allow-Origin:
-              type: "string"
+              type: string
         400:
-          description: Invalid status value
+          description: Invalid ID supplied
+        404:
+          description: Location not found
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerGetSharedRecordsWithUser}
-        responses:
-          default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
-    options:
-      summary: CORS support
-      description: |
-        Enable CORS by returning correct headers
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      tags:
-        - CORS
-      x-amazon-apigateway-integration:
-        type: mock
-        requestTemplates:
-          application/json: |
-            {
-              "statusCode" : 200
-            }
-        responses:
-          "default":
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
-            responseTemplates:
-              application/json: |
-                {}
-      responses:
-        200:
-          description: Default response for CORS method
-          headers:
-            Access-Control-Allow-Headers:
-              type: "string"
-            Access-Control-Allow-Methods:
-              type: "string"
-            Access-Control-Allow-Origin:
-              type: "string"
-  /provider/share/record/byUser:
-    get:
-      security:
-      - CognitoUserProvider: []
-      tags:
-      - Share
-      summary: List records you share
-      operationId: providerGetSharedRecordsByUser
-      produces:
-      - application/json
-      parameters:
-      - in: query
-        name: offset
-        type: integer
-        required: false
-        default: 0
-        minimum: 0
-        description: The number of items to skip before starting to collect the result set.
-      - in: query
-        name: limit
-        type: integer
-        required: false
-        default: 20
-        minimum: 1
-        maximum: 100
-        description: The numbers of items to return.
-      responses:
-        200:
-          description: successful operation
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Share'
-          headers:
-            Access-Control-Allow-Origin:
-              type: "string"
-        400:
-          description: Invalid status value
-      x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerGetSharedRecordsByUser}
+        uri: ${lambda_uri_managerGetCountries}
         responses:
           default:
             statusCode: "200"
@@ -1199,67 +795,19 @@ paths:
               type: "string"
 definitions:
   Empty: {}
-  RecordMetadata:
+  User:
     type: object
     properties:
-      form_id:
+      userUUID:
         type: string
         format: uuid
-      createdAt:
-        type: string
-        format: date
-      name:
-        type: string
-      age:
-        type: number
-      editedAt:
-        type: string
-        format: date
-      form_contents:
-        type: object
-  Record:
+  Location:
     type: object
     properties:
-      form_uuid:
+      locationUUID:
         type: string
         format: uuid
       name:
         type: string
       form_contents:
-        type: object
-  FormMetadata:
-    type: object
-    properties:
-      form_uuid:
-        type: string
-        format: uuid
-      name:
-        type: string
-      subtitle:
-        type: string
-      country:
-        type: string
-      version:
-        type: string
-      tag:
-        type: string
-      form_id:
-        type: string
-  Form:
-    type: object
-    properties:
-      form_uuid:
-        type: string
-        format: uuid
-      form_details:
-        type: object
-  Share:
-    type: object
-    properties:
-      shareUUID:
-        type: string
-        format: uuid
-      formMetadata:
-        type: object
-      form:
         type: object
