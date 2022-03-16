@@ -32,12 +32,14 @@ const rawFiles: Record<string, string> = {
 export async function getFilesByFormId(_: string) {
   const fileCache: Record<string, string> = {}
 
-  await map(rawFiles, async (uri, filename) => {
-    const data = await readFile(filename, uri)
-    if (data) {
-      fileCache[filename] = data
-    }
-  })
+  await Promise.all(
+    map(rawFiles, async (uri, filename) => {
+      const data = await readFile(filename, uri)
+      if (data) {
+        fileCache[filename] = data
+      }
+    })
+  )
 
   return fileCache
 }
