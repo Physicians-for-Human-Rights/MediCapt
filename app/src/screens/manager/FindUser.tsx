@@ -24,7 +24,7 @@ import {
 } from '@expo/vector-icons'
 import DashboardLayout from 'components/DashboardLayout'
 import _ from 'lodash'
-import { default as RecordListComponent } from 'components/RecordList'
+import { default as UserListComponent } from 'components/UserList'
 import { RecordMetadata } from 'utils/types/record'
 
 const records: RecordMetadata[] = [
@@ -81,11 +81,11 @@ export default function FormList({ route, navigation }: any) {
       navigation={navigation}
       displaySidebar={false}
       displayScreenTitle={false}
-      title="Find a record"
+      title="Find a user"
       signOut={route.params.signOut}
       user={route.params.user}
     >
-      <RecordListComponent records={records} />
+      <UserListComponent users={[]} />
     </DashboardLayout>
   )
 }

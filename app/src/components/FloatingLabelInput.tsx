@@ -1,4 +1,5 @@
-import React, { Component } from 'react'
+import useDebounce from 'react-use/lib/useDebounce'
+import React, { Component, useState } from 'react'
 import { Platform, Animated } from 'react-native'
 import { Input, Box } from 'native-base'
 
@@ -94,6 +95,7 @@ export default function FloatingLabelInput({
   containerW,
   isReadOnly,
   placeholder,
+  debounceMs = 300,
 }: {
   label: string
   defaultValue?: string
@@ -103,7 +105,24 @@ export default function FloatingLabelInput({
   containerW?: string | number
   isReadOnly?: boolean
   placeholder?: string
+  debounceMs?: number
 }) {
+  const [rawValue, setRawValue] = React.useState(
+    value === undefined || value === null ? '' : value
+  )
+  useDebounce(
+    () => {
+      if (
+        (rawValue === '' && (value === undefined || value === null)) ||
+        rawValue === value
+      )
+        return
+      setValue && setValue(rawValue)
+    },
+    debounceMs,
+    [rawValue]
+  )
+
   return (
     <RawFloatingLabelInput
       p="3"
@@ -112,8 +131,8 @@ export default function FloatingLabelInput({
       label={label}
       labelColor={'#6b7280'}
       defaultValue={defaultValue}
-      value={value}
-      setValue={setValue}
+      value={rawValue}
+      onChangeText={setRawValue}
       labelBGColor={'#fff'}
       borderColor="coolGray.200"
       fontSize="sm"

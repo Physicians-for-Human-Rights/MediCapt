@@ -3,10 +3,11 @@ export type LocationType = {
   locationUUID: string
   locationID: string
   country: string
-  lanugage: string
+  language: string
   legalName: string
   shortName: string
   entityType: string
+  address: string
   mailingAddress: string
   coordinates: string
   phoneNumber: string

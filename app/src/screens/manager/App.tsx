@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import Home from 'screens/manager/Home'
 import FindUser from 'screens/manager/FindUser'
 import FindLocation from 'screens/manager/FindLocation'
+import CreateLocation from 'screens/manager/CreateLocation'
 import { RootStackParamList } from 'utils/manager/navigation'
 
 const RootStack = createStackNavigator<RootStackParamList>()
@@ -38,7 +39,7 @@ export default function App({
         />
         <RootStack.Screen
           name="AddLocation"
-          component={FindLocation}
+          component={CreateLocation}
           options={{ headerShown: false }}
         />
         <RootStack.Screen

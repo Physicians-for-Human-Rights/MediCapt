@@ -1,4 +1,8 @@
 export default {
+  languages: {
+    en: 'English',
+    fr: 'French',
+  },
   gender: {
     male: 'Male',
     female: 'Female',
@@ -18,6 +22,27 @@ export default {
     Manager: 'Manager',
     FormDesigner: 'Form designer',
     Researcher: 'Researcher',
+  },
+  location: {
+    'full-official-name': 'Full official location name',
+    address: 'Address',
+    'mailing-address': 'Mailing address',
+    id: 'Location ID',
+    'automatically-created': 'automatically created',
+    'entity-type': 'Entity type',
+    'submit-location': 'Submit location',
+    'delete-location': 'Delete location',
+    'enable-location': 'Enable location',
+    'disable-location': 'Disable location',
+    'select-country': 'Select country',
+    'select-default-language': 'Select default language',
+    entity: {
+      'medical-facility': 'Medical facility',
+      'police-station': 'Police station',
+      'refugee-camp': 'Refugee camp',
+    },
+    'coordinates-instructions':
+      'You can get GPS coordinates from Google Maps. Open Google Maps, find the location. Right click on the location. At the top of the menu that opens under the mouse, you will see the coordinates. Click them to copy, then paste them into the box here.',
   },
   form: {
     Yes: 'Yes',
