@@ -10,7 +10,7 @@ export default function ButtonGroup<T>({
   maxW = '30%',
   fullwidth = true,
   isDisabled = false,
-  justifyContent = 'right',
+  justifyContent = 'flex-end',
   ...props
 }: {
   selected: T | null

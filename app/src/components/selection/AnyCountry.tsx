@@ -30,9 +30,9 @@ export default function AnyCountry({
   setValue: (val: string) => any
 }) {
   const language = _.split(locale, '-')[0]
-  const countries = require('../../../assets/countries/' +
-    language +
-    '/world.json')
+  // const countries = require('../../../assets/countries/' +
+  //   language +
+  //   '/world.json')
 
   return (
     <Select
