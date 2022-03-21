@@ -2,7 +2,7 @@ import yaml from 'js-yaml'
 
 import { FormType } from 'utils/types/form'
 import { formStorage } from './MMKVStorage'
-import { rawFiles, getFormById, getFormImageById } from './mockServer'
+import { getFormById, getFormImageById } from './mockServer'
 
 export async function getForm(formId: string): Promise<FormType> {
   const formPath = `/form/${formId}`
@@ -18,28 +18,20 @@ export async function getForm(formId: string): Promise<FormType> {
   return yaml.load(form) as FormType
 }
 
-export async function getFormFiles(form: FormType) {
+export async function getFormFiles(formId: string, imageIds: string[]) {
   let fileCache: Record<string, string> = {}
 
-  // await Promise.all(
-  //   map(getImageIdsInForm(form), async imageId => {
-  for (const imageId of getImageIdsInForm(form)) {
-    const imagePath = `/form/${form.uuid}/image/${imageId}`
+  for (const imageId of imageIds) {
+    const imagePath = `/form/${formId}/image/${imageId}`
 
     if (formStorage.contains(imagePath)) {
       fileCache[imageId] = formStorage.getString(imagePath)!
     } else {
-      const data = await getFormImageById(form.uuid, imageId)
+      const data = await getFormImageById(formId, imageId)
       formStorage.set(imagePath, data)
       fileCache[imageId] = data
     }
   }
-  // )
 
   return fileCache
-}
-
-function getImageIdsInForm(form: FormType) {
-  // TODO
-  return Object.keys(rawFiles)
 }

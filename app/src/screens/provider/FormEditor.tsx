@@ -8,8 +8,14 @@ import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
 import { FormType } from 'utils/types/form'
 import { getForm, getFormFiles } from '../../utils/localStore/store'
+import { rawFiles } from '../../utils/localStore/mockServer'
 
 const FormMemo = React.memo(Form)
+
+function getImageIdsInForm(form: FormType) {
+  // TODO -- place in a relevant utils file
+  return Object.keys(rawFiles)
+}
 
 export default function FormEditor({
   route,
@@ -20,10 +26,10 @@ export default function FormEditor({
 
   useEffect(() => {
     const fetchForm = async () => {
-      const form = await getForm('')
-      const files = await getFormFiles(form)
+      const form: FormType = await getForm('')
+      const files = getImageIdsInForm(form!)
       setForm(form)
-      setFiles(files)
+      setFiles(await getFormFiles(form.uuid, files))
     }
 
     fetchForm()
