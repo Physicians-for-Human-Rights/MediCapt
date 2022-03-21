@@ -27,26 +27,12 @@ export const rawFiles: Record<string, string> = {
   'top.png': require('../../../assets/forms/ke-moh-363-2019/top.png') as string,
 }
 
-export async function getFilesByFormId(_: string) {
-  const fileCache: Record<string, string> = {}
-
-  await Promise.all(
-    map(rawFiles, async (uri, filename) => {
-      const data = await readFile(filename, uri)
-      if (data) {
-        fileCache[filename] = data
-      }
-    })
-  )
-
-  console.log('Server request getFilesByFormId')
-  return fileCache
-}
-
 export async function getFormById(_: string) {
   const formName = 'form.yaml'
   const uri = rawFiles[formName]
   const data = (await readFile(formName, uri))!
+
+  console.log('Server request getFormById')
   return data
 }
 

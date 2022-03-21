@@ -1,3 +1,5 @@
+import yaml from 'js-yaml'
+
 import { FormType } from 'utils/types/form'
 import { formStorage } from './MMKVStorage'
 import { rawFiles, getFormById, getFormImageById } from './mockServer'
@@ -13,7 +15,7 @@ export async function getForm(formId: string): Promise<FormType> {
     formStorage.set(formPath, form)
   }
 
-  return JSON.parse(form) as FormType
+  return yaml.load(form) as FormType
 }
 
 export async function getFormFiles(form: FormType) {
