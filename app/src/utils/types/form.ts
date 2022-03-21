@@ -1,4 +1,5 @@
 export type FormType = {
+  uuid: string
   title: string
   subtitle?: string
   'official-name': string

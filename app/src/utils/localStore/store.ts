@@ -1,24 +1,43 @@
-import yaml from 'js-yaml'
-
 import { FormType } from 'utils/types/form'
 import { formStorage } from './MMKVStorage'
-import { getFilesByFormId } from './mockServer'
+import { rawFiles, getFormById, getFormImageById } from './mockServer'
 
-export async function getFormFiles(
-  id: string
-): Promise<[FormType | null, Record<string, string>]> {
-  let form: FormType | null = null
-  let fileCache: Record<string, string>
+export async function getForm(formId: string): Promise<FormType> {
+  const formPath = `/form/${formId}`
+  let form: string
 
-  if (formStorage.contains(id)) {
-    fileCache = JSON.parse(formStorage.getString(id)!) as Record<string, string>
+  if (formStorage.contains(formPath)) {
+    form = formStorage.getString(formPath)!
   } else {
-    fileCache = await getFilesByFormId(id)
+    form = await getFormById(formId)
+    formStorage.set(formPath, form)
   }
 
-  if ('form.yaml' in fileCache) {
-    form = yaml.load(fileCache['form.yaml']) as FormType
-  }
+  return JSON.parse(form) as FormType
+}
 
-  return [form, fileCache]
+export async function getFormFiles(form: FormType) {
+  let fileCache: Record<string, string> = {}
+
+  // await Promise.all(
+  //   map(getImageIdsInForm(form), async imageId => {
+  for (const imageId of getImageIdsInForm(form)) {
+    const imagePath = `/form/${form.uuid}/image/${imageId}`
+
+    if (formStorage.contains(imagePath)) {
+      fileCache[imageId] = formStorage.getString(imagePath)!
+    } else {
+      const data = await getFormImageById(form.uuid, imageId)
+      formStorage.set(imagePath, data)
+      fileCache[imageId] = data
+    }
+  }
+  // )
+
+  return fileCache
+}
+
+function getImageIdsInForm(form: FormType) {
+  // TODO
+  return Object.keys(rawFiles)
 }

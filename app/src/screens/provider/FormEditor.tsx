@@ -7,7 +7,7 @@ import Form from 'components/Form'
 import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
 import { FormType } from 'utils/types/form'
-import { getFormFiles } from '../../utils/localStore/store'
+import { getForm, getFormFiles } from '../../utils/localStore/store'
 
 const FormMemo = React.memo(Form)
 
@@ -16,13 +16,14 @@ export default function FormEditor({
   navigation,
 }: RootStackScreenProps<'FormEditor'>) {
   const [form, setForm] = useState(null as FormType | null)
-  const [fileCache, { setAll }] = useMap({} as Record<string, string>)
+  const [fileCache, { setAll: setFiles }] = useMap({} as Record<string, string>)
 
   useEffect(() => {
     const fetchForm = async () => {
-      const [formYaml, files] = await getFormFiles('')
-      setForm(formYaml)
-      setAll(files)
+      const form = await getForm('')
+      const files = await getFormFiles(form)
+      setForm(form)
+      setFiles(files)
     }
 
     fetchForm()

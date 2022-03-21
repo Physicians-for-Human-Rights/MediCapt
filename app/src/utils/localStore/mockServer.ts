@@ -1,9 +1,7 @@
 import { readFile } from 'utils/forms'
-import yaml from 'js-yaml'
-import { FormType } from 'utils/types/form'
 import { map } from 'lodash'
 
-const rawFiles: Record<string, string> = {
+export const rawFiles: Record<string, string> = {
   'form.yaml':
     require('../../../assets/forms/ke-moh-363-2019/form.yaml') as string,
   'form.pdf':
@@ -41,5 +39,27 @@ export async function getFilesByFormId(_: string) {
     })
   )
 
+  console.log('Server request getFilesByFormId')
   return fileCache
+}
+
+export async function getFormById(_: string) {
+  const formName = 'form.yaml'
+  const uri = rawFiles[formName]
+  const data = (await readFile(formName, uri))!
+  return data
+}
+
+export async function getFormImageById(formId: string, imageId: string) {
+  const uri: string | undefined = rawFiles[imageId]
+  const data = uri ? await readFile(imageId, uri) : null
+
+  if (!data) {
+    throw new Error(
+      `Fetching nonexistent image /form/${formId}/image/${imageId} from server.`
+    )
+  }
+
+  console.log(`Server request getFormImageById(${formId}, ${imageId})`)
+  return data
 }
