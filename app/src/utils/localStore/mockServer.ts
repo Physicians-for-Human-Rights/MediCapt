@@ -1,5 +1,7 @@
 import { readFile } from 'utils/forms'
 import { map } from 'lodash'
+import { FormMetadata } from 'utils/types/form'
+import { RecordMetadata, RecordType } from 'utils/types/record'
 
 export const rawFiles: Record<string, string> = {
   'form.yaml':
@@ -27,7 +29,13 @@ export const rawFiles: Record<string, string> = {
   'top.png': require('../../../assets/forms/ke-moh-363-2019/top.png') as string,
 }
 
-export async function getFormById(_: string) {
+export async function getFormByCountry(
+  _country: string
+): Promise<FormMetadata[]> {
+  return []
+}
+
+export async function getFormById(_formId: string) {
   const formName = 'form.yaml'
   const uri = rawFiles[formName]
   const data = (await readFile(formName, uri))!
@@ -49,3 +57,33 @@ export async function getFormImageById(formId: string, imageId: string) {
   console.log(`Server request getFormImageById(${formId}, ${imageId})`)
   return data
 }
+
+export async function getRecordByUser(): Promise<RecordMetadata[]> {
+  return []
+}
+
+export async function getRecordById(
+  recordId: string
+): Promise<RecordType | null> {
+  return null
+}
+
+export async function getRecordImageById(recordId: string, imageId: string) {
+  const uri: string | undefined = rawFiles[imageId]
+  const data = uri ? await readFile(imageId, uri) : null
+
+  if (!data) {
+    throw new Error(
+      `Fetching nonexistent image /form/${recordId}/image/${imageId} from server.`
+    )
+  }
+
+  console.log(`Server request getRecordImageById(${recordId}, ${imageId})`)
+  return data
+}
+
+export async function postRecord(record: RecordType) {}
+
+export async function postRecordById(recordId: string, record: RecordType) {}
+
+export async function postRecordImageById(recordId: string, image: string) {}

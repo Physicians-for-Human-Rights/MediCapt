@@ -27,7 +27,7 @@ export default function FormEditor({
   useEffect(() => {
     const fetchForm = async () => {
       const form: FormType = await getForm('')
-      const files = getImageIdsInForm(form!)
+      const files = getImageIdsInForm(form)
       setForm(form)
       setFiles(await getFormFiles(form.uuid, files))
     }
