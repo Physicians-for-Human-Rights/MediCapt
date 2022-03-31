@@ -7,7 +7,7 @@ import Form from 'components/Form'
 import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
 import { FormType } from 'utils/types/form'
-import { getForm, getFormFiles } from '../../utils/localStore/store'
+import { getForm, getFormImages } from '../../utils/localStore/store'
 import { rawFiles } from '../../utils/localStore/mockServer'
 
 const FormMemo = React.memo(Form)
@@ -29,7 +29,7 @@ export default function FormEditor({
       const form: FormType = await getForm('')
       const files = getImageIdsInForm(form)
       setForm(form)
-      setFiles(await getFormFiles(form.uuid, files))
+      setFiles(await getFormImages(form.uuid, files))
     }
 
     fetchForm()

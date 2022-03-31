@@ -68,7 +68,7 @@ export default function Form({
   }
 
   // TODO Debugging until this is tested
-  if (0) {
+  if (1) {
     if (changedPaths !== []) {
       let record = {}
       _.map(formPaths, (v, p) => _.set(record, p, v))
