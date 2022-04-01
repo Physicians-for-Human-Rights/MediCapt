@@ -20,6 +20,23 @@ securityDefinitions:
       type: cognito_user_pools
       providerARNs:
       - ${cognito_user_pool_provider_arn}
+x-amazon-apigateway-gateway-responses:
+  ACCESS_DENIED:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  DEFAULT_4XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  DEFAULT_5XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  MISSING_AUTHENTICATION_TOKEN:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
 security:
   - CognitoUserProvider: []
 schemes:

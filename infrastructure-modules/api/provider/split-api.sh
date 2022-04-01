@@ -43,6 +43,9 @@ for i in `ls apis/xx*`; do
                 if [ ! -f $PREFIX/$API_PATH/$method/policy.json ]; then
                     cp placeholders/policy.json $PREFIX/$API_PATH/$method/policy.json
                 fi
+                if [ ! -f $PREFIX/$API_PATH/$method/assume-policy.json ]; then
+                    cp placeholders/assume-policy.json $PREFIX/$API_PATH/$method/assume-policy.json
+                fi
             done
         fi
     fi

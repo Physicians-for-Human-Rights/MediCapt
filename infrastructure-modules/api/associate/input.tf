@@ -41,7 +41,37 @@ variable "endpoint_configuration" {
 variable "hosted_zone_id" {
   description = "The hosted zone id for the API gateway"
    type        = string
- }
+}
+
+variable "humanid_lambda" {
+  description = "The name of the humanid lambda function"
+   type        = string
+}
+
+variable "humanid_lambda_arn" {
+  description = "The ARN of the humanid lambda function"
+   type        = string
+}
+
+variable "lambda_layer_modules" {
+  description = "Access to the common js modules"
+  type        = string
+}
+
+variable "lambda_layer_internal" {
+  description = "Access to the common js internals"
+  type        = string
+}
+
+variable "location_table" {
+  description = "The location table name"
+   type        = string
+}
+
+variable "location_table_arn" {
+  description = "The location table arn"
+   type        = string
+}
 
 variable "user_type" {
   description = "The type of user, e.g., associate"

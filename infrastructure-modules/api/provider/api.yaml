@@ -20,6 +20,23 @@ securityDefinitions:
       type: cognito_user_pools
       providerARNs:
       - ${cognito_user_pool_provider_arn}
+x-amazon-apigateway-gateway-responses:
+  ACCESS_DENIED:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  DEFAULT_4XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  DEFAULT_5XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  MISSING_AUTHENTICATION_TOKEN:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
 security:
   - CognitoUserProvider: []
 schemes:
@@ -500,7 +517,7 @@ paths:
               type: "string"
             Access-Control-Allow-Origin:
               type: "string"
-  /provider/record/byUser:
+  /provider/record/by-user:
     get:
       security:
       - CognitoUserProvider: []
@@ -1031,7 +1048,7 @@ paths:
               type: "string"
             Access-Control-Allow-Origin:
               type: "string"
-  /provider/share/record/withUser:
+  /provider/share/record/with-user:
     get:
       security:
       - CognitoUserProvider: []
@@ -1114,7 +1131,7 @@ paths:
               type: "string"
             Access-Control-Allow-Origin:
               type: "string"
-  /provider/share/record/byUser:
+  /provider/share/record/by-user:
     get:
       security:
       - CognitoUserProvider: []
