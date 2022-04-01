@@ -22,8 +22,8 @@ variable "lambda_insights_layer" {
   type        = string
 }
 
-variable "lambda_lodash_layer" {
-  description = "The layer arn for lodash"
+variable "lambda_layer_modules" {
+  description = "Access to the common js modules"
   type        = string
 }
 

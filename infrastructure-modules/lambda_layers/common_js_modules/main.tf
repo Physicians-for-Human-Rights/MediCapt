@@ -1,5 +1,5 @@
 locals {
-  layer_name = "lodash"
+  layer_name = "common_js_modules"
 }
 
 resource "null_resource" "build_lambda_layers" {
@@ -16,7 +16,7 @@ resource "aws_lambda_layer_version" "layer" {
   depends_on  = [null_resource.build_lambda_layers]
   filename    = "${path.module}/${local.layer_name}.zip"
   layer_name  = "${local.layer_name}"
-  description = "lodash for nodejs"
+  description = "common libraries we use in nodejs"
   compatible_runtimes = ["nodejs14.x"]
 }
 

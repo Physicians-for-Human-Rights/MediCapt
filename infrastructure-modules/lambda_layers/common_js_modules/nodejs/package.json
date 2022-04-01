@@ -1,0 +1,9 @@
+{
+  "name": "common_js_modules",
+  "version": "1.0.2",
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "uuid": "8.3.2",
+    "zod": "^3.14.3"
+  }
+}

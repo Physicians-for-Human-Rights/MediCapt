@@ -20,7 +20,7 @@ resource "aws_lambda_function" "humanid" {
   # }
   layers = [
     var.lambda_insights_layer,
-    var.lambda_lodash_layer
+    var.lambda_layer_modules
   ]
   # TODO Determine what memory size works best per endpoint
   # https://github.com/alexcasalboni/aws-lambda-power-tuning

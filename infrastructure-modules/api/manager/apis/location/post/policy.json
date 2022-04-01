@@ -2,12 +2,14 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Action": ["sts:AssumeRole"],
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
-      },
+      "Action": "lambda:InvokeFunction",
       "Effect": "Allow",
-      "Sid": ""
+      "Resource": "${humanid_lambda_arn}"
+    },
+    {
+      "Action": "dynamodb:PutItem",
+      "Effect": "Allow",
+      "Resource": "${location_table_arn}"
     }
   ]
 }

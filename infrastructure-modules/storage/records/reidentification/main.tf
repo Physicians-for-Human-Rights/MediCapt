@@ -28,7 +28,7 @@ variable "records_bucket_id" {
 }
 
 variable "lambda_uuid_layer" {
-  description = "Access to UUID"
+  description = "Access to the UUID library"
   type        = string
 }
 
