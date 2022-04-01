@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 export type FormType = {
+  uuid: string
   title: string
   subtitle?: string
   'official-name': string
