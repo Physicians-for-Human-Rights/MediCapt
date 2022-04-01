@@ -21,7 +21,8 @@ resource "aws_lambda_function" "add_reidentification" {
   # }
   layers = [
     var.lambda_insights_layer,
-    var.lambda_uuid_layer
+    var.lambda_layer_modules,
+    var.lambda_layer_internal
   ]
   # TODO Determine what memory size works best per endpoint
   # https://github.com/alexcasalboni/aws-lambda-power-tuning

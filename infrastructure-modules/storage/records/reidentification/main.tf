@@ -27,8 +27,13 @@ variable "records_bucket_id" {
   type        = string
 }
 
-variable "lambda_uuid_layer" {
-  description = "Access to the UUID library"
+variable "lambda_layer_modules" {
+  description = "Access to the common js modules"
+  type        = string
+}
+
+variable "lambda_layer_internal" {
+  description = "Access to the common js internals"
   type        = string
 }
 
