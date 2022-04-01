@@ -1,5 +1,5 @@
 terraform {
-  source = "${local.stage_vars.locals.base_source_url}//lambda_layers/js_uuid/"
+  source = "${local.stage_vars.locals.base_source_url}//lambda_layers/common_js_internal/"
 }
 
 include "root" {

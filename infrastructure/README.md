@@ -1,7 +1,7 @@
 # Medicapt backend infrastructure
 
 ![](https://github.com/abarbu/medicapt-infrastructure/blob/master/docs/backend-overview-v5.png)
-    
+
 
 ## Terraform and terragrunt
 
@@ -167,6 +167,14 @@ with `pip install awscli-local`. That way you don't need to set up the endpoint.
 When getting set up with localstack it's a good idea to comment out your
 `~/.aws/credentials` file temporarily as one of the most common issues are
 requests going to Amazon rather than localhost.
+
+NB Due to a bug in localstack it does not correctly build API gateways from
+swagger/openapi yaml files. We convert our yaml files to json automatically in
+`start-localstack.sh`. If you update those APIs and want localstack to reflect
+this, you will need to either restart localstack and rerun `start-localstack.sh`
+or just rerun `regenerate-api-json.sh` and redeploy the terraform code as you
+would normally on AWS. This is not necessary if you change the contents of a
+lambda function that backs the API, only if you change the `yaml` definitions.
 
 ## Running the test suite
 

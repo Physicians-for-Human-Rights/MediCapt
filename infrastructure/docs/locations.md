@@ -9,16 +9,16 @@ A location is some logical entity defined in MediCapt.
 |`locationID`                               | A random human understandable ID                                                           | Y
 |`country`                                  | The two letter ISO country code                                                            | Y
 |`lanugage`                                 | Two letter lanugage code ISO 639-1 lanugage codes                                          | Y
-|`legalName`                               | The name of the form that providers will see                                               | Y
-|`shortName`                               | The name of the form that providers will see                                               | Y
-|`entityType`                              | The subtitle, can be empty                                                                 | N
-|`mailingAddress`                          | When the form was entered into the system                                                  | Y
+|`legalName`                                | The name of the form that providers will see                                               | Y
+|`shortName`                                | The name of the form that providers will see                                               | Y
+|`entityType`                               | The subtitle, can be empty                                                                 | N
+|`address`                                  | When the form was entered into the system                                                  | Y
+|`mailingAddress`                           | When the form was entered into the system                                                  | Y
 |`coordinates`                              | GPS coordinates                                                                            | Y
-|`phoneNumber`                             | When the form was entered into the system                                                  | Y
+|`phoneNumber`                              | When the form was entered into the system                                                  | Y
 |`email`                                    | When the form was entered into the system                                                  | Y
 |`createdDate`                              | When the form was officially created                                                       | Y
-|`createdByUUID`                            | The person who created this form                                                           | Y
-|`lastApprovedByUUID`                       | The person who approved this form                                                          | Y
+|`createdByUUID`                            | The person who created this location                                                       | Y
 |`enabled`                                  | A number, 1 is enabled, 0 is diabled                                                       | Y
 |`enabledDate`                              | A number, 1 is enabled, 0 is diabled                                                       | Y
 |`enabledSetByUUID`                         | The person who approved this form                                                          | Y

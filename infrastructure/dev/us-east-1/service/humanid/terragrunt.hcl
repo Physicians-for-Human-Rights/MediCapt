@@ -10,10 +10,10 @@ locals {
   stage_vars = read_terragrunt_config(find_in_parent_folders("stage.hcl"))
 }
 
-dependency "lodash" {
-  config_path = "../../lambda_layers/lodash/"
+dependency "lambda_layer_modules" {
+  config_path = "../../lambda_layers/common_js_modules"
 }
 
 inputs = {
-  lambda_lodash_layer = dependency.lodash.outputs.arn
+  lambda_layer_modules = dependency.lambda_layer_modules.outputs.arn
 }

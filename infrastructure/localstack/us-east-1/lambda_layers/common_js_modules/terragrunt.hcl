@@ -1,5 +1,5 @@
 terraform {
-  source = "${local.stage_vars.locals.base_source_url}//lambda_layers/lodash/"
+  source = "${local.stage_vars.locals.base_source_url}//lambda_layers/common_js_modules/"
 }
 
 include "root" {
