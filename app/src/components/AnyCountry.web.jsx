@@ -20,19 +20,11 @@ import {
   MaterialIcons,
 } from '@expo/vector-icons'
 
-export default function AnyCountry({
-  placeholder,
-  value,
-  setValue,
-}: {
-  placeholder: string
-  value: string | undefined
-  setValue: (val: string) => any
-}) {
+export default function AnyCountry({ placeholder, value, setValue }) {
   const language = _.split(locale, '-')[0]
-  // const countries = require('../../../assets/countries/' +
-  //   language +
-  //   '/world.json')
+  const countries = require('../../assets/countries/' +
+    language +
+    '/world.json')
 
   return (
     <Select

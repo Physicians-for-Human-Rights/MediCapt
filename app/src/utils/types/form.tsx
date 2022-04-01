@@ -1,3 +1,5 @@
+import { z } from 'zod'
+
 export type FormType = {
   title: string
   subtitle?: string
@@ -18,27 +20,31 @@ export type FormType = {
   sections: Array<FormSectionMap>
 }
 
-export type FormMetadata = {
-  country: string
-  formUUID: string
-  formID: string
-  locationUUID: string
-  lanugage: string
-  officialName: string
-  title: string
-  subtitle: string
-  createdDate: Date
-  formId: string
-  priority: string
-  version: string
-  createdByUUID: string
-  approvedByUUID: string
-  enabled: boolean
-  enabledDate: Date
-  enabledSetByUUID: string
-  tags: string
-  formStorageVersion: '1.0.0'
-}
+export const formMetadataSchema = z
+  .object({
+    country: z.string().nonempty(),
+    formUUID: z.string().nonempty(),
+    formID: z.string().nonempty(),
+    locationUUID: z.string().nonempty(),
+    language: z.string().nonempty(),
+    officialName: z.string().nonempty(),
+    title: z.string().nonempty(),
+    subtitle: z.string().nonempty(),
+    createdDate: z.date(),
+    formId: z.string().nonempty(),
+    priority: z.string().nonempty(),
+    version: z.string().nonempty(),
+    createdByUUID: z.string().nonempty(),
+    approvedByUUID: z.string().nonempty(),
+    enabled: z.boolean(),
+    enabledDate: z.date(),
+    enabledSetByUUID: z.string().nonempty(),
+    tags: z.string().nonempty(),
+    formStorageVersion: z.literal('1.0.0'),
+  })
+  .strict()
+
+export type FormMetadata = z.infer<typeof formMetadataSchema>
 
 /**
    @minProperties 1

@@ -1,9 +1,13 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react'
+import { useToast } from 'native-base'
+import _ from 'lodash'
 
-const initialState: {
+export type StateType = {
   user: string | null
   signOut: (() => any) | null
-} = {
+}
+
+const initialState: StateType = {
   user: null,
   signOut: null,
 }
@@ -13,7 +17,10 @@ export type StoreAction =
   | { type: 'SET_SIGNOUT'; signOut: () => any }
   | {}
 
-function reducer(state = initialState, action: StoreAction = {}) {
+function reducer(
+  state: StateType = initialState,
+  action: StoreAction = {}
+): StateType {
   if ('type' in action) {
     switch (action.type) {
       case 'SET_USER':
