@@ -1,3 +1,5 @@
+import { z } from 'zod'
+
 export type RecordType = {
   'storage-version'?: '1.0.0'
   sections: RecordSections
@@ -171,28 +173,32 @@ export type RecordDataContents =
 //   [path: string]: RecordValue | RecordData
 // }
 
-export type RecordMetadata = {
-  recordUUID: string
-  recordID: string
-  locationUUID: string
-  createdDate: Date
-  providerCreatedUUID: string
-  formUUID: string
-  formName: string
-  formTags: string
-  formVersion: string
-  completed: boolean
-  completedDate: Date | null
-  providerCompletedUUID: string
-  lastChangedDate: Date
-  providerLastChangedUUID: string
-  patientName: string
-  patientGender: string
-  patientAge: string
-  patientUUID: string
-  caseId: string
-  recordStorageVersion: '1.0.0'
-}
+export const recordMetadataSchema = z
+  .object({
+    recordUUID: z.string().nonempty(),
+    recordID: z.string().nonempty(),
+    locationUUID: z.string().nonempty(),
+    createdDate: z.date(),
+    providerCreatedUUID: z.string().nonempty(),
+    formUUID: z.string().nonempty(),
+    formName: z.string().nonempty(),
+    formTags: z.string().nonempty(),
+    formVersion: z.string().nonempty(),
+    completed: z.boolean(),
+    completedDate: z.date().nullable(),
+    providerCompletedUUID: z.string().nonempty(),
+    lastChangedDate: z.date(),
+    providerLastChangedUUID: z.string().nonempty(),
+    patientName: z.string().nonempty(),
+    patientGender: z.string().nonempty(),
+    patientAge: z.string().nonempty(),
+    patientUUID: z.string().nonempty(),
+    caseId: z.string().nonempty(),
+    recordStorageVersion: z.literal('1.0.0'),
+  })
+  .strict()
+
+export type RecordMetadata = z.infer<typeof recordMetadataSchema>
 
 export type RecordValue =
   | string
