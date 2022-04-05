@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Box,
   HStack,
@@ -24,68 +24,83 @@ import {
 } from '@expo/vector-icons'
 import DashboardLayout from 'components/DashboardLayout'
 import _ from 'lodash'
-import { default as RecordListComponent } from 'components/RecordList'
-import { RecordMetadata } from 'utils/types/record'
-
-const records: RecordMetadata[] = [
-  // @ts-ignore This is temporray anyway
-  {
-    recordID: 'MR3-LUK-9CD-FTR',
-    locationUUID: '92cbcf9b-7e93-4726-9778-ef3ecb2a5728',
-    formName: 'Post-rape care form',
-    formTags: 'sexual-assault',
-    completed: false,
-    completedDate: null,
-    providerCreatedUUID: '64af5d65-34d0-43a1-aaa5-60779b829809',
-    providerCompletedUUID: '64af5d65-34d0-43a1-aaa5-60779b829809',
-    lastChangedDate: new Date('2020-09-06T10:10:10.000Z'),
-    patientName: 'ZackLongname Mylongname LongernameJensen',
-    patientGender: 'transgender',
-    patientAge: '22',
-  },
-  // @ts-ignore This is temporray anyway
-  {
-    recordID: 'MR4-XUP-6CK-9ZF-XYZ',
-    locationUUID: '92cbcf9b-7e93-4726-9778-ef3ecb2a5728',
-    formName: 'Post-rape care form',
-    formTags: 'sexual-assault',
-    completed: false,
-    completedDate: null,
-    providerCreatedUUID: '64af5d65-34d0-43a1-aaa5-60779b829809',
-    providerCompletedUUID: '64af5d65-34d0-43a1-aaa5-60779b829809',
-    lastChangedDate: new Date('2021-05-21T10:10:10.000Z'),
-    patientName: 'Lucca Leon',
-    patientGender: 'female',
-    patientAge: '52',
-  },
-  // @ts-ignore This is temporray anyway
-  {
-    recordID: 'MR3-HP8-34X-UEQ',
-    locationUUID: '92cbcf9b-7e93-4726-9778-ef3ecb2a5728',
-    formName: 'Post-rape care form',
-    formTags: 'sexual-assault',
-    completed: true,
-    completedDate: new Date('2019-01-01T10:10:10.000Z'),
-    providerCreatedUUID: '64af5d65-34d0-43a1-aaa5-60779b829809',
-    providerCompletedUUID: '64af5d65-34d0-43a1-aaa5-60779b829809',
-    lastChangedDate: new Date('2019-01-11T10:10:10.000Z'),
-    patientName: 'Keir Murphy',
-    patientGender: 'male',
-    patientAge: '32',
-  },
-]
+import { default as LocationListComponent } from 'components/LocationList'
+import { LocationType } from 'utils/types/location'
+import { useInfo, handleStandardErrors } from 'utils/errors'
+import Loading from 'components/Loading'
+import { API } from 'aws-amplify'
+import { locationSchema } from 'utils/types/location'
 
 export default function FormList({ route, navigation }: any) {
+  const [locations, setLocations] = useState([] as LocationType[])
+  const [nextKey, setNextKey] = useState(undefined as any)
+  const [filterCountry, setFilterCountry] = useState(
+    undefined as undefined | string
+  )
+  const [filterLanguage, setFilterLanguage] = useState(
+    undefined as undefined | string
+  )
+  const [filterEntityType, setFilterEntityType] = useState(
+    undefined as undefined | string
+  )
+  const [filterText, setFilterText] = useState(undefined as undefined | string)
+  const [error, warning, success] = useInfo()
+  const [waiting, setWaiting] = useState(null as null | string)
+
+  const doSearch = async () => {
+    console.log('DoSearch')
+    try {
+      setWaiting('Searching')
+      let filters = []
+      if (filterCountry) filters.push({ country: { eq: filterCountry } })
+      if (filterLanguage) filters.push({ country: { eq: filterLanguage } })
+      const data = await API.get('manager', '/manager/location', {
+        queryStringParameters: {
+          filter: JSON.stringify(filters),
+        },
+      })
+      console.log('Got', data)
+      // @ts-ignore
+      setLocations(_.map(data.items, locationSchema.parse))
+      setNextKey(data.nextKey)
+    } catch (e) {
+      handleStandardErrors(error, warning, success, e)
+    } finally {
+      setWaiting(null)
+    }
+  }
+
+  useEffect(() => {
+    doSearch()
+  }, [filterCountry, filterLanguage, filterEntityType, filterText])
+
   return (
     <DashboardLayout
       navigation={navigation}
       displaySidebar={false}
       displayScreenTitle={false}
-      title="Find a record"
+      title="Find a location"
       signOut={route.params.signOut}
       user={route.params.user}
     >
-      <RecordListComponent records={records} />
+      <>
+        <LocationListComponent
+          locations={locations}
+          filterCountry={filterCountry}
+          setFilterCountry={setFilterCountry}
+          filterLanguage={filterLanguage}
+          setFilterLanguage={setFilterLanguage}
+          filterEntityType={filterEntityType}
+          setFilterEntityType={setFilterEntityType}
+          filterText={filterText}
+          setFilterText={setFilterText}
+          doSearch={doSearch}
+          selectItem={location => {
+            navigation.navigate('EditLocation', { ...route.params, location })
+          }}
+        />
+        <Loading loading={waiting} />
+      </>
     </DashboardLayout>
   )
 }

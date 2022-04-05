@@ -26,7 +26,7 @@ import {
   Feather,
   MaterialIcons,
 } from '@expo/vector-icons'
-import AnyCountry from './AnyCountry'
+import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import Loading from 'components/Loading'
 import { API } from 'aws-amplify'
@@ -287,7 +287,3 @@ export default function LocationEditor({
     </>
   )
 }
-
-// <View style={spinnerStyle} pointerEvents="none">
-//   <Spinner size="lg" />
-// </View>

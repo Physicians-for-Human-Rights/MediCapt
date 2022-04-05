@@ -2,12 +2,15 @@ import React, { useState } from 'react'
 import {
   Box,
   HStack,
-  Icon,
   Text,
   VStack,
   ScrollView,
   Pressable,
   Input,
+  IconButton,
+  Icon,
+  Button,
+  Select,
 } from 'native-base'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
@@ -15,9 +18,12 @@ import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import { UserType } from 'utils/types/user'
-import { LocationType } from 'utils/types/location'
+import { LocationType, locationEntityTypes } from 'utils/types/location'
+import AnyCountry from 'components/AnyCountry'
+import Language from 'components/Language'
+import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 
-export function ListItem({ item }: { item: UserType }) {
+export function ListItem({ item }: { item: LocationType }) {
   return (
     <Pressable p={2} borderBottomWidth={0.8} borderBottomColor="coolGray.300">
       <HStack justifyContent="space-between" w="100%">
@@ -69,43 +75,47 @@ export function ListItem({ item }: { item: UserType }) {
   )
 }
 
-export function ListItemDesktop({ item }: { item: UserType }) {
+export function ListItemDesktop({
+  item,
+  selectItem,
+}: {
+  item: LocationType
+  selectItem: (location: LocationType) => any
+}) {
   return (
-    <Pressable p={2} flex={1} _hover={{ bg: 'coolGray.100' }}>
+    <Pressable
+      px={2}
+      flex={1}
+      _hover={{ bg: 'coolGray.100' }}
+      onPress={() => selectItem(item)}
+    >
       <HStack alignItems="center" flex={1} justifyContent="space-between">
         <VStack w="30%">
           <Text bold isTruncated noOfLines={2}>
-            {item.patientName}
+            {item.legalName}
           </Text>
           <HStack alignItems="center" flex={1} justifyContent="flex-start">
             <Text isTruncated ml={2}>
-              {t('gender.' + item.patientGender)}
-            </Text>
-            <Text isTruncated ml={2}>
-              {item.patientAge}
+              {item.shortName}
             </Text>
           </HStack>
-        </VStack>
-
-        <VStack w="20%">
-          {_.split(item.formTags, ',').map((s: string, n: number) => (
-            <Text isTruncated key={n}>
-              {t('tag.' + s)}
-            </Text>
-          ))}
-          <Text key={100}>{item.recordID}</Text>
-        </VStack>
-
-        <VStack w="30%">
-          <Text isTruncated>{item.locationUUID}</Text>
-          <Text isTruncated>{item.providerCreatedUUID}</Text>
-          <Text isTruncated>
-            {formatDate(item.createdDate || item.lastChangedDate, 'PPP')}
+          <Text isTruncated ml={2}>
+            {t('location.entity.' + item.entityType)}
           </Text>
         </VStack>
 
+        <VStack w="20%">
+          <Text isTruncated>{t('country.' + item.country)}</Text>
+          <Text isTruncated>{t('languages.' + item.language)}</Text>
+        </VStack>
+
+        <VStack w="30%">
+          <Text isTruncated>{formatDate(item.lastChangedDate, 'PPP')}</Text>
+          <Text isTruncated>{item.locationID}</Text>
+        </VStack>
+
         <HStack w="5%">
-          {item.completed ? (
+          {item.enabled ? (
             <Icon
               color="success.400"
               size="6"
@@ -125,31 +135,50 @@ export default function LocationList({
   locations,
   itemsPerPage = 20,
   loadNextPage,
+  filterCountry,
+  setFilterCountry,
+  filterLanguage,
+  setFilterLanguage,
+  filterEntityType,
+  setFilterEntityType,
+  filterText,
+  setFilterText,
+  doSearch,
+  selectItem,
 }: {
   locations: LocationType[]
   itemsPerPage?: number
   loadNextPage?: (
     pageToken: null | string
   ) => null | { pageToken: string; contents: UserType[] }
+  filterCountry: string | undefined
+  setFilterCountry: React.Dispatch<React.SetStateAction<string | undefined>>
+  filterLanguage: string | undefined
+  setFilterLanguage: React.Dispatch<React.SetStateAction<string | undefined>>
+  filterEntityType: string | undefined
+  setFilterEntityType: React.Dispatch<React.SetStateAction<string | undefined>>
+  filterText: string | undefined
+  setFilterText: React.Dispatch<React.SetStateAction<string | undefined>>
+  doSearch: () => any
+  selectItem: (location: LocationType) => any
 }) {
   const [page, setPage] = useState(1)
   const [pageToken, setPageToken] = useState(null as null | string)
-  const numberOfPages = Math.ceil(users.length / itemsPerPage)
+  const numberOfPages = Math.ceil(locations.length / itemsPerPage)
   return (
     <>
       <HStack
         pt={{ md: 5, base: 2 }}
-        mb={{ md: 5, base: 0 }}
         w="100%"
         justifyContent="space-between"
         _light={{ bg: { base: 'white', md: 'muted.50' } }}
       >
-        <Input
+        <DebouncedTextInput
           flex={{ md: undefined, lg: undefined, base: 1 }}
-          w={{ md: '100%', lg: '100%', base: '90%' }}
+          w={{ md: '90%', lg: '90%', base: '80%' }}
           py={3}
           mx={{ base: 4, md: 0 }}
-          mr={{ base: 4, md: 4, lg: 30, xl: 40 }}
+          mr={{ base: 4, md: 4, lg: 5, xl: 10 }}
           bg="white"
           InputLeftElement={
             <Icon
@@ -164,8 +193,71 @@ export default function LocationList({
           }
           size="lg"
           color="black"
-          placeholder="Search for form names, ids, tags, or locations"
+          placeholder="Search for location names, ids, tags, etc."
+          debounceMs={200}
+          value={filterText}
+          onChangeText={setFilterText}
         />
+        <Button
+          leftIcon={
+            <Icon
+              as={MaterialIcons}
+              name="close"
+              size="sm"
+              onPress={() => {
+                console.log('X', filterText)
+                console.log('Y', filterEntityType)
+                // @ts-ignore
+                setFilterCountry(null)
+                // @ts-ignore
+                setFilterLanguage(null)
+                // @ts-ignore
+                setFilterEntityType('')
+                // @ts-ignore
+                setFilterText('CM')
+              }}
+            />
+          }
+          size="xs"
+          mr={2}
+        />
+        <Button
+          leftIcon={
+            <Icon
+              as={MaterialIcons}
+              name="refresh"
+              size="sm"
+              onPress={doSearch}
+            />
+          }
+          size="xs"
+        />
+      </HStack>
+      <HStack mb={{ md: 5, base: 0 }} justifyContent="center">
+        <AnyCountry
+          bg="white"
+          placeholder={t('location.select-country')}
+          value={filterCountry}
+          setValue={setFilterCountry}
+        />
+        <Language
+          bg="white"
+          placeholder={t('location.select-language')}
+          value={filterLanguage}
+          setValue={setFilterLanguage}
+        />
+        <Select
+          size="md"
+          bg="white"
+          selectedValue={filterEntityType}
+          placeholder={t('location.select-entity-type')}
+          onValueChange={setFilterEntityType}
+          m={3}
+        >
+          {locationEntityTypes.map(e => (
+            <Select.Item key={e} label={t('location.entity.' + e)} value={e} />
+          ))}
+        </Select>
       </HStack>
       <VStack
         px={{ base: 4, md: 8 }}
@@ -181,11 +273,6 @@ export default function LocationList({
       >
         <Box>
           <ScrollView>
-            <Box position="relative" display={{ md: 'none', base: 'flex' }}>
-              {users.map((item: UserType, index: number) => {
-                return <ListItem item={item} key={index} />
-              })}
-            </Box>
             <Box display={{ md: 'flex', base: 'none' }}>
               <HStack
                 alignItems="center"
@@ -201,7 +288,7 @@ export default function LocationList({
                   mb={3}
                   _light={{ color: 'coolGray.800' }}
                 >
-                  Patient
+                  {t('heading.name')}
                 </Text>
                 <Text
                   fontWeight="bold"
@@ -210,7 +297,7 @@ export default function LocationList({
                   mb={3}
                   _light={{ color: 'coolGray.900' }}
                 >
-                  Details
+                  {t('heading.countryAndLanguage')}
                 </Text>
                 <Text
                   fontWeight="bold"
@@ -219,7 +306,7 @@ export default function LocationList({
                   mb={3}
                   _light={{ color: 'coolGray.900' }}
                 >
-                  Last changed
+                  {t('heading.lastChangedAndId')}
                 </Text>
                 <Text
                   fontWeight="bold"
@@ -229,12 +316,18 @@ export default function LocationList({
                   _light={{ color: 'coolGray.900' }}
                   mr={-1}
                 >
-                  Complete
+                  {t('heading.enabled')}
                 </Text>
               </HStack>
               <VStack mt={3} space={3}>
-                {users.map((item: UserType, index: number) => {
-                  return <ListItemDesktop item={item} key={index} />
+                {locations.map((item: Location, index: number) => {
+                  return (
+                    <ListItemDesktop
+                      item={item}
+                      key={index}
+                      selectItem={selectItem}
+                    />
+                  )
                 })}
               </VStack>
             </Box>
