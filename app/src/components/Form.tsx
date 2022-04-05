@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react'
+import React, { useState, useRef, useMemo, useCallback } from 'react'
 import useMap from 'react-use/lib/useMap'
 import usePrevious from 'react-use/lib/usePrevious'
 import useSet from 'react-use/lib/useSet'
@@ -30,7 +30,7 @@ export default function Form({
   noRenderCache = false,
   onCancel,
 }: {
-  files: Record<string, any>
+  files: Record<string, string>
   form: FormType | undefined
   noRenderCache?: boolean
   onCancel: () => any
@@ -69,7 +69,7 @@ export default function Form({
 
   // TODO Debugging until this is tested
   if (1) {
-    if (changedPaths !== []) {
+    if (!_.isEqual(changedPaths, [])) {
       let record = {}
       _.map(formPaths, (v, p) => _.set(record, p, v))
       console.log('Record+paths', record, formPaths)
