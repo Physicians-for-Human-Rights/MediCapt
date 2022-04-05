@@ -542,5 +542,6 @@ export function renderCommand(
       )
     default:
       console.log('Unknown render command', command)
+      return null
   }
 }

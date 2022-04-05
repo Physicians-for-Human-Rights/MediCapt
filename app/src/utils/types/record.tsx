@@ -144,9 +144,7 @@ export type RecordDataByType =
 
 // export type RecordDataMaybeRepeated<T extends keyof RecordDataByType> =
 export type RecordDataMaybeRepeated<T extends keyof RecordDataByType> =
-  | {
-      [T: string]: RecordDataByType[T]
-    }
+  | { [T: string]: RecordDataByType[T] }
   | { [T: string]: RecordDataByType[T][] }
 
 export type RecordDataContents =
