@@ -49,6 +49,7 @@ export type RecordDataByType =
   //   part: RecordData
   // }
   {
+    parts: RecordParts
     bool: {
       value: boolean
     }
@@ -148,7 +149,7 @@ export type RecordDataMaybeRepeated<T extends keyof RecordDataByType> =
   | { [T: string]: RecordDataByType[T][] }
 
 export type RecordDataContents =
-  // | RecordDataMaybeRepeated<'part'>
+  | RecordDataMaybeRepeated<'parts'>
   | RecordDataMaybeRepeated<'bool'>
   | RecordDataMaybeRepeated<'signature'>
   | RecordDataMaybeRepeated<'date'>
