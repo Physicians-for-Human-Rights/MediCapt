@@ -24,10 +24,12 @@ export default function Language({
   placeholder,
   value,
   setValue,
+  bg,
 }: {
   placeholder: string
   value: string | undefined
   setValue: (val: string) => any
+  bg?: string | undefined
 }) {
   const languages = [
     { alpha2: 'en', name: t('languages.en') },
@@ -36,6 +38,7 @@ export default function Language({
 
   return (
     <Select
+      bg={bg}
       size="md"
       selectedValue={value}
       placeholder={placeholder}

@@ -37,7 +37,7 @@ const options = [
   {
     icon: <MaterialIcons name="add-location" />,
     label: 'Add a location',
-    to: 'AddLocation',
+    to: 'EditLocation',
   },
   {
     icon: <MaterialIcons name="map" />,

@@ -1,5 +1,12 @@
 import { z } from 'zod'
 import { dateSchema } from 'utils/types/common'
+import _ from 'lodash'
+
+export const locationEntityTypes = [
+  'medical-facility',
+  'police-station',
+  'refugee-camp',
+] as const
 
 export const locationSchema = z
   .object({
@@ -10,10 +17,24 @@ export const locationSchema = z
     language: z.string().length(2),
     legalName: z.string().nonempty(),
     shortName: z.string().nonempty(),
-    entityType: z.string().nonempty(),
+    entityType: z.enum(locationEntityTypes),
     address: z.string().nonempty(),
     mailingAddress: z.string().nonempty(),
-    coordinates: z.string().nonempty(),
+    coordinates: z
+      .string()
+      .nonempty()
+      .refine(
+        v => {
+          const list = _.split(v, ',')
+          if (list.length !== 2) return false
+          const [l, r] = list
+          return !_.isNaN(_.toNumber(l)) && !_.isNaN(_.toNumber(r))
+        },
+        {
+          message:
+            'Coordinates must be 2 numbers separated by a comma like 42.34089818841653, -71.08180417092166',
+        }
+      ),
     phoneNumber: z.string().nonempty(),
     email: z.string().email().nonempty(),
     createdDate: dateSchema,
@@ -24,9 +45,12 @@ export const locationSchema = z
     enabledDate: dateSchema,
     enabledSetByUUID: z.string().nonempty(),
     tags: z.string().optional(),
+    deleted: z.boolean(),
     version: z.string().nonempty(),
   })
   .strict()
+
+export const locationSchemaStrip = locationSchema.strip()
 
 export type LocationType = z.infer<typeof locationSchema>
 

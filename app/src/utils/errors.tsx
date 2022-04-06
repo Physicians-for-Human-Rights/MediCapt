@@ -63,7 +63,7 @@ export function handleStandardErrors(
     error('Network error', undefined, e)
   } else {
     // TODO Server errors vs local errors
-    error('Error submitting form', undefined, e)
+    error('Server error', undefined, e)
     console.error('Error', e, typeof e)
   }
 }

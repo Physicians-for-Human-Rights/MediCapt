@@ -10,17 +10,11 @@ import {
   Select,
   CheckIcon,
 } from 'native-base'
-import { FormType } from 'utils/types/form'
-import yaml from 'js-yaml'
 import DashboardLayout from 'components/DashboardLayout'
-import { RootStackScreenProps } from 'utils/formDesigner/navigation'
-import FormEditorComponent from 'components/FormEditor'
-import FormEditorFiles from 'components/FormEditorFiles'
-import FormEditorPrinted from 'components/FormEditorPrinted'
+import { RootStackScreenProps } from 'utils/manager/navigation'
 import LocationEditor from 'components/LocationEditor'
 import useMap from 'react-use/lib/useMap'
 import _ from 'lodash'
-import { readFile } from 'utils/forms'
 import { LocationType } from 'utils/types/location'
 
 export const defaultLocation = {
@@ -44,15 +38,16 @@ export const defaultLocation = {
   enabledDate: undefined,
   enabledSetByUUID: undefined,
   tags: undefined,
+  deleted: false,
   version: undefined,
 }
 
-export default function CreateLocation({
+export default function EditLocation({
   route,
   navigation,
-}: RootStackScreenProps<'FormEditor'>) {
+}: RootStackScreenProps<'EditLocation'>) {
   const [location, setLocation] = useState(
-    defaultLocation as Partial<LocationType>
+    (route.params.location || defaultLocation) as Partial<LocationType>
   )
   const [lastSubmitted, setLastSubmitted] = useState(
     null as Partial<LocationType> | null
