@@ -17,7 +17,7 @@ import useMap from 'react-use/lib/useMap'
 import _ from 'lodash'
 import { LocationType } from 'utils/types/location'
 
-export const defaultLocation = {
+export const defaultLocation: Partial<LocationType> = {
   'storage-version': '1.0.0',
   locationUUID: '',
   locationID: '',
@@ -35,10 +35,7 @@ export const defaultLocation = {
   lastChangedByUUID: undefined,
   lastChangedDate: undefined,
   enabled: false,
-  enabledDate: undefined,
-  enabledSetByUUID: undefined,
-  tags: undefined,
-  deleted: false,
+  tags: new Set(),
   version: undefined,
 }
 

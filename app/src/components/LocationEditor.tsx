@@ -3,7 +3,6 @@ import {
   HStack,
   VStack,
   Button,
-  Badge,
   View,
   Icon,
   Select,
@@ -11,10 +10,9 @@ import {
   CloseIcon,
   Tooltip,
   Popover,
-  Spinner,
 } from 'native-base'
 import type { LocationType } from 'utils/types/location'
-import { locationSchema, locationCreationSchema } from 'utils/types/location'
+import { locationEntityTypes } from 'utils/types/location'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 import NecessaryItem from 'components/NecessaryItem'
 import { t } from 'i18n-js'
@@ -29,15 +27,9 @@ import {
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import Loading from 'components/Loading'
-import { API } from 'aws-amplify'
-import { useInfo, handleStandardErrors } from 'utils/errors'
-import { z } from 'zod'
-export const entityTypes = [
-  'medical-facility',
-  'police-station',
-  'refugee-camp',
-]
-import { StyleSheet } from 'react-native'
+import { useInfo } from 'utils/errors'
+import { createLocation, updateLocation, deleteLocation } from 'api/manager'
+import { standardHandler } from 'api/utils'
 
 export default function LocationEditor({
   files,
@@ -52,22 +44,58 @@ export default function LocationEditor({
 }) {
   const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
-  const handleCreate = async () => {
-    try {
-      locationCreationSchema.parse(location)
-      setWaiting('Creating location')
-      const data = await API.post('manager', '/manager/location', {
-        body: location,
-      })
-      success('Location created')
-      setLocation(locationSchema.parse(data))
-    } catch (e) {
-      handleStandardErrors(error, warning, success, e)
-    } finally {
-      setWaiting(null)
-    }
-  }
+
   const createMode = !(location.locationUUID && location.locationUUID !== '')
+
+  const standardReporters = { setWaiting, error, warning, success }
+  const handleCreateLocation = () =>
+    standardHandler(
+      standardReporters,
+      'Creating location',
+      'Location created',
+      async () =>
+        setLocation(
+          await createLocation(
+            //@ts-ignore We validate this before the call
+            location
+          )
+        )
+    )
+
+  const submitLocation = (updatedLocation: Partial<LocationType>) =>
+    standardHandler(
+      standardReporters,
+      'Updating location',
+      'Location updated',
+      async () =>
+        setLocation(
+          await updateLocation(
+            //@ts-ignore We validate this before the call
+            updatedLocation
+          )
+        )
+    )
+
+  const handleDeleteLocation = () =>
+    standardHandler(
+      standardReporters,
+      'Deleting location',
+      'Location deleted',
+      async () => {
+        await deleteLocation(
+          //@ts-ignore We validate this before the call
+          location
+        )
+      }
+    )
+
+  const handleSubmitLocation = () => submitLocation(location)
+
+  const toggleLocation = () => {
+    const newLocation = { ...location, enabled: !location.enabled }
+    setLocation(newLocation)
+    submitLocation(newLocation)
+  }
 
   return (
     <>
@@ -76,6 +104,7 @@ export default function LocationEditor({
           label={t('location.full-official-name')}
           value={location.legalName}
           setValue={v => setLocation({ ...location, legalName: v })}
+          mt={10}
         />
         <HStack alignItems="center" justifyContent="space-between">
           <FloatingLabelInput
@@ -92,11 +121,12 @@ export default function LocationEditor({
             w="95%"
             onValueChange={itemValue => {
               if (itemValue != null) {
+                // @ts-ignore this value comes from location.entityType, which is correct
                 setLocation({ ...location, entityType: itemValue })
               }
             }}
           >
-            {entityTypes.map((e, i) => (
+            {locationEntityTypes.map((e, i) => (
               <Select.Item
                 size="md"
                 key={e}
@@ -121,11 +151,17 @@ export default function LocationEditor({
             placeholder={t('location.select-country')}
             value={location.country}
             setValue={v => setLocation({ ...location, country: v })}
+            mx={3}
+            mt={1}
+            mb={3}
           />
           <Language
             placeholder={t('location.select-default-language')}
             value={location.language}
             setValue={v => setLocation({ ...location, language: v })}
+            mx={3}
+            mt={1}
+            mb={3}
           />
         </HStack>
         <HStack alignItems="center" justifyContent="space-between">
@@ -179,8 +215,10 @@ export default function LocationEditor({
             label={'Tag (optional)'}
             w="100%"
             containerW="45%"
-            value={location.tags}
-            setValue={v => setLocation({ ...location, tags: v })}
+            value={location.tags ? _.join(Array.from(location.tags), ' ') : ''}
+            setValue={v =>
+              setLocation({ ...location, tags: new Set(_.split(v, / |,/)) })
+            }
           />
           <View w="45%">
             <NecessaryItem
@@ -245,7 +283,7 @@ export default function LocationEditor({
             <Button
               leftIcon={<Icon as={MaterialIcons} name="save" size="sm" />}
               colorScheme="green"
-              onPress={handleCreate}
+              onPress={handleCreateLocation}
             >
               {t('location.create-location')}
             </Button>
@@ -255,11 +293,13 @@ export default function LocationEditor({
             <Button
               leftIcon={<Icon as={MaterialIcons} name="save" size="sm" />}
               colorScheme="green"
+              onPress={handleSubmitLocation}
             >
               {t('location.submit-location')}
             </Button>
             <Button
               leftIcon={<Icon as={MaterialIcons} name="delete" size="sm" />}
+              onPress={handleDeleteLocation}
             >
               {t('location.delete-location')}
             </Button>
@@ -273,7 +313,7 @@ export default function LocationEditor({
                   )
                 }
                 colorScheme={location.enabled ? 'red' : 'green'}
-                isDisabled={true}
+                onPress={toggleLocation}
               >
                 {location.enabled
                   ? t('location.disable-location')

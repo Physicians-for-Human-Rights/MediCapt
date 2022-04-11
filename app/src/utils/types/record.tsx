@@ -13,8 +13,13 @@ export type RecordSubparts = {
   parts: RecordParts
 }
 
+export type RecordRepeated = {
+  'repeat-list': string[]
+  repeat: RecordSubparts
+}
+
 export type RecordParts = {
-  [path: string]: RecordDataContents
+  [path: string]: RecordDataContents | RecordRepeated
 }
 
 export type RecordPath = (string | number)[]

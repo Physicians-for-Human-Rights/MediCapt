@@ -30,30 +30,27 @@ import { useInfo, handleStandardErrors } from 'utils/errors'
 import Loading from 'components/Loading'
 import { API } from 'aws-amplify'
 import { locationSchema } from 'utils/types/location'
+import { QueryFilterForType } from 'utils/types/url'
 
 export default function FormList({ route, navigation }: any) {
   const [locations, setLocations] = useState([] as LocationType[])
   const [nextKey, setNextKey] = useState(undefined as any)
-  const [filterCountry, setFilterCountry] = useState(
-    undefined as undefined | string
-  )
-  const [filterLanguage, setFilterLanguage] = useState(
-    undefined as undefined | string
-  )
-  const [filterEntityType, setFilterEntityType] = useState(
-    undefined as undefined | string
-  )
+  const [filterCountry, setFilterCountry] = useState('')
+  const [filterLanguage, setFilterLanguage] = useState('')
+  const [filterEntityType, setFilterEntityType] = useState('')
   const [filterText, setFilterText] = useState(undefined as undefined | string)
   const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
 
   const doSearch = async () => {
-    console.log('DoSearch')
     try {
       setWaiting('Searching')
-      let filters = []
+      let filters: QueryFilterForType<LocationType> = []
       if (filterCountry) filters.push({ country: { eq: filterCountry } })
-      if (filterLanguage) filters.push({ country: { eq: filterLanguage } })
+      if (filterLanguage) filters.push({ language: { eq: filterLanguage } })
+      if (filterEntityType)
+        filters.push({ entityType: { eq: filterEntityType } })
+      if (filterText) filters.push({ locationID: { eq: filterText } })
       const data = await API.get('manager', '/manager/location', {
         queryStringParameters: {
           filter: JSON.stringify(filters),

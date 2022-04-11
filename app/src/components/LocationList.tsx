@@ -151,12 +151,12 @@ export default function LocationList({
   loadNextPage?: (
     pageToken: null | string
   ) => null | { pageToken: string; contents: UserType[] }
-  filterCountry: string | undefined
-  setFilterCountry: React.Dispatch<React.SetStateAction<string | undefined>>
-  filterLanguage: string | undefined
-  setFilterLanguage: React.Dispatch<React.SetStateAction<string | undefined>>
-  filterEntityType: string | undefined
-  setFilterEntityType: React.Dispatch<React.SetStateAction<string | undefined>>
+  filterCountry: string
+  setFilterCountry: React.Dispatch<React.SetStateAction<string>>
+  filterLanguage: string
+  setFilterLanguage: React.Dispatch<React.SetStateAction<string>>
+  filterEntityType: string
+  setFilterEntityType: React.Dispatch<React.SetStateAction<string>>
   filterText: string | undefined
   setFilterText: React.Dispatch<React.SetStateAction<string | undefined>>
   doSearch: () => any
@@ -167,10 +167,72 @@ export default function LocationList({
   const numberOfPages = Math.ceil(locations.length / itemsPerPage)
   return (
     <>
+      <HStack mb={{ md: 1, base: 0 }} justifyContent="center">
+        <AnyCountry
+          bg="white"
+          placeholder={t('location.select-country')}
+          value={filterCountry}
+          setValue={setFilterCountry}
+          any={'location.any-country'}
+        />
+        <Language
+          bg="white"
+          placeholder={t('location.select-language')}
+          value={filterLanguage}
+          setValue={setFilterLanguage}
+          any={'location.any-language'}
+          mx={2}
+        />
+        <Select
+          size="md"
+          bg="white"
+          selectedValue={filterEntityType}
+          onValueChange={setFilterEntityType}
+          placeholder={t('location.select-entity-type')}
+        >
+          <Select.Item
+            key={'__any__'}
+            label={t('location.any-entity-type')}
+            value={''}
+          />
+          {locationEntityTypes.map(e => (
+            <Select.Item key={e} label={t('location.entity.' + e)} value={e} />
+          ))}
+        </Select>
+        <Button
+          leftIcon={
+            <Icon
+              as={MaterialIcons}
+              name="close"
+              size="sm"
+              onPress={() => {
+                setFilterCountry('')
+                setFilterLanguage('')
+                setFilterEntityType('')
+                setFilterText('')
+              }}
+            />
+          }
+          size="xs"
+          ml={4}
+          mr={2}
+        />
+        <Button
+          leftIcon={
+            <Icon
+              as={MaterialIcons}
+              name="refresh"
+              size="sm"
+              onPress={doSearch}
+            />
+          }
+          size="xs"
+        />
+      </HStack>
       <HStack
-        pt={{ md: 5, base: 2 }}
+        py={2}
         w="100%"
-        justifyContent="space-between"
+        justifyContent="center"
         _light={{ bg: { base: 'white', md: 'muted.50' } }}
       >
         <DebouncedTextInput
@@ -193,71 +255,11 @@ export default function LocationList({
           }
           size="lg"
           color="black"
-          placeholder="Search for location names, ids, tags, etc."
-          debounceMs={200}
+          placeholder={t('location.search')}
+          debounceMs={1000}
           value={filterText}
           onChangeText={setFilterText}
         />
-        <Button
-          leftIcon={
-            <Icon
-              as={MaterialIcons}
-              name="close"
-              size="sm"
-              onPress={() => {
-                console.log('X', filterText)
-                console.log('Y', filterEntityType)
-                // @ts-ignore
-                setFilterCountry(null)
-                // @ts-ignore
-                setFilterLanguage(null)
-                // @ts-ignore
-                setFilterEntityType('')
-                // @ts-ignore
-                setFilterText('CM')
-              }}
-            />
-          }
-          size="xs"
-          mr={2}
-        />
-        <Button
-          leftIcon={
-            <Icon
-              as={MaterialIcons}
-              name="refresh"
-              size="sm"
-              onPress={doSearch}
-            />
-          }
-          size="xs"
-        />
-      </HStack>
-      <HStack mb={{ md: 5, base: 0 }} justifyContent="center">
-        <AnyCountry
-          bg="white"
-          placeholder={t('location.select-country')}
-          value={filterCountry}
-          setValue={setFilterCountry}
-        />
-        <Language
-          bg="white"
-          placeholder={t('location.select-language')}
-          value={filterLanguage}
-          setValue={setFilterLanguage}
-        />
-        <Select
-          size="md"
-          bg="white"
-          selectedValue={filterEntityType}
-          placeholder={t('location.select-entity-type')}
-          onValueChange={setFilterEntityType}
-          m={3}
-        >
-          {locationEntityTypes.map(e => (
-            <Select.Item key={e} label={t('location.entity.' + e)} value={e} />
-          ))}
-        </Select>
       </HStack>
       <VStack
         px={{ base: 4, md: 8 }}

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Input, IInputProps } from 'native-base'
 import useDebounce from 'react-use/lib/useDebounce'
 
@@ -12,6 +12,13 @@ export default function DebouncedTextInput(
 ) {
   const [rawContents, setRawContents] = React.useState(
     props.value === undefined || props.value === null ? '' : props.value
+  )
+  useEffect(
+    () =>
+      setRawContents(
+        props.value === undefined || props.value === null ? '' : props.value
+      ),
+    [props.value]
   )
   useDebounce(
     () => {

@@ -64,7 +64,7 @@ export class RawFloatingLabelInput extends Component<any, any> {
       color: this.props.labelColor,
     } as any
     return (
-      <Box w={this.props.containerWidth} m={3}>
+      <Box w={this.props.containerWidth} m={3} mt={this.props.mt}>
         <Animated.View pointerEvents="none" style={lableContainerStyles}>
           <Animated.Text
             style={
@@ -76,6 +76,7 @@ export class RawFloatingLabelInput extends Component<any, any> {
         </Animated.View>
         <Input
           {...props}
+          mt={0}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
           padding="3"
@@ -96,6 +97,7 @@ export default function FloatingLabelInput({
   isReadOnly,
   placeholder,
   debounceMs = 300,
+  mt = 5,
 }: {
   label: string
   defaultValue?: string
@@ -106,6 +108,7 @@ export default function FloatingLabelInput({
   isReadOnly?: boolean
   placeholder?: string
   debounceMs?: number
+  mt?: number
 }) {
   const [rawValue, setRawValue] = React.useState(
     value === undefined || value === null ? '' : value
@@ -141,6 +144,7 @@ export default function FloatingLabelInput({
       w={w}
       isReadOnly={isReadOnly}
       placeholder={placeholder}
+      mt={mt}
     />
   )
 }
