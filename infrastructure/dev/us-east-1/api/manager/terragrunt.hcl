@@ -44,7 +44,6 @@ inputs = {
   lambda_layer_internal = dependency.lambda_layer_internal.outputs.arn
   humanid_lambda = dependency.humanid.outputs.lambda.function_name
   humanid_lambda_arn = dependency.humanid.outputs.lambda.arn
-  location_table = dependency.locations.outputs.dynamodb.table_name
-  location_table_arn = dependency.locations.outputs.dynamodb.table_arn
+  location_dynamodb = dependency.locations.outputs.dynamodb
   user_type = "manager"
 }

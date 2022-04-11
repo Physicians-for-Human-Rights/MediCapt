@@ -29,3 +29,17 @@ Every endpoint is a separate lambda function with its own minimal permissions.
 Every lambda function should validate its input, any data it attempts to put
 into the store, and anything it returns to the client. `common-types.ts`
 contains schemas for validating all types with `zod`.
+
+NB: The default `policy.json` for lambda functions has a useless policy that
+denies access to EC2. Lambda functions don't have EC2 permissions anyway and we
+don't use EC2. But there's no way to create an empty AWS policy as a
+placeholder, so we create a useless one instead.
+
+### APIs
+
+Query APIs can contain filters. All filters are standardized to be
+`filter=[{field: {op: value}}]`.  For now, only string fields are supported with
+the `eq` and `contains` ops.
+
+Query APIs can sort. All sorts are standardized to be `sort=[{inc: field1},
+{dec: field2}]`.
