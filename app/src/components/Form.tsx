@@ -87,6 +87,7 @@ export default function Form({
   // The side menu, although depending on the size of the viewport we sometimes
   // display it on top
   const [isMenuVisible, rawToggleMenu] = useToggle(false)
+  // TODO do something with scrollView or remove
   const scrollView = useRef(null as any)
   const toggleMenu = useCallback(() => {
     // Users are very likely to be editing a field
