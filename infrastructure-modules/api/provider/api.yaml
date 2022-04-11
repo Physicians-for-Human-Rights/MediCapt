@@ -48,7 +48,7 @@ paths:
       - CognitoUserProvider: []
       tags:
       - Record
-      summary: Add a new record
+      summary: Create a new record
       consumes:
       - application/json
       produces:
@@ -62,10 +62,12 @@ paths:
         schema:
           $ref: '#/definitions/Record'
       responses:
-        405:
-          description: Invalid input
+        200:
+          description: Record created
           schema:
             $ref: '#/definitions/Record'
+        405:
+          description: Invalid input
       x-amazon-apigateway-integration:
         uri: ${lambda_uri_providerCreateRecord}
         responses:
@@ -160,7 +162,7 @@ paths:
       parameters:
       - name: recordId
         in: path
-        description: ID of the record to return
+        description: ID of the record to update
         required: true
         type: string
         format: uuid
@@ -260,7 +262,7 @@ paths:
       - CognitoUserProvider: []
       tags:
       - Record
-      summary: Update an existing record
+      summary: Seal a record, it cannot be changed
       operationId: providerSealRecordById
       consumes:
       - application/x-www-form-urlencoded
@@ -331,27 +333,26 @@ paths:
       - CognitoUserProvider: []
       tags:
       - Record
-      summary: Upload an image for a record
+      summary: Create an image for a record
       operationId: providerUploadImageForRecordBy
       consumes:
        - multipart/form-data
       produces:
       - application/json
       parameters:
-      - in: formData
-        name: upfile
-        type: file
-        required: true
-        description: The file to upload.
       - name: recordId
         in: path
-        description: ID of record to return
+        description: ID of the record to which this image should be attached
         required: true
         type: string
         format: uuid
       responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/SignedLink'
         400:
-          description: Record already sealed
+          description: Cannot add image
         404:
           description: Record not found
         405:
@@ -1270,6 +1271,11 @@ definitions:
         format: uuid
       form_details:
         type: object
+  SignedLink:
+    type: object
+    properties:
+      url:
+        type: string
   Share:
     type: object
     properties:

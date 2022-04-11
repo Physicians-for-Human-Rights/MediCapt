@@ -19,7 +19,24 @@ securityDefinitions:
     x-amazon-apigateway-authorizer:
       type: cognito_user_pools
       providerARNs:
-      - ${cognito_user_pool_provider_arn}
+      - ${cognito_user_pool_manager_arn}
+x-amazon-apigateway-gateway-responses:
+  ACCESS_DENIED:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  DEFAULT_4XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  DEFAULT_5XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  MISSING_AUTHENTICATION_TOKEN:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
 security:
   - CognitoUserProvider: []
 schemes:
@@ -102,7 +119,7 @@ paths:
       - CognitoUserProvider: []
       tags:
       - Location
-      summary: Deletes a sssser
+      summary: Deletes a location
       operationId: managerDeleteLocationById
       produces:
       - application/json
@@ -120,7 +137,7 @@ paths:
         405:
           description: Record already sealed
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_managerDeleteLocationdById}
+        uri: ${lambda_uri_managerDeleteLocationById}
         responses:
           default:
             statusCode: "200"

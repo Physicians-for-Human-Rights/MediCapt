@@ -63,14 +63,9 @@ variable "lambda_layer_internal" {
   type        = string
 }
 
-variable "location_table" {
-  description = "The location table name"
-   type        = string
-}
-
-variable "location_table_arn" {
-  description = "The location table arn"
-   type        = string
+variable "location_dynamodb" {
+  description = "The location dynamodb"
+  type        = any
 }
 
 variable "user_type" {

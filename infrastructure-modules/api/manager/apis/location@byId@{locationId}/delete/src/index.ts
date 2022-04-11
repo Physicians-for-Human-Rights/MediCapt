@@ -1,23 +1,58 @@
-'use strict'
-
+import _ from 'lodash'
 import { APIGatewayProxyWithCognitoAuthorizerHandler } from 'aws-lambda'
 import AWS from 'aws-sdk'
 AWS.config.update({
   region: process.env.AWS_REGION,
 })
+const ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' })
+
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      humanid_lambda: string
+      location_table: string
+    }
+  }
+}
+
+import { good, bad, DynamoDB } from 'common-utils'
+import { LocationType, locationSchema } from 'utils/types/location'
 
 export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
   event,
   context
 ) => {
-  console.log('ENVIRONMENT VARIABLES\n' + JSON.stringify(process.env, null, 2))
-  console.log('EVENT\n' + JSON.stringify(event, null, 2))
-  console.log('CONTEXT\n' + JSON.stringify(context, null, 2))
-  return {
-    statusCode: 200,
-    body: JSON.stringify([process.env, event, context], null, 2),
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-    },
+  try {
+    try {
+      var location = locationSchema.parse(
+        JSON.parse(event.body!)
+      ) as LocationType
+    } catch (e) {
+      return bad(e, 'Bad input location')
+    }
+
+    await ddb
+      .deleteItem({
+        TableName: process.env.location_table,
+        Key: {
+          PK: { S: 'LOCATION#' + location.locationUUID },
+          SK: { S: 'VERSION#latest' },
+        },
+      })
+      .promise()
+
+    await ddb
+      .putItem({
+        TableName: process.env.location_table,
+        Item: {
+          PK: { S: 'LOCATION#' + location.locationUUID },
+          SK: { S: 'VERSION#deleted' },
+        },
+      })
+      .promise()
+
+    return good(location.locationUUID)
+  } catch (e) {
+    return bad(e, 'Generic error')
   }
 }

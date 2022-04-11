@@ -2,10 +2,9 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "Placeholder",
-      "Effect": "Deny",
-      "Action": ["ec2:*"],
-      "Resource": "*"
+      "Action": ["dynamodb:GetItem"],
+      "Effect": "Allow",
+      "Resource": "${location_table_arn}"
     }
   ]
 }

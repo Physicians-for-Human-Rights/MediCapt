@@ -4,7 +4,7 @@
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "baseUrl": "./",
+    "baseUrl": "./js/",
     "strict": true,
     "module": "CommonJS",
     "resolveJsonModule": true,
@@ -12,7 +12,8 @@
     "moduleResolution": "node",
     "noEmit": false,
     "skipLibCheck": true,
-    "outDir": "dist-lambda"
+    "outDir": "dist-lambda",
+    "jsx": "react-native"
   },
   "include": ["./**/*.ts"],
   "exclude": ["node_modules", "dist-lambda", "./**/*.js", "./**/*.jsx"]

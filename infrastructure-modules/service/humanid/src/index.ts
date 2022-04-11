@@ -2,7 +2,7 @@ import crypto from 'crypto'
 import filter from 'lodash/filter.js'
 import isEmpty from 'lodash/isEmpty'
 import includes from 'lodash/includes'
-import { LocationType, HumanIDResponse, HumanIDAction } from 'common-types'
+import { HumanIDResponse, HumanIDAction } from 'services/human-id'
 
 import { Handler } from 'aws-lambda'
 import AWS from 'aws-sdk'

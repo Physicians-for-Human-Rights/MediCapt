@@ -3,12 +3,13 @@ locals {
 }
 
 resource "null_resource" "build_lambda_layers" {
-  triggers = {
-    layer_build = "${md5(file("${path.module}/../../common-types.ts"))}"
-  }
+  # TODO What's the right trigger here?
+  # triggers = {
+  #   layer_build = "${md5(file("${path.module}/../../common-types.ts"))}"
+  # }
   provisioner "local-exec" {
     working_dir = "${path.module}/nodejs/"
-    command     = "cp ../../../dist-lambda/common-types.js ../../../dist-lambda/common-utils.js . && cd .. && zip -9 -r --quiet ${local.layer_name}.zip nodejs"
+    command     = "rsync --delete -av ../../../dist-lambda/js/ . && cd .. && zip -9 -r --quiet ${local.layer_name}.zip nodejs"
     # command     = "cp ../../../dist-lambda/common-types.js node_modules/internal/ && cd .. && zip -9 -r --quiet ${local.layer_name}.zip nodejs"  }
   }
 }

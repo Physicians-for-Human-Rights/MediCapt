@@ -20,12 +20,16 @@ declare global {
   }
 }
 
-import { good, bad, machineIdToHumanId } from 'common-utils'
+import { good, bad, machineIdToHumanId, DynamoDB } from 'common-utils'
 import {
   LocationType,
-  locationCreationSchema,
-  locationSchema,
-} from 'common-types'
+  locationSchemaByUser,
+  LocationByUserType,
+  locationSchemaDynamoLatest,
+  LocationDynamoLatestType,
+  locationSchemaDynamoVersion,
+  LocationDynamoVersionType,
+} from 'utils/types/location'
 
 export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
   event,
@@ -33,56 +37,61 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
 ) => {
   try {
     try {
-      var location = locationCreationSchema.parse(
+      var locationCreation = locationSchemaByUser.parse(
         JSON.parse(event.body!)
-      ) as LocationType
+      ) as LocationByUserType
     } catch (e) {
       return bad(e, 'Bad input location')
     }
     const locationUUID = uuidv4()
     const ids = await machineIdToHumanId(locationUUID, 'ML', lambda)
-    location.version = '1'
-    location.createdDate = new Date()
-    location.createdByUUID = event.requestContext.authorizer.claims.sub
-    location.enabled = false
-    location.enabledDate = new Date()
-    location.enabledSetByUUID = event.requestContext.authorizer.claims.sub
-    location.locationUUID = ids.machineID
-    location.locationID = ids.humanID
-    location.lastChangedByUUID = event.requestContext.authorizer.claims.sub
-    location.lastChangedDate = new Date()
+    const location: LocationType = {
+      ...locationCreation,
+      version: '1',
+      createdDate: new Date(),
+      createdByUUID: event.requestContext.authorizer.claims.sub,
+      enabled: false,
+      locationUUID: ids.machineID,
+      locationID: ids.humanID,
+      lastChangedByUUID: event.requestContext.authorizer.claims.sub,
+      lastChangedDate: new Date(),
+    }
+    const locationDynamoLatest: LocationDynamoLatestType = {
+      ...location,
+      PK: 'LOCATION#' + location.locationUUID,
+      SK: 'VERSION#latest',
+      GPK1: 'LOCATION#' + location.locationID,
+      GSK1: 'VERSION#latest',
+      GPK2: 'VERSION#latest',
+      GSK2: 'DATE#' + location.lastChangedDate.toISOString(),
+      GPK3: 'LA#' + location.language,
+      GSK3: 'DATE#' + location.lastChangedDate.toISOString(),
+      GPK4: 'CA#' + location.country,
+      GSK4: 'DATE#' + location.lastChangedDate.toISOString(),
+      GPK5: 'ET#' + location.entityType,
+      GSK5: 'DATE#' + location.lastChangedDate.toISOString(),
+    }
+    const locationDynamoV1: LocationDynamoVersionType = {
+      ...location,
+      PK: 'LOCATION#' + location.locationUUID,
+      SK: 'VERSION#1',
+    }
     try {
-      locationSchema.parse(location)
+      locationSchemaDynamoLatest.parse(locationDynamoLatest)
+      locationSchemaDynamoVersion.parse(locationDynamoV1)
     } catch (e) {
       return bad(e, 'Bad output location')
     }
     await ddb
       .putItem({
         TableName: process.env.location_table,
-        Item: {
-          locationUUID: { S: location.locationUUID },
-          locationID: { S: location.locationID },
-          country: { S: location.country },
-          language: { S: location.language },
-          legalName: { S: location.legalName },
-          shortName: { S: location.shortName },
-          entityType: { S: location.entityType },
-          address: { S: location.address },
-          mailingAddress: { S: location.mailingAddress },
-          coordinates: { S: location.coordinates },
-          phoneNumber: { S: location.phoneNumber },
-          email: { S: location.email },
-          createdDate: { S: location.createdDate.toString() },
-          createdByUUID: { S: location.createdByUUID },
-          enabled: { BOOL: location.enabled },
-          enabledDate: { S: location.enabledDate.toString() },
-          enabledSetByUUID: { S: location.enabledSetByUUID },
-          tags: { S: location.tags || '' },
-          version: { S: location.version },
-          lastChangedByUUID: { S: location.lastChangedByUUID },
-          lastChangedDate: { S: location.lastChangedDate.toString() },
-          locationStorageVersion: { S: location['storage-version'] },
-        },
+        Item: DynamoDB.marshall(locationDynamoV1),
+      })
+      .promise()
+    await ddb
+      .putItem({
+        TableName: process.env.location_table,
+        Item: DynamoDB.marshall(locationDynamoLatest),
       })
       .promise()
     return good(location)

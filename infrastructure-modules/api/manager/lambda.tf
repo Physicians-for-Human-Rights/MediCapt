@@ -40,12 +40,8 @@ locals {
       path = "location@byId@{locationId}/delete"
       reserved_concurrent_executions = null
     }
-    managerGetLocationsByCountry = {
-      path = "location@byCountry@{countryCode}/get"
-      reserved_concurrent_executions = null
-    }
-    managerGetCountries = {
-      path = "country/get"
+    managerGetLocations = {
+      path = "location/get"
       reserved_concurrent_executions = null
     }
   }
@@ -80,7 +76,12 @@ resource "aws_lambda_function" "lambdas" {
   environment {
     variables = {
       humanid_lambda = var.humanid_lambda
-      location_table = var.location_table
+      location_table = var.location_dynamodb.table_name
+      location_gsi_id  = var.location_dynamodb.global_secondary_index_names[0]
+      location_gsi_date = var.location_dynamodb.global_secondary_index_names[1]
+      location_gsi_language = var.location_dynamodb.global_secondary_index_names[2]
+      location_gsi_country = var.location_dynamodb.global_secondary_index_names[3]
+      location_gsi_entity = var.location_dynamodb.global_secondary_index_names[4]
       # NB In a better world we would do:
       # depends_on = [
       #   aws_iam_role_policy_attachment.dead_letter[each.key],
@@ -137,7 +138,7 @@ resource "aws_iam_role_policy" "per_lambda_json_policy" {
   policy = templatefile("${path.module}/apis/${each.value.path}/policy.json",
     {
       humanid_lambda_arn = var.humanid_lambda_arn
-      location_table_arn = var.location_table_arn
+      location_table_arn = var.location_dynamodb.table_arn
     }
   )
 }
