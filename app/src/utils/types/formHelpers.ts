@@ -137,7 +137,7 @@ export type FormFns<Return> = {
     recordPath: RecordPath,
     repeatId: ArrayElement<RecordPath>,
     repeatPath: RecordPath
-  ) => Return | null
+  ) => Return
   postRepeated: (
     list: { path: RecordPath; result: Return }[],
     part: FormPart,

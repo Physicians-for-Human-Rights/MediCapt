@@ -9,7 +9,7 @@ import {
   FormPartMap,
   FormDefinition,
   FormRef,
-  FormConditional,
+  FormSection,
 } from 'utils/types/form'
 import { NamedFormSection, FormFns } from 'utils/types/formHelpers'
 import { RecordPath } from 'utils/types/record'
@@ -20,24 +20,35 @@ export type GetValueFn = (
 ) => FormPart | FormValueType | undefined
 
 export function shouldSkipConditional(
-  part: FormConditional,
+  section: FormSection,
+  getValue: GetValueFn
+): boolean
+export function shouldSkipConditional(
+  part: FormPart,
+  getValue: GetValueFn
+): boolean
+
+export function shouldSkipConditional(
+  conditional: FormPart | FormSection,
   getValue: GetValueFn
 ) {
-  if ('only-when' in part && part['only-when']) {
+  if ('only-when' in conditional && conditional['only-when']) {
     if (
-      getValue(_.split(part['only-when'].path, '.')) !== part['only-when'].value
+      getValue(_.split(conditional['only-when'].path, '.')) !==
+      conditional['only-when'].value
     )
       return true
   }
-  if ('only-not' in part && part['only-not']) {
+  if ('only-not' in conditional && conditional['only-not']) {
     if (
-      getValue(_.split(part['only-not'].path, '.')) === part['only-not'].value
+      getValue(_.split(conditional['only-not'].path, '.')) ===
+      conditional['only-not'].value
     )
       return true
   }
-  if ('only-sex' in part) {
+  if ('only-sex' in conditional) {
     const sex = getValue(['inferred', 'sex'])
-    switch (part['only-sex']) {
+    switch (conditional['only-sex']) {
       case 'male':
         if (sex === 'female') return true
         break
@@ -54,10 +65,11 @@ export function shouldSkipConditional(
         break
     }
   }
-  if ('only-gender' in part) {
-    if (getValue(['inferred', 'gender']) !== part['only-gender']) return true
+  if ('only-gender' in conditional) {
+    if (getValue(['inferred', 'gender']) !== conditional['only-gender'])
+      return true
   }
-  if ('only-child' in part) {
+  if ('only-child' in conditional) {
     const aom = getValue(['inferred', 'age-of-majority'])
     const age = getValue(['inferred', 'age'])
     if (typeof aom === 'number' && typeof age === 'number' && aom >= age)
@@ -282,6 +294,7 @@ export function mapSectionWithPaths<Return>(
                 handleOne(part, path, index, entry),
                 part,
                 recordPath,
+                r,
                 path
               ),
             }

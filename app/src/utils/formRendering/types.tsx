@@ -1,18 +1,6 @@
 import _ from 'lodash'
 import { FormKVRawType } from 'utils/types/form'
 import { RecordPhoto, RecordPath, RecordDataByType } from 'utils/types/record'
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  MaterialCommunityIcons,
-  MaterialIcons,
-} from '@expo/vector-icons'
-import {
-  List,
-  ListSelectMultiple,
-  isPrimitiveType,
-} from 'components/form-parts/List'
 
 export type URI = string
 
@@ -25,7 +13,7 @@ export type RenderCommand =
         size: string
         fontWeight: string
         italic: boolean
-        maxW?: string | undefined
+        maxW?: string
       }
     | {
         type: 'description'
@@ -34,7 +22,7 @@ export type RenderCommand =
     | {
         type: 'divider'
         thickness: number
-        w: string | undefined
+        w?: string
       }
     | {
         type: 'skip'
@@ -74,8 +62,8 @@ export type RenderCommand =
     // Commands that correspond to form components
     | {
         type: 'address'
-        text: string | undefined
-        placeholder: string | undefined
+        text?: string
+        placeholder?: string
       }
     | {
         type: 'body-image'
@@ -86,28 +74,28 @@ export type RenderCommand =
     | {
         type: 'bool'
         selected: boolean | null
-        fullwidth?: boolean | undefined
-        maxW?: string | undefined
+        fullwidth?: boolean
+        maxW?: string
       }
     | { type: 'date'; date: Date; title: string }
     | { type: 'date-time'; date: Date; title: string }
     | {
         type: 'email'
-        text: string | undefined
-        placeholder: string | undefined
+        text?: string
+        placeholder?: string
       }
     | {
         type: 'gender'
         selected: string
         options: Record<string, string>
-        fullwidth?: boolean | undefined
-        maxW?: string | undefined
+        fullwidth?: boolean
+        maxW?: string
       }
     | {
         type: 'list'
         value: string
         options: string[] | boolean[] | number[] | null
-        other: 'text' | 'long-text' | undefined
+        other?: 'text' | 'long-text'
         otherValue: string | null
         otherPath: RecordPath
       }
@@ -116,17 +104,17 @@ export type RenderCommand =
         values: boolean[]
         valuePaths: RecordPath[]
         otherChecked: boolean | null
-        otherText: string | undefined
+        otherText?: string
         otherPath: RecordPath
         otherPathText: RecordPath
-        other: 'text' | 'long-text' | undefined
+        other?: 'text' | 'long-text'
         options: string[] | boolean[] | number[]
       }
     | {
         type: 'list-with-labels'
         options: FormKVRawType[] | null
         value: string | null
-        other: 'text' | 'long-text' | undefined
+        other?: 'text' | 'long-text'
         otherValue: string | null
         otherPath: RecordPath
       }
@@ -135,7 +123,7 @@ export type RenderCommand =
         options: FormKVRawType[]
         value: any[]
         valuePaths: RecordPath[]
-        other: 'text' | 'long-text' | undefined
+        other?: 'text' | 'long-text'
         otherValue: string | null
       }
     | {
@@ -146,28 +134,28 @@ export type RenderCommand =
         type: 'long-text'
         text: string
         numberOfLines: number
-        placeholder: string | undefined
+        placeholder?: string
       }
     | {
         type: 'number'
         value: string
-        placeholder: string | undefined
-        maxW?: string | undefined
+        placeholder?: string
+        maxW?: string
       }
-    | { type: 'phone-number'; value: string; maxW?: string | undefined }
+    | { type: 'phone-number'; value: string; maxW?: string }
     | { type: 'photo'; photos: RecordPhoto[] }
     | {
         type: 'sex'
         value: string
         options: Record<string, string>
-        fullwidth?: boolean | undefined
-        maxW?: string | undefined
+        fullwidth?: boolean
+        maxW?: string
       }
     | { type: 'signature'; image: URI; date: Date }
     | {
         type: 'text'
         text: string
-        placeholder: string | undefined
-        maxW: string | undefined
+        placeholder?: string
+        maxW?: string
       }
   ) & { valuePath: RecordPath; key: string; disable: boolean }
