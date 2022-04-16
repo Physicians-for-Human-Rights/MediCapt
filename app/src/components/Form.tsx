@@ -17,7 +17,7 @@ import FromTop from 'components/FormTop'
 
 import { FormType } from 'utils/types/form'
 import { RecordPath } from 'utils/types/record'
-import getRecordPath from 'utils/formInferences'
+import getFlatRecordValue from 'utils/formInferences'
 import { RenderCommand } from 'utils/formRendering/types'
 import { allFormRenderCommands } from 'utils/formRendering/commands'
 import { renderCommand } from 'utils/formRendering/renderer'
@@ -55,14 +55,16 @@ export default function Form({
   // wanting to rerender them a lot. This allows us to cut off the process early
   // by checking which parts of the from were updated and which parts want to be
   // rerendered unconditionally.
-  const [formPaths, { set: setFormPath }] = useMap({} as Record<string, any>)
+  const [flatRecord, { set: setFlatRecordValue }] = useMap(
+    {} as Record<string, any>
+  )
   const [keepAlive, { add: addKeepAlive, remove: removeKeepAlive }] = useSet(
     new Set([] as string[])
   )
-  const previousFormPaths = usePrevious(formPaths)
+  const previousFlatRecord = usePrevious(flatRecord)
   let changedPaths = []
-  for (const key of _.union(_.keys(formPaths), _.keys(previousFormPaths))) {
-    if (previousFormPaths && formPaths[key] !== previousFormPaths[key]) {
+  for (const key of _.union(_.keys(flatRecord), _.keys(previousFlatRecord))) {
+    if (previousFlatRecord && flatRecord[key] !== previousFlatRecord[key]) {
       changedPaths.push(key)
     }
   }
@@ -71,15 +73,15 @@ export default function Form({
   if (1) {
     if (!_.isEqual(changedPaths, [])) {
       let record = {}
-      _.map(formPaths, (v, p) => _.set(record, p, v))
-      console.log('Record+paths', record, formPaths)
+      _.map(flatRecord, (v, p) => _.set(record, p, v))
+      console.log('Record+paths', record, flatRecord)
     }
   }
 
   const isSectionCompleteList = form
     ? _.map(formSections, section =>
         isSectionComplete(section, form.common, (value: RecordPath) =>
-          getRecordPath(formPaths, value, null)
+          getFlatRecordValue(flatRecord, value, null)
         )
       )
     : []
@@ -88,7 +90,7 @@ export default function Form({
   // display it on top
   const [isMenuVisible, rawToggleMenu] = useToggle(false)
   // TODO do something with scrollView or remove
-  const scrollView = useRef(null as any)
+  // const scrollView = useRef(null as any)
   const toggleMenu = useCallback(() => {
     // Users are very likely to be editing a field
     Keyboard.dismiss()
@@ -98,14 +100,16 @@ export default function Form({
   const menuChangeSection = useCallback(
     (i: number) => {
       setCurrentSection(i)
-      scrollView.current &&
-        scrollView.current.scrollTo({ x: 0, y: 0, animated: true })
+      // scrollView.current &&
+      //   scrollView.current.scrollTo({ x: 0, y: 0, animated: true })
     },
-    [scrollView.current]
+    [
+      /*scrollView.current*/
+    ]
   )
 
   const setRecordPath = useCallback((path: RecordPath, value: any) => {
-    setFormPath(_.join(path, '.'), value)
+    setFlatRecordValue(_.join(path, '.'), value)
   }, [])
 
   // outside of the if so the # of hooks doesn't change
@@ -117,14 +121,14 @@ export default function Form({
   )
 
   if (!_.isEmpty(formSections) && form && 'common' in form) {
-    const current_section_content = formSections[currentSection]
+    const sectionContent = formSections[currentSection]
     const sectionCommands = transformToLayout(
       allFormRenderCommands(
         files,
-        current_section_content,
+        sectionContent,
         form.common,
-        (value: RecordPath, default_: any) =>
-          getRecordPath(formPaths, value, default_)
+        (path: RecordPath, default_: any) =>
+          getFlatRecordValue(flatRecord, path, default_)
       ),
       layoutType
     )

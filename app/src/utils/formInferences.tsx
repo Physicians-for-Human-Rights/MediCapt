@@ -4,21 +4,21 @@ import _ from 'lodash'
 // Make inferences about the form so that you can access more abstract values
 // like someone's age without needing to specify the exact path to the age field
 
-export default function recordGetPath(
-  formPaths: Record<string, any>,
-  recordPath: RecordPath,
+export default function getFlatRecordValue(
+  flatRecord: Record<string, any>,
+  valuePath: RecordPath,
   default_: any = null
 ) {
-  if (recordPath === null) return default_
-  if (recordPath[0] === 'inferred') {
-    switch (recordPath[1]) {
+  if (valuePath === null) return default_
+  if (valuePath[0] === 'inferred') {
+    switch (valuePath[1]) {
       case 'age-of-majority': {
         // TODO Should this vary by country?
         return 18
       }
       case 'sex': {
         const value = _.find(
-          formPaths,
+          flatRecord,
           (_v, k) =>
             _.includes(k, '.sex.value') ||
             // These two are definitely not equivalent, but some forms may not
@@ -31,7 +31,7 @@ export default function recordGetPath(
         return default_
       }
       case 'age': {
-        const value = _.find(formPaths, (v, k) => _.includes(k, '.age.value'))
+        const value = _.find(flatRecord, (v, k) => _.includes(k, '.age.value'))
         if (typeof value === 'number') {
           return value
         }
@@ -39,9 +39,9 @@ export default function recordGetPath(
       }
       default:
         // TODO Error handling
-        console.log("Don't know how to compute this inferred value", recordPath)
+        console.log("Don't know how to compute this inferred value", valuePath)
     }
   }
-  const stringPath = _.join(recordPath, '.')
-  return stringPath in formPaths ? formPaths[stringPath] : default_
+  const stringPath = _.join(valuePath, '.')
+  return stringPath in flatRecord ? flatRecord[stringPath] : default_
 }

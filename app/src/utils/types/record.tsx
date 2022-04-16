@@ -15,7 +15,7 @@ export type RecordSection = {
 
 export type RecordRepeated = {
   'repeat-list': string[]
-  repeat: RecordSubparts
+  repeat: RecordSection
 }
 
 export type RecordParts = {
@@ -139,7 +139,6 @@ export type RecordDataMaybeRepeated<T extends keyof RecordDataByType> =
   | { [T: string]: RecordDataByType[T][] }
 
 export type RecordDataContents =
-  | RecordDataMaybeRepeated<'parts'>
   | RecordDataMaybeRepeated<'bool'>
   | RecordDataMaybeRepeated<'signature'>
   | RecordDataMaybeRepeated<'date'>
