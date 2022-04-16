@@ -56,7 +56,6 @@ export default function FormList({ route, navigation }: any) {
           filter: JSON.stringify(filters),
         },
       })
-      console.log('Got', data)
       // @ts-ignore
       setLocations(_.map(data.items, locationSchema.parse))
       setNextKey(data.nextKey)
@@ -82,6 +81,7 @@ export default function FormList({ route, navigation }: any) {
     >
       <>
         <LocationListComponent
+          hasMore={false}
           locations={locations}
           filterCountry={filterCountry}
           setFilterCountry={setFilterCountry}

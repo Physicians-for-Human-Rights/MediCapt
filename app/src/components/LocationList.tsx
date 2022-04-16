@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import {
   Box,
   HStack,
+  Stack,
+  Center,
   Text,
   VStack,
   ScrollView,
@@ -17,7 +19,6 @@ import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
 import _ from 'lodash'
-import { UserType } from 'utils/types/user'
 import { LocationType, locationEntityTypes } from 'utils/types/location'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
@@ -27,7 +28,7 @@ export function ListItem({ item }: { item: LocationType }) {
   return (
     <Pressable p={2} borderBottomWidth={0.8} borderBottomColor="coolGray.300">
       <HStack justifyContent="space-between" w="100%">
-        <HStack alignItems="center" space={4} w="60%">
+        <HStack alignItems="center" space={4} w="55%">
           <VStack>
             <Text
               isTruncated
@@ -37,38 +38,48 @@ export function ListItem({ item }: { item: LocationType }) {
               maxW="64"
               color="coolGray.900"
             >
-              {item.patientName}
+              {item.legalName}
             </Text>
             <HStack>
               <Text pl={3} isTruncated fontSize="sm" color="coolGray.600">
-                {item.patientAge}
+                {t('location.entity.' + item.entityType)}
               </Text>
               <Text isTruncated ml={2} color="coolGray.600">
-                {t('gender.' + item.patientGender)}
+                {t('country.' + item.country)}
               </Text>
             </HStack>
             <Text pl={3} isTruncated fontSize="sm" color="coolGray.700">
-              {formatDate(item.createdDate || item.lastChangedDate, 'PPP')}
+              {formatDate(item.lastChangedDate, 'PPP')}
             </Text>
           </VStack>
         </HStack>
-        <HStack alignItems="center" space={4} w="40%">
+        <HStack alignItems="center" space={4} w="32%">
           <VStack>
-            <Text isTruncated maxW="60%" fontSize="xs" color="coolGray.900">
-              {item.recordID}
+            <Text isTruncated maxW="100%" fontSize="xs" color="coolGray.900">
+              {item.shortName}
             </Text>
-            <Text isTruncated maxW="60%" fontSize="xs" color="coolGray.500">
-              {item.locationUUID}
+            <Text isTruncated maxW="100%" fontSize="xs" color="coolGray.900">
+              {item.locationID}
+            </Text>
+            <Text isTruncated maxW="100%" fontSize="xs" color="coolGray.500">
+              {formatDate(item.createdDate, 'PPP')}
             </Text>
             <Text isTruncated fontSize="xs" maxW="60%" color="coolGray.500">
-              {item.providerCreatedUUID}
+              {item.enabled}
             </Text>
-            {_.split(item.formTags, ',').map((s: string, n: number) => (
-              <Text isTruncated key={n} fontSize="xs">
-                {t('tag.' + s)}
-              </Text>
-            ))}
           </VStack>
+        </HStack>
+        <HStack w="5%">
+          {item.enabled ? (
+            <Icon
+              color="success.400"
+              size="6"
+              name="check-circle"
+              as={MaterialIcons}
+            />
+          ) : (
+            <Icon color="error.700" size="6" name="cancel" as={MaterialIcons} />
+          )}
         </HStack>
       </HStack>
     </Pressable>
@@ -133,8 +144,8 @@ export function ListItemDesktop({
 
 export default function LocationList({
   locations,
-  itemsPerPage = 20,
-  loadNextPage,
+  hasMore = false,
+  loadMore,
   filterCountry,
   setFilterCountry,
   filterLanguage,
@@ -147,10 +158,8 @@ export default function LocationList({
   selectItem,
 }: {
   locations: LocationType[]
-  itemsPerPage?: number
-  loadNextPage?: (
-    pageToken: null | string
-  ) => null | { pageToken: string; contents: UserType[] }
+  hasMore: boolean
+  loadMore?: () => any
   filterCountry: string
   setFilterCountry: React.Dispatch<React.SetStateAction<string>>
   filterLanguage: string
@@ -162,79 +171,93 @@ export default function LocationList({
   doSearch: () => any
   selectItem: (location: LocationType) => any
 }) {
-  const [page, setPage] = useState(1)
-  const [pageToken, setPageToken] = useState(null as null | string)
-  const numberOfPages = Math.ceil(locations.length / itemsPerPage)
   return (
     <>
-      <HStack mb={{ md: 1, base: 0 }} justifyContent="center">
-        <AnyCountry
-          bg="white"
-          placeholder={t('location.select-country')}
-          value={filterCountry}
-          setValue={setFilterCountry}
-          any={'location.any-country'}
-        />
-        <Language
-          bg="white"
-          placeholder={t('location.select-language')}
-          value={filterLanguage}
-          setValue={setFilterLanguage}
-          any={'location.any-language'}
-          mx={2}
-        />
-        <Select
-          size="md"
-          bg="white"
-          selectedValue={filterEntityType}
-          onValueChange={setFilterEntityType}
-          placeholder={t('location.select-entity-type')}
-        >
-          <Select.Item
-            key={'__any__'}
-            label={t('location.any-entity-type')}
-            value={''}
-          />
-          {locationEntityTypes.map(e => (
-            <Select.Item key={e} label={t('location.entity.' + e)} value={e} />
-          ))}
-        </Select>
-        <Button
-          leftIcon={
-            <Icon
-              as={MaterialIcons}
-              name="close"
-              size="sm"
-              onPress={() => {
-                setFilterCountry('')
-                setFilterLanguage('')
-                setFilterEntityType('')
-                setFilterText('')
-              }}
-            />
-          }
-          size="xs"
-          ml={4}
-          mr={2}
-        />
-        <Button
-          leftIcon={
-            <Icon
-              as={MaterialIcons}
-              name="refresh"
-              size="sm"
-              onPress={doSearch}
-            />
-          }
-          size="xs"
-        />
-      </HStack>
-      <HStack
-        py={2}
-        w="100%"
+      <Stack
+        direction={{ md: 'row', base: 'column' }}
+        mb={{ md: 1, base: 0 }}
         justifyContent="center"
-        _light={{ bg: { base: 'white', md: 'muted.50' } }}
       >
+        <Center>
+          <AnyCountry
+            bg="white"
+            placeholder={t('location.select-country')}
+            value={filterCountry}
+            setValue={setFilterCountry}
+            any={'location.any-country'}
+            mt={{ md: 0, base: 2 }}
+          />
+        </Center>
+        <Center>
+          <Language
+            bg="white"
+            placeholder={t('location.select-language')}
+            value={filterLanguage}
+            setValue={setFilterLanguage}
+            any={'location.any-language'}
+            mx={{ md: 2, base: 0 }}
+            my={{ md: 0, base: 2 }}
+          />
+        </Center>
+        <Center>
+          <Select
+            size="md"
+            bg="white"
+            selectedValue={filterEntityType}
+            onValueChange={setFilterEntityType}
+            placeholder={t('location.select-entity-type')}
+          >
+            <Select.Item
+              key={'__any__'}
+              label={t('location.any-entity-type')}
+              value={''}
+            />
+            {locationEntityTypes.map(e => (
+              <Select.Item
+                key={e}
+                label={t('location.entity.' + e)}
+                value={e}
+              />
+            ))}
+          </Select>
+        </Center>
+        <HStack
+          my={{ md: 0, base: 2 }}
+          mb={{ md: 1, base: 2 }}
+          justifyContent="center"
+        >
+          <Button
+            leftIcon={
+              <Icon
+                as={MaterialIcons}
+                name="close"
+                size="sm"
+                onPress={() => {
+                  setFilterCountry('')
+                  setFilterLanguage('')
+                  setFilterEntityType('')
+                  setFilterText('')
+                }}
+              />
+            }
+            size="xs"
+            ml={4}
+            mr={2}
+          />
+          <Button
+            leftIcon={
+              <Icon
+                as={MaterialIcons}
+                name="refresh"
+                size="sm"
+                onPress={doSearch}
+              />
+            }
+            size="xs"
+          />
+        </HStack>
+      </Stack>
+      <HStack py={2} w="100%" justifyContent="center" bg={'muted.50'}>
         <DebouncedTextInput
           flex={{ md: undefined, lg: undefined, base: 1 }}
           w={{ md: '90%', lg: '90%', base: '80%' }}
@@ -275,6 +298,11 @@ export default function LocationList({
       >
         <Box>
           <ScrollView>
+            <Box position="relative" display={{ md: 'none', base: 'flex' }}>
+              {locations.map((item: LocationType, index: number) => {
+                return <ListItem item={item} key={index} />
+              })}
+            </Box>
             <Box display={{ md: 'flex', base: 'none' }}>
               <HStack
                 alignItems="center"
@@ -322,7 +350,7 @@ export default function LocationList({
                 </Text>
               </HStack>
               <VStack mt={3} space={3}>
-                {locations.map((item: Location, index: number) => {
+                {locations.map((item: LocationType, index: number) => {
                   return (
                     <ListItemDesktop
                       item={item}
@@ -336,34 +364,6 @@ export default function LocationList({
           </ScrollView>
         </Box>
       </VStack>
-      {numberOfPages !== 1 && (
-        <HStack
-          display={{ base: 'none', md: 'flex' }}
-          space="2"
-          alignItems="center"
-          mt="2"
-          justifyContent="flex-end"
-        >
-          {_.range(1, numberOfPages + 1).map((n: number) => (
-            <Pressable
-              height={8}
-              width={8}
-              borderRadius={4}
-              bg="white"
-              color="coolGray.500"
-              textAlign="center"
-              justifyContent="center"
-              borderColor={n === page ? 'primary.700' : undefined}
-              borderWidth={n === page ? 1 : undefined}
-              onPress={() => setPage(n)}
-            >
-              <Text color="coolGray.500" fontSize="sm">
-                {n}
-              </Text>
-            </Pressable>
-          ))}
-        </HStack>
-      )}
     </>
   )
 }

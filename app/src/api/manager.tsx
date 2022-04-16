@@ -13,6 +13,51 @@ import {
   LocationByUserType,
   locationSchemaByUser,
 } from 'utils/types/location'
+import {
+  UserType,
+  userSchema,
+  UserByUserType,
+  userSchemaByUser,
+} from 'utils/types/user'
+
+// User
+
+export async function createUser(user: UserByUserType) {
+  userSchemaByUser.parse(user)
+  const data = await API.post('manager', '/manager/user', {
+    body: user,
+  })
+  return {
+    user: userSchema.parse(data.user),
+    imageLink: data.imageLink,
+  }
+}
+
+export async function getUser(poolId: string, username: string) {
+  const data = await API.get(
+    'manager',
+    '/manager/user/byId/' + poolId + '/' + username,
+    {}
+  )
+  return userSchema.parse(data)
+}
+
+export async function updateUser(user: UserType) {
+  userSchemaByUser.parse(user)
+  const data = await API.post(
+    'manager',
+    '/manager/user/byId/' + user.userType + '/' + user.username,
+    {
+      body: user,
+    }
+  )
+  return {
+    user: userSchema.parse(data.user),
+    imageLink: data.imageLink,
+  }
+}
+
+// Location
 
 export async function createLocation(location: LocationByUserType) {
   locationSchemaByUser.parse(location)

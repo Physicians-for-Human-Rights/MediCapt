@@ -1,11 +1,13 @@
 import { StackScreenProps } from '@react-navigation/stack'
 import { LocationType } from 'utils/types/location'
+import { UserType } from 'utils/types/user'
 
 export type RootStackParamList = {
   Home: { signOut: () => any; user: any }
-  AddUser: {
+  EditUser: {
     signOut: () => any
     user: any
+    userToEdit?: UserType
   }
   FindUser: {
     signOut: () => any

@@ -2,6 +2,7 @@ import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import Home from 'screens/manager/Home'
+import EditUser from 'screens/manager/EditUsers'
 import FindUser from 'screens/manager/FindUser'
 import FindLocation from 'screens/manager/FindLocation'
 import EditLocation from 'screens/manager/EditLocation'
@@ -26,8 +27,8 @@ export default function App({
           initialParams={{ user, signOut }}
         />
         <RootStack.Screen
-          name="AddUser"
-          component={FindUser}
+          name="EditUser"
+          component={EditUser}
           options={{
             headerShown: false,
           }}

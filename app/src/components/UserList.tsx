@@ -2,12 +2,17 @@ import React, { useState } from 'react'
 import {
   Box,
   HStack,
-  Icon,
+  Stack,
+  Center,
   Text,
   VStack,
   ScrollView,
   Pressable,
   Input,
+  IconButton,
+  Icon,
+  Button,
+  Select,
 } from 'native-base'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
@@ -15,12 +20,16 @@ import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import { UserType } from 'utils/types/user'
+import { UserTypeList } from 'utils/userTypes'
+import AnyCountry from 'components/AnyCountry'
+import Language from 'components/Language'
+import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 
 export function ListItem({ item }: { item: UserType }) {
   return (
     <Pressable p={2} borderBottomWidth={0.8} borderBottomColor="coolGray.300">
       <HStack justifyContent="space-between" w="100%">
-        <HStack alignItems="center" space={4} w="60%">
+        <HStack alignItems="center" space={4} w="55%">
           <VStack>
             <Text
               isTruncated
@@ -30,81 +39,95 @@ export function ListItem({ item }: { item: UserType }) {
               maxW="64"
               color="coolGray.900"
             >
-              {item.patientName}
+              {item.legalName}
             </Text>
             <HStack>
               <Text pl={3} isTruncated fontSize="sm" color="coolGray.600">
-                {item.patientAge}
+                {t('user.user.' + item.userType)}
               </Text>
               <Text isTruncated ml={2} color="coolGray.600">
-                {t('gender.' + item.patientGender)}
+                {t('country.' + item.country)}
               </Text>
             </HStack>
             <Text pl={3} isTruncated fontSize="sm" color="coolGray.700">
-              {formatDate(item.createdDate || item.lastChangedDate, 'PPP')}
+              {formatDate(item.lastChangedDate, 'PPP')}
             </Text>
           </VStack>
         </HStack>
-        <HStack alignItems="center" space={4} w="40%">
+        <HStack alignItems="center" space={4} w="32%">
           <VStack>
-            <Text isTruncated maxW="60%" fontSize="xs" color="coolGray.900">
-              {item.recordID}
+            <Text isTruncated maxW="100%" fontSize="xs" color="coolGray.900">
+              {item.shortName}
             </Text>
-            <Text isTruncated maxW="60%" fontSize="xs" color="coolGray.500">
-              {item.locationUUID}
+            <Text isTruncated maxW="100%" fontSize="xs" color="coolGray.900">
+              {item.userID}
+            </Text>
+            <Text isTruncated maxW="100%" fontSize="xs" color="coolGray.500">
+              {formatDate(item.createdDate, 'PPP')}
             </Text>
             <Text isTruncated fontSize="xs" maxW="60%" color="coolGray.500">
-              {item.providerCreatedUUID}
+              {item.enabled}
             </Text>
-            {_.split(item.formTags, ',').map((s: string, n: number) => (
-              <Text isTruncated key={n} fontSize="xs">
-                {t('tag.' + s)}
-              </Text>
-            ))}
           </VStack>
+        </HStack>
+        <HStack w="5%">
+          {item.enabled ? (
+            <Icon
+              color="success.400"
+              size="6"
+              name="check-circle"
+              as={MaterialIcons}
+            />
+          ) : (
+            <Icon color="error.700" size="6" name="cancel" as={MaterialIcons} />
+          )}
         </HStack>
       </HStack>
     </Pressable>
   )
 }
 
-export function ListItemDesktop({ item }: { item: UserType }) {
+export function ListItemDesktop({
+  item,
+  selectItem,
+}: {
+  item: UserType
+  selectItem: (user: UserType) => any
+}) {
   return (
-    <Pressable p={2} flex={1} _hover={{ bg: 'coolGray.100' }}>
+    <Pressable
+      px={2}
+      flex={1}
+      _hover={{ bg: 'coolGray.100' }}
+      onPress={() => selectItem(item)}
+    >
       <HStack alignItems="center" flex={1} justifyContent="space-between">
         <VStack w="30%">
           <Text bold isTruncated noOfLines={2}>
-            {item.patientName}
+            {item.name}
           </Text>
           <HStack alignItems="center" flex={1} justifyContent="flex-start">
             <Text isTruncated ml={2}>
-              {t('gender.' + item.patientGender)}
-            </Text>
-            <Text isTruncated ml={2}>
-              {item.patientAge}
+              {item.nickname}
             </Text>
           </HStack>
-        </VStack>
-
-        <VStack w="20%">
-          {_.split(item.formTags, ',').map((s: string, n: number) => (
-            <Text isTruncated key={n}>
-              {t('tag.' + s)}
-            </Text>
-          ))}
-          <Text key={100}>{item.recordID}</Text>
-        </VStack>
-
-        <VStack w="30%">
-          <Text isTruncated>{item.locationUUID}</Text>
-          <Text isTruncated>{item.providerCreatedUUID}</Text>
-          <Text isTruncated>
-            {formatDate(item.createdDate || item.lastChangedDate, 'PPP')}
+          <Text isTruncated ml={2}>
+            {item.userID}
           </Text>
         </VStack>
 
+        <VStack w="20%">
+          <Text isTruncated>{item.email}</Text>
+          <Text isTruncated>{item.username}</Text>
+        </VStack>
+
+        <VStack w="30%">
+          <Text isTruncated>{formatDate(item.last_updated_time, 'PPP')}</Text>
+          <Text isTruncated>{item.userID}</Text>
+        </VStack>
+
         <HStack w="5%">
-          {item.completed ? (
+          {item.enabled ? (
             <Icon
               color="success.400"
               size="6"
@@ -122,33 +145,156 @@ export function ListItemDesktop({ item }: { item: UserType }) {
 
 export default function UserList({
   users,
-  itemsPerPage = 20,
-  loadNextPage,
+  hasMore = false,
+  loadMore,
+  filterUserType,
+  setFilterUserType,
+  filterEnabledOrDisabled,
+  setFilterEnabledOrDisabled,
+  filterLocation,
+  setFilterLocation,
+  filterSearchType,
+  setFilterSearchType,
+  filterText,
+  setFilterText,
+  doSearch,
+  selectItem,
 }: {
   users: UserType[]
-  itemsPerPage?: number
-  loadNextPage?: (
-    pageToken: null | string
-  ) => null | { pageToken: string; contents: UserType[] }
+  hasMore: boolean
+  loadMore?: () => any
+  filterUserType: string
+  setFilterUserType: React.Dispatch<React.SetStateAction<string>>
+  filterEnabledOrDisabled: string
+  setFilterEnabledOrDisabled: React.Dispatch<React.SetStateAction<string>>
+  filterLocation: string
+  setFilterLocation: React.Dispatch<React.SetStateAction<string>>
+  filterSearchType: string
+  setFilterSearchType: React.Dispatch<React.SetStateAction<string>>
+  filterText: string | undefined
+  setFilterText: React.Dispatch<React.SetStateAction<string | undefined>>
+  doSearch: () => any
+  selectItem: (user: UserType) => any
 }) {
-  const [page, setPage] = useState(1)
-  const [pageToken, setPageToken] = useState(null as null | string)
-  const numberOfPages = Math.ceil(users.length / itemsPerPage)
   return (
     <>
-      <HStack
-        pt={{ md: 5, base: 2 }}
-        mb={{ md: 5, base: 0 }}
-        w="100%"
-        justifyContent="space-between"
-        _light={{ bg: { base: 'white', md: 'muted.50' } }}
+      <Stack
+        direction={{ md: 'row', base: 'column' }}
+        mb={{ md: 1, base: 0 }}
+        justifyContent="center"
       >
-        <Input
+        <Center>
+          <Select
+            size="md"
+            bg="white"
+            selectedValue={filterUserType}
+            onValueChange={setFilterUserType}
+            placeholder={t('user.select-user-type')}
+          >
+            {UserTypeList.map(e => (
+              <Select.Item key={e} label={t('user.' + e)} value={e} />
+            ))}
+          </Select>
+        </Center>
+        <Center>
+          <Select
+            size="md"
+            bg="white"
+            selectedValue={filterEnabledOrDisabled}
+            onValueChange={setFilterEnabledOrDisabled}
+            placeholder={t('user.filter.select-user-enabled')}
+            ml={{ base: 0, md: 2 }}
+          >
+            <Select.Item
+              key={'__any__'}
+              label={t('user.filter.any-is-user-enabled')}
+              value={''}
+            />
+            {['enabled', 'disabled'].map(e => (
+              <Select.Item key={e} label={t('user.filter.' + e)} value={e} />
+            ))}
+          </Select>
+        </Center>
+        <Center>
+          <DebouncedTextInput
+            flex={{ md: undefined, lg: undefined, base: 1 }}
+            w={{ md: '90%', lg: '90%', base: '90%' }}
+            py={3}
+            ml={{ base: 0, md: 2 }}
+            bg="white"
+            size="lg"
+            color="black"
+            placeholder={t('user.enter-location-id')}
+            debounceMs={1000}
+            value={filterLocation}
+            onChangeText={setFilterLocation}
+          />
+        </Center>
+        <HStack
+          my={{ md: 0, base: 2 }}
+          mb={{ md: 1, base: 2 }}
+          justifyContent="center"
+        >
+          <Button
+            leftIcon={
+              <Icon
+                as={MaterialIcons}
+                name="close"
+                size="sm"
+                onPress={() => {
+                  setFilterUserType('')
+                  setFilterEnabledOrDisabled('')
+                  setFilterLocation('')
+                  setFilterSearchType('')
+                  setFilterText('')
+                }}
+              />
+            }
+            size="xs"
+            ml={4}
+            mr={2}
+          />
+          <Button
+            leftIcon={
+              <Icon
+                as={MaterialIcons}
+                name="refresh"
+                size="sm"
+                onPress={doSearch}
+              />
+            }
+            size="xs"
+          />
+        </HStack>
+      </Stack>
+      <HStack py={2} w="100%" justifyContent="center" bg={'muted.50'}>
+        <Center>
+          <Select
+            size="md"
+            bg="white"
+            selectedValue={filterSearchType}
+            onValueChange={setFilterSearchType}
+            placeholder={t('user.search-by.select')}
+            ml={{ base: 0, md: 2 }}
+            w={{ md: '80%', lg: '80%', base: '80%' }}
+          >
+            {['username', 'email', 'phone-number', 'name', 'user-id-code'].map(
+              e => (
+                <Select.Item
+                  key={e}
+                  label={t('user.search-by.' + e)}
+                  value={e}
+                />
+              )
+            )}
+          </Select>
+        </Center>
+        <DebouncedTextInput
           flex={{ md: undefined, lg: undefined, base: 1 }}
-          w={{ md: '100%', lg: '100%', base: '90%' }}
+          w={{ md: '70%', lg: '70%', base: '70%' }}
           py={3}
           mx={{ base: 4, md: 0 }}
-          mr={{ base: 4, md: 4, lg: 30, xl: 40 }}
+          mr={{ base: 4, md: 4, lg: 5, xl: 10 }}
           bg="white"
           InputLeftElement={
             <Icon
@@ -163,7 +309,10 @@ export default function UserList({
           }
           size="lg"
           color="black"
-          placeholder="Search for form names, ids, tags, or locations"
+          placeholder={t('user.search-enter')}
+          debounceMs={1000}
+          value={filterText}
+          onChangeText={setFilterText}
         />
       </HStack>
       <VStack
@@ -200,7 +349,7 @@ export default function UserList({
                   mb={3}
                   _light={{ color: 'coolGray.800' }}
                 >
-                  Patient
+                  {t('heading.name')}
                 </Text>
                 <Text
                   fontWeight="bold"
@@ -209,7 +358,7 @@ export default function UserList({
                   mb={3}
                   _light={{ color: 'coolGray.900' }}
                 >
-                  Details
+                  {t('heading.usernameAndEmail')}
                 </Text>
                 <Text
                   fontWeight="bold"
@@ -218,7 +367,7 @@ export default function UserList({
                   mb={3}
                   _light={{ color: 'coolGray.900' }}
                 >
-                  Last changed
+                  {t('heading.lastChangedAndId')}
                 </Text>
                 <Text
                   fontWeight="bold"
@@ -228,46 +377,24 @@ export default function UserList({
                   _light={{ color: 'coolGray.900' }}
                   mr={-1}
                 >
-                  Complete
+                  {t('heading.enabled')}
                 </Text>
               </HStack>
               <VStack mt={3} space={3}>
                 {users.map((item: UserType, index: number) => {
-                  return <ListItemDesktop item={item} key={index} />
+                  return (
+                    <ListItemDesktop
+                      item={item}
+                      key={index}
+                      selectItem={selectItem}
+                    />
+                  )
                 })}
               </VStack>
             </Box>
           </ScrollView>
         </Box>
       </VStack>
-      {numberOfPages !== 1 && (
-        <HStack
-          display={{ base: 'none', md: 'flex' }}
-          space="2"
-          alignItems="center"
-          mt="2"
-          justifyContent="flex-end"
-        >
-          {_.range(1, numberOfPages + 1).map((n: number) => (
-            <Pressable
-              height={8}
-              width={8}
-              borderRadius={4}
-              bg="white"
-              color="coolGray.500"
-              textAlign="center"
-              justifyContent="center"
-              borderColor={n === page ? 'primary.700' : undefined}
-              borderWidth={n === page ? 1 : undefined}
-              onPress={() => setPage(n)}
-            >
-              <Text color="coolGray.500" fontSize="sm">
-                {n}
-              </Text>
-            </Pressable>
-          ))}
-        </HStack>
-      )}
     </>
   )
 }

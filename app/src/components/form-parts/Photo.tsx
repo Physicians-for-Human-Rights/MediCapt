@@ -34,6 +34,7 @@ type PhotoSelectorProps = {
   addPhoto: (photo: ArrayElement<RecordDataByType['photo']['value']>) => void
   removePhoto: (n: number) => void
   isDisabled: boolean
+  onlyOne?: boolean
 }
 
 const disabledStyle = { backgroundColor: disabledBackground }
@@ -44,23 +45,19 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
   addPhoto,
   removePhoto,
   isDisabled,
+  onlyOne = false,
 }) => {
   const window = useWindowDimensions()
   const modalSize = Math.min(window.height, window.width)
   const [isOpen, setOpen] = useState(false)
   const [camera, setCamera] = useState(null as null | Camera)
 
-  const verifyPermissions = async () => {
-    const cameraPermissions = await ImagePicker.requestCameraPermissionsAsync()
-    return true
-  }
-
   const onAddPhoto = async () => {
     // TODO Should this be? getMediaLibraryPermissionsAsync
     const imagePermission = await ImagePicker.requestCameraPermissionsAsync()
     if (!imagePermission.granted) {
       Alert.alert('Insufficient Permissions', 'TODO', [{ text: 'Okay' }])
-      console.error('TODO could not get permissions', imagePermissions)
+      console.error('TODO could not get permissions', imagePermission)
       return false
     }
     const image = await ImagePicker.launchCameraAsync({
@@ -155,36 +152,42 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
           </VStack>
         )}
         ItemSeparatorComponent={() => <Divider my={2} thickness="1" />}
-        ListFooterComponent={() => (
-          <HStack justifyContent="center">
-            <Button
-              my={2}
-              mx={2}
-              fontWeight="bold"
-              colorScheme="blue"
-              isDisabled={isDisabled}
-              fontSize="md"
-              leftIcon={<Icon as={Feather} name="upload-cloud" size="sm" />}
-              onPress={onAddPhoto}
-              accessibilityLabel={t('form.add-photo')}
-            >
-              {t('form.add-photo')}
-            </Button>
-            <Button
-              my={2}
-              mx={2}
-              fontWeight="bold"
-              colorScheme="blue"
-              isDisabled={isDisabled}
-              fontSize="md"
-              leftIcon={<Icon as={MaterialIcons} name="camera-alt" size="sm" />}
-              onPress={onTakePhotoOpenModal}
-              accessibilityLabel={t('form.take-photo')}
-            >
-              {t('form.take-photo')}
-            </Button>
-          </HStack>
-        )}
+        ListFooterComponent={() =>
+          onlyOne && photos.length > 0 ? (
+            <></>
+          ) : (
+            <HStack justifyContent="center">
+              <Button
+                my={2}
+                mx={2}
+                fontWeight="bold"
+                colorScheme="blue"
+                isDisabled={isDisabled}
+                fontSize="md"
+                leftIcon={<Icon as={Feather} name="upload-cloud" size="sm" />}
+                onPress={onAddPhoto}
+                accessibilityLabel={t('form.add-photo')}
+              >
+                {t('form.add-photo')}
+              </Button>
+              <Button
+                my={2}
+                mx={2}
+                fontWeight="bold"
+                colorScheme="blue"
+                isDisabled={isDisabled}
+                fontSize="md"
+                leftIcon={
+                  <Icon as={MaterialIcons} name="camera-alt" size="sm" />
+                }
+                onPress={onTakePhotoOpenModal}
+                accessibilityLabel={t('form.take-photo')}
+              >
+                {t('form.take-photo')}
+              </Button>
+            </HStack>
+          )
+        }
       />
       <Modal isOpen={isOpen} onClose={internalClose} size="full">
         <Modal.Content>

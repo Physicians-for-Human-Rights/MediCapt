@@ -27,7 +27,7 @@ const options = [
   {
     icon: <MaterialIcons name="add-box" />,
     label: 'Add a user',
-    to: 'AddUser',
+    to: 'EditUser',
   },
   {
     icon: <MaterialIcons name="search" />,

@@ -5,6 +5,7 @@ import { AntDesign } from '@expo/vector-icons'
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
 import { disabledBackground } from 'utils/formRendering/utils'
+import FloatingLabelInput from 'components/FloatingLabelInput'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import DatePicker from 'react-datepicker'
@@ -18,6 +19,7 @@ export default function DateTimePicker({
   setDate,
   time,
   isDisabled,
+  fancyLabel = undefined,
 }) {
   const formatString = time ? 'yyyy-MM-dd h:mm a' : 'yyyy-MM-dd'
   const [modalVisible, setModalVisible] = useState(false)
@@ -38,9 +40,9 @@ export default function DateTimePicker({
     close()
   }
 
-  const onSaveText = () => {
+  const onSaveRawText = text => {
     try {
-      const date = parseDate(dateString)
+      const date = parseDate(text)
       if (isNaN(date.valueOf())) {
         setDate(null)
         setDateString('')
@@ -49,11 +51,18 @@ export default function DateTimePicker({
         setDateString(formatDate(date, formatString))
       }
     } catch (e) {
+      // TODO This should clear the field, particularly when the fancyLabel
+      // setting is used; happens when the date is invalid
+      console.error('Failed to parse', e)
       setDate(null)
       setDateString('')
     }
     setModalVisible(false)
     close()
+  }
+
+  const onSaveText = () => {
+    onSaveRawText(dateString)
   }
 
   const onClose = () => {
@@ -65,33 +74,48 @@ export default function DateTimePicker({
     <>
       <Center bg={isDisabled ? disabledBackground : undefined}>
         <HStack>
-          <Input
-            isDisabled={isDisabled}
-            mx="3"
-            size="md"
-            placeholder={t(time ? 'form.enter-date-time' : 'form.enter-date')}
-            w="75%"
-            maxWidth="200px"
-            onChangeText={setDateString}
-            value={dateString}
-            onSubmitEditing={onSaveText}
-            onEndEditing={onSaveText}
-            accessibilityLabel={t(
-              time ? 'form.enter-date-time' : 'form.enter-date'
-            )}
-          />
-          <IconButton
-            isDisabled={isDisabled}
-            onPress={openInternal}
-            size="sm"
-            colorScheme="indigo"
-            variant="solid"
-            _icon={{
-              as: AntDesign,
-              name: 'calendar',
-            }}
-            accessibilityLabel={'Open calendar'}
-          />
+          {fancyLabel ? (
+            <FloatingLabelInput
+              label={fancyLabel}
+              value={dateString}
+              setValue={v => {
+                setDateString(v)
+                onSaveRawText(v)
+              }}
+              placeholder={'YYYY-MM-DD'}
+            />
+          ) : (
+            <Input
+              isDisabled={isDisabled}
+              mx="3"
+              size="md"
+              placeholder={t(time ? 'form.enter-date-time' : 'form.enter-date')}
+              w="75%"
+              maxWidth="200px"
+              onChangeText={setDateString}
+              value={dateString}
+              onSubmitEditing={onSaveText}
+              onEndEditing={onSaveText}
+              accessibilityLabel={t(
+                time ? 'form.enter-date-time' : 'form.enter-date'
+              )}
+            />
+          )}
+          <Center>
+            <IconButton
+              isDisabled={isDisabled}
+              onPress={openInternal}
+              size="sm"
+              mt={fancyLabel ? 2 : 0}
+              colorScheme="indigo"
+              variant="solid"
+              _icon={{
+                as: AntDesign,
+                name: 'calendar',
+              }}
+              accessibilityLabel={'Open calendar'}
+            />
+          </Center>
         </HStack>
       </Center>
       <Modal isOpen={modalVisible} onClose={onClose}>
@@ -105,6 +129,7 @@ export default function DateTimePicker({
                 onChange={onSave}
                 inline
                 fixedHeight
+                showYearDropdown={fancyLabel ? true : false}
               />
             </Center>
           </Modal.Body>
