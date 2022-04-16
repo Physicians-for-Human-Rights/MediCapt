@@ -139,6 +139,12 @@ module "cognito_user_pool" {
   }
 }
 
+resource "aws_cognito_user_group" "admin" {
+  name         = "admin"
+  user_pool_id = module.cognito_user_pool.user_pool.id
+  description  = "Admins have permissions to all locations"
+}
+
 resource null_resource cognito_users {
   for_each = var.cognito_default_users
   triggers = {
@@ -256,4 +262,8 @@ output "image_bucket_arn" {
 
 output "image_bucket_id" {
   value = module.s3_bucket.bucket_id
+}
+
+output "cognito_admin_group" {
+  value = aws_cognito_user_group.admin
 }

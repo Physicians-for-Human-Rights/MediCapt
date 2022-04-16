@@ -68,6 +68,93 @@ variable "location_dynamodb" {
   type        = any
 }
 
+variable "user_pool_provider" {
+  description = "The provider user pool"
+  type = string
+}
+variable "user_pool_associate" {
+  description = "The associate user pool"
+  type = string
+}
+variable "user_pool_manager" {
+  description = "The manager user pool"
+  type = string
+}
+variable "user_pool_formdesigner" {
+  description = "The form designer user pool"
+  type = string
+}
+variable "user_pool_researcher" {
+  description = "The researcher user pool"
+  type = string
+}
+
+variable "user_pool_provider_arn" {
+  description = "The provider user pool ARN"
+  type = string
+}
+variable "user_pool_associate_arn" {
+  description = "The associate user pool ARN"
+  type = string
+}
+variable "user_pool_manager_arn" {
+  description = "The manager user pool ARN"
+  type = string
+}
+variable "user_pool_formdesigner_arn" {
+  description = "The form designer user pool ARN"
+  type = string
+}
+variable "user_pool_researcher_arn" {
+  description = "The researcher user pool ARN"
+  type = string
+}
+
+
+
+
+variable "image_bucket_provider" {
+  description = "The provider image bucket"
+  type = string
+}
+variable "image_bucket_associate" {
+  description = "The associate image bucket"
+  type = string
+}
+variable "image_bucket_manager" {
+  description = "The manager image bucket"
+  type = string
+}
+variable "image_bucket_formdesigner" {
+  description = "The form designer image bucket"
+  type = string
+}
+variable "image_bucket_researcher" {
+  description = "The researcher image bucket"
+  type = string
+}
+
+variable "image_bucket_provider_arn" {
+  description = "The provider image bucket ARN"
+  type = string
+}
+variable "image_bucket_associate_arn" {
+  description = "The associate image bucket ARN"
+  type = string
+}
+variable "image_bucket_manager_arn" {
+  description = "The manager image bucket ARN"
+  type = string
+}
+variable "image_bucket_formdesigner_arn" {
+  description = "The form designer image bucket ARN"
+  type = string
+}
+variable "image_bucket_researcher_arn" {
+  description = "The researcher image bucket ARN"
+  type = string
+}
+
 variable "user_type" {
   description = "The type of user, e.g., associate"
    type        = string

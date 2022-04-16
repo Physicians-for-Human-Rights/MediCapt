@@ -7,6 +7,11 @@ import { typeOf } from 'aws-sdk/lib/dynamodb/types'
 import { DynamoDBSet } from 'aws-sdk/lib/dynamodb/set'
 import { NumberValue } from 'aws-sdk/lib/dynamodb/numberValue'
 import { HumanIDResponse } from 'services/human-id'
+import {
+  UserType as CognitoUserType,
+  AdminGetUserResponse,
+} from 'aws-sdk/clients/cognitoidentityserviceprovider'
+import { UserType, userSchema, UserTypeList } from 'utils/types/user'
 
 export function good(value: any) {
   return {
@@ -412,4 +417,107 @@ export function zDynamoAttributeNames(schema: z.SomeZodObject) {
     _.mapValues(schema.shape, (v, k) => k),
     (v, k) => '#' + sanitizeKey(k)
   )
+}
+
+export async function multiplePages<R, T>(
+  startToken: string | undefined,
+  fn: (nextToken: string | undefined) => Promise<T>,
+  getItems: (result: T) => R[],
+  getNextToken: (result: T) => string | undefined,
+  maxPages: number
+): Promise<{ items: R[]; nextToken: string | undefined }> {
+  const result = await fn(startToken)
+  getItems(result)
+  const token = getNextToken(result)
+  if (token && maxPages > 0) {
+    const rest = await multiplePages<R, T>(
+      token,
+      fn,
+      getItems,
+      getNextToken,
+      maxPages - 1
+    )
+    return {
+      items: _.concat(getItems(result), rest.items),
+      nextToken: rest.nextToken,
+    }
+  }
+  return { items: getItems(result), nextToken: token }
+}
+
+export function findUserAttribute(
+  u: CognitoUserType | AdminGetUserResponse,
+  name: string
+) {
+  // @ts-ignore One of these two is guaranteed to exist
+  const x = _.find(u.Attributes || u.UserAttributes, a => a.Name === name)
+  if (x && x.Value) {
+    return x.Value
+  }
+  return undefined
+}
+
+export function verifyValue<T>(a: T | undefined, msg: string): T {
+  if (a === undefined) throw msg
+  return a
+}
+
+export function convertCognitoUser(
+  u: CognitoUserType,
+  image_bucket_id: string,
+  userType: UserTypeList | undefined,
+  s3: AWS.S3
+) {
+  if (
+    findUserAttribute(u, 'custom:storage_version') &&
+    findUserAttribute(u, 'custom:storage_version') !== '1.0.0'
+  ) {
+    throw 'Unknown storage version'
+  }
+  const rawIdImage = findUserAttribute(u, 'custom:official_id_image')
+  let idImage = 'none'
+  if (rawIdImage && rawIdImage !== 'none') {
+    idImage = s3.getSignedUrl('getObject', {
+      Bucket: image_bucket_id,
+      Key: rawIdImage,
+    })
+  }
+  // NB Ideally, if any attributes are missing we would fail. But, a dev
+  // could add users to cognito manually. These users could then never
+  // be managed if their types don't line up correctly.
+  const bd = findUserAttribute(u, 'birthdate')
+  const id_ex = findUserAttribute(u, 'custom:official_id_expires')
+  const ex = findUserAttribute(u, 'custom:expiry_date')
+  const oneUser: Partial<UserType> = {
+    'storage-version': '1.0.0',
+    userUUID: findUserAttribute(u, 'sub'),
+    userID: findUserAttribute(u, 'custom:human_id'),
+    created_time: verifyValue(u.UserCreateDate, 'missing creation time'),
+    last_updated_time: verifyValue(
+      u.UserLastModifiedDate,
+      'missing modified time'
+    ),
+    username: verifyValue(u.Username, 'missing username'),
+    email: findUserAttribute(u, 'email'),
+    birthdate: bd ? new Date(bd) : undefined,
+    name: findUserAttribute(u, 'name'),
+    nickname: findUserAttribute(u, 'nickname'),
+    formal_name: findUserAttribute(u, 'custom:formal_name'),
+    gender: findUserAttribute(u, 'gender'),
+    phone_number: findUserAttribute(u, 'phone_number'),
+    official_id_type: findUserAttribute(u, 'custom:official_id_type'),
+    official_id_code: findUserAttribute(u, 'custom:official_id_code'),
+    official_id_expires: id_ex ? new Date(id_ex) : undefined,
+    official_id_image: idImage,
+    address: findUserAttribute(u, 'address'),
+    country: findUserAttribute(u, 'custom:country'),
+    language: findUserAttribute(u, 'custom:language'),
+    expiry_date: ex ? new Date(ex) : undefined,
+    allowed_locations: findUserAttribute(u, 'custom:allowed_locations'),
+    created_by: findUserAttribute(u, 'custom:created_by'),
+    userType,
+    enabled: verifyValue<boolean>(u.Enabled, 'Missing enabled/disabled'),
+    status: u.UserStatus,
+  }
+  return userSchema.partial().parse(oneUser)
 }

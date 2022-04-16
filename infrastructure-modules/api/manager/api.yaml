@@ -74,6 +74,52 @@ paths:
         passthroughBehavior: "NEVER"
         httpMethod: "POST"
         type: "aws_proxy"
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - User
+      summary: List users
+      operationId: managerGetUsers
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - in: query
+        name: next
+        type: string
+        required: false
+        description: The token for the next page if any
+      - in: query
+        name: filter
+        type: string
+        required: false
+        description: A JSON filter
+      - in: query
+        name: sort
+        type: string
+        required: false
+        description: A JSON sort
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+        400:
+          description: Invalid status value
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_managerGetUsers}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
     options:
       summary: CORS support
       description: |
@@ -111,7 +157,7 @@ paths:
               type: "string"
             Access-Control-Allow-Origin:
               type: "string"
-  /manager/user/byId/{userId}:
+  /manager/user/byId/{poolId}/{username}:
     get:
       security:
       - CognitoUserProvider: []
@@ -123,12 +169,16 @@ paths:
       - application/json
       - application/xml
       parameters:
-      - name: userId
+      - name: poolId
+        in: path
+        description: The pool ID of this user
+        required: true
+        type: string
+      - name: username
         in: path
         description: ID of the user to return
         required: true
         type: string
-        format: uuid
       responses:
         200:
           description: successful operation
@@ -158,12 +208,16 @@ paths:
       produces:
       - application/json
       parameters:
-      - name: userId
+      - name: poolId
+        in: path
+        description: The pool ID of this user
+        required: true
+        type: string
+      - name: username
         in: path
         description: ID of the user to return
         required: true
         type: string
-        format: uuid
       - in: body
         name: body
         description: Updated user
@@ -183,204 +237,73 @@ paths:
         passthroughBehavior: "NEVER"
         httpMethod: "POST"
         type: "aws_proxy"
-    delete:
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+  /manager/user/byId/{poolId}/{username}/signout:
+    post:
       security:
       - CognitoUserProvider: []
       tags:
       - User
-      summary: Deletes a sssser
-      operationId: managerDeleteUserById
+      summary: Sign a user out everywhere
+      operationId: managerSignoutUserById
+      consumes:
+      - application/x-www-form-urlencoded
       produces:
       - application/json
-      - application/xml
       parameters:
-      - name: userId
+      - name: poolId
         in: path
-        description: ID of user to delete
+        description: The pool ID of this user
         required: true
         type: string
-        format: uuid
+      - name: username
+        in: path
+        description: ID of the user to return
+        required: true
+        type: string
       responses:
         404:
-          description: Record not found
+          description: User not found
         405:
-          description: Record already sealed
+          description: Validation exception
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_managerDeleteUserById}
-        responses:
-          default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
-    options:
-      summary: CORS support
-      description: |
-        Enable CORS by returning correct headers
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      tags:
-        - CORS
-      x-amazon-apigateway-integration:
-        type: mock
-        requestTemplates:
-          application/json: |
-            {
-              "statusCode" : 200
-            }
-        responses:
-          "default":
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
-            responseTemplates:
-              application/json: |
-                {}
-      responses:
-        200:
-          description: Default response for CORS method
-          headers:
-            Access-Control-Allow-Headers:
-              type: "string"
-            Access-Control-Allow-Methods:
-              type: "string"
-            Access-Control-Allow-Origin:
-              type: "string"
-  /manager/user/byUser:
-    get:
-      security:
-      - CognitoUserProvider: []
-      tags:
-      - User
-      summary: List your own users
-      operationId: managerGetOwnUsers
-      produces:
-      - application/json
-      - application/xml
-      parameters:
-      - in: query
-        name: offset
-        type: integer
-        required: false
-        default: 0
-        minimum: 0
-        description: The number of items to skip before starting to collect the result set.
-      - in: query
-        name: limit
-        type: integer
-        required: false
-        default: 20
-        minimum: 1
-        maximum: 100
-        description: The numbers of items to return.
-      responses:
-        200:
-          description: successful operation
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/User'
-          headers:
-            Access-Control-Allow-Origin:
-              type: "string"
-        400:
-          description: Invalid status value
-      x-amazon-apigateway-integration:
-        uri: ${lambda_uri_managerGetOwnUsers}
-        responses:
-          default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
-    options:
-      summary: CORS support
-      description: |
-        Enable CORS by returning correct headers
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      tags:
-        - CORS
-      x-amazon-apigateway-integration:
-        type: mock
-        requestTemplates:
-          application/json: |
-            {
-              "statusCode" : 200
-            }
-        responses:
-          "default":
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
-            responseTemplates:
-              application/json: |
-                {}
-      responses:
-        200:
-          description: Default response for CORS method
-          headers:
-            Access-Control-Allow-Headers:
-              type: "string"
-            Access-Control-Allow-Methods:
-              type: "string"
-            Access-Control-Allow-Origin:
-              type: "string"
-  /manager/user/byLocation/{locationId}:
-    get:
-      security:
-      - CognitoUserProvider: []
-      tags:
-      - User
-      summary: List users at a location
-      operationId: managerGetUsersByLocationId
-      produces:
-      - application/json
-      - application/xml
-      parameters:
-      - name: locationId
-        in: path
-        description: ID of location to search
-        required: true
-        type: string
-        format: uuid
-      - in: query
-        name: offset
-        type: integer
-        required: false
-        default: 0
-        minimum: 0
-        description: The number of items to skip before starting to collect the result set.
-      - in: query
-        name: limit
-        type: integer
-        required: false
-        default: 20
-        minimum: 1
-        maximum: 100
-        description: The numbers of items to return.
-      responses:
-        200:
-          description: successful operation
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/User'
-          headers:
-            Access-Control-Allow-Origin:
-              type: "string"
-        400:
-          description: Invalid status value
-      x-amazon-apigateway-integration:
-        uri: ${lambda_uri_managerGetUsersByLocationId}
+        uri: ${lambda_uri_managerUpdateUserById}
         responses:
           default:
             statusCode: "200"

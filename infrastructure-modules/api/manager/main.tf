@@ -26,9 +26,8 @@ resource "aws_api_gateway_rest_api" "manager" {
       lambda_uri_managerCreateUser            = aws_lambda_function.lambdas["managerCreateUser"].invoke_arn
       lambda_uri_managerGetUserById           = aws_lambda_function.lambdas["managerGetUserById"].invoke_arn
       lambda_uri_managerUpdateUserById        = aws_lambda_function.lambdas["managerUpdateUserById"].invoke_arn
-      lambda_uri_managerDeleteUserById        = aws_lambda_function.lambdas["managerDeleteUserById"].invoke_arn
-      lambda_uri_managerGetOwnUsers           = aws_lambda_function.lambdas["managerGetOwnUsers"].invoke_arn
-      lambda_uri_managerGetUsersByLocationId  = aws_lambda_function.lambdas["managerGetUsersByLocationId"].invoke_arn
+      lambda_uri_managerGetUsers              = aws_lambda_function.lambdas["managerGetUsers"].invoke_arn
+      lambda_uri_managerSignoutUserById       = aws_lambda_function.lambdas["managerSignoutUserById"].invoke_arn
       lambda_uri_managerCreateLocation        = aws_lambda_function.lambdas["managerCreateLocation"].invoke_arn
       lambda_uri_managerGetLocationById       = aws_lambda_function.lambdas["managerGetLocationById"].invoke_arn
       lambda_uri_managerUpdateLocationById    = aws_lambda_function.lambdas["managerUpdateLocationById"].invoke_arn
@@ -47,9 +46,8 @@ resource "aws_api_gateway_deployment" "api" {
     aws_lambda_function.lambdas["managerCreateUser"],
     aws_lambda_function.lambdas["managerGetUserById"],
     aws_lambda_function.lambdas["managerUpdateUserById"],
-    aws_lambda_function.lambdas["managerDeleteUserById"],
-    aws_lambda_function.lambdas["managerGetOwnUsers"],
-    aws_lambda_function.lambdas["managerGetUsersByLocationId"],
+    aws_lambda_function.lambdas["managerGetUsers"],
+    aws_lambda_function.lambdas["managerSignoutUserById"],
     aws_lambda_function.lambdas["managerCreateLocation"],
     aws_lambda_function.lambdas["managerGetLocationById"],
     aws_lambda_function.lambdas["managerUpdateLocationById"],
@@ -77,10 +75,9 @@ resource "aws_api_gateway_stage" "api" {
     aws_lambda_function.lambdas["managerCreateUser"],
     aws_lambda_function.lambdas["managerGetUserById"],
     aws_lambda_function.lambdas["managerUpdateUserById"],
-    aws_lambda_function.lambdas["managerDeleteUserById"],
-    aws_lambda_function.lambdas["managerGetOwnUsers"],
-    aws_lambda_function.lambdas["managerGetUsersByLocationId"],
+    aws_lambda_function.lambdas["managerGetUsers"],
     aws_lambda_function.lambdas["managerCreateLocation"],
+    aws_lambda_function.lambdas["managerSignoutUserById"],
     aws_lambda_function.lambdas["managerGetLocationById"],
     aws_lambda_function.lambdas["managerUpdateLocationById"],
     aws_lambda_function.lambdas["managerDeleteLocationById"],

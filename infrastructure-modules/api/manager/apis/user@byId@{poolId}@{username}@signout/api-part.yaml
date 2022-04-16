@@ -42,53 +42,36 @@ security:
 schemes:
 - https
 paths:
-  /manager/user/byLocation/{locationId}:
-    get:
+  /manager/user/byId/{poolId}/{username}/signout:
+    post:
       security:
       - CognitoUserProvider: []
       tags:
       - User
-      summary: List users at a location
-      operationId: managerGetUsersByLocationId
+      summary: Sign a user out everywhere
+      operationId: managerSignoutUserById
+      consumes:
+      - application/x-www-form-urlencoded
       produces:
       - application/json
-      - application/xml
       parameters:
-      - name: locationId
+      - name: poolId
         in: path
-        description: ID of location to search
+        description: The pool ID of this user
         required: true
         type: string
-        format: uuid
-      - in: query
-        name: offset
-        type: integer
-        required: false
-        default: 0
-        minimum: 0
-        description: The number of items to skip before starting to collect the result set.
-      - in: query
-        name: limit
-        type: integer
-        required: false
-        default: 20
-        minimum: 1
-        maximum: 100
-        description: The numbers of items to return.
+      - name: username
+        in: path
+        description: ID of the user to return
+        required: true
+        type: string
       responses:
-        200:
-          description: successful operation
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/User'
-          headers:
-            Access-Control-Allow-Origin:
-              type: "string"
-        400:
-          description: Invalid status value
+        404:
+          description: User not found
+        405:
+          description: Validation exception
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_managerGetUsersByLocationId}
+        uri: ${lambda_uri_managerUpdateUserById}
         responses:
           default:
             statusCode: "200"

@@ -42,47 +42,80 @@ security:
 schemes:
 - https
 paths:
-  /manager/user/byUser:
+  /manager/user/byId/{poolId}/{username}:
     get:
       security:
       - CognitoUserProvider: []
       tags:
       - User
-      summary: List your own users
-      operationId: managerGetOwnUsers
+      summary: Get a user by ID
+      operationId: managerGetUserById
       produces:
       - application/json
       - application/xml
       parameters:
-      - in: query
-        name: offset
-        type: integer
-        required: false
-        default: 0
-        minimum: 0
-        description: The number of items to skip before starting to collect the result set.
-      - in: query
-        name: limit
-        type: integer
-        required: false
-        default: 20
-        minimum: 1
-        maximum: 100
-        description: The numbers of items to return.
+      - name: poolId
+        in: path
+        description: The pool ID of this user
+        required: true
+        type: string
+      - name: username
+        in: path
+        description: ID of the user to return
+        required: true
+        type: string
       responses:
         200:
           description: successful operation
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/User'
-          headers:
-            Access-Control-Allow-Origin:
-              type: "string"
+            $ref: '#/definitions/User'
         400:
-          description: Invalid status value
+          description: Invalid ID supplied
+        404:
+          description: User not found
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_managerGetOwnUsers}
+        uri: ${lambda_uri_managerGetUserById}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    post:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - User
+      summary: Update an existing user
+      operationId: managerUpdateUserById
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      parameters:
+      - name: poolId
+        in: path
+        description: The pool ID of this user
+        required: true
+        type: string
+      - name: username
+        in: path
+        description: ID of the user to return
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: Updated user
+        required: true
+        schema:
+          $ref: '#/definitions/User'
+      responses:
+        404:
+          description: User not found
+        405:
+          description: Validation exception
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_managerUpdateUserById}
         responses:
           default:
             statusCode: "200"

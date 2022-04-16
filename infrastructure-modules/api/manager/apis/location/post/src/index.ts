@@ -10,12 +10,20 @@ var lambda = new AWS.Lambda({
   apiVersion: '2015-03-31',
   region: process.env.AWS_REGION,
 })
+const cognito = new AWS.CognitoIdentityServiceProvider({
+  apiVersion: '2016-04-18',
+})
 
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
       humanid_lambda: string
       location_table: string
+      user_pool_provider: string
+      user_pool_associate: string
+      user_pool_manager: string
+      user_pool_formdesigner: string
+      user_pool_researcher: string
     }
   }
 }
@@ -94,6 +102,26 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
         Item: DynamoDB.marshall(locationDynamoLatest),
       })
       .promise()
+
+    await Promise.all(
+      _.map(
+        [
+          process.env.user_pool_provider,
+          process.env.user_pool_associate,
+          process.env.user_pool_manager,
+          process.env.user_pool_formdesigner,
+          process.env.user_pool_researcher,
+        ],
+        async p =>
+          await cognito
+            .createGroup({
+              GroupName: location.locationUUID,
+              UserPoolId: p,
+              Description: location.legalName,
+            })
+            .promise()
+      )
+    )
     return good(location)
   } catch (e) {
     return bad(e, 'Generic error')

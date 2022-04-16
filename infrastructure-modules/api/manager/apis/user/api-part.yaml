@@ -74,6 +74,52 @@ paths:
         passthroughBehavior: "NEVER"
         httpMethod: "POST"
         type: "aws_proxy"
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - User
+      summary: List users
+      operationId: managerGetUsers
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - in: query
+        name: next
+        type: string
+        required: false
+        description: The token for the next page if any
+      - in: query
+        name: filter
+        type: string
+        required: false
+        description: A JSON filter
+      - in: query
+        name: sort
+        type: string
+        required: false
+        description: A JSON sort
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+        400:
+          description: Invalid status value
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_managerGetUsers}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
     options:
       summary: CORS support
       description: |
