@@ -322,8 +322,6 @@ export default function FormEditor({
       middlebar={<Tabs tabName={tabName} setTabName={setTabName} />}
       mobileMiddlebar={<Tabs tabName={tabName} setTabName={setTabName} />}
       fullWidth={tabName === 'Editor'}
-      signOut={route.params.signOut}
-      user={route.params.user}
     >
       <VStack
         safeAreaBottom

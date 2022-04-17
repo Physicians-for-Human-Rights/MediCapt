@@ -76,8 +76,6 @@ export default function FormList({ route, navigation }: any) {
       displaySidebar={false}
       displayScreenTitle={false}
       title="Find a location"
-      signOut={route.params.signOut}
-      user={route.params.user}
     >
       <>
         <LocationListComponent

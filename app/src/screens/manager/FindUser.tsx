@@ -84,8 +84,6 @@ export default function FormList({ route, navigation }: any) {
       displaySidebar={false}
       displayScreenTitle={false}
       title="Find a user"
-      signOut={route.params.signOut}
-      user={route.params.user}
     >
       <>
         <UserListComponent
@@ -105,7 +103,7 @@ export default function FormList({ route, navigation }: any) {
           selectItem={user => {
             navigation.navigate('EditUser', {
               ...route.params,
-              userToEdit: user,
+              user,
             })
           }}
         />

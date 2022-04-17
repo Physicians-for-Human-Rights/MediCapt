@@ -8,13 +8,7 @@ import { RootStackParamList } from 'utils/provider/navigation'
 
 const RootStack = createStackNavigator<RootStackParamList>()
 
-export default function App({
-  signOut,
-  user,
-}: {
-  signOut: () => any
-  user: any
-}) {
+export default function App({}: {}) {
   return (
     <NavigationContainer>
       <RootStack.Navigator initialRouteName="Home">
@@ -22,7 +16,6 @@ export default function App({
           name="Home"
           component={Home}
           options={{ headerShown: false }}
-          initialParams={{ user, signOut }}
         />
         <RootStack.Screen
           name="FormEditor"

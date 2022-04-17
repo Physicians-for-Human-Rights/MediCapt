@@ -51,7 +51,7 @@ export default function EditUser({
   navigation,
 }: RootStackScreenProps<'EditUser'>) {
   const [user, setUser] = useState(
-    (route.params.userToEdit || defaultUser) as Partial<UserType>
+    (route.params.user || defaultUser) as Partial<UserType>
   )
   const [lastSubmitted, setLastSubmitted] = useState(
     null as Partial<UserType> | null
@@ -76,8 +76,6 @@ export default function EditUser({
       middlebar={<></>}
       mobileMiddlebar={<></>}
       fullWidth={false}
-      signOut={route.params.signOut}
-      user={route.params.user}
     >
       <VStack
         safeAreaBottom
@@ -92,7 +90,7 @@ export default function EditUser({
       >
         <UserEditor
           files={files}
-          userToEdit={user}
+          user={user}
           setUser={setUser}
           changed={_.isEqual(lastSubmitted, location)}
         />

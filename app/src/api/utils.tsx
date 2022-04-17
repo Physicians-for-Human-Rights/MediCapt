@@ -27,9 +27,9 @@ export async function standardHandler(
   apiCallFn: () => any
 ) {
   try {
-    setWaiting('Updating location')
+    setWaiting(preMsg)
     await apiCallFn()
-    success('Location updated')
+    success(postMsg)
   } catch (e) {
     handleStandardErrors(error, warning, success, e)
   } finally {

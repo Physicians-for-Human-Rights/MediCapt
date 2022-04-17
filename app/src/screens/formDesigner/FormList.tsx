@@ -82,8 +82,6 @@ export default function FormList({ route, navigation }: any) {
       displaySidebar={false}
       displayScreenTitle={false}
       title="Select a form"
-      signOut={route.params.signOut}
-      user={route.params.user}
     >
       <FormListComponent forms={forms} />
     </DashboardLayout>

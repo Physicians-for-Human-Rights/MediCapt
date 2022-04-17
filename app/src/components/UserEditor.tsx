@@ -58,16 +58,15 @@ function dataURItoBlob(dataURI: any) {
 
 export default function UserEditor({
   files,
-  userToEdit,
+  user,
   setUser,
   changed,
 }: {
   files: Record<string, any>
-  userToEdit: Partial<UserType>
+  user: Partial<UserType>
   setUser: React.Dispatch<React.SetStateAction<Partial<UserType>>>
   changed: boolean
 }) {
-  const user = userToEdit
   const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
 

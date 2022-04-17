@@ -16,7 +16,13 @@ import { t } from 'i18n-js'
 import _ from 'lodash'
 import { FormMetadata } from 'utils/types/form'
 
-export function ListItem({ item }: { item: FormMetadata }) {
+export function ListItem({
+  item,
+  onPress,
+}: {
+  item: FormMetadata
+  onPress: (i: FormMetadata) => any
+}) {
   return (
     <Pressable p={2}>
       <HStack justifyContent="space-between" w="100%">
@@ -53,7 +59,13 @@ export function ListItem({ item }: { item: FormMetadata }) {
   )
 }
 
-export function ListItemDesktop({ item }: { item: FormMetadata }) {
+export function ListItemDesktop({
+  item,
+  onPress,
+}: {
+  item: FormMetadata
+  onPress: (i: FormMetadata) => any
+}) {
   return (
     <Pressable p={2} flex={1}>
       <HStack alignItems="center" flex={1} justifyContent="space-between">
@@ -99,9 +111,11 @@ export function ListItemDesktop({ item }: { item: FormMetadata }) {
 export default function FormList({
   forms,
   itemsPerPage = 20,
+  onPress = () => undefined,
 }: {
   forms: FormMetadata[]
   itemsPerPage?: number
+  onPress?: (i: FormMetadata) => any
 }) {
   const [page, setPage] = useState(1)
   const numberOfPages = Math.ceil(forms.length / itemsPerPage)
@@ -153,7 +167,7 @@ export default function FormList({
           <ScrollView>
             <Box position="relative" display={{ md: 'none', base: 'flex' }}>
               {forms.map((item: FormMetadata, index: number) => {
-                return <ListItem item={item} key={index} />
+                return <ListItem item={item} key={index} onPress={onPress} />
               })}
             </Box>
             <Box display={{ md: 'flex', base: 'none' }}>
@@ -203,7 +217,13 @@ export default function FormList({
               </HStack>
               <VStack mt={3} space={3}>
                 {forms.map((item: FormMetadata, index: number) => {
-                  return <ListItemDesktop item={item} key={index} />
+                  return (
+                    <ListItemDesktop
+                      item={item}
+                      key={index}
+                      onPress={onPress}
+                    />
+                  )
                 })}
               </VStack>
             </Box>

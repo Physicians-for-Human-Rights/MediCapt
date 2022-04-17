@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 // @ts-ignore TODO Typescript doesn't support platform-specific files
 // https://github.com/microsoft/TypeScript/issues/21926
 import withAuthenticator from 'screens/Authentication'
 
-import { StoreProvider } from 'utils/store'
+import { StoreProvider, useUser, useSignOut } from 'utils/store'
 
 import { theme } from 'theme'
 import { UserType } from 'utils/userTypes'
@@ -44,17 +44,25 @@ function App({
   user: any
   userType: UserType
 }) {
+  const [storeUser, setStoreUser] = useUser()
+  const [storeSignOut, setStoreSignOut] = useSignOut()
+
+  useEffect(() => {
+    setStoreUser(user)
+    setStoreSignOut(signOut)
+  }, [user, signOut])
+
   switch (userType) {
     case UserType.Provider:
-      return <ProviderApp signOut={signOut} user={user} />
+      return <ProviderApp />
     case UserType.Associate:
-      return <AssociateApp signOut={signOut} user={user} />
+      return <AssociateApp />
     case UserType.Manager:
-      return <ManagerApp signOut={signOut} user={user} />
+      return <ManagerApp />
     case UserType.FormDesigner:
-      return <FormDesignerApp signOut={signOut} user={user} />
+      return <FormDesignerApp />
     case UserType.Researcher:
-      return <ResearcherApp signOut={signOut} user={user} />
+      return <ResearcherApp />
   }
 }
 

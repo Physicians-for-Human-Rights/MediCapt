@@ -1,15 +1,9 @@
 import { StackScreenProps } from '@react-navigation/stack'
 
 export type RootStackParamList = {
-  Home: { signOut: () => any; user: any }
-  FormList: {
-    signOut: () => any
-    user: any
-  }
-  FormEditor: {
-    signOut: () => any
-    user: any
-  }
+  Home: {}
+  FormList: {}
+  FormEditor: {}
 }
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =

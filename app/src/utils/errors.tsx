@@ -11,7 +11,7 @@ export const useInfo = () => {
       toast.show({
         title: error,
         status: 'error',
-        placement: 'top',
+        placement: 'bottom',
         duration: 5000,
         isClosable: true,
         description,
@@ -23,7 +23,7 @@ export const useInfo = () => {
       toast.show({
         title: warning,
         status: 'warning',
-        placement: 'top',
+        placement: 'bottom',
         duration: 5000,
         isClosable: true,
         description,
@@ -34,7 +34,7 @@ export const useInfo = () => {
       toast.show({
         title: success,
         status: 'success',
-        placement: 'top',
+        placement: 'bottom',
         duration: 5000,
         isClosable: true,
         description,

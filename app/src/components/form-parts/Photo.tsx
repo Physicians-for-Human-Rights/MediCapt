@@ -196,11 +196,13 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
           <Modal.Body>
             <Center flex={1}>
               <Box h={modalSize * 0.7} w={modalSize * 0.7}>
-                <Camera
-                  ref={setCamera}
-                  type={Camera.Constants.Type.back}
-                  ratio={'1:1'}
-                />
+                {isOpen && (
+                  <Camera
+                    ref={setCamera}
+                    type={Camera.Constants.Type.back}
+                    ratio={'1:1'}
+                  />
+                )}
               </Box>
             </Center>
           </Modal.Body>

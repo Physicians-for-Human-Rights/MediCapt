@@ -25,7 +25,7 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from '@expo/vector-icons'
-import { Auth } from 'aws-amplify'
+import { useUser, useSignOut } from 'utils/store'
 
 import medicapt_logo from '../../assets/medicapt.png'
 import phr_logo from '../../assets/phr_small.png'
@@ -466,16 +466,10 @@ export function MobileHeader({
   )
 }
 
-function authSignOut() {
-  Auth.signOut()
-}
-
 export default function DashboardLayout({
   navigation,
   children,
   title,
-  signOut,
-  user,
   scrollable = true,
   displayScreenTitle = true,
   displayHeaderTitle = true,
@@ -491,8 +485,6 @@ export default function DashboardLayout({
   navigation: any
   children: JSX.Element
   title: string
-  signOut: () => any
-  user: any
   scrollable?: boolean
   displayScreenTitle?: boolean
   displayHeaderTitle?: boolean
@@ -505,7 +497,7 @@ export default function DashboardLayout({
   fullWidth?: boolean
   showLogos?: boolean
 }) {
-  if (!signOut) signOut = authSignOut
+  const [signOut] = useSignOut()
   const [isSidebarVisible, setIsSidebarVisible] = React.useState(true)
   function toggleSidebar() {
     setIsSidebarVisible(!isSidebarVisible)

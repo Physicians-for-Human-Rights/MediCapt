@@ -22,6 +22,7 @@ import {
   RootStackScreenProps,
   RootStackParamList,
 } from 'utils/formDesigner/navigation'
+import { useUser } from 'utils/store'
 
 const options = [
   {
@@ -62,15 +63,14 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
     sm: { columns: 2, w: '190px', h: '190px', size: 16, fontSize: 'lg' },
     md: { columns: 3, w: '200px', h: '200px', size: 16, fontSize: 'lg' },
   })
+  const [user] = useUser()
   return (
     <DashboardLayout
-      title={'Welcome ' + route.params.user.attributes.nickname}
+      title={'Welcome ' + (user ? user.attributes.nickname : '')}
       displaySidebar={false}
       displayScreenTitle={false}
       backButton={false}
       navigation={navigation}
-      signOut={route.params.signOut}
-      user={route.params.user}
       showLogos
     >
       <VStack

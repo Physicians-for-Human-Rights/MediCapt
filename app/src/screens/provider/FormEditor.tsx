@@ -41,8 +41,6 @@ export default function FormEditor({
       displaySidebar={false}
       displayScreenTitle={false}
       title="Fill out a record"
-      signOut={route.params.signOut}
-      user={route.params.user}
       displayHeader={false}
       fullWidth={true}
     >

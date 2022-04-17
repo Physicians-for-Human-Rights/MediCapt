@@ -1,6 +1,11 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react'
-import { useToast } from 'native-base'
 import _ from 'lodash'
+import { Auth } from 'aws-amplify'
+import { UserType } from 'utils/types/user'
+
+function authSignOut() {
+  Auth.signOut()
+}
 
 export type StateType = {
   user: string | null
@@ -9,7 +14,7 @@ export type StateType = {
 
 const initialState: StateType = {
   user: null,
-  signOut: null,
+  signOut: authSignOut,
 }
 
 export type StoreAction =
@@ -56,7 +61,7 @@ export const useSignOut = () => {
   // @ts-ignore Why doesn't typescript like useContext with two return values?
   const [state, dispatch] = useContext(StoreContext)
   return [
-    state.signOut,
+    state.signOut ? state.signOut : authSignOut,
     (signOut: any) => dispatch({ type: 'SET_SIGNOUT', signOut }),
   ]
 }

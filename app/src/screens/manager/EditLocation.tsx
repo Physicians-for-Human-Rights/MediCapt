@@ -69,8 +69,6 @@ export default function EditLocation({
       middlebar={<></>}
       mobileMiddlebar={<></>}
       fullWidth={false}
-      signOut={route.params.signOut}
-      user={route.params.user}
     >
       <VStack
         safeAreaBottom

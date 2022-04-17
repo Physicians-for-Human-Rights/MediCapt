@@ -111,9 +111,6 @@ export function ListItemDesktop({
               {item.nickname}
             </Text>
           </HStack>
-          <Text isTruncated ml={2}>
-            {item.userID}
-          </Text>
         </VStack>
 
         <VStack w="20%">
@@ -236,34 +233,22 @@ export default function UserList({
           justifyContent="center"
         >
           <Button
-            leftIcon={
-              <Icon
-                as={MaterialIcons}
-                name="close"
-                size="sm"
-                onPress={() => {
-                  setFilterUserType('')
-                  setFilterEnabledOrDisabled('')
-                  setFilterLocation('')
-                  setFilterSearchType('')
-                  setFilterText('')
-                }}
-              />
-            }
-            size="xs"
+            onPress={() => {
+              setFilterUserType('Manager')
+              setFilterEnabledOrDisabled('')
+              setFilterLocation('')
+              setFilterSearchType('')
+              setFilterText('')
+            }}
+            leftIcon={<Icon as={MaterialIcons} name="close" />}
+            size="sm"
             ml={4}
             mr={2}
           />
           <Button
-            leftIcon={
-              <Icon
-                as={MaterialIcons}
-                name="refresh"
-                size="sm"
-                onPress={doSearch}
-              />
-            }
-            size="xs"
+            onPress={doSearch}
+            leftIcon={<Icon as={MaterialIcons} name="refresh" />}
+            size="sm"
           />
         </HStack>
       </Stack>

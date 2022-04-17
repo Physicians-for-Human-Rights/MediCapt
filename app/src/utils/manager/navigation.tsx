@@ -3,33 +3,17 @@ import { LocationType } from 'utils/types/location'
 import { UserType } from 'utils/types/user'
 
 export type RootStackParamList = {
-  Home: { signOut: () => any; user: any }
+  Home: {}
   EditUser: {
-    signOut: () => any
-    user: any
-    userToEdit?: UserType
+    user?: UserType
   }
-  FindUser: {
-    signOut: () => any
-    user: any
-  }
+  FindUser: {}
   EditLocation: {
-    signOut: () => any
-    user: any
     location?: LocationType
   }
-  FindLocation: {
-    signOut: () => any
-    user: any
-  }
-  Settings: {
-    signOut: () => any
-    user: any
-  }
-  Training: {
-    signOut: () => any
-    user: any
-  }
+  FindLocation: {}
+  Settings: {}
+  Training: {}
 }
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =

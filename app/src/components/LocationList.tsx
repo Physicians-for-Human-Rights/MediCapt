@@ -227,33 +227,21 @@ export default function LocationList({
           justifyContent="center"
         >
           <Button
-            leftIcon={
-              <Icon
-                as={MaterialIcons}
-                name="close"
-                size="sm"
-                onPress={() => {
-                  setFilterCountry('')
-                  setFilterLanguage('')
-                  setFilterEntityType('')
-                  setFilterText('')
-                }}
-              />
-            }
-            size="xs"
+            onPress={() => {
+              setFilterCountry('')
+              setFilterLanguage('')
+              setFilterEntityType('')
+              setFilterText('')
+            }}
+            leftIcon={<Icon as={MaterialIcons} name="close" />}
+            size="sm"
             ml={4}
             mr={2}
           />
           <Button
-            leftIcon={
-              <Icon
-                as={MaterialIcons}
-                name="refresh"
-                size="sm"
-                onPress={doSearch}
-              />
-            }
-            size="xs"
+            onPress={doSearch}
+            leftIcon={<Icon as={MaterialIcons} name="refresh" />}
+            size="sm"
           />
         </HStack>
       </Stack>

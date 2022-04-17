@@ -29,8 +29,6 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
       displayScreenTitle={false}
       backButton={false}
       navigation={navigation}
-      signOut={route.params.signOut}
-      user={route.params.user}
     >
       <VStack
         safeAreaBottom

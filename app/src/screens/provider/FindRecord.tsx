@@ -82,8 +82,6 @@ export default function FormList({ route, navigation }: any) {
       displaySidebar={false}
       displayScreenTitle={false}
       title="Find a record"
-      signOut={route.params.signOut}
-      user={route.params.user}
     >
       <RecordListComponent records={records} />
     </DashboardLayout>
