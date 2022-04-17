@@ -261,7 +261,10 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
     // Update user status & enable/disable
 
     if (existingUser.UserStatus !== user.status) {
-      if (user.status === 'RESET_REQUIRED' || 'FORCE_CHANGE_PASSWORD') {
+      if (
+        user.status === 'RESET_REQUIRED' ||
+        user.status === 'FORCE_CHANGE_PASSWORD'
+      ) {
         await cognito
           .adminResetUserPassword({
             UserPoolId: user_pool_id,
