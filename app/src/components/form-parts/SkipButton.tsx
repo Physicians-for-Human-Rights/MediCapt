@@ -21,7 +21,7 @@ export default function SkipButton({
 }: {
   skippable: boolean | null
   skipped: boolean
-  toggleSkip: () => any
+  toggleSkip: () => void
   direction: 'row' | 'column'
   absolutePositioning?: boolean
   isDisabled: boolean

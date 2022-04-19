@@ -7,11 +7,10 @@ import {
   Platform,
   GestureResponderEvent,
 } from 'react-native'
-import { RecordDataByType } from 'utils/types/record'
+import { ImageAnnotation, RecordPhoto } from 'utils/types/record'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
-import { ArrayElement } from 'utils/types/formHelpers'
 import Photo from 'components/form-parts/Photo'
 
 function squareToImageCoordinates(
@@ -69,12 +68,9 @@ function BodyMarker({
   onCoverPress,
   isDisabled,
 }: {
-  baseImage: RecordDataByType['body-image']['uri']
-  annotations: RecordDataByType['body-image']['annotations']
-  onAnnotate?: (
-    annotation: ArrayElement<RecordDataByType['body-image']['annotations']>,
-    index: number | null
-  ) => any
+  baseImage: string
+  annotations: ImageAnnotation[]
+  onAnnotate?: (annotation: ImageAnnotation, index: number | null) => any
   onDeleteAnnotation?: (index: number) => any
   onCoverPress?: () => any
   isDisabled: boolean
@@ -92,9 +88,7 @@ function BodyMarker({
     null as null | { x: number; y: number }
   )
   const [currentAnnotation, setCurrentAnnotation] = useState('')
-  const [currentPhotos, setCurrentPhotos] = useState(
-    [] as ArrayElement<RecordDataByType['body-image']['annotations']>['photos']
-  )
+  const [currentPhotos, setCurrentPhotos] = useState([] as RecordPhoto[])
   const [isMarkerModalOpen, setMarkerModalOpen] = useState(false)
 
   useEffect(() => {
@@ -109,9 +103,7 @@ function BodyMarker({
   const onPress = (
     location: { x: number; y: number },
     text?: string,
-    photos?: ArrayElement<
-      RecordDataByType['body-image']['annotations']
-    >['photos'],
+    photos?: RecordPhoto[],
     index?: number
   ) => {
     if (index === undefined) {
@@ -280,9 +272,7 @@ function BodyMarker({
               <Photo
                 isDisabled={isDisabled}
                 photos={currentPhotos || []}
-                addPhoto={(
-                  toAdd: ArrayElement<RecordDataByType['photo']['value']>
-                ) => {
+                addPhoto={(toAdd: RecordPhoto) => {
                   setCurrentPhotos(currentPhotos.concat(toAdd))
                 }}
                 removePhoto={(n: number) => {

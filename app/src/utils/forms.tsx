@@ -3,63 +3,61 @@ import * as FileSystem from 'expo-file-system'
 import _ from 'lodash'
 import { Asset } from 'expo-asset'
 import {
-  FormValueType,
   FormPart,
   FormSectionMap,
   FormPartMap,
   FormDefinition,
   FormRef,
-  FormSection,
+  FormConditional,
 } from 'utils/types/form'
 import { NamedFormSection, FormFns } from 'utils/types/formHelpers'
-import { RecordPath } from 'utils/types/record'
 import CryptoJS from 'crypto-js'
 import {
   FormMetadata,
   FormFileWitDataSchema,
   FormManifestWithData,
 } from 'utils/types/formMetadata'
+import { RecordValuePath, FlatRecord, RecordValue } from 'utils/types/record'
+import { getFlatRecordValue, restrictRecordValueType } from './records'
 
-export type GetValueFn = (
-  path: RecordPath,
-  _default?: any
-) => FormPart | FormValueType | undefined
-
+// Conditionals are either sections or parts
 export function shouldSkipConditional(
-  section: FormSection,
-  getValue: GetValueFn
-): boolean
-export function shouldSkipConditional(
-  part: FormPart,
-  getValue: GetValueFn
-): boolean
-
-export function shouldSkipConditional(
-  conditional: FormPart | FormSection,
-  getValue: GetValueFn
+  conditional: FormConditional,
+  getValue: (path: RecordValuePath) => RecordValue | undefined
 ) {
   if ('only-when' in conditional && conditional['only-when']) {
+    const condition = getValue(_.split(conditional['only-when'].path, '.'))
     if (
-      getValue(_.split(conditional['only-when'].path, '.')) !==
-      conditional['only-when'].value
+      !condition ||
+      condition.type !== 'bool' ||
+      condition.value !== conditional['only-when'].value
     )
       return true
   }
   if ('only-not' in conditional && conditional['only-not']) {
+    const condition = getValue(_.split(conditional['only-not'].path, '.'))
     if (
-      getValue(_.split(conditional['only-not'].path, '.')) ===
-      conditional['only-not'].value
+      condition &&
+      condition.type === 'bool' &&
+      condition.value === conditional['only-not'].value
     )
       return true
   }
   if ('only-sex' in conditional) {
-    const sex = getValue(['inferred', 'sex'])
+    const recordSex = getValue(['inferred', 'sex'])
     switch (conditional['only-sex']) {
       case 'male':
-        if (sex === 'female') return true
+        if (
+          (recordSex?.type !== 'sex' && recordSex?.type !== 'gender') ||
+          recordSex.value === 'female'
+        )
+          return true
         break
       case 'female':
-        if (sex === 'male') {
+        if (
+          (recordSex?.type !== 'sex' && recordSex?.type !== 'gender') ||
+          recordSex.value === 'male'
+        ) {
           return true
         }
         break
@@ -67,18 +65,26 @@ export function shouldSkipConditional(
         // This isn't a typo. If the part is for M, we don't show it to F. If the
         // part is for F, we don't show to M. If the fiels is for I, we only show
         // it for I. This fails open, I sees both M and F parts.
-        if (sex !== 'intersex') return true
+        if (
+          (recordSex?.type !== 'sex' && recordSex?.type !== 'gender') ||
+          recordSex.value !== 'intersex'
+        )
+          return true
         break
     }
   }
   if ('only-gender' in conditional) {
-    if (getValue(['inferred', 'gender']) !== conditional['only-gender'])
+    const recordGender = getValue(['inferred', 'gender'])
+    if (
+      (recordGender?.type !== 'sex' && recordGender?.type !== 'gender') ||
+      recordGender.value !== conditional['only-gender']
+    )
       return true
   }
   if ('only-child' in conditional) {
     const aom = getValue(['inferred', 'age-of-majority'])
     const age = getValue(['inferred', 'age'])
-    if (typeof aom === 'number' && typeof age === 'number' && aom >= age)
+    if (aom?.type === 'number' && age?.type === 'number' && aom >= age)
       return true
   }
   return false
@@ -111,302 +117,348 @@ export function mapSectionWithPaths<Return>(
   section: NamedFormSection,
   commonRefTable: Record<string, FormDefinition>,
   identity: Return,
-  getValue: GetValueFn,
+  getValue: (path: RecordValuePath) => RecordValue | undefined,
   fns: FormFns<Return>
 ): Return {
-  function processMultiple(
-    entry: Array<FormPartMap>,
-    recordPath: RecordPath
+  // -------------------
+  //  Helper Functions
+  // -------------------
+
+  // List of Return from a formPartsArray
+  function handleFormPartsArray(
+    formPartsArray: Array<FormPartMap>,
+    partsRecordPath: RecordValuePath
   ): Return[] {
-    if (_.isNil(entry)) return []
-    return entry.map((e, i) => {
-      return process(e, i, recordPath)
+    if (_.isNil(formPartsArray)) return []
+
+    // Handle each form part
+    return formPartsArray.map((formPartMap, index) => {
+      if (
+        _.isNil(formPartMap) ||
+        !_.isString(Object.keys(formPartMap)[0]) ||
+        Object.keys(formPartMap)[0] === ''
+      )
+        return identity
+
+      const formPart = Object.values(formPartMap)[0]
+      const recordPath = _.concat(partsRecordPath, Object.keys(formPartMap)[0])
+
+      if (!_.isObject(formPart)) return identity
+
+      // If the part isn't a reference and should be skipped
+      if (!('Ref' in formPart) && shouldSkipConditional(formPart, getValue)) {
+        return identity
+      }
+
+      // We handle repeated parts separately
+      if ('repeated' in formPart && formPart.repeated) {
+        return handleRepeatedFormPart(
+          formPart,
+          recordPath,
+          index,
+          formPartMap,
+          formPart.repeated
+        )
+      } else {
+        return handleFormPart(formPart, recordPath, index, formPartMap)
+      }
     })
   }
-  function handleOne(
-    part: FormPart,
-    recordPath: RecordPath,
+
+  function handleRepeatedFormPart(
+    formPart: FormPart,
+    repeatListRecordPath: RecordValuePath,
     index: number,
-    entry: FormPartMap
+    formPartMap: FormPartMap,
+    repeated: true | 'at-least-one'
   ): Return {
-    const skippedPath =
-      'optional' in part && part.optional ? recordPath.concat('skipped') : null
-    const pre = fns.pre(part, recordPath, index, entry, skippedPath)
+    const repeatList = _.uniq([
+      ...(repeated === 'at-least-one' ? ['at-least-one'] : []),
+      ...(restrictRecordValueType(getValue(repeatListRecordPath), 'repeat-list')
+        ?.value || []),
+    ])
+
+    fns.preRepeat(formPart, repeatListRecordPath)
+
+    const resultMaps = _.map(repeatList, repeatId => {
+      const recordPath = repeatListRecordPath.concat(['repeat', repeatId])
+
+      fns.preEachRepeat(formPart, repeatListRecordPath, repeatId, recordPath)
+      const result = fns.eachRepeat(
+        handleFormPart(formPart, recordPath, index, formPartMap),
+        formPart,
+        repeatListRecordPath,
+        repeatId,
+        recordPath
+      )
+
+      return { path: recordPath, result }
+    })
+
+    return fns.postRepeated(
+      _.filter(
+        resultMaps,
+        map => map.result !== null && map.result !== undefined
+      ),
+      formPart,
+      repeatListRecordPath
+    )
+  }
+
+  function handleFormPart(
+    part: FormPart,
+    recordPath: RecordValuePath,
+    index: number,
+    formPartMap: FormPartMap
+  ): Return {
+    const partOptional = ('optional' in part && part.optional) || false
+
+    const pre = fns.pre(part, recordPath, index, formPartMap, partOptional)
+
     let inner: Return | null = null
-    let subparts: Return | null = null
-    // References are always to a list of pats.
+    let subpartsResult: Return | null = null
+    // References are always to a list of parts.
     if ('Ref' in part) {
-      subparts = fns.combineSmartParts(
+      const resultsFromSubparts = handleFormPartsArray(
+        lookupPartRef(part, commonRefTable),
+        recordPath
+      )
+      subpartsResult = fns.combineResultsFromSubparts(
+        resultsFromSubparts,
         part,
-        processMultiple(lookupPartRef(part, commonRefTable), recordPath),
         null,
         recordPath,
         index,
-        entry
+        formPartMap
       )
     } else {
       if ('type' in part) {
         // These parts have subparts that must be combined together
         switch (part.type) {
           case 'bool':
-            if (
-              'show-parts-when-true' in part &&
-              part['show-parts-when-true'] &&
-              getValue(recordPath.concat(part.type, 'value'))
-            ) {
-              subparts = fns.combineSmartParts(
-                part,
-                processMultiple(
+            {
+              if (
+                'show-parts-when-true' in part &&
+                part['show-parts-when-true'] &&
+                restrictRecordValueType(getValue(recordPath), 'bool')?.value
+              ) {
+                const resultsFromSubparts = handleFormPartsArray(
                   part['show-parts-when-true'],
                   recordPath.concat('parts')
-                ),
-                inner,
-                recordPath,
-                index,
-                entry
-              )
-            }
-            break
-        }
-        // Some parts handle lists of results, all others handle single items
-        switch (part.type) {
-          case 'list-multiple':
-          case 'list-with-labels-multiple':
-            {
-              const resolved = resolveRef(part.options, commonRefTable)
-              if (resolved) {
-                inner = fns.selectMultiple(
-                  resolved.map((_e: any, i: number) => {
-                    return recordPath.concat(part.type, 'value', i)
-                  }),
+                )
+                subpartsResult = fns.combineResultsFromSubparts(
+                  resultsFromSubparts,
                   part,
+                  inner,
                   recordPath,
                   index,
-                  part.other
-                    ? recordPath.concat(part.type, 'value', 'other')
-                    : null,
-                  entry
+                  formPartMap
                 )
               }
             }
             break
-          case 'list-with-parts': {
-            const resolved = resolveRef(part.options, commonRefTable)
-            if (resolved) {
-              inner = fns.selectMultiple(
-                resolved.map((_e: any, i: number) => {
-                  return recordPath.concat(part.type, 'value', i)
-                }),
-                part,
-                recordPath,
-                index,
-                null,
-                entry
-              )
-              subparts = fns.combineSmartParts(
-                part,
-                processMultiple(
-                  _.filter(
-                    resolved.map((_e: any, i: number) => {
-                      if (
-                        getValue(
-                          recordPath.concat(part.type, 'value', i),
-                          false
-                        )
-                      ) {
-                        return part.options[i]
-                      } else {
-                        return null
-                      }
-                    }),
-                    p => p
-                  ),
+          case 'list-with-parts':
+            {
+              const listOptions = resolveRef(part.options, commonRefTable)
+              if (listOptions) {
+                const recordValue = restrictRecordValueType(
+                  getValue(recordPath),
+                  'list-with-parts'
+                )
+                const subparts = listOptions.map(
+                  (subpart: FormPartMap, index: number) => {
+                    if (
+                      recordValue?.value &&
+                      recordValue.value.selections[index]
+                    ) {
+                      return subpart
+                    } else {
+                      return {}
+                    }
+                  }
+                )
+                const resultsFromSubparts = handleFormPartsArray(
+                  _.filter(subparts, subpart => !!subpart),
                   recordPath.concat('list-with-parts')
-                ),
-                inner,
-                recordPath,
-                index,
-                entry
-              )
+                )
+
+                subpartsResult = fns.combineResultsFromSubparts(
+                  resultsFromSubparts,
+                  part,
+                  inner,
+                  recordPath,
+                  index,
+                  formPartMap
+                )
+              }
             }
-          }
-          default:
-            // @ts-ignore TODO Errors out with expression produces a union type that is too complex to represent
-            if (part && fns[part.type]) {
-              // @ts-ignore TODO Typescript doesn't seem willing to represent this type
-              inner = fns[part.type](
-                recordPath.concat(part.type, 'value'),
-                part,
-                recordPath,
-                index,
-                entry
-              )
-            } else {
-              console.log('UNSUPPORTED FIELD TYPE', part)
-            }
+            break
+        }
+        // @ts-ignore TODO Errors out with expression produces a union type that is too complex to represent
+        if (part && fns[part.type]) {
+          // @ts-ignore TODO Typescript doesn't seem willing to represent this type
+          inner = fns[part.type](
+            recordPath,
+            part,
+            recordPath,
+            index,
+            formPartMap
+          )
+        } else {
+          console.log('UNSUPPORTED FIELD TYPE', part)
         }
       }
       if ('parts' in part && part.parts && part.parts !== undefined) {
-        const parts = resolveRef(part.parts, commonRefTable)
-        if (parts) {
-          subparts = fns.combineSmartParts(
+        const subparts = resolveRef(part.parts, commonRefTable)
+
+        if (subparts) {
+          const resultsFromSubparts = _.concat(
+            handleFormPartsArray(subparts, recordPath.concat('parts')),
+            subpartsResult || []
+          )
+          subpartsResult = fns.combineResultsFromSubparts(
+            resultsFromSubparts,
             part,
-            _.concat(
-              processMultiple(parts, recordPath.concat('parts')),
-              subparts || []
-            ),
             inner,
             recordPath,
             index,
-            entry
+            formPartMap
           )
         }
       }
     }
     return fns.post(
       part,
-      subparts,
+      subpartsResult,
       inner,
       recordPath,
       index,
       pre,
-      skippedPath,
-      entry
+      formPartMap,
+      partOptional
     )
   }
-  function handleRepeats(
-    repeated: true | 'at-least-one',
-    part: FormPart,
-    recordPath: RecordPath,
-    index: number,
-    entry: FormPartMap,
-    repeats: string[]
-  ): Return {
-    fns.preRepeat(part, recordPath)
-    return fns.postRepeated(
-      _.filter(
-        _.map(
-          _.uniq(
-            repeated === 'at-least-one'
-              ? repeats.concat('at-least-one')
-              : repeats
-          ),
-          r => {
-            const path = recordPath.concat(['repeat', r])
-            fns.preEachRepeat(part, recordPath, r, path)
-            return {
-              path,
-              result: fns.eachRepeat(
-                handleOne(part, path, index, entry),
-                part,
-                recordPath,
-                r,
-                path
-              ),
-            }
-          }
-        ),
-        x => x.result !== null && x.result !== undefined
-      ),
-      part,
-      recordPath
-    )
-  }
-  function process(
-    entry: FormPartMap,
-    index: number,
-    oldRecordPath: RecordPath
-  ): Return {
-    if (_.isNil(entry)) return identity
-    const part = Object.values(entry)[0]
-    if (
-      !_.isObject(part) ||
-      !_.isString(Object.keys(entry)[0]) ||
-      Object.keys(entry)[0] === ''
-    )
-      return identity
-    const recordPath = _.concat(oldRecordPath, Object.keys(entry)[0])
-    //
-    if (!('Ref' in part) && shouldSkipConditional(part, getValue)) {
-      return identity
-    }
-    //
-    if ('repeated' in part && part.repeated) {
-      return handleRepeats(
-        part.repeated,
-        part,
-        recordPath,
-        index,
-        entry,
-        (getValue(recordPath.concat('repeat-list')) || []) as string[]
-      )
-    } else {
-      return handleOne(part, recordPath, index, entry)
-    }
-  }
-  if (shouldSkipConditional(section, getValue)) {
-    return identity
-  }
-  if (_.isNil(section) || _.isNil(section.parts) || _.isNil(section.name))
-    return identity
-  return fns.combinePlainParts(
-    processMultiple(section.parts, ['sections', section.name, 'parts']),
-    ['sections', section.name, 'parts'],
-    0
+
+  // -------------------
+  // mapSectionWithPaths
+  // -------------------
+
+  if (
+    shouldSkipConditional(section, getValue) ||
+    _.isNil(section) ||
+    _.isNil(section.parts) ||
+    _.isNil(section.name)
   )
+    return identity
+
+  const partsListPath = ['sections', section.name, 'parts']
+  const resultsFromParts = handleFormPartsArray(section.parts, partsListPath)
+
+  return fns.combineResultsFromParts(resultsFromParts, partsListPath, 0)
 }
 
 export function isSectionComplete(
   section: NamedFormSection,
   commonRefTable: Record<string, FormDefinition>,
-  getValue: GetValueFn
+  flatRecord: FlatRecord
 ) {
-  return mapSectionWithPaths<boolean>(section, commonRefTable, true, getValue, {
-    pre: () => true,
-    selectMultiple: valuePaths =>
-      // NB This checks not that getValue exists, but that at least one of them is also true.
-      _.some(valuePaths, x => getValue(x)),
-    address: valuePath => getValue(valuePath) != null,
-    'body-image': valuePath => getValue(valuePath) != null,
-    bool: valuePath => getValue(valuePath) != null,
-    date: valuePath => getValue(valuePath) != null,
-    'date-time': valuePath => getValue(valuePath) != null,
-    email: valuePath => getValue(valuePath) != null,
-    gender: valuePath => getValue(valuePath) != null,
-    list: valuePath => getValue(valuePath) != null,
-    'list-with-labels': valuePath => getValue(valuePath) != null,
-    'list-with-parts': valuePath => getValue(valuePath) != null,
-    'long-text': valuePath => getValue(valuePath) != null,
-    number: valuePath => getValue(valuePath) != null,
-    'phone-number': valuePath => getValue(valuePath) != null,
-    photo: valuePath => getValue(valuePath) != null,
-    sex: valuePath => getValue(valuePath) != null,
-    text: valuePath => getValue(valuePath) != null,
-    signature: valuePath => getValue(valuePath) != null,
-    combinePlainParts: (subparts, _recordPath, _index) =>
-      _.reduce(subparts, (a, b) => a && b, true as boolean),
-    combineSmartParts: (_part, parts) => {
-      const r = _.reduce(parts, (a, b) => a && b)
-      if (r === undefined) return true
-      else return r
-    },
-    preRepeat: () => null,
-    preEachRepeat: () => null,
-    eachRepeat: result => result,
-    postRepeated: list =>
-      _.reduce(
-        _.map(list, e => e.result),
-        (a, b) => a && b,
-        true as boolean
-      ),
-    post: (_part, subparts, inner, _recordPath, _index, _pre, skippedPath) => {
-      return (
-        (skippedPath && getValue(skippedPath) === true) ||
-        ((inner === null ? true : inner) &&
-          (subparts === null ? true : subparts))
-      )
-    },
-  })
+  return mapSectionWithPaths<boolean>(
+    section,
+    commonRefTable,
+    true,
+    (recordValuePath: RecordValuePath) =>
+      getFlatRecordValue(flatRecord, recordValuePath),
+    {
+      pre: () => true,
+      // selectMultiple: valuePaths =>
+      //   // NB This checks not that getValue exists, but that at least one of them is also true.
+      //   _.some(valuePaths, x => getFlatRecordValue(flatRecord, x)),
+      address: valuePath =>
+        getFlatRecordValue(flatRecord, valuePath, 'address')?.value !=
+        undefined,
+      'body-image': valuePath =>
+        getFlatRecordValue(flatRecord, valuePath, 'body-image')?.value !=
+        undefined,
+      bool: valuePath =>
+        getFlatRecordValue(flatRecord, valuePath, 'bool')?.value != undefined,
+      date: valuePath =>
+        getFlatRecordValue(flatRecord, valuePath, 'date')?.value != undefined,
+      'date-time': valuePath =>
+        getFlatRecordValue(flatRecord, valuePath, 'date-time')?.value !=
+        undefined,
+      email: valuePath =>
+        getFlatRecordValue(flatRecord, valuePath, 'email')?.value != undefined,
+      gender: valuePath =>
+        getFlatRecordValue(flatRecord, valuePath, 'gender')?.value != undefined,
+      list: valuePath =>
+        getFlatRecordValue(flatRecord, valuePath, 'list')?.value != undefined,
+      'list-with-labels': valuePath =>
+        getFlatRecordValue(flatRecord, valuePath, 'list-with-labels')?.value !=
+        undefined,
+      'list-multiple': valuePath =>
+        _.some(
+          getFlatRecordValue(flatRecord, valuePath, 'list-multiple')?.value
+        ),
+      'list-with-labels-multiple': valuePath =>
+        _.some(
+          getFlatRecordValue(flatRecord, valuePath, 'list-multiple')?.value
+        ),
+      'list-with-parts': valuePath =>
+        _.some(
+          getFlatRecordValue(flatRecord, valuePath, 'list-multiple')?.value
+        ),
+      'long-text': valuePath =>
+        getFlatRecordValue(flatRecord, valuePath, 'long-text')?.value !=
+        undefined,
+      number: valuePath =>
+        getFlatRecordValue(flatRecord, valuePath, 'number')?.value != undefined,
+      'phone-number': valuePath =>
+        getFlatRecordValue(flatRecord, valuePath, 'phone-number')?.value !=
+        undefined,
+      photo: valuePath =>
+        _.some(getFlatRecordValue(flatRecord, valuePath, 'photo')?.value),
+      sex: valuePath =>
+        getFlatRecordValue(flatRecord, valuePath, 'sex')?.value != undefined,
+      text: valuePath =>
+        getFlatRecordValue(flatRecord, valuePath, 'text')?.value != undefined,
+      signature: valuePath =>
+        getFlatRecordValue(flatRecord, valuePath, 'signature')?.value !=
+        undefined,
+      combineResultsFromParts: results =>
+        _.reduce(results, (a, b) => a && b, true as boolean),
+      combineResultsFromSubparts: results => {
+        const result = _.reduce(results, (a, b) => a && b)
+        if (result === undefined) return true
+        else return result
+      },
+      preRepeat: () => {},
+      preEachRepeat: () => {},
+      eachRepeat: result => result,
+      postRepeated: list =>
+        _.reduce(
+          _.map(list, e => e.result),
+          (a, b) => a && b,
+          true as boolean
+        ),
+      post: (
+        _part,
+        subparts,
+        inner,
+        recordPath,
+        _index,
+        _pre,
+        _formPartMap,
+        partOptional
+      ) => {
+        return (
+          (partOptional &&
+            getFlatRecordValue(flatRecord, recordPath)?.skipped) ||
+          ((inner === null ? true : inner) &&
+            (subparts === null ? true : subparts))
+        )
+      },
+    }
+  )
 }
 
 export function blobToBase64(blob: Blob): Promise<string | ArrayBuffer> {

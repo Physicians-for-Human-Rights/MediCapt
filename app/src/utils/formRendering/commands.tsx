@@ -1,111 +1,74 @@
 import _ from 'lodash'
 import { FormDefinition, FormKVRawType } from 'utils/types/form'
-import { mapSectionWithPaths, GetValueFn } from 'utils/forms'
+import { mapSectionWithPaths } from 'utils/forms'
 import { NamedFormSection } from 'utils/types/formHelpers'
-import { RecordPath } from 'utils/types/record'
+import { FlatRecord, RecordValuePath } from 'utils/types/record'
+import { getFlatRecordValue } from 'utils/records'
 import { t } from 'i18n-js'
 import { resolveRef } from 'utils/forms'
 
-import { isPrimitiveType } from 'components/form-parts/List'
-import { RenderCommand, URI } from 'utils/formRendering/types'
-
-function getRepeatList(
-  repeated: boolean | 'at-least-one',
-  getPath: (
-    valuePath: RecordPath | null | undefined,
-    checkTy?: ((o: any) => boolean) | undefined,
-    _default?: any
-  ) => any,
-  recordPath: RecordPath
-) {
-  if (repeated === 'at-least-one')
-    return _.uniq(
-      (getPath(recordPath.concat('repeat-list'), _.isArray, []) || []).concat(
-        'at-least-one'
-      )
-    )
-  return getPath(recordPath.concat('repeat-list'), _.isArray, []) || []
-}
-
-function isSkipped(path: RecordPath, skipping: RecordPath[]) {
-  return _.some(skipping, skip => _.isEqual(_.take(path, skip.length), skip))
-}
-
-function onlyDisableInner(path: RecordPath) {
-  // Only disable this inside a disabled section, not at its boundary
-  return _.dropRight(path, 2)
-}
+import { RenderCommand } from 'utils/formRendering/types'
 
 // Turn a section of a form into a list of flat render commands
 export function allFormRenderCommands(
-  files: Record<string, any>,
   section: NamedFormSection,
   commonRefTable: Record<string, FormDefinition>,
-  getRecordValue: GetValueFn
+  files: Record<string, string>,
+  flatRecord: FlatRecord
 ) {
-  function getPath(
-    valuePath: RecordPath | null | undefined,
-    checkTy?: (o: any) => boolean,
-    _default: any = undefined
-  ) {
-    if (valuePath === undefined || valuePath === null) return _default
-    const recordValue = getRecordValue(valuePath, _default)
-    if (checkTy !== undefined && !checkTy(recordValue)) return _default
-    return recordValue
-  }
   let renderCommands: RenderCommand[] = []
-  const skipping: RecordPath[] = []
+  const skipping: RecordValuePath[] = []
   // any is an ok type here because we're discarding the output
   mapSectionWithPaths<void>(
     section,
     commonRefTable,
     undefined,
-    getRecordValue,
+    (recordValuePath: RecordValuePath) =>
+      getFlatRecordValue(flatRecord, recordValuePath),
     {
-      pre: (part, recordPath, _index, _entry, skippedPath) => {
-        if (skippedPath) {
-          if (getPath(skippedPath, _.isBoolean, false)) {
-            skipping.push(_.dropRight(skippedPath))
-          }
+      pre: (part, recordValuePath, _index, _entry, partOptional) => {
+        const recordValue = getFlatRecordValue(flatRecord, recordValuePath)
+        const skipped = recordValue?.skipped || false
+        if (partOptional) {
           renderCommands.push({
             type: 'skip',
-            disable: isSkipped(recordPath, skipping),
-            valuePath: recordPath,
-            key: _.join(recordPath.concat('skip'), '.'),
-            skipped: getPath(skippedPath, _.isBoolean, false),
-            skippedPath,
+            value: recordValue,
             direction: 'row',
+            valuePath: recordValuePath,
+            key: _.join(recordValuePath.concat('skip'), '.'),
+            disable: skipped,
           })
         }
         if ('title' in part) {
-          const [recordPath1, _recordPart0] = _.takeRight(recordPath, 2)
           // Look for list-with-parts.<something>
-          if (recordPath1 === 'list-with-parts') {
+          if (recordValue?.type === 'list-with-parts') {
             renderCommands.push({
               type: 'divider',
-              disable: isSkipped(recordPath, skipping),
-              valuePath: recordPath.concat('divider'),
-              key: _.join(recordPath.concat('divider'), '.'),
               thickness: 1,
               w: '50%',
+              valuePath: recordValuePath.concat('divider'),
+              key: _.join(recordValuePath.concat('divider'), '.'),
+              disable: skipped,
             })
           }
           const isRepeated = 'repeated' in part && part.repeated
-          const size = recordPath.length < 5 ? 'md' : 'sm'
+          const size = recordValuePath.length < 5 ? 'md' : 'sm'
           const fontWeight = isRepeated
             ? '500'
-            : recordPath.length < 7
+            : recordValuePath.length < 7
             ? 'bold'
             : 'normal'
           let suffix = ''
           if (isRepeated) {
-            const [repeatPathPart, repeatId] = _.takeRight(recordPath, 2)
+            const [repeatPathPart, repeatId] = _.takeRight(recordValuePath, 2)
             if (repeatPathPart === 'repeat') {
-              const repeatList = getRepeatList(
-                part.repeated || false,
-                getPath,
-                _.dropRight(recordPath, 2)
-              )
+              const repeatList =
+                getFlatRecordValue(
+                  flatRecord,
+                  _.dropRight(recordValuePath, 2),
+                  'repeat-list'
+                )?.value ||
+                (part.repeated === 'at-least-one' ? ['at-least-one'] : [])
               suffix =
                 ' (' +
                 t('form.repeat-number') +
@@ -120,67 +83,55 @@ export function allFormRenderCommands(
           }
           renderCommands.push({
             type: 'title',
-            disable: isSkipped(recordPath, skipping),
-            valuePath: recordPath.concat('title'),
-            key: _.join(recordPath.concat('title'), '.'),
             title: 'title' in part ? part.title + suffix : '',
             size,
             fontWeight,
             italic: isRepeated == !undefined,
+            valuePath: recordValuePath.concat('title'),
+            key: _.join(recordValuePath.concat('title'), '.'),
+            disable: skipped,
           })
         }
         if ('description' in part) {
           renderCommands.push({
             type: 'description',
-            valuePath: recordPath.concat('description'),
-            disable: isSkipped(recordPath, skipping),
-            key: _.join(recordPath.concat('description'), '.'),
             description:
               'description' in part && part.description !== undefined
                 ? part.description
                 : '',
+            valuePath: recordValuePath.concat('description'),
+            key: _.join(recordValuePath.concat('description'), '.'),
+            disable: skipped,
           })
         }
       },
-      selectMultiple: (valuePaths, part, recordPath, index, otherPath) => {
-        renderCommands.push({
-          type: 'list-multiple',
-          disable: isSkipped(recordPath, skipping),
-          valuePath: valuePaths[0],
-          key: _.join(valuePaths[0], '.'),
-          values: valuePaths.map((p: RecordPath) =>
-            getPath(p, _.isBoolean, false)
-          ),
-          valuePaths,
-          otherChecked:
-            otherPath &&
-            getPath(otherPath.concat('checked'), _.isBoolean, false),
-          otherText:
-            otherPath && getPath(otherPath.concat('text'), _.isString, ''),
-          otherPath: otherPath && otherPath.concat('checked'),
-          otherPathText: otherPath && otherPath.concat('text'),
-          // @ts-ignore TODO Help TS see this
-          other: part.other,
-          // @ts-ignore TODO This combines two cases, split them
-          options:
-            'options' in part && _.isArray(part.options) ? part.options : [],
-        })
-      },
-      address: (valuePath, part) =>
+      address: (recordValuePath, part) =>
         renderCommands.push({
           type: 'address',
-          disable: isSkipped(valuePath, skipping),
-          valuePath,
-          key: _.join(valuePath, '.'),
+          recordValue: getFlatRecordValue(
+            flatRecord,
+            recordValuePath,
+            'address'
+          ),
           placeholder: part.placeholder,
-          text: getPath(valuePath, _.isString, ''),
+          valuePath: recordValuePath,
+          key: _.join(recordValuePath, '.'),
+          disable:
+            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
         }),
-      'body-image': (valuePath, part) => {
+      'body-image': (recordValuePath, part) => {
         const genderOrSex: string =
-          getPath(['inferred', 'sex'], _.isString, '') ||
-          getPath(['inferred', 'gender'], _.isString, '')
-        const annotationPath = valuePath.concat('annotations')
-        const backgroundImage =
+          getFlatRecordValue(flatRecord, ['inferred', 'sex'], 'sex')?.value ||
+          getFlatRecordValue(flatRecord, ['inferred', 'gender'], 'gender')
+            ?.value ||
+          ''
+
+        const recordValue = getFlatRecordValue(
+          flatRecord,
+          recordValuePath,
+          'body-image'
+        )
+        const formImage =
           ('filename-female' in part &&
             part['filename-female'] &&
             genderOrSex &&
@@ -196,72 +147,73 @@ export function allFormRenderCommands(
             genderOrSex &&
             genderOrSex === 'male' &&
             files[part['filename-male']]) ||
-          ('filename' in part && part.filename && files[part.filename]) ||
-          getPath(valuePath.concat('uri'), _.isString, null)
-        if (backgroundImage === null) {
+          ('filename' in part && part.filename && files[part.filename])
+        if (!formImage) {
           // TODO
           console.log(
             'NO IMAGE, What do we do here? Prevent this from being filled out? Show a message?'
           )
         }
-        if (
-          getPath(valuePath.concat('uri'), _.isString, null) !== backgroundImage
-        ) {
-          // TODO Should we store this? If so, where? In the component?
-          // recordSetPath(valuePath.concat('uri'), backgroundImage)
-        }
         renderCommands.push({
           type: 'body-image',
-          disable: isSkipped(valuePath, skipping),
-          valuePath,
-          key: _.join(valuePath, '.'),
-          backgroundImage: backgroundImage,
-          annotations: getPath(annotationPath, _.isArray, []),
-          annotationPath: annotationPath,
+          recordValue,
+          formImage: formImage || '',
+          valuePath: recordValuePath,
+          key: _.join(recordValuePath, '.'),
+          disable: recordValue?.skipped || false,
         })
       },
-      bool: valuePath =>
+      bool: recordValuePath =>
         renderCommands.push({
           type: 'bool',
-          disable: isSkipped(valuePath, skipping),
-          valuePath,
-          key: _.join(valuePath, '.'),
-          selected: getPath(valuePath, _.isBoolean, null),
+          recordValue: getFlatRecordValue(flatRecord, recordValuePath, 'bool'),
+          valuePath: recordValuePath,
+          key: _.join(recordValuePath, '.'),
+          disable:
+            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
         }),
-      date: (valuePath, part) =>
+      date: (recordValuePath, part) =>
         renderCommands.push({
           type: 'date',
-          disable: isSkipped(valuePath, skipping),
-          valuePath,
-          key: _.join(valuePath, '.'),
+          recordValue: getFlatRecordValue(flatRecord, recordValuePath, 'date'),
           title: part.title,
-          date: getPath(valuePath, _.isDate, null),
+          valuePath: recordValuePath,
+          key: _.join(recordValuePath, '.'),
+          disable:
+            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
         }),
-      'date-time': (valuePath, part) =>
+      'date-time': (recordValuePath, part) =>
         renderCommands.push({
           type: 'date-time',
-          disable: isSkipped(valuePath, skipping),
-          valuePath,
-          key: _.join(valuePath, '.'),
+          recordValue: getFlatRecordValue(
+            flatRecord,
+            recordValuePath,
+            'date-time'
+          ),
           title: part.title,
-          date: getPath(valuePath, _.isDate, null),
+          valuePath: recordValuePath,
+          key: _.join(recordValuePath, '.'),
+          disable:
+            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
         }),
-      email: (valuePath, part) =>
+      email: (recordValuePath, part) =>
         renderCommands.push({
           type: 'email',
-          disable: isSkipped(valuePath, skipping),
-          valuePath,
-          key: _.join(valuePath, '.'),
+          recordValue: getFlatRecordValue(flatRecord, recordValuePath, 'email'),
           placeholder: part.placeholder,
-          text: getPath(valuePath, _.isString, ''),
+          valuePath: recordValuePath,
+          key: _.join(recordValuePath, '.'),
+          disable:
+            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
         }),
-      gender: valuePath =>
+      gender: recordValuePath =>
         renderCommands.push({
           type: 'gender',
-          disable: isSkipped(valuePath, skipping),
-          valuePath,
-          key: _.join(valuePath, '.'),
-          selected: getPath(valuePath, _.isString, ''),
+          recordValue: getFlatRecordValue(
+            flatRecord,
+            recordValuePath,
+            'gender'
+          ),
           options: _.fromPairs(
             _.map(
               'gender' in commonRefTable
@@ -277,79 +229,150 @@ export function allFormRenderCommands(
               o => [o.value, o.key]
             )
           ) as Record<string, string>,
+          valuePath: recordValuePath,
+          key: _.join(recordValuePath, '.'),
+          disable:
+            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
         }),
-      list: (valuePath, part, recordPath) =>
-        renderCommands.push({
-          type: 'list',
-          disable: isSkipped(valuePath, skipping),
-          valuePath,
-          key: _.join(valuePath, '.'),
-          value: getPath(valuePath, isPrimitiveType, null),
-          other: part.other,
-          otherValue: getPath(recordPath.concat('other'), _.isString, null),
-          otherPath: recordPath.concat('other'),
-          options: resolveRef(part.options, commonRefTable),
-        }),
-      'list-with-labels': (valuePath, part, recordPath) =>
-        renderCommands.push({
-          type: 'list-with-labels',
-          disable: isSkipped(valuePath, skipping),
-          valuePath,
-          key: _.join(valuePath, '.'),
-          value: getPath(valuePath, isPrimitiveType, null),
-          other: part.other,
-          otherValue: getPath(recordPath.concat('other'), _.isString, null),
-          otherPath: recordPath.concat('other'),
-          options: resolveRef(part.options, commonRefTable),
-        }),
-      // TODO list-with-parts
-      'list-with-parts': () => null,
-      'long-text': (valuePath, part) =>
+      list: (recordValuePath, part) => {
+        const listOptions = resolveRef(part.options, commonRefTable)
+        if (listOptions) {
+          renderCommands.push({
+            type: 'list',
+            recordValue: undefined,
+            other: part.other,
+            options: listOptions,
+            valuePath: recordValuePath,
+            key: _.join(recordValuePath, '.'),
+            disable:
+              getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          })
+        }
+      },
+      'list-with-labels': (recordValuePath, part) => {
+        const listOptions = resolveRef(part.options, commonRefTable)
+        if (listOptions) {
+          renderCommands.push({
+            type: 'list-with-labels',
+            recordValue: undefined,
+            other: part.other,
+            options: listOptions,
+            valuePath: recordValuePath,
+            key: _.join(recordValuePath, '.'),
+            disable:
+              getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          })
+        }
+      },
+      'list-multiple': (recordValuePath, part) => {
+        const listOptions = resolveRef(part.options, commonRefTable)
+        if (listOptions) {
+          renderCommands.push({
+            type: 'list-multiple',
+            recordValue: undefined,
+            other: part.other,
+            options: listOptions,
+            valuePath: recordValuePath,
+            key: _.join(recordValuePath, '.'),
+            disable:
+              getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          })
+        }
+      },
+      'list-with-labels-multiple': (recordValuePath, part) => {
+        // TODO: switch from rendering with list-multiple to list-with-labels-multiple
+        const listOptions = resolveRef(part.options, commonRefTable)
+        if (listOptions) {
+          renderCommands.push({
+            type: 'list-multiple',
+            recordValue: undefined,
+            other: part.other,
+            options: _.map(listOptions, kv => kv.key),
+            valuePath: recordValuePath,
+            key: _.join(recordValuePath, '.'),
+            disable:
+              getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          })
+        }
+      },
+      'list-with-parts': (recordValuePath, part) => {
+        // TODO: switch from rendering with list-multiple to list-with-parts
+        const listOptions = resolveRef(part.options, commonRefTable)
+        const listOptionsStrings = _.filter(
+          _.map(listOptions, formPartMap => Object.keys(formPartMap)[0]),
+          optionId => optionId !== ''
+        )
+        if (listOptions) {
+          renderCommands.push({
+            type: 'list-multiple',
+            recordValue: undefined,
+            options: listOptionsStrings,
+            valuePath: recordValuePath,
+            key: _.join(recordValuePath, '.'),
+            disable:
+              getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          })
+        }
+      },
+      'long-text': (recordValuePath, part) =>
         renderCommands.push({
           type: 'long-text',
-          disable: isSkipped(valuePath, skipping),
-          valuePath,
-          key: _.join(valuePath, '.'),
-          placeholder: part.placeholder,
-          text: getPath(valuePath, _.isString, ''),
+          recordValue: getFlatRecordValue(
+            flatRecord,
+            recordValuePath,
+            'long-text'
+          ),
           numberOfLines:
             part['number-of-lines'] === null ||
             part['number-of-lines'] === undefined
               ? 5
               : part['number-of-lines'],
+          placeholder: part.placeholder,
+          valuePath: recordValuePath,
+          key: _.join(recordValuePath, '.'),
+          disable:
+            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
         }),
-      number: (valuePath, part) =>
+      number: (recordValuePath, part) =>
         renderCommands.push({
           type: 'number',
-          disable: isSkipped(valuePath, skipping),
-          valuePath,
-          key: _.join(valuePath, '.'),
+          recordValue: getFlatRecordValue(
+            flatRecord,
+            recordValuePath,
+            'number'
+          ),
           placeholder: part.placeholder,
-          value: getPath(valuePath, _.isString, ''),
+          valuePath: recordValuePath,
+          key: _.join(recordValuePath, '.'),
+          disable:
+            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
         }),
-      'phone-number': valuePath =>
+      'phone-number': recordValuePath =>
         renderCommands.push({
           type: 'phone-number',
-          disable: isSkipped(valuePath, skipping),
-          valuePath,
-          key: _.join(valuePath, '.'),
-          value: getPath(valuePath, _.isString, ''),
+          recordValue: getFlatRecordValue(
+            flatRecord,
+            recordValuePath,
+            'phone-number'
+          ),
+          valuePath: recordValuePath,
+          key: _.join(recordValuePath, '.'),
+          disable:
+            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
         }),
-      photo: valuePath =>
+      photo: recordValuePath =>
         renderCommands.push({
           type: 'photo',
-          disable: isSkipped(valuePath, skipping),
-          valuePath,
-          key: _.join(valuePath, '.'),
-          photos: getPath(valuePath, _.isArray, []),
+          recordValue: getFlatRecordValue(flatRecord, recordValuePath, 'photo'),
+          valuePath: recordValuePath,
+          key: _.join(recordValuePath, '.'),
+          disable:
+            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
         }),
-      sex: valuePath =>
+      sex: recordValuePath =>
         renderCommands.push({
-          type: 'gender',
-          disable: isSkipped(valuePath, skipping),
-          valuePath,
-          key: _.join(valuePath, '.'),
-          selected: getPath(valuePath, _.isString, ''),
+          type: 'sex',
+          recordValue: getFlatRecordValue(flatRecord, recordValuePath, 'sex'),
           options: _.fromPairs(
             _.map(
               'sex' in commonRefTable
@@ -365,54 +388,68 @@ export function allFormRenderCommands(
               o => [o.value, o.key]
             )
           ) as Record<string, string>,
+          valuePath: recordValuePath,
+          key: _.join(recordValuePath, '.'),
+          disable:
+            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
         }),
-      signature: (valuePath, part, recordPath) =>
+      signature: recordValuePath =>
         renderCommands.push({
           type: 'signature',
-          disable: isSkipped(valuePath, skipping),
-          valuePath,
-          key: _.join(valuePath, '.'),
-          image: getPath(valuePath, _.isString, null),
-          date: getPath(recordPath.concat('date'), _.isDate, null),
+          recordValue: getFlatRecordValue(
+            flatRecord,
+            recordValuePath,
+            'signature'
+          ),
+          valuePath: recordValuePath,
+          key: _.join(recordValuePath, '.'),
+          disable:
+            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
         }),
-      text: (valuePath, part) =>
+      text: (recordValuePath, part) =>
         renderCommands.push({
           type: 'text',
-          disable: isSkipped(valuePath, skipping),
-          valuePath,
-          key: _.join(valuePath, '.'),
+          recordValue: getFlatRecordValue(flatRecord, recordValuePath, 'text'),
           placeholder: part.placeholder,
-          text: getPath(valuePath, _.isString, ''),
+          valuePath: recordValuePath,
+          key: _.join(recordValuePath, '.'),
+          disable:
+            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
         }),
-      combinePlainParts: () => null,
-      combineSmartParts: () => null,
-      post: (part, subparts, inner, recordPath) => {
-        if (recordPath.length === 4) {
+      combineResultsFromParts: () => null,
+      combineResultsFromSubparts: () => null,
+      post: (_part, _subparts, _inner, recordValuePath) => {
+        if (recordValuePath.length === 4) {
           renderCommands.push({
             type: 'divider',
-            disable: isSkipped(onlyDisableInner(recordPath), skipping),
-            valuePath: recordPath.concat('divider'),
-            key: _.join(recordPath.concat('divider'), '.'),
             thickness: 1,
+            valuePath: recordValuePath.concat('divider'),
+            key: _.join(recordValuePath.concat('divider'), '.'),
+            disable:
+              getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
           })
         }
       },
-      preRepeat: (part, recordPath) => {
+      preRepeat: (part, recordValuePath) => {
         let suffix = ''
+        const recordValue = getFlatRecordValue(
+          flatRecord,
+          recordValuePath,
+          'repeat-list'
+        )
         if ('repeated' in part && part.repeated) {
-          const nr = getRepeatList(
-            part.repeated || false,
-            getPath,
-            recordPath
+          const numberOfRepeats = (
+            recordValue?.value ||
+            (part.repeated === 'at-least-one' ? ['at-least-one'] : [])
           ).length
-          if (nr === 1) {
+          if (numberOfRepeats === 1) {
             suffix = ' (' + t('form.repeated-one-time-below') + ')'
-          } else if (nr > 0) {
+          } else if (numberOfRepeats > 0) {
             suffix =
               ' (' +
               t('form.repeated') +
               ' ' +
-              nr +
+              numberOfRepeats +
               ' ' +
               t('form.times-below') +
               ')'
@@ -422,50 +459,68 @@ export function allFormRenderCommands(
         }
         renderCommands.push({
           type: 'title',
-          disable: isSkipped(recordPath, skipping),
-          valuePath: recordPath.concat('title'),
-          key: _.join(recordPath.concat('title'), '.'),
           title: 'title' in part ? part.title + suffix : '',
           size: 'sm',
           fontWeight: 'bold',
           italic: false,
+          valuePath: recordValuePath.concat('title'),
+          key: _.join(recordValuePath.concat('title'), '.'),
+          disable:
+            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
         })
       },
-      preEachRepeat: (part, recordPath, repeatId, repeatPath) => {
-        if (_.last(repeatPath) === 'at-least-one') {
-          return
+      postRepeated: (_results, part, recordValuePath) => {
+        if ('repeated' in part && part.repeated) {
+          const repeatListRecordValue = getFlatRecordValue(
+            flatRecord,
+            recordValuePath,
+            'repeat-list'
+          )
+          renderCommands.push({
+            type: 'add-repeat-button',
+            recordValue: repeatListRecordValue,
+            title: 'title' in part ? part.title : '',
+            partRepeated: part.repeated,
+            // repeatList:
+            //   repeatListRecordValue?.value ||
+            //   (part.repeated === 'at-least-one' ? ['at-least-one'] : []),
+            // repeatListPath: recordValuePath,
+            valuePath: recordValuePath,
+            key: _.join(recordValuePath.concat('add-repeat-button'), '.'),
+            disable:
+              getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          })
         }
-        renderCommands.push({
-          type: 'remove-repeat-button',
-          disable: isSkipped(recordPath, skipping),
-          valuePath: repeatPath.concat('add-repeat-button'),
-          key: _.join(repeatPath.concat('add-repeat-button'), '.'),
-          title: 'title' in part ? part.title : '',
-          repeatList: getRepeatList(
-            ('repeated' in part && part.repeated) || false,
-            getPath,
-            recordPath
-          ),
-          repeatListPath: recordPath.concat('repeat-list'),
-          repeatId: repeatId + '',
-        })
       },
-      eachRepeat: (result, part, recordPath, repeatId, repeatPath) => {},
-      postRepeated: (list, part, recordPath) => {
-        renderCommands.push({
-          type: 'add-repeat-button',
-          disable: isSkipped(recordPath, skipping),
-          valuePath: recordPath.concat('add-repeat-button'),
-          key: _.join(recordPath.concat('add-repeat-button'), '.'),
-          title: 'title' in part ? part.title : '',
-          repeatList: getRepeatList(
-            ('repeated' in part && part.repeated) || false,
-            getPath,
-            recordPath
-          ),
-          repeatListPath: recordPath.concat('repeat-list'),
-        })
+      preEachRepeat: (part, repeatListRecordPath, repeatId, recordPath) => {
+        if (
+          'repeated' in part &&
+          part.repeated &&
+          repeatId !== 'at-least-one'
+        ) {
+          const repeatListRecordValue = getFlatRecordValue(
+            flatRecord,
+            repeatListRecordPath,
+            'repeat-list'
+          )
+          renderCommands.push({
+            type: 'remove-repeat-button',
+            recordValue: repeatListRecordValue,
+            title: 'title' in part ? part.title : '',
+            partRepeated: part.repeated,
+            repeatId: repeatId,
+            // repeatList:
+            // repeatListRecordValue?.value ||
+            // (part.repeated === 'at-least-one' ? ['at-least-one'] : []),
+            valuePath: repeatListRecordPath,
+            key: _.join(recordPath.concat('add-repeat-button'), '.'),
+            disable:
+              getFlatRecordValue(flatRecord, repeatListRecordPath)?.skipped ||
+              false,
+          })
+        }
       },
+      eachRepeat: () => {},
     }
   )
   return renderCommands

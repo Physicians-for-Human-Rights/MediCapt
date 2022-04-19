@@ -1,17 +1,10 @@
 import React, { useState } from 'react'
 import { Box, Icon, Button, Center, Modal } from 'native-base'
-import { RecordDataByType } from 'utils/types/record'
-import { ArrayElement } from 'utils/types/formHelpers'
+import { ImageAnnotation } from 'utils/types/record'
 import BodyMarker from 'components/BodyMarker'
 import { useWindowDimensions } from 'react-native'
-import { disabled, disabledBackground } from 'utils/formRendering/utils'
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  MaterialCommunityIcons,
-  MaterialIcons,
-} from '@expo/vector-icons'
+import { disabledBackground } from 'utils/formRendering/utils'
+import { AntDesign } from '@expo/vector-icons'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 
@@ -23,11 +16,8 @@ function BodyImage({
   isDisabled,
 }: {
   imageURI: string
-  annotations: RecordDataByType['body-image']['annotations']
-  addMarkerData: (
-    marker: ArrayElement<RecordDataByType['body-image']['annotations']>,
-    index: number | null
-  ) => void
+  annotations: ImageAnnotation[]
+  addMarkerData: (marker: ImageAnnotation, index: number | null) => void
   removeMarkerData: (n: number) => void
   isDisabled: boolean
 }) {

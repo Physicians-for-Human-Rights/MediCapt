@@ -1,4 +1,13 @@
 import { z } from 'zod'
+import { FormKVRawType, FormPart } from 'utils/types/form'
+
+export type RecordValuePath = (string | number)[]
+
+export type RecordValue =
+  | RecordSimpleValue
+  | RecordValueByType['repeat-list']
+  | RecordValueByType['list-with-parts']
+export type FlatRecord = Record<string, RecordValue>
 
 export type RecordType = {
   'storage-version'?: '1.0.0'
@@ -13,20 +22,186 @@ export type RecordSection = {
   parts: RecordParts
 }
 
-export type RecordRepeated = {
-  'repeat-list': string[]
-  repeat: RecordSection
+export type RecordParts = {
+  [partName: string]: RecordRepeatedPart | RecordPart
 }
 
-export type RecordParts = {
-  [partName: string]: RecordPart
+export type RecordRepeatedPart = RecordValueByType['repeat-list'] & {
+  repeat: RecordParts
 }
 
 export type RecordPart = {
-  parts: RecordParts
-} & RecordDataContents
+  parts?: RecordParts
+} & (RecordSimpleValue | RecordListWithParts)
 
-export type RecordPath = (string | number)[]
+export type RecordListWithParts = RecordValueByType['list-with-parts'] & {
+  'list-parts': RecordParts
+}
+
+export type RecordSimpleValue =
+  | RecordValueByType['bool']
+  | RecordValueByType['date']
+  | RecordValueByType['date-time']
+  | RecordValueByType['number']
+  | RecordValueByType['list']
+  | RecordValueByType['list-with-labels']
+  | RecordValueByType['list-multiple']
+  | RecordValueByType['list-with-labels-multiple']
+  | RecordValueByType['text']
+  | RecordValueByType['long-text']
+  | RecordValueByType['email']
+  | RecordValueByType['address']
+  | RecordValueByType['phone-number']
+  | RecordValueByType['gender']
+  | RecordValueByType['sex']
+  | RecordValueByType['signature']
+  | RecordValueByType['photo']
+  | RecordValueByType['body-image']
+
+export type RecordValueByType = {
+  'repeat-list': {
+    type?: 'repeat-list'
+    skipped?: boolean
+    value?: string[]
+  }
+  bool: {
+    type?: 'bool'
+    skipped?: boolean
+    value?: boolean
+  }
+  number: {
+    type?: 'number'
+    skipped?: boolean
+    value?: string
+  }
+  text: {
+    type?: 'text'
+    skipped?: boolean
+    value?: string
+  }
+  'long-text': {
+    type?: 'long-text'
+    skipped?: boolean
+    value?: string
+  }
+  email: {
+    /**
+           @faker internet.email
+    */
+    type?: 'email'
+    skipped?: boolean
+    value?: string
+  }
+  address: {
+    type?: 'address'
+    skipped?: boolean
+    value?: string
+  }
+  'phone-number': {
+    type?: 'phone-number'
+    skipped?: boolean
+    value?: string
+  }
+  gender: {
+    type?: 'gender'
+    skipped?: boolean
+    value?: string
+  }
+  sex: {
+    type?: 'sex'
+    skipped?: boolean
+    value?: string // TODO 'male' | 'female' | 'intersex'
+  }
+  date: {
+    type?: 'date'
+    skipped?: boolean
+    value?: Date
+    birthdate?: boolean
+  }
+  'date-time': {
+    /**
+     @format date-time
+    */
+    type?: 'date-time'
+    skipped?: boolean
+    value?: Date
+  }
+  list: {
+    type?: 'list'
+    skipped?: boolean
+    value?: {
+      options: string[] | boolean[] | number[] | null
+      // selection: number | 'other'
+      // otherText?: string
+      selection: string | null
+      otherValue: string | null
+    }
+  }
+  'list-with-labels': {
+    type?: 'list-with-labels'
+    skipped?: boolean
+    value?: {
+      options: FormKVRawType[] | null
+      // selection: number | 'other'
+      // otherText?: string
+      selection: string | null
+      otherValue: string | null
+    }
+  }
+  'list-multiple': {
+    type?: 'list-multiple'
+    skipped?: boolean
+    value?: {
+      options: string[] | boolean[] | number[]
+      selections: boolean[]
+      otherChecked?: boolean
+      otherValue?: string
+    }
+  }
+  'list-with-labels-multiple': {
+    type?: 'list-with-labels-multiple'
+    skipped?: boolean
+    value?: {
+      options: FormKVRawType[]
+      selections: boolean[]
+      other?: string
+    }
+  }
+  'list-with-parts': {
+    type?: 'list-with-parts'
+    skipped?: boolean
+    value?: {
+      options: FormPart[]
+      selections: boolean[]
+    }
+  }
+  signature: {
+    type: 'signature'
+    skipped?: boolean
+    /**
+     @format uri
+    */
+    value?: string
+    signer?: string
+    'date-signed'?: Date
+  }
+  photo: {
+    type?: 'photo'
+    skipped?: boolean
+    value?: RecordPhoto[]
+  }
+  'body-image': {
+    /**
+       @format uri
+    */
+    type?: 'body-image'
+    skipped?: boolean
+    value?: {
+      uri: string
+      annotations: ImageAnnotation[]
+    }
+  }
+}
 
 export type RecordPhoto = {
   /**
@@ -39,123 +214,24 @@ export type RecordPhoto = {
   'date-taken': Date
 }
 
-export type RecordDataByType = {
-  bool: {
-    value: boolean
-  }
-  signature: {
-    signer?: string
+export type ImageAnnotation = {
+  location: {
     /**
-       @format uri
+      @minimum 0
+      @maximum 10000
+      @type integer
     */
-    uri: string
-    'date-signed': Date
-  }
-  date: {
-    birthdate?: boolean
-    value: Date
-  }
-  'date-time': {
+    x: number
     /**
-     @format date-time
-  */
-    value: Date
-  }
-  number: {
-    value: string
-  }
-  list: {
-    selection: string
-    other?: string
-  }
-  'list-with-labels': {
-    selection: string
-    other?: string
-  }
-  'list-multiple': {
-    value: (boolean | null)[]
-    other?: string
-  }
-  'list-with-labels-multiple': {
-    selections: string[]
-    other?: string
-  }
-  text: {
-    value: string
-  }
-  'long-text': {
-    value: string
-  }
-  email: {
-    /**
-           @faker internet.email
-        */
-    value: string
-  }
-  address: {
-    value: string
-  }
-  'phone-number': {
-    value: string
-  }
-  gender: {
-    value: string
-  }
-  sex: {
-    value: string
-  }
-  photo: {
-    value: RecordPhoto[]
-  }
-  'body-image': {
-    /**
-       @format uri
+      @minimum 0
+      @maximum 10000
+      @type integer
     */
-    uri: string
-    annotations: {
-      location: {
-        /**
-           @minimum 0
-           @maximum 10000
-           @type integer
-        */
-        x: number
-        /**
-           @minimum 0
-           @maximum 10000
-           @type integer
-        */
-        y: number
-      }
-      text: string
-      photos: RecordPhoto[]
-    }[]
+    y: number
   }
+  text: string
+  photos: RecordPhoto[]
 }
-
-// export type RecordDataMaybeRepeated<T extends keyof RecordDataByType> =
-export type RecordDataMaybeRepeated<T extends keyof RecordDataByType> =
-  | { [T: string]: RecordDataByType[T] }
-  | { [T: string]: RecordDataByType[T][] }
-
-export type RecordDataContents =
-  | RecordDataMaybeRepeated<'bool'>
-  | RecordDataMaybeRepeated<'signature'>
-  | RecordDataMaybeRepeated<'date'>
-  | RecordDataMaybeRepeated<'date-time'>
-  | RecordDataMaybeRepeated<'number'>
-  | RecordDataMaybeRepeated<'list-multiple'>
-  | RecordDataMaybeRepeated<'list-with-labels-multiple'>
-  | RecordDataMaybeRepeated<'list'>
-  | RecordDataMaybeRepeated<'list-with-labels'>
-  | RecordDataMaybeRepeated<'text'>
-  | RecordDataMaybeRepeated<'address'>
-  | RecordDataMaybeRepeated<'phone-number'>
-  | RecordDataMaybeRepeated<'gender'>
-  | RecordDataMaybeRepeated<'sex'>
-  | RecordDataMaybeRepeated<'photo'>
-  | RecordDataMaybeRepeated<'body-image'>
-// | RecordDataMaybeRepeated<'list-with-parts'>
 
 // TODO Integrate this back in
 // export type RecordDataMap = {
@@ -189,7 +265,7 @@ export const recordMetadataSchema = z
 
 export type RecordMetadata = z.infer<typeof recordMetadataSchema>
 
-export type RecordValue =
+export type RecordValueTypes =
   | string
   | number
   | boolean

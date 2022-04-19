@@ -1,8 +1,10 @@
 import _ from 'lodash'
-import { FormKVRawType } from 'utils/types/form'
-import { RecordPhoto, RecordPath, RecordDataByType } from 'utils/types/record'
-
-export type URI = string
+import { FormKVRawType, FormPartMap } from 'utils/types/form'
+import {
+  RecordValuePath,
+  RecordValueByType,
+  RecordValue,
+} from 'utils/types/record'
 
 export type RenderCommand =
   // Commands that correspond to structural UI components
@@ -26,22 +28,25 @@ export type RenderCommand =
       }
     | {
         type: 'skip'
-        skipped: boolean
-        skippedPath: RecordPath
+        value?: RecordValue
         direction: 'row' | 'column'
       }
     | {
         type: 'remove-repeat-button'
+        recordValue?: RecordValueByType['repeat-list']
         title: string
+        partRepeated: true | 'at-least-one'
         repeatId: string
-        repeatList: string[]
-        repeatListPath: RecordPath
+        // repeatList: string[]
+        // repeatListPath: RecordValuePath
       }
     | {
         type: 'add-repeat-button'
+        recordValue?: RecordValueByType['repeat-list']
         title: string
-        repeatList: string[]
-        repeatListPath: RecordPath
+        partRepeated: true | 'at-least-one'
+        // repeatList: string[]
+        // repeatListPath: RecordValuePath
       }
     | {
         type: 'padding'
@@ -62,100 +67,110 @@ export type RenderCommand =
     // Commands that correspond to form components
     | {
         type: 'address'
-        text?: string
+        recordValue?: RecordValueByType['address']
         placeholder?: string
       }
     | {
         type: 'body-image'
-        backgroundImage: URI
-        annotations: RecordDataByType['body-image']['annotations']
-        annotationPath: RecordPath
+        recordValue?: RecordValueByType['body-image']
+        formImage: string
       }
     | {
         type: 'bool'
-        selected: boolean | null
+        recordValue?: RecordValueByType['bool']
         fullwidth?: boolean
         maxW?: string
       }
-    | { type: 'date'; date: Date; title: string }
-    | { type: 'date-time'; date: Date; title: string }
+    | { type: 'date'; recordValue?: RecordValueByType['date']; title: string }
+    | {
+        type: 'date-time'
+        recordValue?: RecordValueByType['date-time']
+        title: string
+      }
     | {
         type: 'email'
-        text?: string
+        recordValue?: RecordValueByType['email']
         placeholder?: string
       }
     | {
         type: 'gender'
-        selected: string
+        recordValue?: RecordValueByType['gender']
         options: Record<string, string>
         fullwidth?: boolean
         maxW?: string
       }
     | {
         type: 'list'
-        value: string
+        recordValue?: RecordValueByType['list']
         options: string[] | boolean[] | number[] | null
         other?: 'text' | 'long-text'
-        otherValue: string | null
-        otherPath: RecordPath
-      }
-    | {
-        type: 'list-multiple'
-        values: boolean[]
-        valuePaths: RecordPath[]
-        otherChecked: boolean | null
-        otherText?: string
-        otherPath: RecordPath
-        otherPathText: RecordPath
-        other?: 'text' | 'long-text'
-        options: string[] | boolean[] | number[]
+        // value: string
+        // otherValue: string | null
       }
     | {
         type: 'list-with-labels'
+        recordValue?: RecordValueByType['list-with-labels']
         options: FormKVRawType[] | null
-        value: string | null
         other?: 'text' | 'long-text'
-        otherValue: string | null
-        otherPath: RecordPath
+        // value: string | null
+        // otherValue: string | null
+      }
+    | {
+        type: 'list-multiple'
+        recordValue?: RecordValueByType['list-multiple']
+        options: string[] | boolean[] | number[]
+        other?: 'text' | 'long-text'
+        // values: boolean[]
+        // otherChecked: boolean | null
+        // otherText?: string
       }
     | {
         type: 'list-with-labels-multiple'
+        recordValue?: RecordValueByType['list-with-labels-multiple']
         options: FormKVRawType[]
-        value: any[]
-        valuePaths: RecordPath[]
         other?: 'text' | 'long-text'
-        otherValue: string | null
+        // value: any[]
+        // valuePaths: RecordValuePath[]
+        // otherValue: string | null
       }
     | {
         type: 'list-with-parts'
-        // TODO list-with-parts
+        recordValue?: RecordValueByType['list-with-labels-multiple']
+        options: FormPartMap[]
       }
     | {
         type: 'long-text'
-        text: string
+        recordValue?: RecordValueByType['long-text']
         numberOfLines: number
         placeholder?: string
       }
     | {
         type: 'number'
-        value: string
+        recordValue?: RecordValueByType['number']
         placeholder?: string
         maxW?: string
       }
-    | { type: 'phone-number'; value: string; maxW?: string }
-    | { type: 'photo'; photos: RecordPhoto[] }
+    | {
+        type: 'phone-number'
+        recordValue?: RecordValueByType['phone-number']
+        maxW?: string
+      }
+    | { type: 'photo'; recordValue?: RecordValueByType['photo'] }
     | {
         type: 'sex'
-        value: string
+        recordValue?: RecordValueByType['sex']
         options: Record<string, string>
         fullwidth?: boolean
         maxW?: string
       }
-    | { type: 'signature'; image: URI; date: Date }
+    | {
+        type: 'signature'
+        recordValue?: RecordValueByType['signature']
+      }
     | {
         type: 'text'
-        text: string
+        recordValue?: RecordValueByType['text']
         placeholder?: string
         maxW?: string
       }
-  ) & { valuePath: RecordPath; key: string; disable: boolean }
+  ) & { valuePath: RecordValuePath; key: string; disable: boolean }

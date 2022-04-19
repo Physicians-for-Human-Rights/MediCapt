@@ -15,7 +15,7 @@ import betterAjvErrors from 'better-ajv-errors'
 import jsf from 'json-schema-faker'
 import Form from 'components/Form'
 import { renderCommand } from 'utils/formRendering/renderer'
-import { GetValueFn, mapSectionWithPaths } from 'utils/forms'
+import { GetRecordValueFromPathFn, mapSectionWithPaths } from 'utils/forms'
 import { ArrayElement, NamedFormSection, FormFns } from 'utils/formTypesHelpers'
 import {
   RecordType,

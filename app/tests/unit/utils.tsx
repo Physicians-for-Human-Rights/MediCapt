@@ -6,45 +6,20 @@ jest.mock('expo-image-picker', () => ({
     .mockResolvedValue({ cancelled: false, base64: 'MOCK' }),
 }))
 
-import {
-  render,
-  fireEvent,
-  waitFor,
-  act,
-  FireEventAPI,
-} from '@testing-library/react-native'
-import fs from 'fs'
-import yaml from 'js-yaml'
+import { render, fireEvent, waitFor } from '@testing-library/react-native'
 import { createGenerator } from 'ts-json-schema-generator'
 import Ajv from 'ajv'
 import addFormats from 'ajv-formats'
 import betterAjvErrors from 'better-ajv-errors'
-import jsf from 'json-schema-faker'
-import Form from 'components/Form'
 import { renderCommand } from 'utils/formRendering/renderer'
-import { GetValueFn, mapSectionWithPaths } from 'utils/forms'
-import { ArrayElement, NamedFormSection, FormFns } from 'utils/formTypesHelpers'
-import {
-  RecordType,
-  RecordSections,
-  RecordPath,
-  RecordDataByType,
-} from 'utils/recordTypes'
+import { GetRecordValueFromPathFn, mapSectionWithPaths } from 'utils/forms'
+import { NamedFormSection } from 'utils/types/formHelpers'
+import { RecordType, RecordValuePath } from 'utils/types/record'
 import { allFormRenderCommands } from 'utils/formRendering/commands'
 import _ from 'lodash'
 import React from 'react'
-import { Text } from 'react-native'
-import { FlatList } from 'react-native'
 import { NativeBaseProvider } from 'native-base'
-import {
-  FormValueType,
-  FormPart,
-  FormSectionMap,
-  FormPartMap,
-  FormDefinition,
-  FormRef,
-  FormConditional,
-} from 'utils/formTypes'
+import { FormDefinition } from 'utils/types/form'
 
 import { toSatisfy } from 'jest-extended'
 expect.extend({ toSatisfy })
@@ -69,15 +44,17 @@ const inset = {
 
 export function formSectionRenderTest(sectionContents: NamedFormSection) {
   const formPaths = {} as Record<string, any>
-  const setRecordPath = jest.fn((path: RecordPath, value: any) => {
+  const setRecordPath = jest.fn((path: RecordValuePath, value: any) => {
     formPaths[_.join(path, '.')] = value
   })
   const addKeepAlive = jest.fn()
   const removeKeepAlive = jest.fn()
-  const getRecordPath = jest.fn((recordPath: RecordPath, default_: any) => {
-    const stringPath = _.join(recordPath, '.')
-    return stringPath in formPaths ? formPaths[stringPath] : default_
-  })
+  const getRecordPath = jest.fn(
+    (recordPath: RecordValuePath, default_: any) => {
+      const stringPath = _.join(recordPath, '.')
+      return stringPath in formPaths ? formPaths[stringPath] : default_
+    }
+  )
   const commands = allFormRenderCommands({}, sectionContents, {}, getRecordPath)
   const elements = _.map(commands, command =>
     React.cloneElement(
@@ -207,7 +184,7 @@ export async function formFieldTest({
 export function populateTypes(
   section: NamedFormSection,
   commonRefTable: Record<string, FormDefinition>,
-  getValue: GetValueFn
+  getValue: GetRecordValueFromPathFn
 ) {
   const record = {} as Record<string, any>
   function setType(valuePath: (string | number)[], type: string) {
@@ -215,8 +192,6 @@ export function populateTypes(
   }
   mapSectionWithPaths<any>(section, commonRefTable, null, getValue, {
     pre: () => null,
-    // TODO
-    selectMultiple: () => null,
     address: valuePath => setType(valuePath, 'address'),
     'body-image': valuePath => setType(valuePath, 'body-image'),
     bool: valuePath => setType(valuePath, 'bool'),
@@ -227,6 +202,10 @@ export function populateTypes(
     list: valuePath => setType(valuePath, 'list'),
     'list-with-labels': valuePath => setType(valuePath, 'list-with-labels'),
     // TODO
+    'list-multiple': () => null,
+    // TODO
+    'list-with-labels-multiple': () => null,
+    // TODO
     'list-with-parts': valuePath => setType(valuePath, 'list-with-parts'),
     'long-text': valuePath => setType(valuePath, 'long-text'),
     number: valuePath => setType(valuePath, 'number'),
@@ -235,8 +214,8 @@ export function populateTypes(
     sex: valuePath => setType(valuePath, 'sex'),
     text: valuePath => setType(valuePath, 'text'),
     signature: valuePath => setType(valuePath, 'signature'),
-    combinePlainParts: () => null,
-    combineSmartParts: () => null,
+    combineResultsFromParts: () => null,
+    combineResultsFromSubparts: () => null,
     preRepeat: () => null,
     preEachRepeat: () => null,
     eachRepeat: () => null,
@@ -248,7 +227,7 @@ export function populateTypes(
 
 export function formPathsToRecord(
   sectionContents: NamedFormSection,
-  getValue: GetValueFn,
+  getValue: GetRecordValueFromPathFn,
   formPaths: Record<string, any>
 ) {
   let record = { 'storage-version': '1.0.0', sections: {} } as RecordType

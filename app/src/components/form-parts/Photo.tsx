@@ -15,7 +15,7 @@ import {
 } from 'native-base'
 import * as ImagePicker from 'expo-image-picker'
 import { Camera } from 'expo-camera'
-import { RecordDataByType } from 'utils/types/record'
+import { RecordPhoto, RecordValueByType } from 'utils/types/record'
 import { ArrayElement } from 'utils/types/formHelpers'
 import {
   AntDesign,
@@ -30,8 +30,8 @@ import _ from 'lodash'
 import { useWindowDimensions } from 'react-native'
 
 type PhotoSelectorProps = {
-  photos: RecordDataByType['photo']['value']
-  addPhoto: (photo: ArrayElement<RecordDataByType['photo']['value']>) => void
+  photos: RecordValueByType['photo']['value']
+  addPhoto: (photo: RecordPhoto) => void
   removePhoto: (n: number) => void
   isDisabled: boolean
   onlyOne?: boolean

@@ -1,28 +1,13 @@
 import _ from 'lodash'
 import {
-  FormValueType,
-  FormPart,
-  FormSectionMap,
-  FormPartMap,
-  FormDefinition,
-  FormRef,
-  FormConditional,
-  FormPartCommon,
-  FormPartField,
-  FormKVRawType,
-  MultipleFormValueTypes,
-} from 'utils/types/form'
-import { ArrayElement } from 'utils/types/formHelpers'
-import { RecordPath, RecordDataByType } from 'utils/types/record'
+  RecordValuePath,
+  RecordValue,
+  ImageAnnotation,
+  RecordPhoto,
+} from 'utils/types/record'
 import React from 'react'
 import { t } from 'i18n-js'
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  MaterialCommunityIcons,
-  MaterialIcons,
-} from '@expo/vector-icons'
+import { MaterialIcons } from '@expo/vector-icons'
 import uuid from 'react-native-uuid'
 
 import {
@@ -33,26 +18,20 @@ import {
   HStack,
   Text,
   Heading,
-  ZStack,
   Box,
 } from 'native-base'
-import { TextInput, View } from 'react-native'
 // @ts-ignore TODO TS doesn't understand .native.tsx and .web.tsx files
 import DateTimePicker from 'components/DateTimePicker'
 // @ts-ignore typescript doesn't like platform-specific modules
 import Signature from 'components/Signature'
-import {
-  List,
-  ListSelectMultiple,
-  isPrimitiveType,
-} from 'components/form-parts/List'
+import { List, ListSelectMultiple } from 'components/form-parts/List'
 import ButtonGroup from 'components/form-parts/ButtonGroup'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import Photo from 'components/form-parts/Photo'
 import BodyImage from 'components/form-parts/BodyImage'
 import CustomButton from 'components/form-parts/Button'
 import SkipButton from 'components/form-parts/SkipButton'
-import { RenderCommand, URI } from 'utils/formRendering/types'
+import { RenderCommand } from 'utils/formRendering/types'
 import { wrapCommandMemo } from 'utils/memo'
 
 const CDebouncedTextInput = wrapCommandMemo(DebouncedTextInput)
@@ -71,9 +50,9 @@ import { disabled, disabledBackground } from 'utils/formRendering/utils'
 
 export function renderCommand(
   command: RenderCommand,
-  setPath: (path: RecordPath, value: any) => any,
-  addKeepAlive: (n: string) => any,
-  removeKeepAlive: (n: string) => any
+  setPath: (path: RecordValuePath, value: RecordValue) => void,
+  addKeepAlive: (n: string) => void,
+  removeKeepAlive: (n: string) => void
 ) {
   switch (command.type) {
     case 'title':
@@ -118,9 +97,13 @@ export function renderCommand(
             command={command}
             isDisabled={false}
             skippable={true}
-            skipped={command.skipped}
+            skipped={command.value?.skipped || false}
             toggleSkip={() => {
-              setPath(command.skippedPath, !command.skipped)
+              const skipped = command.value?.skipped || false
+              setPath(command.valuePath, {
+                ...command.value,
+                skipped: !skipped,
+              })
             }}
             direction={command.direction}
           />
@@ -133,7 +116,11 @@ export function renderCommand(
             command={command}
             isDisabled={command.disable}
             onChangeText={text => {
-              setPath(command.valuePath, text)
+              setPath(command.valuePath, {
+                ...command.recordValue,
+                type: 'address',
+                value: text,
+              })
             }}
             debounceMs={500}
             size="md"
@@ -146,46 +133,67 @@ export function renderCommand(
             multiline={true}
             numberOfLines={3}
             placeholder={command.placeholder}
-            value={command.text}
+            value={command.recordValue?.value}
             accessibilityLabel={t('form.enter-address')}
           />
         </Center>
       )
-    case 'body-image':
+    case 'body-image': {
+      const image = command.recordValue?.value?.uri || command.formImage
+      const annotations = command.recordValue?.value?.annotations || []
       return (
         <CBodyImage
           command={command}
           isDisabled={command.disable}
-          imageURI={command.backgroundImage}
-          annotations={command.annotations}
-          addMarkerData={(
-            toAdd: ArrayElement<RecordDataByType['body-image']['annotations']>,
-            index: number | null
-          ) => {
-            let array = command.annotations
+          imageURI={image}
+          annotations={annotations}
+          addMarkerData={(toAdd: ImageAnnotation, index: number | null) => {
+            let array = _.cloneDeep(annotations)
             if (index !== null) {
               array.splice(index, 1, toAdd)
             } else {
               array = array.concat(toAdd)
             }
-            setPath(command.annotationPath, array)
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'body-image',
+              value: {
+                uri: image,
+                annotations: array,
+              },
+            })
           }}
           removeMarkerData={(n: number) => {
-            const r = _.cloneDeep(command.annotations)
-            _.pullAt(r, [n])
-            setPath(command.annotationPath, r)
+            const array = _.cloneDeep(annotations)
+            _.pullAt(array, [n])
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'body-image',
+              value: {
+                uri: image,
+                annotations: array,
+              },
+            })
           }}
         />
       )
+    }
     case 'bool':
       return (
         <CButtonGroup
           command={command}
+          // @ts-ignore TODO Why not?
           bg={disabled(command, disabledBackground)}
           isDisabled={command.disable}
-          selected={command.selected}
+          selected={command.recordValue?.value}
           options={{ [t('form.Yes')]: true, [t('form.No')]: false }}
-          onPress={v => setPath(command.valuePath, v)}
+          onPress={v =>
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'bool',
+              value: v as boolean,
+            })
+          }
           fullwidth={command.fullwidth}
           maxW={command.maxW}
           py={1}
@@ -196,26 +204,38 @@ export function renderCommand(
       return (
         <CDateTimePicker
           command={command}
-          isDisabled={command.disable}
           // @ts-ignore TODO Why not?
+          isDisabled={command.disable}
           title={command.title}
-          date={command.date}
+          date={command.recordValue?.value}
           open={() => addKeepAlive(_.join(command.valuePath, '.'))}
           close={() => removeKeepAlive(_.join(command.valuePath, '.'))}
-          setDate={(date: Date) => setPath(command.valuePath, date)}
+          setDate={(date: Date) =>
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'date',
+              value: date,
+            })
+          }
         />
       )
     case 'date-time':
       return (
         <CDateTimePicker
           command={command}
-          isDisabled={command.disable}
           // @ts-ignore TODO Why not?
+          isDisabled={command.disable}
           title={command.title}
-          date={command.date}
+          date={command.recordValue?.value}
           open={() => addKeepAlive(_.join(command.valuePath, '.'))}
           close={() => removeKeepAlive(_.join(command.valuePath, '.'))}
-          setDate={(date: Date) => setPath(command.valuePath, date)}
+          setDate={(date: Date) =>
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'date-time',
+              value: date,
+            })
+          }
           time
         />
       )
@@ -225,7 +245,13 @@ export function renderCommand(
           <CDebouncedTextInput
             command={command}
             isDisabled={command.disable}
-            onChangeText={text => setPath(command.valuePath, text)}
+            onChangeText={text =>
+              setPath(command.valuePath, {
+                ...command.recordValue,
+                type: 'email',
+                value: text,
+              })
+            }
             debounceMs={500}
             size="md"
             bg="coolGray.100"
@@ -235,7 +261,7 @@ export function renderCommand(
             textContentType="emailAddress"
             keyboardType="email-address"
             placeholder={command.placeholder}
-            value={command.text}
+            value={command.recordValue?.value || ''}
             accessibilityLabel={t('form.enter-email')}
           />
         </Center>
@@ -244,65 +270,153 @@ export function renderCommand(
       return (
         <CButtonGroup
           command={command}
+          // @ts-ignore Why isn't TS happy here?
           bg={disabled(command, disabledBackground)}
           isDisabled={command.disable}
-          selected={command.selected}
+          selected={command.recordValue?.value || ''}
           options={command.options}
-          onPress={v => setPath(command.valuePath, v)}
+          onPress={v =>
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'gender',
+              value: v as string,
+            })
+          }
           fullwidth={command.fullwidth}
           maxW={command.maxW}
         />
       )
-    case 'list':
+    case 'list': {
+      const listValue = command.recordValue?.value
+      const selection = listValue ? listValue.selection : null
+      const otherValue = listValue ? listValue.otherValue : null
       return (
         <CList
           command={command}
           isDisabled={command.disable}
           options={command.options}
-          value={command.value}
-          onSelect={s => setPath(command.valuePath, s)}
+          value={selection}
+          onSelect={selection =>
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'list',
+              value: {
+                options: command.options,
+                selection,
+                otherValue: null,
+              },
+            })
+          }
           other={command.other}
-          otherValue={command.otherValue}
-          onOtherValue={s => setPath(command.otherPath, s)}
+          otherValue={otherValue}
+          onOtherValue={otherValue =>
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'list',
+              value: {
+                options: command.options,
+                selection: null,
+                otherValue,
+              },
+            })
+          }
         />
       )
-    case 'list-multiple':
-      return (
-        <CListSelectMultiple
-          command={command}
-          isDisabled={command.disable}
-          values={command.values}
-          otherChecked={command.otherChecked}
-          otherText={command.otherText}
-          options={command.options}
-          other={command.other}
-          togglePathValue={(idx: number) => {
-            setPath(command.valuePaths[idx], !command.values[idx])
-          }}
-          toggleOtherChecked={() => {
-            setPath(command.otherPath, !command.otherChecked)
-          }}
-          setOtherText={(s: string | undefined) => {
-            command.other &&
-              command.otherPathText &&
-              setPath(command.otherPathText, s)
-          }}
-        />
-      )
-    case 'list-with-labels':
+    }
+    case 'list-with-labels': {
+      const listValue = command.recordValue?.value
+      const selection = listValue ? listValue.selection : null
+      const otherValue = listValue ? listValue.otherValue : null
       return (
         <CList
           command={command}
           isDisabled={command.disable}
           withLabels
           options={command.options}
-          value={command.value}
-          onSelect={s => setPath(command.valuePath, s)}
+          value={selection}
+          onSelect={selection =>
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'list-with-labels',
+              value: {
+                options: command.options,
+                selection,
+                otherValue: null,
+              },
+            })
+          }
           other={command.other}
-          otherValue={command.otherValue}
-          onOtherValue={s => setPath(command.otherPath, s)}
+          otherValue={otherValue}
+          onOtherValue={otherValue =>
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'list-with-labels',
+              value: {
+                options: command.options,
+                selection: null,
+                otherValue,
+              },
+            })
+          }
         />
       )
+    }
+    case 'list-multiple': {
+      const listValue = command.recordValue?.value
+      const options = listValue?.options || command.options
+      const selections =
+        listValue?.selections || _.times(options?.length, _.constant(false))
+      return (
+        <CListSelectMultiple
+          command={command}
+          isDisabled={command.disable}
+          values={selections}
+          otherChecked={!!listValue?.otherChecked}
+          otherText={listValue?.otherValue}
+          options={command.options}
+          other={command.other}
+          togglePathValue={(idx: number) => {
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'list-multiple',
+              value: {
+                ...listValue,
+                options,
+                selections: _.concat(
+                  _.slice(selections, 0, idx),
+                  !selections[idx],
+                  _.slice(selections, idx)
+                ),
+              },
+            })
+          }}
+          toggleOtherChecked={() => {
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'list-multiple',
+              value: {
+                ...listValue,
+                options,
+                selections,
+                otherChecked: !listValue?.otherChecked,
+              },
+            })
+          }}
+          setOtherText={(otherValue: string | undefined) => {
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'list-multiple',
+              value: {
+                ...listValue,
+                options,
+                selections,
+                otherValue,
+              },
+            })
+          }}
+        />
+      )
+    }
     case 'list-with-labels-multiple':
       // TODO
       return <></>
@@ -316,7 +430,11 @@ export function renderCommand(
             command={command}
             isDisabled={command.disable}
             onChangeText={text => {
-              setPath(command.valuePath, text)
+              setPath(command.valuePath, {
+                ...command.recordValue,
+                type: 'long-text',
+                value: text,
+              })
             }}
             debounceMs={500}
             placeholder={command.placeholder}
@@ -326,7 +444,7 @@ export function renderCommand(
             w="100%"
             multiline={true}
             numberOfLines={command.numberOfLines}
-            value={command.text}
+            value={command.recordValue?.value || ''}
             accessibilityLabel={t('form.enter-long-text')}
           />
         </Center>
@@ -338,7 +456,11 @@ export function renderCommand(
             command={command}
             isDisabled={command.disable}
             onChangeText={text => {
-              setPath(command.valuePath, text)
+              setPath(command.valuePath, {
+                ...command.recordValue,
+                type: 'number',
+                value: text,
+              })
             }}
             debounceMs={500}
             placeholder={command.placeholder}
@@ -348,7 +470,7 @@ export function renderCommand(
             w="100%"
             textAlign="center"
             keyboardType="numeric"
-            value={command.value}
+            value={command.recordValue?.value || ''}
             maxW={command.maxW}
             accessibilityLabel={t('form.enter-number')}
           />
@@ -361,7 +483,11 @@ export function renderCommand(
             command={command}
             isDisabled={command.disable}
             onChangeText={text => {
-              setPath(command.valuePath, text)
+              setPath(command.valuePath, {
+                ...command.recordValue,
+                type: 'phone-number',
+                value: text,
+              })
             }}
             debounceMs={500}
             size="md"
@@ -371,27 +497,34 @@ export function renderCommand(
             textAlign="center"
             textContentType="telephoneNumber"
             keyboardType="phone-pad"
-            value={command.value}
+            value={command.recordValue?.value || ''}
             maxW={command.maxW}
             accessibilityLabel={t('form.enter-phone-number')}
           />
         </Center>
       )
     case 'photo':
+      const photos = command.recordValue?.value || []
       return (
         <CPhoto
           command={command}
           isDisabled={command.disable}
-          photos={command.photos}
-          addPhoto={(
-            toAdd: ArrayElement<RecordDataByType['photo']['value']>
-          ) => {
-            setPath(command.valuePath, command.photos.concat(toAdd))
+          photos={photos}
+          addPhoto={(toAdd: RecordPhoto) => {
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'photo',
+              value: photos.concat(toAdd),
+            })
           }}
           removePhoto={(n: number) => {
-            const r = _.cloneDeep(command.photos)
-            _.pullAt(r, [n])
-            setPath(command.valuePath, r)
+            const array = _.cloneDeep(photos)
+            _.pullAt(array, [n])
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'photo',
+              value: array,
+            })
           }}
         />
       )
@@ -399,11 +532,18 @@ export function renderCommand(
       return (
         <CButtonGroup
           command={command}
+          // @ts-ignore TODO Why not?
           bg={disabled(command, disabledBackground)}
           isDisabled={command.disable}
-          selected={command.value}
+          selected={command.recordValue?.value || ''}
           options={command.options}
-          onPress={v => setPath(command.valuePath, v)}
+          onPress={v =>
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'sex',
+              value: v as string,
+            })
+          }
           fullwidth={command.fullwidth}
           maxW={command.maxW}
         />
@@ -414,16 +554,19 @@ export function renderCommand(
           command={command}
           // @ts-ignore Why isn't TS happy here?
           isDisabled={command.disable}
-          // @ts-ignore Why isn't TS happy here?
-          imageURI={command.image}
+          imageURI={command.recordValue?.value}
           open={() => {
             addKeepAlive(_.join(command.valuePath, '.'))
           }}
           close={() => {
             removeKeepAlive(_.join(command.valuePath, '.'))
           }}
-          setSignature={(dataURI: string) =>
-            setPath(command.valuePath, dataURI)
+          setSignature={(signature: string) =>
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'signature',
+              value: signature,
+            })
           }
         />
       )
@@ -434,7 +577,11 @@ export function renderCommand(
             command={command}
             isDisabled={command.disable}
             onChangeText={text => {
-              setPath(command.valuePath, text)
+              setPath(command.valuePath, {
+                ...command.recordValue,
+                type: 'text',
+                value: text,
+              })
             }}
             debounceMs={500}
             placeholder={command.placeholder}
@@ -443,25 +590,30 @@ export function renderCommand(
             variant="filled"
             w="100%"
             textAlign="center"
-            value={command.text}
+            value={command.recordValue?.value || ''}
             maxW={command.maxW}
             accessibilityLabel={t('form.enter-text')}
           />
         </Center>
       )
-    case 'add-repeat-button':
+    case 'add-repeat-button': {
+      const repeatList =
+        command.recordValue?.value ||
+        (command.partRepeated === 'at-least-one' ? ['at-least-one'] : [])
       return (
         <Center bg={disabled(command, disabledBackground)}>
           <CCustomButton
             command={command}
+            // @ts-ignore Why isn't TS happy here?
             isDisabled={command.disable}
             key={command.key}
             text={'Add ' + _.lowerCase(command.title)}
             onPress={() => {
-              setPath(
-                command.repeatListPath,
-                command.repeatList.concat(uuid.v4() as string)
-              )
+              setPath(command.valuePath, {
+                ...command.recordValue,
+                type: 'repeat-list',
+                value: repeatList.concat(uuid.v4() as string),
+              })
             }}
             mt={2}
             p={2}
@@ -470,19 +622,25 @@ export function renderCommand(
           />
         </Center>
       )
-    case 'remove-repeat-button':
+    }
+    case 'remove-repeat-button': {
+      const repeatList =
+        command.recordValue?.value ||
+        (command.partRepeated === 'at-least-one' ? ['at-least-one'] : [])
       return (
         <Center bg={disabled(command, disabledBackground)}>
           <CCustomButton
             command={command}
+            // @ts-ignore Why isn't TS happy here?
             isDisabled={command.disable}
             key={command.key}
             text={'Remove ' + _.lowerCase(command.title)}
             onPress={() =>
-              setPath(
-                command.repeatListPath,
-                _.difference(command.repeatList, [command.repeatId])
-              )
+              setPath(command.valuePath, {
+                ...command.recordValue,
+                type: 'repeat-list',
+                value: _.difference(repeatList, [command.repeatId]),
+              })
             }
             mt={2}
             p={2}
@@ -491,6 +649,7 @@ export function renderCommand(
           />
         </Center>
       )
+    }
     case 'padding':
       return (
         <Box px={command.padding} bg={disabled(command, disabledBackground)}>

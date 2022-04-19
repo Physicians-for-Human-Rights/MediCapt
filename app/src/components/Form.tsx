@@ -16,8 +16,7 @@ import FormMenu from 'components/FormMenu'
 import FromTop from 'components/FormTop'
 
 import { FormType } from 'utils/types/form'
-import { RecordPath } from 'utils/types/record'
-import getFlatRecordValue from 'utils/formInferences'
+import { RecordValue, RecordValuePath, FlatRecord } from 'utils/types/record'
 import { RenderCommand } from 'utils/formRendering/types'
 import { allFormRenderCommands } from 'utils/formRendering/commands'
 import { renderCommand } from 'utils/formRendering/renderer'
@@ -25,13 +24,12 @@ import { transformToLayout } from 'utils/formRendering/transformations'
 import { nameFormSections, isSectionComplete } from 'utils/forms'
 
 export default function Form({
-  files,
   form,
-  noRenderCache = false,
+  files,
   onCancel,
 }: {
-  files: Record<string, string>
   form: FormType | undefined
+  files: Record<string, string>
   noRenderCache?: boolean
   onCancel: () => any
 }) {
@@ -51,16 +49,14 @@ export default function Form({
     [currentSection]
   )
 
+  const [flatRecord, { set: setFlatRecordValue }] = useMap({} as FlatRecord)
+  const [keepAlive, { add: addKeepAlive, remove: removeKeepAlive }] = useSet(
+    new Set([] as string[])
+  )
   // This section handles caching. Since forms are so dynamic React ends up
   // wanting to rerender them a lot. This allows us to cut off the process early
   // by checking which parts of the from were updated and which parts want to be
   // rerendered unconditionally.
-  const [flatRecord, { set: setFlatRecordValue }] = useMap(
-    {} as Record<string, any>
-  )
-  const [keepAlive, { add: addKeepAlive, remove: removeKeepAlive }] = useSet(
-    new Set([] as string[])
-  )
   const previousFlatRecord = usePrevious(flatRecord)
   let changedPaths = []
   for (const key of _.union(_.keys(flatRecord), _.keys(previousFlatRecord))) {
@@ -72,7 +68,7 @@ export default function Form({
   // TODO Debugging until this is tested
   if (1) {
     if (!_.isEqual(changedPaths, [])) {
-      let record = {}
+      const record = {}
       _.map(flatRecord, (v, p) => _.set(record, p, v))
       console.log('Record+paths', record, flatRecord)
     }
@@ -80,9 +76,7 @@ export default function Form({
 
   const isSectionCompleteList = form
     ? _.map(formSections, section =>
-        isSectionComplete(section, form.common, (value: RecordPath) =>
-          getFlatRecordValue(flatRecord, value, null)
-        )
+        isSectionComplete(section, form.common, flatRecord)
       )
     : []
 
@@ -108,9 +102,12 @@ export default function Form({
     ]
   )
 
-  const setRecordPath = useCallback((path: RecordPath, value: any) => {
-    setFlatRecordValue(_.join(path, '.'), value)
-  }, [])
+  const setRecordPath = useCallback(
+    (path: RecordValuePath, value: RecordValue) => {
+      setFlatRecordValue(_.join(path, '.'), value)
+    },
+    []
+  )
 
   // outside of the if so the # of hooks doesn't change
   const [renderCommands, setRenderCommands] = useState([] as RenderCommand[])
@@ -123,13 +120,7 @@ export default function Form({
   if (!_.isEmpty(formSections) && form && 'common' in form) {
     const sectionContent = formSections[currentSection]
     const sectionCommands = transformToLayout(
-      allFormRenderCommands(
-        files,
-        sectionContent,
-        form.common,
-        (path: RecordPath, default_: any) =>
-          getFlatRecordValue(flatRecord, path, default_)
-      ),
+      allFormRenderCommands(sectionContent, form.common, files, flatRecord),
       layoutType
     )
     if (!_.isEqual(renderCommands, sectionCommands)) {

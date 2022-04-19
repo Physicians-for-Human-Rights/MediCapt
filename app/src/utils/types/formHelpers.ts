@@ -6,7 +6,7 @@ import {
   NonRefFormPart,
 } from 'utils/types/form'
 import { FormMetadata } from 'utils/types/formMetadata'
-import { RecordPath } from 'utils/types/record'
+import { RecordValuePath } from 'utils/types/record'
 
 // Sections and fields are named by the key of the object they're stored in. The
 // name is not present inside the section or field.
@@ -23,16 +23,24 @@ export type ArrayElement<ArrayType extends readonly unknown[]> =
 export type StandardFormFn<Return, RestrictPart = {}> = (
   // The path to the current value. We can be called multiple times with
   // different value paths when items are repeated
-  valuePath: RecordPath,
+  valuePath: RecordValuePath,
   // The part that corresponds to that entry (an entry is a named part)
   part: NonRefFormPart & (FormPartField & RestrictPart),
   // The path in the form to the current item
-  recordPath: RecordPath,
+  recordPath: RecordValuePath,
   // The index within a list if we're contained in one. Zero otherwise
   index: number,
   // The entry in the form that we're processing
   entry: FormPartMap
 ) => Return
+
+// export type SelectMultipleFormFn<Return> = (
+//   recordValuePath: RecordValuePath,
+//   part: FormPart,
+//   recordPath: RecordValuePath,
+//   index: number,
+//   formPartMap: FormPartMap
+// ) => Return
 
 export type FieldType = {
   signature: string // data URI
@@ -81,67 +89,59 @@ export type FieldTypes =
 // A type to support walking over a form
 export type FormFns<Return> = {
   // utilities
+  combineResultsFromParts: (
+    results: Return[],
+    // This combination of parts doesn't know what its enclosing form type is
+    partsListRecordPath: RecordValuePath,
+    index: number
+  ) => Return
+  combineResultsFromSubparts: (
+    results: Return[],
+    parentPart: FormPart,
+    inner: Return | null,
+    // The path to the parts and the parts we should combine together
+    parentPartRecordPath: RecordValuePath,
+    // This part combination can know what its enclosing form type is
+    index: number,
+    entry: FormPartMap
+  ) => Return
   pre: (
     part: FormPart,
-    recordPath: RecordPath,
+    recordPath: RecordValuePath,
     index: number,
-    entry: FormPartMap,
-    skippedPath: RecordPath | null
+    formPartMap: FormPartMap,
+    partOptional: boolean
   ) => Return | null
   post: (
     part: FormPart,
     // The subparts are already combined
     subparts: Return | null,
     inner: Return | null,
-    recordPath: RecordPath,
+    recordPath: RecordValuePath,
     index: number,
     pre: Return | null,
-    skippedPath: RecordPath | null,
-    entry: FormPartMap
+    formPartMap: FormPartMap,
+    partOptional: boolean
   ) => Return
-  combinePlainParts: (
-    subparts: Return[],
-    // This combination of parts doesn't know what its enclosing form type is
-    recordPath: RecordPath,
-    index: number
-  ) => Return
-  combineSmartParts: (
-    part: FormPart,
-    subparts: Return[],
-    inner: Return | null,
-    // The path to the parts and the parts we should combine together
-    recordPath: RecordPath,
-    // This part combination can know what its enclosing form type is
-    index: number,
-    entry: FormPartMap
-  ) => Return
-  selectMultiple: (
-    valuePaths: RecordPath[],
-    part: FormPart,
-    recordPath: RecordPath,
-    index: number,
-    otherPath: RecordPath | null,
-    entry: FormPartMap
-  ) => Return | null
   // Handle repeats
-  preRepeat: (part: FormPart, recordPath: RecordPath) => Return | null
   preEachRepeat: (
     part: FormPart,
-    recordPath: RecordPath,
-    repeatId: ArrayElement<RecordPath>,
-    repeatPath: RecordPath
-  ) => Return | null
+    repeatListRecordPath: RecordValuePath,
+    repeatId: string,
+    recordPath: RecordValuePath
+  ) => void
   eachRepeat: (
     result: Return,
     part: FormPart,
-    recordPath: RecordPath,
-    repeatId: ArrayElement<RecordPath>,
-    repeatPath: RecordPath
+    repeatListRecordPath: RecordValuePath,
+    repeatId: ArrayElement<RecordValuePath>,
+    recordPath: RecordValuePath
   ) => Return
+  preRepeat: (part: FormPart, repeatListRecordPath: RecordValuePath) => void
   postRepeated: (
-    list: { path: RecordPath; result: Return }[],
+    resultMaps: { path: RecordValuePath; result: Return }[],
     part: FormPart,
-    recordPath: RecordPath
+    repeatListRecordPath: RecordValuePath
   ) => Return
   // parts
   //
@@ -156,7 +156,15 @@ export type FormFns<Return> = {
   email: StandardFormFn<Return, { type: 'email' }>
   list: StandardFormFn<Return, { type: 'list' }>
   'list-with-labels': StandardFormFn<Return, { type: 'list-with-labels' }>
+  'list-multiple': StandardFormFn<Return, { type: 'list-multiple' }>
+  // 'list-multiple': SelectMultipleFormFn<Return>
+  'list-with-labels-multiple': StandardFormFn<
+    Return,
+    { type: 'list-with-labels-multiple' }
+  >
+  // 'list-with-labels-multiple': SelectMultipleFormFn<Return>
   'list-with-parts': StandardFormFn<Return, { type: 'list-with-parts' }>
+  // 'list-with-parts': SelectMultipleFormFn<Return>
   'long-text': StandardFormFn<Return, { type: 'long-text' }>
   number: StandardFormFn<Return, { type: 'number' }>
   'phone-number': StandardFormFn<Return, { type: 'phone-number' }>
