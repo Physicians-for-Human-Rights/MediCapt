@@ -357,9 +357,6 @@ export function isSectionComplete(
       getFlatRecordValue(flatRecord, recordValuePath),
     {
       pre: () => true,
-      // selectMultiple: valuePaths =>
-      //   // NB This checks not that getValue exists, but that at least one of them is also true.
-      //   _.some(valuePaths, x => getFlatRecordValue(flatRecord, x)),
       address: valuePath =>
         getFlatRecordValue(flatRecord, valuePath, 'address')?.value !=
         undefined,
