@@ -136,25 +136,18 @@ export function getFlatRecordValue(
           value: '18',
         } as RecordValue)
       }
-      case 'sex':
+      case 'sex': {
+        const sexEntries = _.filter(flatRecord, (v, _k) => v.type === 'sex')
+        if (sexEntries.length === 1) return restrictType(sexEntries[0])
+        else return undefined
+      }
       case 'gender': {
         const genderEntries = _.filter(
           flatRecord,
           (v, _k) => v.type === 'gender'
         )
-        const sexEntries = _.filter(flatRecord, (v, _k) => v.type === 'sex')
-
-        if (valuePath[1] == 'gender') {
-          if (genderEntries.length === 1) return restrictType(genderEntries[0])
-          else if (genderEntries.length === 0 && sexEntries.length === 1)
-            return restrictType(sexEntries[0])
-          else return undefined
-        } else {
-          if (sexEntries.length === 1) return restrictType(sexEntries[0])
-          else if (sexEntries.length === 0 && genderEntries.length === 1)
-            return restrictType(genderEntries[0])
-          else return undefined
-        }
+        if (genderEntries.length === 1) return restrictType(genderEntries[0])
+        else return undefined
       }
       case 'age': {
         const recordData = _.find(

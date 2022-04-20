@@ -44,42 +44,29 @@ export function shouldSkipConditional(
       return true
   }
   if ('only-sex' in conditional) {
-    const recordSex = getValue(['inferred', 'sex'])
+    const recordSex =
+      restrictRecordValueType(getValue(['inferred', 'sex']), 'sex') ||
+      restrictRecordValueType(getValue(['inferred', 'gender']), 'gender')
     switch (conditional['only-sex']) {
       case 'male':
-        if (
-          (recordSex?.type !== 'sex' && recordSex?.type !== 'gender') ||
-          recordSex.value === 'female'
-        )
-          return true
+        if (recordSex?.value === 'female') return true
         break
       case 'female':
-        if (
-          (recordSex?.type !== 'sex' && recordSex?.type !== 'gender') ||
-          recordSex.value === 'male'
-        ) {
-          return true
-        }
+        if (recordSex?.value === 'male') return true
         break
       case 'intersex':
         // This isn't a typo. If the part is for M, we don't show it to F. If the
         // part is for F, we don't show to M. If the fiels is for I, we only show
         // it for I. This fails open, I sees both M and F parts.
-        if (
-          (recordSex?.type !== 'sex' && recordSex?.type !== 'gender') ||
-          recordSex.value !== 'intersex'
-        )
-          return true
+        if (recordSex?.value !== 'intersex') return true
         break
     }
   }
   if ('only-gender' in conditional) {
-    const recordGender = getValue(['inferred', 'gender'])
-    if (
-      (recordGender?.type !== 'sex' && recordGender?.type !== 'gender') ||
-      recordGender.value !== conditional['only-gender']
-    )
-      return true
+    const recordGender =
+      restrictRecordValueType(getValue(['inferred', 'gender']), 'gender') ||
+      restrictRecordValueType(getValue(['inferred', 'sex']), 'sex')
+    if (recordGender?.value !== conditional['only-gender']) return true
   }
   if ('only-child' in conditional) {
     const aom = getValue(['inferred', 'age-of-majority'])
