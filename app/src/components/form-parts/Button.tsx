@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button as NButton } from 'native-base'
+import { Button as NButton, IButtonProps } from 'native-base'
 import _ from 'lodash'
 
 export default function Button({
@@ -13,11 +13,11 @@ export default function Button({
 }: {
   key: string
   text: string
-  onPress: () => any
+  onPress: () => void
   colorScheme?: string
   maxW?: string
   icon?: JSX.Element
-}) {
+} & Partial<IButtonProps>) {
   return (
     <NButton
       key={key}

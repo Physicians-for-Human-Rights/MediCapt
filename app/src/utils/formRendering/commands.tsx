@@ -3,9 +3,10 @@ import { FormDefinition, FormKVRawType } from 'utils/types/form'
 import { mapSectionWithPaths } from 'utils/forms'
 import { NamedFormSection } from 'utils/types/formHelpers'
 import { FlatRecord, RecordValuePath } from 'utils/types/record'
-import { getFlatRecordValue } from 'utils/records'
+import { getFlatRecordValue, restrictRecordValueType } from 'utils/records'
 import { t } from 'i18n-js'
 import { resolveRef } from 'utils/forms'
+import uuid from 'react-native-uuid'
 
 import { RenderCommand } from 'utils/formRendering/types'
 
@@ -239,7 +240,11 @@ export function allFormRenderCommands(
         if (listOptions) {
           renderCommands.push({
             type: 'list',
-            recordValue: undefined,
+            recordValue: getFlatRecordValue(
+              flatRecord,
+              recordValuePath,
+              'list'
+            ),
             other: part.other,
             options: listOptions,
             valuePath: recordValuePath,
@@ -254,7 +259,11 @@ export function allFormRenderCommands(
         if (listOptions) {
           renderCommands.push({
             type: 'list-with-labels',
-            recordValue: undefined,
+            recordValue: getFlatRecordValue(
+              flatRecord,
+              recordValuePath,
+              'list-with-labels'
+            ),
             other: part.other,
             options: listOptions,
             valuePath: recordValuePath,
@@ -269,7 +278,11 @@ export function allFormRenderCommands(
         if (listOptions) {
           renderCommands.push({
             type: 'list-multiple',
-            recordValue: undefined,
+            recordValue: getFlatRecordValue(
+              flatRecord,
+              recordValuePath,
+              'list-multiple'
+            ),
             other: part.other,
             options: listOptions,
             valuePath: recordValuePath,
@@ -285,7 +298,11 @@ export function allFormRenderCommands(
         if (listOptions) {
           renderCommands.push({
             type: 'list-multiple',
-            recordValue: undefined,
+            recordValue: getFlatRecordValue(
+              flatRecord,
+              recordValuePath,
+              'list-multiple'
+            ),
             other: part.other,
             options: _.map(listOptions, kv => kv.key),
             valuePath: recordValuePath,
@@ -305,7 +322,11 @@ export function allFormRenderCommands(
         if (listOptions) {
           renderCommands.push({
             type: 'list-multiple',
-            recordValue: undefined,
+            recordValue: getFlatRecordValue(
+              flatRecord,
+              recordValuePath,
+              'list-multiple'
+            ),
             options: listOptionsStrings,
             valuePath: recordValuePath,
             key: _.join(recordValuePath, '.'),

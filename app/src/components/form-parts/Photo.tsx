@@ -16,14 +16,7 @@ import {
 import * as ImagePicker from 'expo-image-picker'
 import { Camera } from 'expo-camera'
 import { RecordPhoto, RecordValueByType } from 'utils/types/record'
-import { ArrayElement } from 'utils/types/formHelpers'
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  Feather,
-  MaterialIcons,
-} from '@expo/vector-icons'
+import { Feather, MaterialIcons } from '@expo/vector-icons'
 import { disabledBackground } from 'utils/formRendering/utils'
 import { t } from 'i18n-js'
 import _ from 'lodash'
@@ -153,7 +146,7 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
         )}
         ItemSeparatorComponent={() => <Divider my={2} thickness="1" />}
         ListFooterComponent={() =>
-          onlyOne && photos.length > 0 ? (
+          onlyOne && photos && photos.length > 0 ? (
             <></>
           ) : (
             <HStack justifyContent="center">

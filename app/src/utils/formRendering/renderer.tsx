@@ -31,20 +31,21 @@ import Photo from 'components/form-parts/Photo'
 import BodyImage from 'components/form-parts/BodyImage'
 import CustomButton from 'components/form-parts/Button'
 import SkipButton from 'components/form-parts/SkipButton'
-import { RenderCommand } from 'utils/formRendering/types'
-import { wrapCommandMemo } from 'utils/memo'
 
-const CDebouncedTextInput = wrapCommandMemo(DebouncedTextInput)
-const CButtonGroup = wrapCommandMemo(ButtonGroup)
-const CBodyImage = wrapCommandMemo(BodyImage)
-const CDateTimePicker = wrapCommandMemo(DateTimePicker)
-const CList = wrapCommandMemo(List)
-const CListSelectMultiple = wrapCommandMemo(ListSelectMultiple)
-const CPhoto = wrapCommandMemo(Photo)
-const CSignature = wrapCommandMemo(Signature)
-const CCenter = wrapCommandMemo(Center)
-const CCustomButton = wrapCommandMemo(CustomButton)
-const CSkipButton = wrapCommandMemo(SkipButton)
+import { RenderCommand } from 'utils/formRendering/types'
+// import { wrapCommandMemo } from 'utils/memo'
+
+// const CDebouncedTextInput = wrapCommandMemo(DebouncedTextInput)
+// const CButtonGroup = wrapCommandMemo(ButtonGroup)
+// const CBodyImage = wrapCommandMemo(BodyImage)
+// const CDateTimePicker = wrapCommandMemo(DateTimePicker)
+// const CList = wrapCommandMemo(List)
+// const CListSelectMultiple = wrapCommandMemo(ListSelectMultiple)
+// const CPhoto = wrapCommandMemo(Photo)
+// const CSignature = wrapCommandMemo(Signature)
+// const CCenter = wrapCommandMemo(Center)
+// const CCustomButton = wrapCommandMemo(CustomButton)
+// const CSkipButton = wrapCommandMemo(SkipButton)
 
 import { disabled, disabledBackground } from 'utils/formRendering/utils'
 
@@ -57,9 +58,9 @@ export function renderCommand(
   switch (command.type) {
     case 'title':
       return (
-        <CCenter
+        <Center
+          // command={command}
           bg={disabled(command, disabledBackground)}
-          command={command}
           pt={4}
           pb={2}
         >
@@ -73,7 +74,7 @@ export function renderCommand(
           >
             {command.title}
           </Heading>
-        </CCenter>
+        </Center>
       )
     case 'description':
       return (
@@ -93,8 +94,8 @@ export function renderCommand(
       // it doesn't get stuck
       return (
         <Center bg={disabled(command, disabledBackground)}>
-          <CSkipButton
-            command={command}
+          <SkipButton
+            // command={command}
             isDisabled={false}
             skippable={true}
             skipped={command.value?.skipped || false}
@@ -112,8 +113,8 @@ export function renderCommand(
     case 'address':
       return (
         <Center bg={disabled(command, disabledBackground)}>
-          <CDebouncedTextInput
-            command={command}
+          <DebouncedTextInput
+            // command={command}
             isDisabled={command.disable}
             onChangeText={text => {
               setPath(command.valuePath, {
@@ -142,8 +143,8 @@ export function renderCommand(
       const image = command.recordValue?.value?.uri || command.formImage
       const annotations = command.recordValue?.value?.annotations || []
       return (
-        <CBodyImage
-          command={command}
+        <BodyImage
+          // command={command}
           isDisabled={command.disable}
           imageURI={image}
           annotations={annotations}
@@ -180,9 +181,8 @@ export function renderCommand(
     }
     case 'bool':
       return (
-        <CButtonGroup
-          command={command}
-          // @ts-ignore TODO Why not?
+        <ButtonGroup
+          // command={command}
           bg={disabled(command, disabledBackground)}
           isDisabled={command.disable}
           selected={command.recordValue?.value}
@@ -202,10 +202,9 @@ export function renderCommand(
       )
     case 'date':
       return (
-        <CDateTimePicker
-          command={command}
-          // @ts-ignore TODO Why not?
-          isDisabled={command.disable}
+        <DateTimePicker
+          // command={command}
+          isDisaxbled={command.disable}
           title={command.title}
           date={command.recordValue?.value}
           open={() => addKeepAlive(_.join(command.valuePath, '.'))}
@@ -221,9 +220,8 @@ export function renderCommand(
       )
     case 'date-time':
       return (
-        <CDateTimePicker
-          command={command}
-          // @ts-ignore TODO Why not?
+        <DateTimePicker
+          // command={command}
           isDisabled={command.disable}
           title={command.title}
           date={command.recordValue?.value}
@@ -242,8 +240,8 @@ export function renderCommand(
     case 'email':
       return (
         <Center bg={disabled(command, disabledBackground)}>
-          <CDebouncedTextInput
-            command={command}
+          <DebouncedTextInput
+            // command={command}
             isDisabled={command.disable}
             onChangeText={text =>
               setPath(command.valuePath, {
@@ -268,9 +266,8 @@ export function renderCommand(
       )
     case 'gender':
       return (
-        <CButtonGroup
-          command={command}
-          // @ts-ignore Why isn't TS happy here?
+        <ButtonGroup
+          // command={command}
           bg={disabled(command, disabledBackground)}
           isDisabled={command.disable}
           selected={command.recordValue?.value || ''}
@@ -291,8 +288,8 @@ export function renderCommand(
       const selection = listValue ? listValue.selection : null
       const otherValue = listValue ? listValue.otherValue : null
       return (
-        <CList
-          command={command}
+        <List
+          // command={command}
           isDisabled={command.disable}
           options={command.options}
           value={selection}
@@ -328,8 +325,8 @@ export function renderCommand(
       const selection = listValue ? listValue.selection : null
       const otherValue = listValue ? listValue.otherValue : null
       return (
-        <CList
-          command={command}
+        <List
+          // command={command}
           isDisabled={command.disable}
           withLabels
           options={command.options}
@@ -367,8 +364,8 @@ export function renderCommand(
       const selections =
         listValue?.selections || _.times(options?.length, _.constant(false))
       return (
-        <CListSelectMultiple
-          command={command}
+        <ListSelectMultiple
+          // command={command}
           isDisabled={command.disable}
           values={selections}
           otherChecked={!!listValue?.otherChecked}
@@ -385,7 +382,7 @@ export function renderCommand(
                 selections: _.concat(
                   _.slice(selections, 0, idx),
                   !selections[idx],
-                  _.slice(selections, idx)
+                  _.slice(selections, idx + 1)
                 ),
               },
             })
@@ -403,16 +400,18 @@ export function renderCommand(
             })
           }}
           setOtherText={(otherValue: string | undefined) => {
-            setPath(command.valuePath, {
-              ...command.recordValue,
-              type: 'list-multiple',
-              value: {
-                ...listValue,
-                options,
-                selections,
-                otherValue,
-              },
-            })
+            if (otherValue) {
+              setPath(command.valuePath, {
+                ...command.recordValue,
+                type: 'list-multiple',
+                value: {
+                  ...listValue,
+                  options,
+                  selections,
+                  otherValue,
+                },
+              })
+            }
           }}
         />
       )
@@ -426,8 +425,8 @@ export function renderCommand(
     case 'long-text':
       return (
         <Center bg={disabled(command, disabledBackground)}>
-          <CDebouncedTextInput
-            command={command}
+          <DebouncedTextInput
+            // command={command}
             isDisabled={command.disable}
             onChangeText={text => {
               setPath(command.valuePath, {
@@ -452,8 +451,8 @@ export function renderCommand(
     case 'number':
       return (
         <Center bg={disabled(command, disabledBackground)}>
-          <CDebouncedTextInput
-            command={command}
+          <DebouncedTextInput
+            // command={command}
             isDisabled={command.disable}
             onChangeText={text => {
               setPath(command.valuePath, {
@@ -479,8 +478,8 @@ export function renderCommand(
     case 'phone-number':
       return (
         <Center bg={disabled(command, disabledBackground)}>
-          <CDebouncedTextInput
-            command={command}
+          <DebouncedTextInput
+            // command={command}
             isDisabled={command.disable}
             onChangeText={text => {
               setPath(command.valuePath, {
@@ -506,8 +505,8 @@ export function renderCommand(
     case 'photo':
       const photos = command.recordValue?.value || []
       return (
-        <CPhoto
-          command={command}
+        <Photo
+          // command={command}
           isDisabled={command.disable}
           photos={photos}
           addPhoto={(toAdd: RecordPhoto) => {
@@ -530,9 +529,8 @@ export function renderCommand(
       )
     case 'sex':
       return (
-        <CButtonGroup
-          command={command}
-          // @ts-ignore TODO Why not?
+        <ButtonGroup
+          // command={command}
           bg={disabled(command, disabledBackground)}
           isDisabled={command.disable}
           selected={command.recordValue?.value || ''}
@@ -550,9 +548,8 @@ export function renderCommand(
       )
     case 'signature':
       return (
-        <CSignature
+        <Signature
           command={command}
-          // @ts-ignore Why isn't TS happy here?
           isDisabled={command.disable}
           imageURI={command.recordValue?.value}
           open={() => {
@@ -573,8 +570,8 @@ export function renderCommand(
     case 'text':
       return (
         <Center bg={disabled(command, disabledBackground)}>
-          <CDebouncedTextInput
-            command={command}
+          <DebouncedTextInput
+            // command={command}
             isDisabled={command.disable}
             onChangeText={text => {
               setPath(command.valuePath, {
@@ -602,9 +599,8 @@ export function renderCommand(
         (command.partRepeated === 'at-least-one' ? ['at-least-one'] : [])
       return (
         <Center bg={disabled(command, disabledBackground)}>
-          <CCustomButton
-            command={command}
-            // @ts-ignore Why isn't TS happy here?
+          <CustomButton
+            // command={command}
             isDisabled={command.disable}
             key={command.key}
             text={'Add ' + _.lowerCase(command.title)}
@@ -629,9 +625,8 @@ export function renderCommand(
         (command.partRepeated === 'at-least-one' ? ['at-least-one'] : [])
       return (
         <Center bg={disabled(command, disabledBackground)}>
-          <CCustomButton
-            command={command}
-            // @ts-ignore Why isn't TS happy here?
+          <CustomButton
+            // command={command}
             isDisabled={command.disable}
             key={command.key}
             text={'Remove ' + _.lowerCase(command.title)}

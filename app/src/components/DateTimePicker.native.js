@@ -4,13 +4,6 @@ import { t } from 'i18n-js'
 
 import { Button } from 'native-base'
 import _ from 'lodash'
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  MaterialCommunityIcons,
-  MaterialIcons,
-} from '@expo/vector-icons'
 
 export default function DateTimePicker({
   title,

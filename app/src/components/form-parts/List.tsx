@@ -132,10 +132,10 @@ export function List({
   isDisabled,
 }: {
   value: string | null
-  onSelect: (s: string | null) => any
+  onSelect: (s: string | null) => void
   other?: 'text' | 'long-text'
   otherValue: string | null
-  onOtherValue: (s: string) => any | null
+  onOtherValue: (s: string) => void | null
   debounceMs?: number
   isDisabled: boolean
 } & (

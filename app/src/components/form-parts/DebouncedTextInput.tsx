@@ -5,10 +5,10 @@ import useDebounce from 'react-use/lib/useDebounce'
 // TODO Expand this input when multiline={true} as needed
 
 export default function DebouncedTextInput(
-  props: IInputProps & {
+  props: {
     debounceMs: number
-    onChangeText: (value: string) => any
-  }
+    onChangeText: (value: string) => void
+  } & Partial<IInputProps>
 ) {
   const [rawContents, setRawContents] = React.useState(
     props.value === undefined || props.value === null ? '' : props.value

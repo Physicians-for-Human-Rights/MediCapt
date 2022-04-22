@@ -1,5 +1,6 @@
 import React from 'react'
 import { Button } from 'native-base'
+import { IButtonGroupProps } from 'native-base/lib/typescript/components/primitives/Button'
 import _ from 'lodash'
 
 export default function ButtonGroup<T>({
@@ -15,13 +16,13 @@ export default function ButtonGroup<T>({
 }: {
   selected: T | null
   options: Record<string, T>
-  onPress: (arg: T) => any
+  onPress: (arg: T) => void
   colorScheme?: string
   maxW?: string
   fullwidth?: boolean
   isDisabled?: boolean
   justifyContent?: string
-}) {
+} & Partial<IButtonGroupProps>) {
   return (
     <Button.Group
       isAttached

@@ -66,7 +66,7 @@ export default function Form({
   }
 
   // TODO Debugging until this is tested
-  if (1) {
+  if (0) {
     if (!_.isEqual(changedPaths, [])) {
       const record = {}
       _.map(flatRecord, (v, p) => _.set(record, p, v))
