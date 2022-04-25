@@ -3,10 +3,9 @@ import { FormDefinition, FormKVRawType } from 'utils/types/form'
 import { mapSectionWithPaths } from 'utils/forms'
 import { NamedFormSection } from 'utils/types/formHelpers'
 import { FlatRecord, RecordValuePath } from 'utils/types/record'
-import { getFlatRecordValue, restrictRecordValueType } from 'utils/records'
+import { getFlatRecordValue } from 'utils/records'
 import { t } from 'i18n-js'
 import { resolveRef } from 'utils/forms'
-import uuid from 'react-native-uuid'
 
 import { RenderCommand } from 'utils/formRendering/types'
 
