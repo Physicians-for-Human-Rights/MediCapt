@@ -48,20 +48,23 @@ export default function Form({
   )
 
   const [currentSection, setCurrentSection] = useState(0)
-  const menuChangeSection = useCallback((i: number) => setCurrentSection(i), [])
+  const setSection = useCallback(
+    (i: number) => setCurrentSection(i),
+    [setCurrentSection]
+  )
   const setSectionOffset = useCallback(
     (offset: number) => setCurrentSection(currentSection + offset),
-    [currentSection]
+    [setCurrentSection, currentSection]
   )
 
   // The side menu, although depending on the size of the viewport
   // we sometimes display it on top
-  const [isMenuVisible, rawToggleMenu] = useToggle(false)
-  const toggleMenu = useCallback(() => {
+  const [isMenuVisible, rawToggleMenuVisible] = useToggle(false)
+  const toggleMenuVisible = useCallback(() => {
     // Users are very likely to be editing a field
     Keyboard.dismiss()
-    rawToggleMenu()
-  }, [])
+    rawToggleMenuVisible()
+  }, [rawToggleMenuVisible])
 
   const isSectionCompleteList = useMemo(
     () =>
@@ -83,7 +86,7 @@ export default function Form({
     } else {
       return []
     }
-  }, [formSections, currentSection, form])
+  }, [formSections, currentSection, form, files, flatRecord])
 
   const setRecordPath = useCallback(
     (path: RecordValuePath, value: RecordValue) => {
@@ -119,7 +122,7 @@ export default function Form({
         key="form-top"
         sectionOffset={setSectionOffset}
         currentSection={currentSection}
-        toggleMenu={toggleMenu}
+        toggleMenu={toggleMenuVisible}
         title={
           formSections[currentSection] ? formSections[currentSection].title : ''
         }
@@ -130,8 +133,8 @@ export default function Form({
       {isMenuVisible ? (
         <FormMenu
           formSections={formSections}
-          changeSection={menuChangeSection}
-          toggleMenu={toggleMenu}
+          changeSection={setSection}
+          toggleMenu={toggleMenuVisible}
           isSectionCompleteList={isSectionCompleteList}
           onCancel={onCancel}
           onSaveAndExit={onCancel}
