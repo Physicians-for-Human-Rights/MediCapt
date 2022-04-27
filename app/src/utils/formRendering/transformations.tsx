@@ -43,9 +43,8 @@ export function transformToSmallerControl(
       controlType.has(command3.type)
     ) {
       command1.maxW = controlTitleMaxW
-      if ('fullwidth' in command3)
-        command3.fullwidth = multiButtonControls.has(command1.type)
-      if ('maxW' in command3) command3.maxW = controlMaxW
+      command3.fullwidth = multiButtonControls.has(command1.type)
+      command3.maxW = controlMaxW
       newCommands.push({
         type: 'row-with-description',
         left: command1,
@@ -64,9 +63,9 @@ export function transformToSmallerControl(
       controlType.has(command2.type)
     ) {
       command1.maxW = controlTitleMaxW
-      if ('fullwidth' in command2)
-        command2.fullwidth = multiButtonControls.has(command1.type)
-      if ('maxW' in command2) command2.maxW = controlMaxW
+
+      command2.fullwidth = multiButtonControls.has(command1.type)
+      command2.maxW = controlMaxW
       newCommands.push({
         type: 'row',
         left: command1,
