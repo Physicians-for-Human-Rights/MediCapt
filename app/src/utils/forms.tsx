@@ -382,14 +382,17 @@ export function isSectionComplete(
       'list-multiple': valuePath =>
         _.some(
           getFlatRecordValue(flatRecord, valuePath, 'list-multiple')?.value
+            ?.selections
         ),
       'list-with-labels-multiple': valuePath =>
         _.some(
           getFlatRecordValue(flatRecord, valuePath, 'list-multiple')?.value
+            ?.selections
         ),
       'list-with-parts': valuePath =>
         _.some(
           getFlatRecordValue(flatRecord, valuePath, 'list-multiple')?.value
+            ?.selections
         ),
       'long-text': valuePath =>
         getFlatRecordValue(flatRecord, valuePath, 'long-text')?.value !=
