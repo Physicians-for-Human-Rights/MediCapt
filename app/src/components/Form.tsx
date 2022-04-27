@@ -136,8 +136,9 @@ export default function Form({
       setRenderCommands(sectionCommands)
     }
   } else {
-    if (renderCommands !== []) setRenderCommands([])
+    if (!_.isEmpty(renderCommands)) setRenderCommands([])
   }
+
   return (
     <View flex={1}>
       <FromTop
