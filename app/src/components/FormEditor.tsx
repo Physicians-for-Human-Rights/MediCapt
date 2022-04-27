@@ -23,6 +23,7 @@ import {
   changeFilenameInManifest,
   lookupManifest,
 } from 'utils/manifests'
+import { useInfo } from 'utils/errors'
 
 const FormMemo = React.memo(Form)
 
@@ -71,6 +72,7 @@ export default function FormEditor({
   manifest: FormManifestWithData
   setForm: (form: FormType) => any
 }) {
+  const [error, warning, success] = useInfo()
   const [contents, setContents] = React.useState('' as string)
   const [localForm, setLocalForm] = React.useState({
     'storage-version': '1.0.0',
