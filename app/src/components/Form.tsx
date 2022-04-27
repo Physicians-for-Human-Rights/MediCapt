@@ -145,7 +145,9 @@ export default function Form({
         sectionOffset={setSectionOffset}
         currentSection={currentSection}
         toggleMenu={toggleMenu}
-        title={formSections[currentSection].title}
+        title={
+          formSections[currentSection] ? formSections[currentSection].title : ''
+        }
         lastSection={formSections.length - 1}
         isSectionCompleted={isSectionCompleteList[currentSection]}
         isMenuVisible={isMenuVisible}
