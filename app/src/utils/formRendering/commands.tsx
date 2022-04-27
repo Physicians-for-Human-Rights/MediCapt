@@ -9,6 +9,16 @@ import { resolveRef } from 'utils/forms'
 
 import { RenderCommand } from 'utils/formRendering/types'
 
+function isSkipped(flatRecord: FlatRecord, path: RecordValuePath) {
+  const prefixes = _.range(0, path.length + 1).map(pathLegth =>
+    _.take(path, pathLegth)
+  )
+  return _.some(
+    prefixes,
+    prefix => getFlatRecordValue(flatRecord, prefix)?.skipped
+  )
+}
+
 // Turn a section of a form into a list of flat render commands
 export function allFormRenderCommands(
   section: NamedFormSection,
@@ -17,7 +27,6 @@ export function allFormRenderCommands(
   flatRecord: FlatRecord
 ) {
   let renderCommands: RenderCommand[] = []
-  const skipping: RecordValuePath[] = []
   // any is an ok type here because we're discarding the output
   mapSectionWithPaths<void>(
     section,
@@ -28,7 +37,7 @@ export function allFormRenderCommands(
     {
       pre: (part, recordValuePath, _index, _entry, partOptional) => {
         const recordValue = getFlatRecordValue(flatRecord, recordValuePath)
-        const skipped = recordValue?.skipped || false
+        const skipped = isSkipped(flatRecord, recordValuePath)
         if (partOptional) {
           renderCommands.push({
             type: 'skip',
@@ -116,8 +125,7 @@ export function allFormRenderCommands(
           placeholder: part.placeholder,
           valuePath: recordValuePath,
           key: _.join(recordValuePath, '.'),
-          disable:
-            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          disable: isSkipped(flatRecord, recordValuePath),
         }),
       'body-image': (recordValuePath, part) => {
         const genderOrSex: string =
@@ -160,7 +168,7 @@ export function allFormRenderCommands(
           formImage: formImage || '',
           valuePath: recordValuePath,
           key: _.join(recordValuePath, '.'),
-          disable: recordValue?.skipped || false,
+          disable: isSkipped(flatRecord, recordValuePath),
         })
       },
       bool: recordValuePath =>
@@ -169,8 +177,7 @@ export function allFormRenderCommands(
           recordValue: getFlatRecordValue(flatRecord, recordValuePath, 'bool'),
           valuePath: recordValuePath,
           key: _.join(recordValuePath, '.'),
-          disable:
-            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          disable: isSkipped(flatRecord, recordValuePath),
         }),
       date: (recordValuePath, part) =>
         renderCommands.push({
@@ -179,8 +186,7 @@ export function allFormRenderCommands(
           title: part.title,
           valuePath: recordValuePath,
           key: _.join(recordValuePath, '.'),
-          disable:
-            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          disable: isSkipped(flatRecord, recordValuePath),
         }),
       'date-time': (recordValuePath, part) =>
         renderCommands.push({
@@ -193,8 +199,7 @@ export function allFormRenderCommands(
           title: part.title,
           valuePath: recordValuePath,
           key: _.join(recordValuePath, '.'),
-          disable:
-            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          disable: isSkipped(flatRecord, recordValuePath),
         }),
       email: (recordValuePath, part) =>
         renderCommands.push({
@@ -203,8 +208,7 @@ export function allFormRenderCommands(
           placeholder: part.placeholder,
           valuePath: recordValuePath,
           key: _.join(recordValuePath, '.'),
-          disable:
-            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          disable: isSkipped(flatRecord, recordValuePath),
         }),
       gender: recordValuePath =>
         renderCommands.push({
@@ -231,8 +235,7 @@ export function allFormRenderCommands(
           ) as Record<string, string>,
           valuePath: recordValuePath,
           key: _.join(recordValuePath, '.'),
-          disable:
-            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          disable: isSkipped(flatRecord, recordValuePath),
         }),
       list: (recordValuePath, part) => {
         const listOptions = resolveRef(part.options, commonRefTable)
@@ -248,8 +251,7 @@ export function allFormRenderCommands(
             options: listOptions,
             valuePath: recordValuePath,
             key: _.join(recordValuePath, '.'),
-            disable:
-              getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+            disable: isSkipped(flatRecord, recordValuePath),
           })
         }
       },
@@ -267,8 +269,7 @@ export function allFormRenderCommands(
             options: listOptions,
             valuePath: recordValuePath,
             key: _.join(recordValuePath, '.'),
-            disable:
-              getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+            disable: isSkipped(flatRecord, recordValuePath),
           })
         }
       },
@@ -286,8 +287,7 @@ export function allFormRenderCommands(
             options: listOptions,
             valuePath: recordValuePath,
             key: _.join(recordValuePath, '.'),
-            disable:
-              getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+            disable: isSkipped(flatRecord, recordValuePath),
           })
         }
       },
@@ -306,8 +306,7 @@ export function allFormRenderCommands(
             options: _.map(listOptions, kv => kv.key),
             valuePath: recordValuePath,
             key: _.join(recordValuePath, '.'),
-            disable:
-              getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+            disable: isSkipped(flatRecord, recordValuePath),
           })
         }
       },
@@ -329,8 +328,7 @@ export function allFormRenderCommands(
             options: listOptionsStrings,
             valuePath: recordValuePath,
             key: _.join(recordValuePath, '.'),
-            disable:
-              getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+            disable: isSkipped(flatRecord, recordValuePath),
           })
         }
       },
@@ -350,8 +348,7 @@ export function allFormRenderCommands(
           placeholder: part.placeholder,
           valuePath: recordValuePath,
           key: _.join(recordValuePath, '.'),
-          disable:
-            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          disable: isSkipped(flatRecord, recordValuePath),
         }),
       number: (recordValuePath, part) =>
         renderCommands.push({
@@ -364,8 +361,7 @@ export function allFormRenderCommands(
           placeholder: part.placeholder,
           valuePath: recordValuePath,
           key: _.join(recordValuePath, '.'),
-          disable:
-            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          disable: isSkipped(flatRecord, recordValuePath),
         }),
       'phone-number': recordValuePath =>
         renderCommands.push({
@@ -377,8 +373,7 @@ export function allFormRenderCommands(
           ),
           valuePath: recordValuePath,
           key: _.join(recordValuePath, '.'),
-          disable:
-            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          disable: isSkipped(flatRecord, recordValuePath),
         }),
       photo: recordValuePath =>
         renderCommands.push({
@@ -386,8 +381,7 @@ export function allFormRenderCommands(
           recordValue: getFlatRecordValue(flatRecord, recordValuePath, 'photo'),
           valuePath: recordValuePath,
           key: _.join(recordValuePath, '.'),
-          disable:
-            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          disable: isSkipped(flatRecord, recordValuePath),
         }),
       sex: recordValuePath =>
         renderCommands.push({
@@ -410,8 +404,7 @@ export function allFormRenderCommands(
           ) as Record<string, string>,
           valuePath: recordValuePath,
           key: _.join(recordValuePath, '.'),
-          disable:
-            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          disable: isSkipped(flatRecord, recordValuePath),
         }),
       signature: recordValuePath =>
         renderCommands.push({
@@ -423,8 +416,7 @@ export function allFormRenderCommands(
           ),
           valuePath: recordValuePath,
           key: _.join(recordValuePath, '.'),
-          disable:
-            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          disable: isSkipped(flatRecord, recordValuePath),
         }),
       text: (recordValuePath, part) =>
         renderCommands.push({
@@ -433,8 +425,7 @@ export function allFormRenderCommands(
           placeholder: part.placeholder,
           valuePath: recordValuePath,
           key: _.join(recordValuePath, '.'),
-          disable:
-            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          disable: isSkipped(flatRecord, recordValuePath),
         }),
       combineResultsFromParts: () => null,
       combineResultsFromSubparts: () => null,
@@ -445,8 +436,7 @@ export function allFormRenderCommands(
             thickness: 1,
             valuePath: recordValuePath.concat('divider'),
             key: _.join(recordValuePath.concat('divider'), '.'),
-            disable:
-              getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+            disable: isSkipped(flatRecord, recordValuePath),
           })
         }
       },
@@ -485,8 +475,7 @@ export function allFormRenderCommands(
           italic: false,
           valuePath: recordValuePath.concat('title'),
           key: _.join(recordValuePath.concat('title'), '.'),
-          disable:
-            getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+          disable: isSkipped(flatRecord, recordValuePath),
         })
       },
       postRepeated: (_results, part, recordValuePath) => {
@@ -507,8 +496,7 @@ export function allFormRenderCommands(
             // repeatListPath: recordValuePath,
             valuePath: recordValuePath,
             key: _.join(recordValuePath.concat('add-repeat-button'), '.'),
-            disable:
-              getFlatRecordValue(flatRecord, recordValuePath)?.skipped || false,
+            disable: isSkipped(flatRecord, recordValuePath),
           })
         }
       },
@@ -534,9 +522,7 @@ export function allFormRenderCommands(
             // (part.repeated === 'at-least-one' ? ['at-least-one'] : []),
             valuePath: repeatListRecordPath,
             key: _.join(recordPath.concat('add-repeat-button'), '.'),
-            disable:
-              getFlatRecordValue(flatRecord, repeatListRecordPath)?.skipped ||
-              false,
+            disable: isSkipped(flatRecord, repeatListRecordPath),
           })
         }
       },
