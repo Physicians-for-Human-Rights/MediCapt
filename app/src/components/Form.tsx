@@ -108,7 +108,7 @@ export default function Form({
       changedPaths.push(key)
     }
   }
-  if (0) {
+  if (1) {
     if (!_.isEqual(changedPaths, [])) {
       const record = {}
       _.map(flatRecord, (v, p) => _.set(record, p, v))

@@ -30,9 +30,9 @@ export function ListSelectMultiple({
   otherText: string | undefined
   options: MultipleFormValueTypes | undefined
   other: 'text' | 'long-text' | undefined
-  togglePathValue: (idx: number) => any
-  toggleOtherChecked: () => any
-  setOtherText: (s: string | undefined) => any
+  togglePathValue: (idx: number) => void
+  toggleOtherChecked: () => void
+  setOtherText: (s: string | undefined) => void
   isDisabled: boolean
 }) {
   const [rawContents, setRawContents] = React.useState(otherText)
