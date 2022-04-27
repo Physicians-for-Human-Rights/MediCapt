@@ -220,6 +220,19 @@ export function mapSectionWithPaths<Return>(
       )
     } else {
       if ('type' in part) {
+        // @ts-ignore TODO Errors out with expression produces a union type that is too complex to represent
+        if (part && fns[part.type]) {
+          // @ts-ignore TODO Typescript doesn't seem willing to represent this type
+          inner = fns[part.type](
+            recordPath,
+            part,
+            recordPath,
+            index,
+            formPartMap
+          )
+        } else {
+          console.log('UNSUPPORTED FIELD TYPE', part)
+        }
         // These parts have subparts that must be combined together
         switch (part.type) {
           case 'bool':
@@ -250,22 +263,15 @@ export function mapSectionWithPaths<Return>(
               if (listOptions) {
                 const recordValue = restrictRecordValueType(
                   getValue(recordPath),
-                  'list-with-parts'
+                  'list-multiple'
                 )
-                const subparts = listOptions.map(
-                  (subpart: FormPartMap, index: number) => {
-                    if (
-                      recordValue?.value &&
-                      recordValue.value.selections[index]
-                    ) {
-                      return subpart
-                    } else {
-                      return {}
-                    }
-                  }
+
+                const subparts = listOptions.filter(
+                  (_subpart, index) =>
+                    recordValue?.value && recordValue.value.selections[index]
                 )
                 const resultsFromSubparts = handleFormPartsArray(
-                  _.filter(subparts, subpart => !!subpart),
+                  subparts,
                   recordPath.concat('list-with-parts')
                 )
 
@@ -280,19 +286,6 @@ export function mapSectionWithPaths<Return>(
               }
             }
             break
-        }
-        // @ts-ignore TODO Errors out with expression produces a union type that is too complex to represent
-        if (part && fns[part.type]) {
-          // @ts-ignore TODO Typescript doesn't seem willing to represent this type
-          inner = fns[part.type](
-            recordPath,
-            part,
-            recordPath,
-            index,
-            formPartMap
-          )
-        } else {
-          console.log('UNSUPPORTED FIELD TYPE', part)
         }
       }
       if ('parts' in part && part.parts && part.parts !== undefined) {
