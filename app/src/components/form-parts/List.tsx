@@ -6,6 +6,7 @@ import { MultipleFormValueTypes, FormKVRawType } from 'utils/types/form'
 import { t } from 'i18n-js'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import { disabledBackground } from 'utils/formRendering/utils'
+import uuid from 'react-native-uuid'
 
 export function isPrimitiveType(x: any) {
   return _.isString(x) || _.isBoolean(x) || _.isNumber(x)
@@ -49,7 +50,9 @@ export function ListSelectMultiple({
           if (_.isString(e) || _.isNumber(e)) {
             return (
               <Checkbox
-                key={i}
+                // forces React to re-render component as opposed
+                // to using an old one (with outdated togglePathValue)
+                key={uuid.v4() as string}
                 colorScheme="blue"
                 isChecked={values[i]}
                 value={_.toString(i)}
@@ -65,7 +68,9 @@ export function ListSelectMultiple({
           if (_.isObject(e)) {
             return (
               <Checkbox
-                key={i}
+                // forces React to re-render component as opposed
+                // to using an old one (with outdated togglePathValue)
+                key={uuid.v4() as string}
                 colorScheme="blue"
                 isChecked={values[i]}
                 value={_.toString(i)}
@@ -85,7 +90,9 @@ export function ListSelectMultiple({
   if (other && otherChecked !== null) {
     items.push(
       <Checkbox
-        key={-1}
+        // forces React to re-render component as opposed
+        // to using an old one (with outdated togglePathValue)
+        key={uuid.v4() as string}
         isChecked={otherChecked}
         value="other"
         onChange={toggleOtherChecked}
