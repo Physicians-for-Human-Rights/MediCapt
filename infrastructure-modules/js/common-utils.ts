@@ -38,7 +38,8 @@ export function bad(e: any, reason: string = 'Generic error') {
 export async function machineIdToHumanId(
   uuid: string,
   prefix: string,
-  lambda: any
+  lambda: any,
+  humanid_lambda: string
 ) {
   const payload = JSON.stringify({
     action: 'machineID-to-humanID',
@@ -47,7 +48,7 @@ export async function machineIdToHumanId(
   })
   const response = await lambda
     .invoke({
-      FunctionName: process.env.humanid_lambda,
+      FunctionName: humanid_lambda,
       Payload: payload,
     })
     .promise()
@@ -372,7 +373,10 @@ export async function simpleDynamoQuery(
       ExclusiveStartKey: startKey,
       ScanIndexForward: false,
       KeyConditionExpression: '#pk = :pk' + (sk ? ' And #sk = :sk' : ''),
-      ExpressionAttributeNames: { '#pk': pk },
+      ExpressionAttributeNames: {
+        '#pk': pk,
+        ...(sk && { '#sk': sk }),
+      },
       ExpressionAttributeValues: {
         ':pk': { S: pkValue },
         ...(sk && { ':sk': { S: skValue } }),
@@ -385,7 +389,7 @@ function sanitizeKey(key: string) {
   return _.replace(_.replace(key, '-', 'DASH'), '_', 'UNDERSCORE')
 }
 
-export function zDynamoUpdateExpression(schema: z.SomeZodObject) {
+export function zodDynamoUpdateExpression(schema: z.SomeZodObject) {
   // NB This would be a SQL injection, except that we only rely on the keys of a
   // schema (not of a runtime object) and all Zod schemas are statically
   // defined at compile time.
@@ -402,7 +406,7 @@ export function zDynamoUpdateExpression(schema: z.SomeZodObject) {
 }
 
 // TODO Upgrade this type so that the object and schema must agree on their types
-export function zDynamoAttributeValues(schema: z.SomeZodObject, o: any) {
+export function zodDynamoAttributeValues(schema: z.SomeZodObject, o: any) {
   return DynamoDB.marshall(
     _.mapKeys(
       _.mapValues(schema.shape, (v, k) => o[k]),
@@ -412,7 +416,7 @@ export function zDynamoAttributeValues(schema: z.SomeZodObject, o: any) {
 }
 
 // TODO Upgrade this type so that the object and schema must agree on their types
-export function zDynamoAttributeNames(schema: z.SomeZodObject) {
+export function zodDynamoAttributeNames(schema: z.SomeZodObject) {
   return _.mapKeys(
     _.mapValues(schema.shape, (v, k) => k),
     (v, k) => '#' + sanitizeKey(k)
@@ -520,4 +524,72 @@ export function convertCognitoUser(
     status: u.UserStatus,
   }
   return userSchema.partial().parse(oneUser)
+}
+
+export async function s3ObjectExists(bucket: string, key: string, s3: AWS.S3) {
+  try {
+    await s3
+      .headObject({
+        Bucket: bucket,
+        Key: key,
+      })
+      .promise()
+    return true
+  } catch (e) {
+    return false
+  }
+}
+
+export async function s3ReadObjectJSON(
+  bucket: string,
+  key: string,
+  s3: AWS.S3
+) {
+  try {
+    const object = await s3
+      .getObject({
+        Bucket: bucket,
+        Key: key,
+      })
+      .promise()
+    return JSON.parse(object!.Body!.toString('utf-8'))
+  } catch (e) {
+    return undefined
+  }
+}
+
+export function filetypeToExtension(filetype: string) {
+  switch (filetype) {
+    case 'manifest':
+      return 'manifest'
+    case 'image/webp':
+      return 'webp'
+    case 'text/yaml':
+      return 'yaml'
+    case 'application/pdf':
+      return 'pdf'
+    default:
+      throw new Error('Bad file extension: ' + filetype)
+  }
+}
+
+// Hashes come in base64 encoded, we convert them back to hex strings since
+// base64 includes slashes. This is largely an aesthetic concern that makes
+// browsing the buckets easier online.
+export function hashFilename(uuid: string, hash: string, filetype: string) {
+  const buffer = Buffer.from(hash, 'base64')
+  return (
+    '/' +
+    uuid +
+    '/' +
+    buffer.toString('hex') +
+    '.' +
+    filetypeToExtension(filetype)
+  )
+}
+
+// This is only for distingushing our internal IDs from UUIDs, not for
+// validating UUIDs!
+export function isUUIDOrInternalID(s: string) {
+  return s.length === 36
 }

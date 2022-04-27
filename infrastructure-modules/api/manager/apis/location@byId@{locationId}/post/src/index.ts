@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid'
 import _ from 'lodash'
 import { APIGatewayProxyWithCognitoAuthorizerHandler } from 'aws-lambda'
 import AWS from 'aws-sdk'
@@ -20,9 +19,9 @@ import {
   good,
   bad,
   DynamoDB,
-  zDynamoUpdateExpression,
-  zDynamoAttributeValues,
-  zDynamoAttributeNames,
+  zodDynamoUpdateExpression,
+  zodDynamoAttributeValues,
+  zodDynamoAttributeNames,
 } from 'common-utils'
 import {
   LocationDynamoLatestToUpdateType,
@@ -77,14 +76,14 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
             SK: { S: 'VERSION#latest' },
           },
           ReturnValues: 'ALL_NEW',
-          UpdateExpression: zDynamoUpdateExpression(
+          UpdateExpression: zodDynamoUpdateExpression(
             locationSchemaDynamoLatestToUpdate
           ),
-          ExpressionAttributeNames: zDynamoAttributeNames(
+          ExpressionAttributeNames: zodDynamoAttributeNames(
             locationSchemaDynamoLatestToUpdate
           ),
           ExpressionAttributeValues: {
-            ...zDynamoAttributeValues(
+            ...zodDynamoAttributeValues(
               locationSchemaDynamoLatestToUpdate,
               updateLatest
             ),
@@ -124,8 +123,8 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
     return bad(
       [
         e,
-        zDynamoUpdateExpression(locationSchemaDynamoLatestToUpdate),
-        zDynamoAttributeNames(locationSchemaDynamoLatestToUpdate),
+        zodDynamoUpdateExpression(locationSchemaDynamoLatestToUpdate),
+        zodDynamoAttributeNames(locationSchemaDynamoLatestToUpdate),
       ],
       'Generic error'
     )

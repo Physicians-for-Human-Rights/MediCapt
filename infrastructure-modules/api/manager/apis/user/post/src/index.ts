@@ -17,6 +17,7 @@ var lambda = new AWS.Lambda({
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
+      humanid_lambda: string
       location_table: string
       user_pool_provider: string
       user_pool_associate: string
@@ -206,7 +207,8 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       const id = await machineIdToHumanId(
         findUserAttribute(newUser, 'sub'),
         'MU',
-        lambda
+        lambda,
+        process.env.humanid_lambda
       )
       await cognito
         .adminUpdateUserAttributes({

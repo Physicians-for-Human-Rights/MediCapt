@@ -1,11 +1,11 @@
 import {
-  FormMetadata,
   FormPart,
   FormPartField,
   FormPartMap,
   FormSection,
   NonRefFormPart,
 } from 'utils/types/form'
+import { FormMetadata } from 'utils/types/formMetadata'
 import { RecordPath } from 'utils/types/record'
 
 // Sections and fields are named by the key of the object they're stored in. The
@@ -17,8 +17,9 @@ export type Named<T> = T & { name: string }
 export type NamedFormSection = Named<FormSection>
 export type NamedFormPart = Named<FormPart>
 
-export type ArrayElement<ArrayType extends readonly unknown[]> =
-  ArrayType extends readonly (infer ElementType)[] ? ElementType : never
+export type ArrayElement<
+  ArrayType extends readonly unknown[]
+> = ArrayType extends readonly (infer ElementType)[] ? ElementType : never
 
 export type StandardFormFn<Return, RestrictPart = {}> = (
   // The path to the current value. We can be called multiple times with

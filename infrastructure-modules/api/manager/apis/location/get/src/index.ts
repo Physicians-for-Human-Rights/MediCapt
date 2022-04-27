@@ -5,10 +5,6 @@ AWS.config.update({
   region: process.env.AWS_REGION,
 })
 const ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' })
-var lambda = new AWS.Lambda({
-  apiVersion: '2015-03-31',
-  region: process.env.AWS_REGION,
-})
 
 declare global {
   namespace NodeJS {

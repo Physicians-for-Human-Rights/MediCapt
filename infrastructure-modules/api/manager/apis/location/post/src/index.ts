@@ -52,7 +52,12 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       return bad(e, 'Bad input location')
     }
     const locationUUID = uuidv4()
-    const ids = await machineIdToHumanId(locationUUID, 'ML', lambda)
+    const ids = await machineIdToHumanId(
+      locationUUID,
+      'ML',
+      lambda,
+      process.env.humanid_lambda
+    )
     const location: LocationType = {
       ...locationCreation,
       version: '1',

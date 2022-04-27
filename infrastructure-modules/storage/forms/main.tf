@@ -22,10 +22,6 @@ variable "dynamodb_point_in_time_recovery" {
   type        = bool
 }
 
-# Images and form definitions are stored in this S3 bucket as in:
-# <country-code>/<form-code>
-# For example: KE/ke-moh-363-2019
-
 resource "aws_s3_bucket" "forms" {
   bucket = "${var.namespace}-${var.stage}-forms"
   acl    = "private"
@@ -39,6 +35,13 @@ resource "aws_s3_bucket" "forms" {
       }
     }
  }
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["GET", "PUT", "POST"]
+    allowed_origins = ["*"]
+    expose_headers  = []
+    max_age_seconds = 3000
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "forms" {
@@ -46,26 +49,6 @@ resource "aws_s3_bucket_public_access_block" "forms" {
   block_public_acls   = true
   block_public_policy = true
   restrict_public_buckets = true
-}
-
-module "template_files" {
-  source = "hashicorp/dir/template"
-  version = "1.0.2"
-  base_dir = "${path.module}/default-forms"
-  template_vars = {
-  }
-}
-
-resource "aws_s3_bucket_object" "static_files" {
-  #checkov:skip=CKV_AWS_186:Letting AWS manage keys is safer here
-  for_each     = module.template_files.files
-  key          = each.key
-  content_type = each.value.content_type
-  source       = each.value.source_path
-  content      = each.value.content
-  etag         = each.value.digests.md5
-  #
-  bucket       = aws_s3_bucket.forms.id
 }
 
 module "dynamodb_table" {
@@ -82,60 +65,61 @@ module "dynamodb_table" {
   autoscale_min_write_capacity = null
   enable_point_in_time_recovery = var.dynamodb_point_in_time_recovery
   #
-  hash_key                     = "country"
+  hash_key                     = "PK"
   hash_key_type	               = "S"
-  range_key                    = "formUUID"
+  range_key                    = "SK"
   range_key_type               = "S"
   dynamodb_attributes = [
-    #
-    # Fields here are commented out because terraform only wants the fields
-    # which serve as indexes. But for the purposes of documentation, we list all
-    # fields we intend to use.
-    #
-    { name = "country"
-      type = "S"
-    },
-    { name = "formUUID"
-      type ="S"
-    },
     {
-      name = "priority"
+      name = "GPK1"
       type = "S"
     },
     {
-      name = "country_locationUUID"
+      name = "GSK1"
       type = "S"
     },
     {
-      name = "country_locationUUID_enabled"
+      name = "GPK2"
+      type = "S"
+    },
+    {
+      name = "GSK2"
+      type = "S"
+    },
+    {
+      name = "GPK2"
+      type = "S"
+    },
+    {
+      name = "GPK3"
+      type = "S"
+    },
+    {
+      name = "GSK3"
+      type = "S"
+    },
+    {
+      name = "GPK4"
+      type = "S"
+    },
+    {
+      name = "GSK4"
+      type = "S"
+    },
+    {
+      name = "GPK5"
+      type = "S"
+    },
+    {
+      name = "GSK5"
       type = "S"
     }
   ]
   global_secondary_index_map = [
     {
-      name               = "AllActiveTagsByLocation"
-      hash_key           = "country_locationUUID_enabled"
-      range_key          = null
-      projection_type    = "INCLUDE"
-      non_key_attributes = ["Tags"]
-      #
-      read_capacity      = null
-      write_capacity     = null
-    },
-    {
-      name               = "AllLanguagesByCountry"
-      hash_key           = "country"
-      range_key          = null
-      projection_type    = "INCLUDE"
-      non_key_attributes = ["language"]
-      #
-      read_capacity      = null
-      write_capacity     = null
-    },
-    {
-      name               = "ByUUID"
-      hash_key           = "formUUID"
-      range_key          = null
+      name               = "FormID"
+      hash_key           = "GPK1"
+      range_key          = "GSK1"
       projection_type    = "ALL"
       non_key_attributes = null
       #
@@ -143,9 +127,9 @@ module "dynamodb_table" {
       write_capacity     = null
     },
     {
-      name               = "PriorityForms"
-      hash_key           = "country_locationUUID"
-      range_key          = "priority"
+      name               = "LastChangeDate"
+      hash_key           = "GPK2"
+      range_key          = "GSK2"
       projection_type    = "ALL"
       non_key_attributes = null
       #
@@ -153,15 +137,35 @@ module "dynamodb_table" {
       write_capacity     = null
     },
     {
-      name               = "PriorityEnabledForms"
-      hash_key           = "country_locationUUID_enabled"
-      range_key          = "priority"
+      name               = "Search_language"
+      hash_key           = "GPK3"
+      range_key          = "GSK3"
       projection_type    = "ALL"
       non_key_attributes = null
       #
       read_capacity      = null
       write_capacity     = null
-    }
+    },
+    {
+      name               = "Search_country"
+      hash_key           = "GPK4"
+      range_key          = "GSK4"
+      projection_type    = "ALL"
+      non_key_attributes = null
+      #
+      read_capacity      = null
+      write_capacity     = null
+    },
+    {
+      name               = "Search_location"
+      hash_key           = "GPK5"
+      range_key          = "GSK5"
+      projection_type    = "ALL"
+      non_key_attributes = null
+      #
+      read_capacity      = null
+      write_capacity     = null
+    }    
   ]
 }
 
@@ -170,5 +174,9 @@ output "forms_s3_bucket" {
 }
 
 output "forms_dynamodb_table" {
+  value = module.dynamodb_table
+}
+
+output "dynamodb" {
   value = module.dynamodb_table
 }

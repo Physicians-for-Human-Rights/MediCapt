@@ -16,6 +16,7 @@ var lambda = new AWS.Lambda({
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
+      humanid_lambda: string
       location_table: string
       user_pool_provider: string
       user_pool_associate: string
@@ -38,13 +39,6 @@ import {
   convertCognitoUser,
   findUserAttribute,
 } from 'common-utils'
-import {
-  queryFilterSchema,
-  QueryFilterForType,
-  querySortSchema,
-  QueryFilterMatching,
-  QuerySort,
-} from 'utils/types/url'
 import {
   UserType,
   userSchema,
@@ -205,7 +199,12 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
     const sub = findUserAttribute(existingUser, 'sub')
     if (!sub) return bad(existingUser, 'User missing sub attribute')
     if (!findUserAttribute(existingUser, 'custom:human_id')) {
-      const id = await machineIdToHumanId(sub, 'MU', lambda)
+      const id = await machineIdToHumanId(
+        sub,
+        'MU',
+        lambda,
+        process.env.humanid_lambda
+      )
       userAttributes.push({
         Name: 'custom:human_id',
         Value: id.humanID,
