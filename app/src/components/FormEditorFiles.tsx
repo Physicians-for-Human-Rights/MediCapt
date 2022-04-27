@@ -20,26 +20,36 @@ import { FormType } from 'utils/types/form'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import * as DocumentPicker from 'expo-document-picker'
-import { isImage, readImage } from 'utils/forms'
+import { readImage, stripFileExtension } from 'utils/forms'
 import _ from 'lodash'
 import NecessaryItem from 'components/NecessaryItem'
+import { convertToWebP } from 'utils/imageConverter.web.js'
+import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
+import {
+  FormMetadata,
+  FormFileWitDataSchema,
+  FormManifestWithData,
+} from 'utils/types/formMetadata'
+import {
+  isImage,
+  isInManifest,
+  filterManifest,
+  mapManifest,
+  addFileToManifest,
+  makeManifestEntry,
+  changeFilenameInManifest,
+} from 'utils/manifests'
 
 export default function FormEditorFiles({
-  fileCache,
-  setFileCache,
-  files,
-  setFile,
-  form,
-  setForm,
-  removeFile,
+  formMetadata,
+  setFormMetadata,
+  manifest,
+  setManifest,
 }: {
-  fileCache: Record<string, string>
-  setFileCache: (k: string, v: string) => void
-  files: Record<string, any>
-  setFile: (k: string, v: any) => void
-  removeFile: (k: string) => void
-  form: FormType
-  setForm: React.Dispatch<React.SetStateAction<FormType>>
+  formMetadata: Partial<FormMetadata>
+  setFormMetadata: React.Dispatch<React.SetStateAction<Partial<FormMetadata>>>
+  manifest: FormManifestWithData
+  setManifest: React.Dispatch<React.SetStateAction<FormManifestWithData>>
 }) {
   const pickPdf = async () => {
     const result = await DocumentPicker.getDocumentAsync({
@@ -50,8 +60,16 @@ export default function FormEditorFiles({
     if (result.type !== 'cancel') {
       const data = await readImage(result.uri, 'data:application/pdf,')
       if (data) {
-        setFile('form.pdf', data)
-        setFileCache('form.pdf', data)
+        if (_.isArrayBuffer(data)) throw new Error('array buffer')
+        setManifest(
+          addFileToManifest(
+            filterManifest(manifest, f => f.filename !== 'form.pdf'),
+            data,
+            'form.pdf',
+            'application/pdf',
+            true
+          )
+        )
       }
     }
   }
@@ -66,17 +84,24 @@ export default function FormEditorFiles({
     })
     if (!result.cancelled) {
       // TODO It doesn't seem like we can get file names :(
-      let nr = _.size(files)
+      let nr = _.size(manifest.contents)
       for (const uploaded of result.selected) {
-        setFile('image' + nr + '.png', uploaded.uri)
-        setFileCache('image' + nr + '.png', uploaded.uri)
+        setManifest(
+          addFileToManifest(
+            manifest,
+            await convertToWebP(uploaded.uri),
+            'image' + nr + '.webp',
+            'image/webp',
+            true
+          )
+        )
         nr++
       }
     }
   }
 
   const removePdf = () => {
-    removeFile('form.pdf')
+    setManifest(filterManifest(manifest, f => f.filename !== 'form.pdf'))
   }
 
   const pdfHasAnnotations = false
@@ -99,11 +124,11 @@ export default function FormEditorFiles({
               MAIN FORM PDF
             </Badge>
           </Center>
-          {'form.pdf' in files ? (
+          {isInManifest(manifest, e => e.filename == 'form.pdf') ? (
             <Button
               fontWeight="bold"
               color="coolGray.800"
-              bg="info.500"
+              bg="red.500"
               fontSize="md"
               onPress={removePdf}
             >
@@ -121,7 +146,7 @@ export default function FormEditorFiles({
             </Button>
           )}
         </VStack>
-        {'form.pdf' in files ? (
+        {isInManifest(manifest, e => e.filename == 'form.pdf') ? (
           <VStack
             space="2"
             px={{ base: '4', md: '8' }}
@@ -158,14 +183,6 @@ export default function FormEditorFiles({
                 </Popover.Content>
               </Popover>
             </HStack>
-            <Button
-              fontWeight="bold"
-              color="coolGray.800"
-              bg="info.500"
-              fontSize="md"
-            >
-              Download pdf (TODO)
-            </Button>
           </VStack>
         ) : (
           <Text maxW="300" w="300" isTruncated noOfLines={3}>
@@ -211,12 +228,7 @@ export default function FormEditorFiles({
             display={{ md: 'flex' }}
             horizontal={false}
             numColumns={3}
-            data={_.map(
-              _.pickBy(files, (_v, k) => isImage(k)),
-              (data, filename) => {
-                return { filename, data }
-              }
-            )}
+            data={filterManifest(manifest, isImage).contents}
             renderItem={({ item }) => (
               <VStack m={1} borderRadius="md" key={item.filename}>
                 <Image
@@ -226,27 +238,39 @@ export default function FormEditorFiles({
                   height="200px"
                   rounded="lg"
                   alt="Uploaded image"
+                  // @ts-ignore TODO Fix this
                   source={item.data}
                   resizeMode="contain"
                 />
-                <InputGroup w="200px" maxWidth="200px" my={3}>
-                  <Input
-                    value={item.filename}
-                    w="100%"
-                    InputRightElement={
-                      <IconButton
-                        icon={
-                          <Icon
-                            as={MaterialCommunityIcons}
-                            name="delete-forever"
-                          />
-                        }
-                        borderRadius="full"
-                        onPress={() => removeFile(item.filename)}
-                      />
+                <HStack w="200px" maxWidth="200px" my={3}>
+                  <DebouncedTextInput
+                    w={{ md: '100%', lg: '100%', base: '100%' }}
+                    bg="white"
+                    size="lg"
+                    color="black"
+                    debounceMs={1000}
+                    value={stripFileExtension(item.filename)}
+                    onChangeText={t =>
+                      setManifest(
+                        changeFilenameInManifest(manifest, item.sha256, t)
+                      )
                     }
                   />
-                </InputGroup>
+                  <IconButton
+                    icon={
+                      <Icon as={MaterialCommunityIcons} name="delete-forever" />
+                    }
+                    borderRadius="full"
+                    onPress={() =>
+                      setManifest(
+                        filterManifest(
+                          manifest,
+                          e => item.filename !== e.filename
+                        )
+                      )
+                    }
+                  />
+                </HStack>
               </VStack>
             )}
             keyExtractor={(item, index) => 'key' + index}

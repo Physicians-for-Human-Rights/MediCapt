@@ -44,7 +44,8 @@ export default function EditLocation({
   navigation,
 }: RootStackScreenProps<'EditLocation'>) {
   const [location, setLocation] = useState(
-    (route.params.location || defaultLocation) as Partial<LocationType>
+    ((route.params && route.params.location) ||
+      defaultLocation) as Partial<LocationType>
   )
   const [lastSubmitted, setLastSubmitted] = useState(
     null as Partial<LocationType> | null

@@ -33,28 +33,9 @@ import { createUser, updateUser } from 'api/manager'
 import { standardHandler } from 'api/utils'
 import Photo from 'components/form-parts/Photo'
 import DateTimePicker from 'components/DateTimePicker'
-import { API } from 'aws-amplify'
+import { dataURItoBlob } from 'utils/data'
 
 const dummyDate = new Date()
-
-function dataURItoBlob(dataURI: any) {
-  // convert base64/URLEncoded data component to raw binary data held in a string
-  var byteString
-  if (dataURI.split(',')[0].indexOf('base64') >= 0)
-    byteString = atob(dataURI.split(',')[1])
-  else byteString = unescape(dataURI.split(',')[1])
-
-  // separate out the mime component
-  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
-
-  // write the bytes of the string to a typed array
-  var ia = new Uint8Array(byteString.length)
-  for (var i = 0; i < byteString.length; i++) {
-    ia[i] = byteString.charCodeAt(i)
-  }
-
-  return new Blob([ia], { type: mimeString })
-}
 
 export default function UserEditor({
   files,
@@ -69,10 +50,10 @@ export default function UserEditor({
 }) {
   const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
+  const standardReporters = { setWaiting, error, warning, success }
 
   const createMode = !(user.userUUID && user.userUUID !== '')
 
-  const standardReporters = { setWaiting, error, warning, success }
   const handleCreateUser = () =>
     standardHandler(
       standardReporters,

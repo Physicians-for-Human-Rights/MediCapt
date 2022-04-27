@@ -1,9 +1,12 @@
 import { StackScreenProps } from '@react-navigation/stack'
+import { FormMetadata } from 'utils/types/formMetadata'
 
 export type RootStackParamList = {
   Home: {}
   FormList: {}
-  FormEditor: {}
+  FormEditor: {
+    formMetadata?: FormMetadata
+  }
 }
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =

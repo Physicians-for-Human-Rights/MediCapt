@@ -97,22 +97,21 @@ export function reconfigureAmplifyForUserType(userType: UserType) {
         Analytics: {
           disabled: true,
         },
-        // TODO This API doesn't exist yet
-        // API: {
-        //   endpoints: [
-        //     {
-        //       name: 'formdesigner',
-        //       endpoint: config.apiGateway.formdesigner.URL,
-        //       region: config.apiGateway.formdesigner.REGION,
-        //       custom_header: async () => {
-        //         return {
-        //           // @ts-ignore TODO This exists, why doesn't typescript know about it?
-        //           Authorization: (await Auth.currentSession()).idToken.jwtToken,
-        //         }
-        //       },
-        //     },
-        //   ],
-        // }
+        API: {
+          endpoints: [
+            {
+              name: 'formdesigner',
+              endpoint: config.apiGateway.formdesigner.URL,
+              region: config.apiGateway.formdesigner.REGION,
+              custom_header: async () => {
+                return {
+                  // @ts-ignore TODO This exists, why doesn't typescript know about it?
+                  Authorization: (await Auth.currentSession()).idToken.jwtToken,
+                }
+              },
+            },
+          ],
+        },
       })
       return
     case UserType.Researcher:

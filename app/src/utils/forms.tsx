@@ -13,6 +13,12 @@ import {
 } from 'utils/types/form'
 import { NamedFormSection, FormFns } from 'utils/types/formHelpers'
 import { RecordPath } from 'utils/types/record'
+import CryptoJS from 'crypto-js'
+import {
+  FormMetadata,
+  FormFileWitDataSchema,
+  FormManifestWithData,
+} from 'utils/types/formMetadata'
 
 export type GetValueFn = (
   path: RecordPath,
@@ -431,7 +437,11 @@ export async function readImage(
   return content
 }
 
-export function isImage(filename: string) {
+export function stripFileExtension(filename: string) {
+  return filename.substr(0, filename.lastIndexOf('.')) || filename
+}
+
+export function isImageExtension(filename: string) {
   return (
     _.endsWith(filename, '.png') ||
     _.endsWith(filename, '.jpg') ||

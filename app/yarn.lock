@@ -9,6 +9,14 @@
   dependencies:
     "@jridgewell/trace-mapping" "^0.3.0"
 
+"@anatine/zod-openapi@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@anatine/zod-openapi/-/zod-openapi-1.3.0.tgz#b5b38c3d821b79674226aa7b327c88c371860d0d"
+  integrity sha512-l54DypUdDsIq1Uwjv4ib9IBkTXMKZQLUj7qvdFL51EExC5LdSSqOlTOyaVVZZGYgWPKM7ZjGklhdoknLz4EC+w==
+  dependencies:
+    ts-deepmerge "^1.1.0"
+    validator "^13.7.0"
+
 "@aws-amplify/analytics@5.1.12":
   version "5.1.12"
   resolved "https://registry.npmjs.org/@aws-amplify/analytics/-/analytics-5.1.12.tgz"
@@ -5393,6 +5401,11 @@
   resolved "https://registry.npmjs.org/@types/cookie/-/cookie-0.3.3.tgz"
   integrity sha512-LKVP3cgXBT9RYj+t+9FDKwS5tdI+rPBXaNSkma7hvqy35lc7mAokC2zsqWJH0LaqIt3B962nuYI77hsJoT1gow==
 
+"@types/crypto-js@^4.1.1":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@types/crypto-js/-/crypto-js-4.1.1.tgz#602859584cecc91894eb23a4892f38cfa927890d"
+  integrity sha512-BG7fQKZ689HIoc5h+6D2Dgq1fABRa0RbBWKBd9SP/MVRVXROflpm5fhwyATX5duFmbStzyzyycPB8qUYKDH3NA==
+
 "@types/glob@^7.1.1":
   version "7.2.0"
   resolved "https://registry.npmjs.org/@types/glob/-/glob-7.2.0.tgz"
@@ -7611,7 +7624,7 @@ crypto-browserify@^3.11.0:
 
 crypto-js@^4.1.1:
   version "4.1.1"
-  resolved "https://registry.npmjs.org/crypto-js/-/crypto-js-4.1.1.tgz"
+  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.1.1.tgz#9e485bcf03521041bd85844786b83fb7619736cf"
   integrity sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==
 
 crypto-random-string@^1.0.0:
@@ -15444,6 +15457,11 @@ tr46@~0.0.3:
   resolved "https://registry.npmjs.org/tr46/-/tr46-0.0.3.tgz"
   integrity sha1-gYT9NH2snNwYWZLzpmIuFLnZq2o=
 
+ts-deepmerge@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/ts-deepmerge/-/ts-deepmerge-1.1.0.tgz#4236ae102199affe2e77690dcf198a420160eef2"
+  integrity sha512-VvwaV/6RyYMwT9d8dClmfHIsG2PCdm6WY430QKOIbPRR50Y/1Q2ilp4i2XEZeHFcNqfaYnAQzpyUC6XA0AqqBg==
+
 ts-easing@^0.2.0:
   version "0.2.0"
   resolved "https://registry.npmjs.org/ts-easing/-/ts-easing-0.2.0.tgz"
@@ -15904,6 +15922,11 @@ validate-npm-package-license@^3.0.1:
   dependencies:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
+
+validator@^13.7.0:
+  version "13.7.0"
+  resolved "https://registry.yarnpkg.com/validator/-/validator-13.7.0.tgz#4f9658ba13ba8f3d82ee881d3516489ea85c0857"
+  integrity sha512-nYXQLCBkpJ8X6ltALua9dRrZDHVYxjJ1wgskNt1lH9fzGjs3tgojGSCBjmEPwkWS1y29+DrizMTW19Pr9uB2nw==
 
 vary@~1.1.2:
   version "1.1.2"

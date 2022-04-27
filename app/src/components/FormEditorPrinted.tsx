@@ -3,31 +3,55 @@ import { Text, VStack, View } from 'native-base'
 import { FormType } from 'utils/types/form'
 // @ts-ignore typescript doesn't do native/web modules
 import DisplayPDF from './DisplayPDF'
+import {
+  FormMetadata,
+  FormFileWitDataSchema,
+  FormManifestWithData,
+} from 'utils/types/formMetadata'
+import {
+  isImage,
+  isInManifest,
+  filterManifest,
+  mapManifest,
+  addFileToManifest,
+  makeManifestEntry,
+  changeFilenameInManifest,
+  lookupManifestByNameAndType,
+} from 'utils/manifests'
 
 export default function FormEditorPrinted({
-  files,
-  form,
-  setForm,
+  formMetadata,
+  manifest,
 }: {
-  files: Record<string, any>
-  form: FormType
-  setForm: React.Dispatch<React.SetStateAction<FormType>>
+  formMetadata: Partial<FormMetadata>
+  manifest: FormManifestWithData
 }) {
   const [width, setWidth] = useState(null as number | null)
-  if ('form.pdf' in files) {
+  if (isInManifest(manifest, e => e.filename == 'form.pdf')) {
     return (
       <View
         onLayout={event => {
           setWidth(event.nativeEvent.layout.width)
         }}
       >
-        {width && <DisplayPDF width={width} file={files['form.pdf']} />}
+        {width && (
+          <DisplayPDF
+            width={width}
+            file={
+              lookupManifestByNameAndType(
+                manifest,
+                'form.pdf',
+                'application/pdf'
+              )!.data
+            }
+          />
+        )}
       </View>
     )
   }
   return (
     <VStack>
-      <Text>Printed</Text>
+      <Text>PDF is not uploaded</Text>
     </VStack>
   )
 }

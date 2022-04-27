@@ -17,3 +17,11 @@ export const stringSetSchema = z.preprocess(arg => {
   if (_.isArray(arg)) return new Set(arg)
   if (_.isEmpty(arg)) return new Set()
 }, z.set(z.string()))
+
+// Not a very accurate type, but enough to throw type errors
+export const s3PresignedPost = z
+  .object({
+    url: z.string().nonempty(),
+    fields: z.record(z.any()),
+  })
+  .strict()

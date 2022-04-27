@@ -221,7 +221,7 @@ export default function UserList({
             bg="white"
             size="lg"
             color="black"
-            placeholder={t('user.enter-location-id')}
+            placeholder={t('user.enter-location')}
             debounceMs={1000}
             value={filterLocation}
             onChangeText={setFilterLocation}

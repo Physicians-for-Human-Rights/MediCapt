@@ -51,7 +51,7 @@ export default function EditUser({
   navigation,
 }: RootStackScreenProps<'EditUser'>) {
   const [user, setUser] = useState(
-    (route.params.user || defaultUser) as Partial<UserType>
+    ((route.params && route.params.user) || defaultUser) as Partial<UserType>
   )
   const [lastSubmitted, setLastSubmitted] = useState(
     null as Partial<UserType> | null

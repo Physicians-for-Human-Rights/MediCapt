@@ -2,19 +2,26 @@ import React, { useState } from 'react'
 import {
   Box,
   HStack,
-  Icon,
   Text,
   VStack,
   ScrollView,
   Pressable,
   Input,
+  Stack,
+  Center,
+  Button,
+  Icon,
 } from 'native-base'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
 import _ from 'lodash'
-import { FormMetadata } from 'utils/types/form'
+import { FormMetadata } from 'utils/types/formMetadata'
+import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
+import SelectLocation from 'components/SelectLocation'
+import AnyCountry from 'components/AnyCountry'
+import Language from 'components/Language'
 
 export function ListItem({
   item,
@@ -61,13 +68,18 @@ export function ListItem({
 
 export function ListItemDesktop({
   item,
-  onPress,
+  selectItem,
 }: {
   item: FormMetadata
-  onPress: (i: FormMetadata) => any
+  selectItem: (i: FormMetadata) => any
 }) {
   return (
-    <Pressable p={2} flex={1}>
+    <Pressable
+      px={2}
+      flex={1}
+      _hover={{ bg: 'coolGray.100' }}
+      onPress={() => selectItem(item)}
+    >
       <HStack alignItems="center" flex={1} justifyContent="space-between">
         <VStack w="45%">
           <Text bold isTruncated>
@@ -88,7 +100,7 @@ export function ListItemDesktop({
         </VStack>
 
         <VStack w="20%">
-          <Text isTruncated>{formatDate(item.createdDate, 'PPP')}</Text>
+          <Text isTruncated>{formatDate(item.lastChangedDate, 'PPP')}</Text>
         </VStack>
 
         <HStack w="5%">
@@ -110,30 +122,85 @@ export function ListItemDesktop({
 
 export default function FormList({
   forms,
-  itemsPerPage = 20,
-  onPress = () => undefined,
+  hasMore = false,
+  loadMore,
+  filterCountry,
+  setFilterCountry,
+  filterLanguage,
+  setFilterLanguage,
+  filterLocationID,
+  setFilterLocationID,
+  filterSearchType,
+  setFilterSearchType,
+  filterText,
+  setFilterText,
+  doSearch,
+  selectItem,
 }: {
   forms: FormMetadata[]
+  hasMore: boolean
+  loadMore?: () => any
   itemsPerPage?: number
-  onPress?: (i: FormMetadata) => any
+  filterCountry: string
+  setFilterCountry: React.Dispatch<React.SetStateAction<string>>
+  filterLanguage: string
+  setFilterLanguage: React.Dispatch<React.SetStateAction<string>>
+  filterLocationID: string
+  setFilterLocationID: React.Dispatch<React.SetStateAction<string>>
+  filterSearchType: string
+  setFilterSearchType: React.Dispatch<React.SetStateAction<string>>
+  filterText: string | undefined
+  setFilterText: React.Dispatch<React.SetStateAction<string | undefined>>
+  doSearch: () => any
+  selectItem: (f: FormMetadata) => any
 }) {
-  const [page, setPage] = useState(1)
-  const numberOfPages = Math.ceil(forms.length / itemsPerPage)
   return (
     <>
-      <HStack
-        pt={{ md: 5, base: 2 }}
-        mb={{ md: 5, base: 0 }}
-        w="100%"
-        justifyContent="space-between"
-        _light={{ bg: { base: 'white', md: 'muted.50' } }}
+      <Stack
+        direction={{ md: 'row', base: 'column' }}
+        mb={{ md: 1, base: 0 }}
+        justifyContent="center"
       >
-        <Input
+        <Center>
+          <SelectLocation
+            bg="white"
+            placeholder={t('user.enter-location')}
+            any={'user.any-location'}
+            value={filterLocationID}
+            setValue={setFilterLocationID}
+            mx={{ md: 2, base: 0 }}
+            my={{ md: 0, base: 2 }}
+          />
+        </Center>
+        <Center>
+          <AnyCountry
+            bg="white"
+            placeholder={t('location.select-country')}
+            value={filterCountry}
+            setValue={setFilterCountry}
+            any={'location.any-country'}
+            mt={{ md: 0, base: 2 }}
+          />
+        </Center>
+        <Center>
+          <Language
+            bg="white"
+            placeholder={t('location.select-language')}
+            value={filterLanguage}
+            setValue={setFilterLanguage}
+            any={'location.any-language'}
+            mx={{ md: 2, base: 0 }}
+            my={{ md: 0, base: 2 }}
+          />
+        </Center>
+      </Stack>
+      <HStack py={2} w="100%" justifyContent="center" bg={'muted.50'}>
+        <DebouncedTextInput
           flex={{ md: undefined, lg: undefined, base: 1 }}
-          w={{ md: '100%', lg: '100%', base: '90%' }}
+          w={{ md: '80%', lg: '80%', base: '50%' }}
           py={3}
-          mx={{ base: 4, md: 0 }}
-          mr={{ base: 4, md: 4, lg: 30, xl: 40 }}
+          mx={{ base: 2, md: 0 }}
+          mr={{ base: 4, md: 4, lg: 5, xl: 10 }}
           bg="white"
           InputLeftElement={
             <Icon
@@ -148,7 +215,28 @@ export default function FormList({
           }
           size="lg"
           color="black"
-          placeholder="Search for form names, ids, tags, or locations"
+          placeholder={t('user.search.form-names-and-tags')}
+          debounceMs={1000}
+          value={filterText}
+          onChangeText={setFilterText}
+        />
+        <Button
+          onPress={() => {
+            setFilterCountry('')
+            setFilterLanguage('')
+            setFilterLocationID('')
+            setFilterSearchType('')
+            setFilterText('')
+          }}
+          leftIcon={<Icon as={MaterialIcons} name="close" />}
+          size="sm"
+          mr={2}
+        />
+        <Button
+          onPress={doSearch}
+          leftIcon={<Icon as={MaterialIcons} name="refresh" />}
+          size="sm"
+          mr={2}
         />
       </HStack>
       <VStack
@@ -167,7 +255,7 @@ export default function FormList({
           <ScrollView>
             <Box position="relative" display={{ md: 'none', base: 'flex' }}>
               {forms.map((item: FormMetadata, index: number) => {
-                return <ListItem item={item} key={index} onPress={onPress} />
+                return <ListItem item={item} key={index} onPress={selectItem} />
               })}
             </Box>
             <Box display={{ md: 'flex', base: 'none' }}>
@@ -193,7 +281,7 @@ export default function FormList({
                   mb={3}
                   _light={{ color: 'coolGray.900' }}
                 >
-                  Tags
+                  Tags / Form ID
                 </Text>
                 <Text
                   fontWeight="bold"
@@ -202,7 +290,7 @@ export default function FormList({
                   mb={3}
                   _light={{ color: 'coolGray.900' }}
                 >
-                  Date
+                  Date changed
                 </Text>
                 <Text
                   fontWeight="bold"
@@ -221,7 +309,7 @@ export default function FormList({
                     <ListItemDesktop
                       item={item}
                       key={index}
-                      onPress={onPress}
+                      selectItem={selectItem}
                     />
                   )
                 })}
@@ -230,34 +318,6 @@ export default function FormList({
           </ScrollView>
         </Box>
       </VStack>
-      {numberOfPages !== 1 && (
-        <HStack
-          display={{ base: 'none', md: 'flex' }}
-          space="2"
-          alignItems="center"
-          mt="2"
-          justifyContent="flex-end"
-        >
-          {_.range(1, numberOfPages + 1).map((n: number) => (
-            <Pressable
-              height={8}
-              width={8}
-              borderRadius={4}
-              bg="white"
-              color="coolGray.500"
-              textAlign="center"
-              justifyContent="center"
-              borderColor={n === page ? 'primary.700' : undefined}
-              borderWidth={n === page ? 1 : undefined}
-              onPress={() => setPage(n)}
-            >
-              <Text color="coolGray.500" fontSize="sm">
-                {n}
-              </Text>
-            </Pressable>
-          ))}
-        </HStack>
-      )}
     </>
   )
 }

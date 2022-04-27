@@ -19,8 +19,7 @@ export ASSOCIATE_URL=$(terragrunt output   --terragrunt-working-dir $P/api/assoc
 export FORMDESIGNER_USER_POOL_ID=$(terragrunt output             --terragrunt-working-dir $P/admin/users/formdesigner cognito_user_pool_id)
 export FORMDESIGNER_APP_CLIENT_ID=$(terragrunt output            --terragrunt-working-dir $P/admin/users/formdesigner -json cognito_user_pool_client_web|jq '.id')
 export FORMDESIGNER_IDENTITY_POOL_ID=$(terragrunt output         --terragrunt-working-dir $P/admin/users/formdesigner -json cognito_identity_pool|jq '.id')
-# TODO This API doesn't exist yet
-#export FORMDESIGNER_URL=$(terragrunt output   --terragrunt-working-dir $P/api/formdesigner -json aws_api_gateway_domain_name_id|cut -d '"' -f 2)
+export FORMDESIGNER_URL=$(terragrunt output   --terragrunt-working-dir $P/api/formdesigner -json aws_api_gateway_domain_name_id|cut -d '"' -f 2)
 
 export RESEARCHER_USER_POOL_ID=$(terragrunt output             --terragrunt-working-dir $P/admin/users/researcher cognito_user_pool_id)
 export RESEARCHER_APP_CLIENT_ID=$(terragrunt output            --terragrunt-working-dir $P/admin/users/researcher -json cognito_user_pool_client_web|jq '.id')

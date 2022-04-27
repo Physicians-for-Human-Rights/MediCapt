@@ -1,11 +1,11 @@
 import {
-  FormMetadata,
   FormPart,
   FormPartField,
   FormPartMap,
   FormSection,
   NonRefFormPart,
 } from 'utils/types/form'
+import { FormMetadata } from 'utils/types/formMetadata'
 import { RecordPath } from 'utils/types/record'
 
 // Sections and fields are named by the key of the object they're stored in. The

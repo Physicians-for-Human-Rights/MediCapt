@@ -28,8 +28,7 @@ import { default as UserListComponent } from 'components/UserList'
 import { useInfo, handleStandardErrors } from 'utils/errors'
 import Loading from 'components/Loading'
 import { UserType, userSchema } from 'utils/types/user'
-import { API } from 'aws-amplify'
-import { QueryFilterForType } from 'utils/types/url'
+import { findUsers } from 'api/manager'
 
 export default function FormList({ route, navigation }: any) {
   const [users, setUsers] = useState([] as UserType[])
@@ -43,29 +42,18 @@ export default function FormList({ route, navigation }: any) {
   const [waiting, setWaiting] = useState(null as null | string)
 
   const doSearch = async () => {
-    try {
-      setWaiting('Searching')
-      let filters: QueryFilterForType<UserType & Record<string, string>> = []
-      if (filterEnabledOrDisabled)
-        filters.push({ status: { eq: filterEnabledOrDisabled } })
-      if (filterLocation)
-        filters.push({ allowed_locations: { eq: filterLocation } })
-      if (filterSearchType && filterText)
-        filters.push({ [filterSearchType]: { contains: filterText } })
-      const data = await API.get('manager', '/manager/user', {
-        queryStringParameters: {
-          userType: JSON.stringify(filterUserType),
-          filter: JSON.stringify(filters),
-        },
-      })
-      // @ts-ignore
-      setUsers(_.map(data.items, userSchema.partial().parse))
-      setNextKey(data.nextKey)
-    } catch (e) {
-      handleStandardErrors(error, warning, success, e)
-    } finally {
-      setWaiting(null)
-    }
+    findUsers(
+      () => setWaiting('Searching'),
+      () => setWaiting(null),
+      filterEnabledOrDisabled,
+      filterLocation,
+      filterSearchType,
+      filterText,
+      filterUserType,
+      e => handleStandardErrors(error, warning, success, e),
+      setUsers,
+      setNextKey
+    )
   }
 
   useEffect(() => {

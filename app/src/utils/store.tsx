@@ -1,7 +1,16 @@
-import React, { createContext, useContext, useReducer, ReactNode } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  ReactNode,
+  useEffect,
+} from 'react'
 import _ from 'lodash'
 import { Auth } from 'aws-amplify'
-import { UserType } from 'utils/types/user'
+import { splitLocations } from 'utils/types/user'
+import useMap from 'react-use/lib/useMap'
+import { LocationType } from 'utils/types/location'
+import { getLocationCached } from 'api/common'
 
 function authSignOut() {
   Auth.signOut()
@@ -64,4 +73,42 @@ export const useSignOut = () => {
     state.signOut ? state.signOut : authSignOut,
     (signOut: any) => dispatch({ type: 'SET_SIGNOUT', signOut }),
   ]
+}
+
+// A list of locations this user has access to or null if the user has access to
+// all locations. This is used to display relevant locations, not for checking
+// permissions.
+export const useUserLocationIDs = () => {
+  // @ts-ignore Why doesn't typescript like useContext with two return values?
+  const [state] = useContext(StoreContext)
+  if (
+    state &&
+    state.user &&
+    state.user.attributes &&
+    state.user.attributes['custom:allowed_locations']
+  )
+    return splitLocations(state.user.attributes['custom:allowed_locations'])
+  return []
+}
+
+// This will refresh until it contains an array of LocationTypes or if they
+// cannot be resolved, locationIDs (strings). Never use this for checking
+// permissions, only for display.
+export const useUserLocations = () => {
+  const locationIDs = useUserLocationIDs()
+  const [locationMap, { set, setAll, remove, reset }] = useMap(
+    {} as Record<string, LocationType>
+  )
+
+  useEffect(() => {
+    _.map(locationIDs, lID =>
+      getLocationCached(lID, (id, item) => {
+        if (item) set(id, item)
+      })
+    )
+  }, [])
+
+  return _.map(locationIDs, lID =>
+    lID in locationMap ? locationMap[lID] : lID
+  )
 }

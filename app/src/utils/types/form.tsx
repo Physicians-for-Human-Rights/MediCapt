@@ -1,17 +1,5 @@
-import { z } from 'zod'
-
 export type FormType = {
-  title: string
-  subtitle?: string
-  'official-name': string
-  'official-code'?: string
-  version?: string
   'storage-version'?: '1.0.0'
-  description?: string
-  tags?: string[]
-  country: string
-  language: string
-  date: Date
   // A consent entry must exist and must be the first entry unless this is set.
   skipConsent?: boolean
   // Main contents
@@ -19,32 +7,6 @@ export type FormType = {
   common: Record<string, FormDefinition>
   sections: Array<FormSectionMap>
 }
-
-export const formMetadataSchema = z
-  .object({
-    country: z.string().nonempty(),
-    formUUID: z.string().nonempty(),
-    formID: z.string().nonempty(),
-    locationUUID: z.string().nonempty(),
-    language: z.string().nonempty(),
-    officialName: z.string().nonempty(),
-    title: z.string().nonempty(),
-    subtitle: z.string().nonempty(),
-    createdDate: z.date(),
-    formId: z.string().nonempty(),
-    priority: z.string().nonempty(),
-    version: z.string().nonempty(),
-    createdByUUID: z.string().nonempty(),
-    approvedByUUID: z.string().nonempty(),
-    enabled: z.boolean(),
-    enabledDate: z.date(),
-    enabledSetByUUID: z.string().nonempty(),
-    tags: z.string().nonempty(),
-    formStorageVersion: z.literal('1.0.0'),
-  })
-  .strict()
-
-export type FormMetadata = z.infer<typeof formMetadataSchema>
 
 /**
    @minProperties 1

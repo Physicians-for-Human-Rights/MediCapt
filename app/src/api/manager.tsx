@@ -19,6 +19,7 @@ import {
   UserByUserType,
   userSchemaByUser,
 } from 'utils/types/user'
+import { QueryFilterForType } from 'utils/types/url'
 
 // User
 
@@ -33,7 +34,10 @@ export async function createUser(user: UserByUserType) {
   }
 }
 
-export async function getUser(poolId: string, username: string) {
+export async function getUser(
+  poolId: string,
+  username: string
+): Promise<Partial<UserType>> {
   const data = await API.get(
     'manager',
     '/manager/user/byId/' + poolId + '/' + username,
@@ -54,6 +58,43 @@ export async function updateUser(user: UserType) {
   return {
     user: userSchema.parse(data.user),
     imageLink: data.imageLink,
+  }
+}
+
+export async function findUsers(
+  pre: () => any,
+  post: () => any,
+  filterEnabledOrDisabled: string | undefined,
+  filterLocation: string | undefined,
+  filterSearchType: string | undefined,
+  filterText: string | undefined,
+  filterUserType: string | undefined,
+  handleErrors: (err: any) => any,
+  setUsers: (users: UserType[]) => any,
+  setNextKey: (key: string) => any
+) {
+  try {
+    pre()
+    let filters: QueryFilterForType<UserType & Record<string, string>> = []
+    if (filterEnabledOrDisabled)
+      filters.push({ status: { eq: filterEnabledOrDisabled } })
+    if (filterLocation)
+      filters.push({ allowed_locations: { eq: filterLocation } })
+    if (filterSearchType && filterText)
+      filters.push({ [filterSearchType]: { contains: filterText } })
+    const data = await API.get('manager', '/manager/user', {
+      queryStringParameters: {
+        userType: JSON.stringify(filterUserType),
+        filter: JSON.stringify(filters),
+      },
+    })
+    // @ts-ignore TODO
+    setUsers(_.map(data.items, userSchema.partial().parse))
+    setNextKey(data.nextKey)
+  } catch (e) {
+    handleErrors(e)
+  } finally {
+    post()
   }
 }
 
@@ -98,4 +139,37 @@ export async function deleteLocation(location: LocationType) {
     }
   )
   return null
+}
+
+export async function findLocations(
+  pre: () => any,
+  post: () => any,
+  filterCountry: string | undefined,
+  filterLanguage: string | undefined,
+  filterEntityType: string | undefined,
+  filterText: string | undefined,
+  handleErrors: (err: any) => any,
+  setLocations: (users: LocationType[]) => any,
+  setNextKey: (key: string) => any
+) {
+  try {
+    pre()
+    let filters: QueryFilterForType<LocationType> = []
+    if (filterCountry) filters.push({ country: { eq: filterCountry } })
+    if (filterLanguage) filters.push({ language: { eq: filterLanguage } })
+    if (filterEntityType) filters.push({ entityType: { eq: filterEntityType } })
+    if (filterText) filters.push({ locationID: { eq: filterText } })
+    const data = await API.get('manager', '/manager/location', {
+      queryStringParameters: {
+        filter: JSON.stringify(filters),
+      },
+    })
+    // @ts-ignore If this fails, the server gave us bad data
+    setLocations(_.map(data.items, locationSchema.parse))
+    setNextKey(data.nextKey)
+  } catch (e) {
+    handleErrors(e)
+  } finally {
+    post()
+  }
 }

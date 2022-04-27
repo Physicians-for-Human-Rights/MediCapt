@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import {
   Box,
   HStack,
@@ -11,6 +11,13 @@ import {
   CheckIcon,
 } from 'native-base'
 import { FormType } from 'utils/types/form'
+import { md5 } from 'utils/manifests'
+import {
+  FormMetadata,
+  FormManifest,
+  formManifestSchema,
+  FormManifestWithData,
+} from 'utils/types/formMetadata'
 import yaml from 'js-yaml'
 import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
@@ -21,6 +28,11 @@ import FormEditorOverview from 'components/FormEditorOverview'
 import useMap from 'react-use/lib/useMap'
 import _ from 'lodash'
 import { readFile } from 'utils/forms'
+import { useInfo, handleStandardErrors } from 'utils/errors'
+import Loading from 'components/Loading'
+import { getForm } from 'api/formdesigner'
+import { unpackRemoteData, blobToBase64, base64ArrayBuffer } from 'utils/data'
+import { addOrReplaceFileToManifestByFilename } from 'utils/manifests'
 
 function Tabs({
   tabName,
@@ -172,146 +184,143 @@ function Tabs({
   )
 }
 
-const defaultForm: FormType = {
-  title: 'New form',
-  subtitle: 'A subtitle',
-  description: 'Describe the form',
-  'official-name': 'Official form name',
-  'official-code': 'Official code',
-  country: 'US',
-  language: 'en',
-  date: new Date(),
-  tags: ['sexual-assault'],
-  common: {
-    gender: [
-      { key: 'male', value: 'Male' },
-      { key: 'female', value: 'Female' },
-      { key: 'transgender', value: 'Transgender' },
-    ],
-  },
-  sections: [
-    {
-      consent: {
-        title: 'Consent',
-        parts: [
-          {
-            'medical-exam': {
-              title: 'Authorizing medical exam',
-              description:
-                'I AUTHORIZE the clinician to conduct a medical examination including a pelvic exam.',
-              type: 'bool',
-            },
-          },
-          {
-            signature: {
-              title: 'Authorizing medical exam',
-              type: 'signature',
-            },
-          },
-        ],
-      },
-    },
-  ],
+const defaultFormMetadata: Partial<FormMetadata> = {
+  'storage-version': '1.0.0',
+  country: undefined,
+  locationID: undefined,
+  language: undefined,
+  'official-name': undefined,
+  'official-code': '',
+  title: undefined,
+  subtitle: '',
+  priority: undefined,
+  enabled: false,
+  tags: 'sexual-assault',
+  manifestHash: '',
+  manifestMD5: '',
+  formUUID: undefined,
+  formID: undefined,
+  createdDate: undefined,
+  createdByUUID: undefined,
+  lastChangedDate: undefined,
+  lastChangedByUUID: undefined,
+  version: undefined,
 }
 
-const rawFiles: Record<string, string> = {
-  'form.yaml':
-    require('../../../assets/forms/ke-moh-363-2019/form.yaml') as string,
-  'form.pdf':
-    require('../../../assets/forms/ke-moh-363-2019/form.pdf') as string,
-  'anterior.png':
-    require('../../../assets/forms/ke-moh-363-2019/anterior.png') as string,
-  'bottom.png':
-    require('../../../assets/forms/ke-moh-363-2019/bottom.png') as string,
-  'female-1.png':
-    require('../../../assets/forms/ke-moh-363-2019/female-1.png') as string,
-  'female-2.png':
-    require('../../../assets/forms/ke-moh-363-2019/female-2.png') as string,
-  'female-3.png':
-    require('../../../assets/forms/ke-moh-363-2019/female-3.png') as string,
-  'male-1.png':
-    require('../../../assets/forms/ke-moh-363-2019/male-1.png') as string,
-  'male-2.png':
-    require('../../../assets/forms/ke-moh-363-2019/male-2.png') as string,
-  'posterior.png':
-    require('../../../assets/forms/ke-moh-363-2019/posterior.png') as string,
-  'male-3.png':
-    require('../../../assets/forms/ke-moh-363-2019/male-3.png') as string,
-  'top.png': require('../../../assets/forms/ke-moh-363-2019/top.png') as string,
+const defaultForm: Partial<FormType> = {
+  'storage-version': '1.0.0',
+  skipConsent: undefined,
+  common: {},
+  sections: [],
+}
+
+const defaultManifest: FormManifestWithData = {
+  'storage-version': '1.0.0',
+  contents: [],
+  root: '',
 }
 
 export default function FormEditor({
   route,
   navigation,
 }: RootStackScreenProps<'FormEditor'>) {
-  const [tabName, setTabName] = React.useState('Overview')
-  const [form, setForm] = React.useState(defaultForm)
-  const [
-    files,
-    {
-      set: setFile,
-      setAll: setAllFiles,
-      remove: removeFile,
-      reset: resetFiles,
-    },
-  ] = useMap(rawFiles)
-  const [
-    fileCache,
-    {
-      set: setFileCache,
-      setAll: setAllFileCache,
-      remove: removeFileCache,
-      reset: resetFileCache,
-    },
-  ] = useMap({} as Record<string, string>)
+  const [error, warning, success] = useInfo()
+  const [waiting, setWaiting] = useState(null as null | string)
+  const [formMetadata, setFormMetadata] = useState(
+    ((route.params && route.params.formMetadata) ||
+      defaultFormMetadata) as Partial<FormMetadata>
+  )
+  const [manifest, setManifest] = React.useState(defaultManifest)
 
   useEffect(() => {
-    const f = async () => {
-      _.map(files, async (uri, filename) => {
-        const data = await readFile(filename, uri)
-        if (data) {
-          setFileCache(filename, data)
-          if (filename === 'form.yaml') setForm(yaml.load(data) as FormType)
-        }
-      })
+    const fn = async () => {
+      if (route.params && route.params.formMetadata) {
+        setWaiting('Loading form')
+        const r = await getForm(route.params.formMetadata.formUUID)
+        setFormMetadata(r.metadata)
+        const contents = await Promise.all(
+          _.map(r.manifest.contents, async e => {
+            const response = await fetch(e.link)
+            const data =
+              e.filetype === 'application/pdf' ||
+              e.filetype.startsWith('image/')
+                ? await blobToBase64(
+                    new Blob([await response.blob()], { type: e.filetype })
+                  )
+                : await response.text()
+            return {
+              sha256: e.sha256,
+              md5: md5(data),
+              filename: e.filename,
+              data: data,
+              filetype: e.filetype,
+            }
+          })
+        )
+        setManifest({
+          'storage-version': '1.0.0',
+          root: r.manifest.root,
+          contents,
+        })
+        setWaiting(null)
+      }
     }
-    f()
+    fn()
   }, [])
+
+  const [tabName, setTabName] = React.useState('Overview')
+  const createMode = !(formMetadata.formUUID && formMetadata.formUUID !== '')
+
+  const setForm = useCallback(
+    (form: FormType) =>
+      addOrReplaceFileToManifestByFilename(
+        manifest,
+        JSON.stringify(form),
+        'form.yaml',
+        'text/yaml',
+        false
+      ),
+    [manifest]
+  )
 
   let page = null
   switch (tabName) {
     case 'Overview':
-      page = <FormEditorOverview files={files} form={form} setForm={setForm} />
-      break
-    case 'Editor':
       page = (
-        <FormEditorComponent
-          files={fileCache}
-          form={form}
-          setForm={setForm}
-          onCancel={() => null}
+        <FormEditorOverview
+          formMetadata={formMetadata}
+          setFormMetadata={setFormMetadata}
+          manifest={manifest}
+          changed={false}
         />
       )
       break
     case 'Files':
       page = (
         <FormEditorFiles
-          fileCache={fileCache}
-          setFileCache={setFileCache}
-          files={files}
-          setFile={setFile}
-          removeFile={removeFile}
-          form={form}
+          formMetadata={formMetadata}
+          setFormMetadata={setFormMetadata}
+          manifest={manifest}
+          setManifest={setManifest}
+        />
+      )
+      break
+    case 'Editor':
+      page = (
+        <FormEditorComponent
+          formMetadata={formMetadata}
+          manifest={manifest}
           setForm={setForm}
         />
       )
       break
     case 'Printed':
       page = (
-        <FormEditorPrinted files={fileCache} form={form} setForm={setForm} />
+        <FormEditorPrinted formMetadata={formMetadata} manifest={manifest} />
       )
       break
   }
+
   return (
     <DashboardLayout
       title={'Form Editor'}
@@ -319,23 +328,30 @@ export default function FormEditor({
       displayScreenTitle={false}
       backButton={true}
       navigation={navigation}
-      middlebar={<Tabs tabName={tabName} setTabName={setTabName} />}
-      mobileMiddlebar={<Tabs tabName={tabName} setTabName={setTabName} />}
+      middlebar={
+        createMode ? <></> : <Tabs tabName={tabName} setTabName={setTabName} />
+      }
+      mobileMiddlebar={
+        createMode ? <></> : <Tabs tabName={tabName} setTabName={setTabName} />
+      }
       fullWidth={tabName === 'Editor'}
     >
-      <VStack
-        safeAreaBottom
-        height="95%"
-        borderRadius={{ md: '8' }}
-        borderColor="coolGray.200"
-        bg={tabName !== 'Editor' ? 'white' : null}
-        px={{
-          base: 4,
-          md: 32,
-        }}
-      >
-        {page}
-      </VStack>
+      <>
+        <VStack
+          safeAreaBottom
+          height="95%"
+          borderRadius={{ md: '8' }}
+          borderColor="coolGray.200"
+          bg={tabName !== 'Editor' ? 'white' : null}
+          px={{
+            base: 4,
+            md: 32,
+          }}
+        >
+          {page}
+        </VStack>
+        <Loading loading={waiting} />
+      </>
     </DashboardLayout>
   )
 }
