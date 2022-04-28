@@ -347,6 +347,7 @@ export default function FormEditorOverview({
           size={4}
         />
       </VStack>
+      <Loading loading={waiting} />
     </VStack>
   )
 }
