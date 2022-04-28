@@ -170,3 +170,7 @@ export function addOrReplaceFileToManifestByFilename(
     return addFileToManifest(manifest, data, filename, filetype, isDataURI)
   }
 }
+
+export function filetypeIsDataURI(filetype: string) {
+  return filetype === 'application/pdf' || filetype.startsWith('image/')
+}

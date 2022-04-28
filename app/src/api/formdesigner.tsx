@@ -104,7 +104,7 @@ export async function commitForm(
       body: formMetadataSchema.parse(metadata),
     }
   )
-  return formMetadataSchema.parse(data)
+  return formMetadataSchema.parse(data.form)
 }
 
 export async function getFormMetadata(formUUID: string): Promise<FormMetadata> {

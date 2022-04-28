@@ -32,7 +32,10 @@ import { useInfo, handleStandardErrors } from 'utils/errors'
 import Loading from 'components/Loading'
 import { getForm } from 'api/formdesigner'
 import { unpackRemoteData, blobToBase64, base64ArrayBuffer } from 'utils/data'
-import { addOrReplaceFileToManifestByFilename } from 'utils/manifests'
+import {
+  addOrReplaceFileToManifestByFilename,
+  filetypeIsDataURI,
+} from 'utils/manifests'
 
 function Tabs({
   tabName,
@@ -241,13 +244,11 @@ export default function FormEditor({
         const contents = await Promise.all(
           _.map(r.manifest.contents, async e => {
             const response = await fetch(e.link)
-            const data =
-              e.filetype === 'application/pdf' ||
-              e.filetype.startsWith('image/')
-                ? await blobToBase64(
-                    new Blob([await response.blob()], { type: e.filetype })
-                  )
-                : await response.text()
+            const data = filetypeIsDataURI(e.filetype)
+              ? await blobToBase64(
+                  new Blob([await response.blob()], { type: e.filetype })
+                )
+              : await response.text()
             return {
               sha256: e.sha256,
               md5: md5(data),
@@ -272,14 +273,17 @@ export default function FormEditor({
   const createMode = !(formMetadata.formUUID && formMetadata.formUUID !== '')
 
   const setForm = useCallback(
-    (form: FormType) =>
-      addOrReplaceFileToManifestByFilename(
-        manifest,
-        JSON.stringify(form),
-        'form.yaml',
-        'text/yaml',
-        false
-      ),
+    (form: FormType) => {
+      setManifest(
+        addOrReplaceFileToManifestByFilename(
+          manifest,
+          JSON.stringify(form),
+          'form.yaml',
+          'text/yaml',
+          false
+        )
+      )
+    },
     [manifest]
   )
 

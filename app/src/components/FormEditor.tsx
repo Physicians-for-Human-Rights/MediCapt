@@ -80,40 +80,15 @@ export default function FormEditor({
     sections: [],
   } as FormType)
 
-  const [rawContents, setRawContents] = React.useState(contents)
-  // Push text updates to the contents (this is debouncing)
-  useDebounce(
-    () => {
-      setContents(rawContents)
-    },
-    1000,
-    [rawContents]
-  )
-
-  // Push contents changes to the manifest
-  useEffect(() => {
-    try {
-      const form = yaml.load(contents) as FormType
-      form['storage-version'] = '1.0.0'
-      form.common = form.common ? form.common : {}
-      form.sections = form.sections ? form.sections : []
-      setLocalForm(form)
-      setForm(form)
-    } catch (e) {
-      // TODO Error handling
-      console.error(e)
-    }
-  }, [contents])
-
   // Pull the initial contents from the manifest
   useEffect(() => {
     try {
       const f = lookupManifest(
         manifest,
-        e => e.filetype === 'manifest' && e.filename === 'manifet'
+        e => e.filetype === 'text/yaml' && e.filename === 'form.yaml'
       )
       if (f) {
-        const text = yaml.dump(f.data)
+        const text = yaml.dump(JSON.parse(f.data))
         setContents(text)
         setRawContents(text)
       } else {
@@ -128,6 +103,31 @@ export default function FormEditor({
       console.error(e)
     }
   }, [])
+
+  const [rawContents, setRawContents] = React.useState(contents)
+  // Push text updates to the contents (this is debouncing)
+  useDebounce(
+    () => {
+      setContents(rawContents)
+    },
+    1000,
+    [rawContents]
+  )
+
+  // Push contents changes to the manifest
+  useEffect(() => {
+    try {
+      const form = (yaml.load(contents) || {}) as FormType
+      form['storage-version'] = '1.0.0'
+      form.common = form.common ? form.common : {}
+      form.sections = form.sections ? form.sections : []
+      setLocalForm(form)
+      setForm(form)
+    } catch (e) {
+      // TODO Error handling
+      console.error(e)
+    }
+  }, [contents])
 
   const window = useWindowDimensions()
   const padding = Platform.OS === 'web' ? 0.03 : 0

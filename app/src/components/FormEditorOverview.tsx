@@ -36,7 +36,12 @@ import _ from 'lodash'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import SelectLocation from 'components/SelectLocation'
-import { sha256, md5, lookupManifestSHA256 } from 'utils/manifests'
+import {
+  sha256,
+  md5,
+  lookupManifestSHA256,
+  filetypeIsDataURI,
+} from 'utils/manifests'
 import { dataURItoBlob } from 'utils/data'
 
 export default function FormEditorOverview({
@@ -108,7 +113,11 @@ export default function FormEditorOverview({
               ? new Blob([manifestData], {
                   type: 'text/plain',
                 })
-              : dataURItoBlob(lookupManifestSHA256(manifest, e.sha256)!.data)
+              : filetypeIsDataURI(e.filetype)
+              ? dataURItoBlob(lookupManifestSHA256(manifest, e.sha256)!.data)
+              : new Blob([lookupManifestSHA256(manifest, e.sha256)!.data], {
+                  type: e.filetype,
+                })
           form.append('file', blob)
           try {
             await fetch(e.link.url, {
