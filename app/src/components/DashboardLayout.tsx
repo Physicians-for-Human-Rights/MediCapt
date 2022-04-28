@@ -16,8 +16,8 @@ import {
   Avatar,
   Button,
   Input,
+  AlertDialog,
 } from 'native-base'
-
 import {
   AntDesign,
   FontAwesome,
@@ -26,6 +26,7 @@ import {
   MaterialIcons,
 } from '@expo/vector-icons'
 import { useUser, useSignOut } from 'utils/store'
+import _ from 'lodash'
 
 import medicapt_logo from '../../assets/medicapt.png'
 import phr_logo from '../../assets/phr_small.png'
@@ -206,7 +207,10 @@ export function Header(props: any) {
             )}
             {props.backButton ? (
               <IconButton
-                onPress={() => props.navigation.goBack()}
+                onPress={() => {
+                  if (props.alertOnBack) props.openAlert(true)
+                  else props.navigation.goBack()
+                }}
                 icon={
                   <Icon
                     size="6"
@@ -219,11 +223,12 @@ export function Header(props: any) {
             ) : (
               <Box w={10} />
             )}
-            <Pressable onPress={() => props.navigation.goBack()}>
+            {/* TODO What should the logo button do? It used to go back. */}
+            <Pressable>
               <Image
                 h="10"
                 w={10}
-                alt="NativeBase Startup+"
+                alt="Medicapt Logo"
                 resizeMode="cover"
                 source={medicapt_logo}
               />
@@ -466,6 +471,11 @@ export function MobileHeader({
   )
 }
 
+export type CustomAlertOnBack = {
+  message: string
+  description: string
+}
+
 export default function DashboardLayout({
   navigation,
   children,
@@ -481,6 +491,7 @@ export default function DashboardLayout({
   mobileMiddlebar = null,
   fullWidth = false,
   showLogos = false,
+  alertOnBack = false,
 }: {
   navigation: any
   children: JSX.Element
@@ -496,7 +507,11 @@ export default function DashboardLayout({
   mobileMiddlebar?: JSX.Element | null
   fullWidth?: boolean
   showLogos?: boolean
+  alertOnBack?: CustomAlertOnBack | boolean
 }) {
+  const [alertIsOpen, setAlertIsOpen] = React.useState(false)
+  const cancelAlertRef = React.useRef(null)
+  const onCloseAlert = () => setAlertIsOpen(false)
   const [signOut] = useSignOut()
   const [isSidebarVisible, setIsSidebarVisible] = React.useState(true)
   function toggleSidebar() {
@@ -504,6 +519,47 @@ export default function DashboardLayout({
   }
   return (
     <>
+      <AlertDialog
+        leastDestructiveRef={cancelAlertRef}
+        isOpen={alertIsOpen}
+        onClose={onCloseAlert}
+      >
+        <AlertDialog.Content>
+          <AlertDialog.CloseButton />
+          <AlertDialog.Header>
+            {_.isObject(alertOnBack)
+              ? alertOnBack.message
+              : 'Any changes will be lost'}
+          </AlertDialog.Header>
+          <AlertDialog.Body>
+            {_.isObject(alertOnBack)
+              ? alertOnBack.message
+              : 'If you made any changes, they will be lost unless you save before leaving.'}
+          </AlertDialog.Body>
+          <AlertDialog.Footer>
+            <Button.Group space={2}>
+              <Button
+                colorScheme="blue"
+                ref={cancelAlertRef}
+                onPress={() => {
+                  onCloseAlert()
+                }}
+              >
+                Stay
+              </Button>
+              <Button
+                colorScheme="red"
+                onPress={() => {
+                  onCloseAlert()
+                  navigation.goBack()
+                }}
+              >
+                Leave
+              </Button>
+            </Button.Group>
+          </AlertDialog.Footer>
+        </AlertDialog.Content>
+      </AlertDialog>
       <StatusBar
         translucent
         barStyle="light-content"
@@ -535,6 +591,8 @@ export default function DashboardLayout({
               backButton={backButton}
               navigation={navigation}
               signOut={signOut}
+              openAlert={() => setAlertIsOpen(true)}
+              alertOnBack={alertOnBack}
             />
           </Hidden>
         )}

@@ -18,7 +18,6 @@ import {
   formManifestSchema,
   FormManifestWithData,
 } from 'utils/types/formMetadata'
-import yaml from 'js-yaml'
 import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
 import FormEditorComponent from 'components/FormEditor'
@@ -339,6 +338,7 @@ export default function FormEditor({
         createMode ? <></> : <Tabs tabName={tabName} setTabName={setTabName} />
       }
       fullWidth={tabName === 'Editor'}
+      alertOnBack={true}
     >
       <>
         <VStack

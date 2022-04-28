@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Box, HStack, Text, VStack, Center } from 'native-base'
 import { FormType } from 'utils/types/form'
 import yaml from 'js-yaml'
@@ -24,6 +24,7 @@ import {
   lookupManifest,
 } from 'utils/manifests'
 import { useInfo } from 'utils/errors'
+import { useIsFocused } from '@react-navigation/native'
 
 const FormMemo = React.memo(Form)
 
@@ -79,6 +80,14 @@ export default function FormEditor({
     common: {},
     sections: [],
   } as FormType)
+  const [rawContents, setRawContents] = React.useState(contents)
+
+  // TODO Is there a cleaner way to deal with getting a reference to the raw
+  // contents? Could we merge rawContentsRef and setRawContents?
+  const rawContentsRef = useRef(rawContents)
+  useEffect(() => {
+    rawContentsRef.current = rawContents
+  }, [rawContents])
 
   // Pull the initial contents from the manifest
   useEffect(() => {
@@ -98,13 +107,25 @@ export default function FormEditor({
         setLocalForm(defaultForm)
         setForm(defaultForm)
       }
+      // This is important due to the debouncing that we perform with contents and
+      // raw contents. Since the for takes some time to render, we want to delay
+      // such renders between keystrokes. But when you leave the screen too quickly
+      // after typing, you lose your last changes. We check focused on the way out
+      // and do a final commit from rawContents to contents and to the form.
+      return () => {
+        const form = (yaml.load(rawContentsRef.current) || {}) as FormType
+        form['storage-version'] = '1.0.0'
+        form.common = form.common ? form.common : {}
+        form.sections = form.sections ? form.sections : []
+        setLocalForm(form)
+        setForm(form)
+      }
     } catch (e) {
       // TODO Error handling
       console.error(e)
     }
   }, [])
 
-  const [rawContents, setRawContents] = React.useState(contents)
   // Push text updates to the contents (this is debouncing)
   useDebounce(
     () => {
