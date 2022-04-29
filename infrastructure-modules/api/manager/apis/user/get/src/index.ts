@@ -58,8 +58,8 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
   context
 ) => {
   try {
-    const startKey = undefined as undefined | AWS.DynamoDB.Key
-    const filter = [] as QueryFilterForType<UserTypeFilter>
+    let startKey = undefined as undefined | AWS.DynamoDB.Key
+    let filter = [] as QueryFilterForType<UserTypeFilter>
     if (
       event.queryStringParameters &&
       'userType' in event.queryStringParameters &&
@@ -101,11 +101,37 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
     } else {
       return bad([], 'Must specify a valid user type')
     }
+
+    if (
+      event.queryStringParameters &&
+      'nextKey' in event.queryStringParameters &&
+      event.queryStringParameters['nextKey']
+    ) {
+      try {
+        startKey = JSON.parse(event.queryStringParameters['nextKey'])
+      } catch (e) {
+        return bad(e, 'Bad next key')
+      }
+    }
+    if (
+      event.queryStringParameters &&
+      'filter' in event.queryStringParameters &&
+      event.queryStringParameters['filter']
+    ) {
+      try {
+        filter = queryFilterSchema.parse(
+          JSON.parse(event.queryStringParameters['filter'])
+        ) as QueryFilterForType<UserTypeFilter>
+      } catch (e) {
+        return bad(e, 'Bad query filter')
+      }
+    }
     const combinedFilters: Record<string, QueryFilterMatching> = _.merge.apply(
       null,
       // @ts-ignore
       filter
     )
+
     let cognitoItems: CognitoUserType[] = []
     let lastKey: undefined | string = undefined
     if (

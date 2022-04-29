@@ -41,6 +41,7 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
     let startKey = undefined as undefined | AWS.DynamoDB.Key
     let filter = [] as QueryFilterForType<LocationType>
     let sort = [] as QuerySort
+
     if (
       event.queryStringParameters &&
       'nextKey' in event.queryStringParameters &&
@@ -83,6 +84,7 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       // @ts-ignore
       filter
     )
+
     let rawItems: AWS.DynamoDB.ItemList = []
     let lastKey: undefined | AWS.DynamoDB.Key = undefined
     if (_.isEmpty(filter)) {
