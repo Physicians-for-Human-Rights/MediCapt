@@ -117,7 +117,7 @@ export const recordValueTypesSchema = {
   }),
   sex: z.object({
     type: z.literal('sex'),
-    value: z.enum(['male', 'female', 'intersex']),
+    value: z.string(), // z.enum(['male', 'female', 'intersex']),
   }),
   date: z.object({
     type: z.literal('date'),
@@ -157,10 +157,13 @@ export const recordValueTypesSchema = {
   'list-with-labels': z.object({
     type: z.literal('list-with-labels'),
     value: z.object({
-      options: z.object({
-        key: z.string().nonempty(),
-        value: z.union([z.string(), z.number(), z.boolean()]).nullable(),
-      }),
+      options: z
+        .object({
+          key: z.string().nonempty(),
+          value: z.union([z.string(), z.number(), z.boolean()]),
+        })
+        .array()
+        .nullable(),
       selection: z.string().nullable(),
       otherValue: z.string().nullable(),
     }),
