@@ -1,38 +1,64 @@
 import { z } from 'zod'
-import { FormKVRawType, FormPart } from 'utils/types/form'
 import { dateSchema } from './common'
 
 export type RecordValuePath = (string | number)[]
 
-export type RecordValue =
-  | RecordSimpleValue
-  | RecordValueByType['repeat-list']
-  | RecordValueByType['list-with-parts']
-export type FlatRecord = Record<string, RecordValue>
+export const recordValueSchema = z.lazy(() =>
+  z.intersection(
+    skippableSchema,
+    z.union([
+      recordSimpleValueSchema,
+      recordValueTypesSchema['list-with-parts'],
+      recordValueTypesSchema['repeat-list'],
+    ])
+  )
+)
+export const flatRecordSchema = z.record(recordValueSchema)
+export type RecordValue = z.infer<typeof recordValueSchema>
+export type FlatRecord = z.infer<typeof flatRecordSchema>
 
 export const recordTypeSchema = z.lazy(() =>
   z.object({
     'storage-version': z.literal('1.0.0').default('1.0.0'),
     sections: z.record(
       z.object({
-        parts: z.record(skippableRecordPartSchema),
+        parts: z.record(recordPartSchema),
       })
     ),
   })
 )
-
-export const skippableRecordPartSchema = z.lazy(() =>
+export const recordPartSchema: z.ZodType<RecordPart> = z.lazy(() =>
   z.intersection(
-    recordPartSchema,
-    z.object({
-      skipped: z.boolean().optional(),
-    })
+    skippableSchema,
+    z.union([
+      z.intersection(
+        recordSimpleValueSchema,
+        z.object({
+          parts: z.record(recordPartSchema).optional(),
+        })
+      ),
+      z.intersection(
+        recordValueTypesSchema['list-with-parts'],
+        z.object({
+          'list-parts': z.record(recordPartSchema),
+          parts: z.record(recordPartSchema).optional(),
+        })
+      ),
+      z.intersection(
+        recordValueTypesSchema['repeat-list'],
+        z.object({
+          repeat: z.record(recordPartSchema),
+        })
+      ),
+    ])
   )
 )
-
-export const recordPartSchema = z.lazy(() =>
+export const skippableSchema = z.object({
+  skipped: z.boolean().optional(),
+})
+export const recordSimpleValueSchema = z.lazy(() =>
   z.union([
-    recordValueTypesSchema['repeat-list'],
+    recordValueTypesSchema['untyped'],
     recordValueTypesSchema['bool'],
     recordValueTypesSchema['number'],
     recordValueTypesSchema['text'],
@@ -44,21 +70,18 @@ export const recordPartSchema = z.lazy(() =>
     recordValueTypesSchema['sex'],
     recordValueTypesSchema['date'],
     recordValueTypesSchema['date-time'],
-    recordValueTypesSchema['singature'],
+    recordValueTypesSchema['signature'],
     recordValueTypesSchema['photo'],
     recordValueTypesSchema['body-image'],
     recordValueTypesSchema['list'],
     recordValueTypesSchema['list-with-labels'],
     recordValueTypesSchema['list-multiple'],
     recordValueTypesSchema['list-with-labels-multiple'],
-    recordValueTypesSchema['list-with-parts'],
   ])
 )
-
 export const recordValueTypesSchema = {
-  'repeat-list': z.object({
-    type: z.literal('repeat-list'),
-    value: z.string().array(),
+  untyped: z.object({
+    type: z.undefined().optional(),
   }),
   bool: z.object({
     type: z.literal('bool'),
@@ -66,7 +89,7 @@ export const recordValueTypesSchema = {
   }),
   number: z.object({
     type: z.literal('number'),
-    value: z.number(),
+    value: z.string(),
   }),
   text: z.object({
     type: z.literal('text'),
@@ -104,7 +127,7 @@ export const recordValueTypesSchema = {
     type: z.literal('date-time'),
     value: dateSchema,
   }),
-  singature: z.object({
+  signature: z.object({
     type: z.literal('signature'),
     value: z.string().nonempty(),
     signer: z.string().optional(),
@@ -163,14 +186,17 @@ export const recordValueTypesSchema = {
     type: z.literal('list-with-parts'),
     value: z.string(),
   }),
+  'repeat-list': z.object({
+    type: z.literal('repeat-list'),
+    value: z.string().array(),
+  }),
 }
-
-const recordPhotoSchema = z.object({
+const RecordValueByType = z.object(recordValueTypesSchema)
+export const recordPhotoSchema = z.object({
   uri: z.string().nonempty(),
   'date-taken': dateSchema.optional(),
 })
-
-const imageAnnotationSchema = z.object({
+export const imageAnnotationSchema = z.object({
   location: z.object({
     x: z.number().int().min(0).max(10000),
     y: z.number().int().min(0).max(10000),
@@ -178,232 +204,27 @@ const imageAnnotationSchema = z.object({
   text: z.string(),
   photos: recordPhotoSchema.array(),
 })
+export type RecordType = z.infer<typeof recordTypeSchema>
+export type RecordPart = Skippable &
+  (
+    | (RecordSimpleValue & {
+        parts?: Record<string, RecordPart>
+      })
+    | (RecordValueByType['list-with-parts'] & {
+        'list-parts': Record<string, RecordPart>
+        parts?: Record<string, RecordPart>
+      })
+    | (RecordValueByType['repeat-list'] & {
+        repeat: Record<string, RecordPart>
+      })
+  )
+export type Skippable = z.infer<typeof skippableSchema>
+export type RecordSimpleValue = z.infer<typeof recordSimpleValueSchema>
+export type RecordValueByType = z.infer<typeof RecordValueByType>
+export type RecordPhoto = z.infer<typeof recordPhotoSchema>
+export type ImageAnnotation = z.infer<typeof imageAnnotationSchema>
 
-export type RecordType = {
-  'storage-version'?: '1.0.0'
-  sections: RecordSections
-}
-
-export type RecordSections = {
-  [sectionName: string]: RecordSection
-}
-
-export type RecordSection = {
-  parts: RecordParts
-}
-
-export type RecordParts = {
-  [partName: string]: RecordRepeatedPart | RecordPart
-}
-
-export type RecordRepeatedPart = RecordValueByType['repeat-list'] & {
-  repeat: RecordParts
-}
-
-export type RecordPart = {
-  parts?: RecordParts
-} & (RecordSimpleValue | RecordListWithParts)
-
-export type RecordListWithParts = RecordValueByType['list-with-parts'] & {
-  'list-parts': RecordParts
-}
-
-export type RecordSimpleValue =
-  | RecordValueByType['bool']
-  | RecordValueByType['date']
-  | RecordValueByType['date-time']
-  | RecordValueByType['number']
-  | RecordValueByType['list']
-  | RecordValueByType['list-with-labels']
-  | RecordValueByType['list-multiple']
-  | RecordValueByType['list-with-labels-multiple']
-  | RecordValueByType['text']
-  | RecordValueByType['long-text']
-  | RecordValueByType['email']
-  | RecordValueByType['address']
-  | RecordValueByType['phone-number']
-  | RecordValueByType['gender']
-  | RecordValueByType['sex']
-  | RecordValueByType['signature']
-  | RecordValueByType['photo']
-  | RecordValueByType['body-image']
-
-export type RecordValueByType = {
-  'repeat-list': {
-    type?: 'repeat-list'
-    skipped?: boolean
-    value?: string[]
-  }
-  bool: {
-    type?: 'bool'
-    skipped?: boolean
-    value?: boolean
-  }
-  number: {
-    type?: 'number'
-    skipped?: boolean
-    value?: string
-  }
-  text: {
-    type?: 'text'
-    skipped?: boolean
-    value?: string
-  }
-  'long-text': {
-    type?: 'long-text'
-    skipped?: boolean
-    value?: string
-  }
-  email: {
-    /**
-           @faker internet.email
-    */
-    type?: 'email'
-    skipped?: boolean
-    value?: string
-  }
-  address: {
-    type?: 'address'
-    skipped?: boolean
-    value?: string
-  }
-  'phone-number': {
-    type?: 'phone-number'
-    skipped?: boolean
-    value?: string
-  }
-  gender: {
-    type?: 'gender'
-    skipped?: boolean
-    value?: string
-  }
-  sex: {
-    type?: 'sex'
-    skipped?: boolean
-    value?: string // TODO 'male' | 'female' | 'intersex'
-  }
-  date: {
-    type?: 'date'
-    skipped?: boolean
-    value?: Date
-    birthdate?: boolean
-  }
-  'date-time': {
-    /**
-     @format date-time
-    */
-    type?: 'date-time'
-    skipped?: boolean
-    value?: Date
-  }
-  list: {
-    type?: 'list'
-    skipped?: boolean
-    value?: {
-      options: string[] | boolean[] | number[] | null
-      // selection: number | 'other'
-      // otherText?: string
-      selection: string | null
-      otherValue: string | null
-    }
-  }
-  'list-with-labels': {
-    type?: 'list-with-labels'
-    skipped?: boolean
-    value?: {
-      options: FormKVRawType[] | null
-      // selection: number | 'other'
-      // otherText?: string
-      selection: string | null
-      otherValue: string | null
-    }
-  }
-  'list-multiple': {
-    type?: 'list-multiple'
-    skipped?: boolean
-    value?: {
-      options: string[] | boolean[] | number[]
-      selections: boolean[]
-      otherChecked?: boolean
-      otherValue?: string
-    }
-  }
-  'list-with-labels-multiple': {
-    type?: 'list-with-labels-multiple'
-    skipped?: boolean
-    value?: {
-      options: FormKVRawType[]
-      selections: boolean[]
-      other?: string
-    }
-  }
-  'list-with-parts': {
-    type?: 'list-with-parts'
-    skipped?: boolean
-    value?: {
-      options: FormPart[]
-      selections: boolean[]
-    }
-  }
-  signature: {
-    type: 'signature'
-    skipped?: boolean
-    /**
-     @format uri
-    */
-    value?: string
-    signer?: string
-    'date-signed'?: Date
-  }
-  photo: {
-    type?: 'photo'
-    skipped?: boolean
-    value?: RecordPhoto[]
-  }
-  'body-image': {
-    /**
-       @format uri
-    */
-    type?: 'body-image'
-    skipped?: boolean
-    value?: {
-      uri: string
-      annotations: ImageAnnotation[]
-    }
-  }
-}
-
-export type RecordPhoto = {
-  /**
-     @format uri
-  */
-  uri: string
-  /**
-     @format date-time
-  */
-  'date-taken': Date
-}
-
-export type ImageAnnotation = {
-  location: {
-    /**
-      @minimum 0
-      @maximum 10000
-      @type integer
-    */
-    x: number
-    /**
-      @minimum 0
-      @maximum 10000
-      @type integer
-    */
-    y: number
-  }
-  text: string
-  photos: RecordPhoto[]
-}
-
-export const RecordMetadata = z
+export const recordMetadataSchema = z
   .object({
     recordUUID: z.string().nonempty(),
     recordID: z.string().nonempty(),
@@ -427,5 +248,4 @@ export const RecordMetadata = z
     recordStorageVersion: z.literal('1.0.0'),
   })
   .strict()
-
-export type RecordMetadata = z.infer<typeof RecordMetadata>
+export type RecordMetadata = z.infer<typeof recordMetadataSchema>

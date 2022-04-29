@@ -4,8 +4,8 @@ import {
   RecordValue,
   FlatRecord,
   RecordType,
-  RecordParts,
   RecordPart,
+  recordTypeSchema,
 } from 'utils/types/record'
 import _ from 'lodash'
 
@@ -253,18 +253,23 @@ export function restrictRecordValueType(
 ) {
   if (recordValue?.type === expectedType) return recordValue
   else return undefined
+  // if (recordValue?.type === undefined) return undefined
+  // return recordValueTypesSchema[expectedType].passthrough().parse(recordValue)
 }
 
 export function flatRecordToRecordType(flatRecord: FlatRecord): RecordType {
-  const record: RecordType = { sections: {} }
+  const record = { sections: {} }
   _.map(flatRecord, (v, p) => _.set(record, p, v))
-  return record
+  return recordTypeSchema.parse(record)
 }
 
 export function recordTypeToFlatRecord(record: RecordType): FlatRecord {
   const flatRecord: FlatRecord = {}
 
-  function flattenParts(parts: RecordParts, path: RecordValuePath) {
+  function flattenParts(
+    parts: Record<string, RecordPart>,
+    path: RecordValuePath
+  ) {
     Object.keys(parts).forEach(partName => {
       const part = parts[partName]
 
@@ -284,8 +289,8 @@ export function recordTypeToFlatRecord(record: RecordType): FlatRecord {
           break
         }
         default: {
-          const { parts, ...terminal } = part as RecordPart
-          flatRecord[_.join(path.concat(partName))] = terminal
+          const { parts, ...terminal } = part
+          if (terminal) flatRecord[_.join(path.concat(partName))] = terminal
           if (parts) flattenParts(parts, path.concat(partName, 'parts'))
         }
       }

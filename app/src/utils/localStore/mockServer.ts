@@ -1,5 +1,4 @@
 import { readFile } from 'utils/forms'
-import { map } from 'lodash'
 import { FormMetadata } from 'utils/types/form'
 import { RecordMetadata, RecordType } from 'utils/types/record'
 
