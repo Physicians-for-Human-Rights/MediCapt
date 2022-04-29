@@ -46,8 +46,8 @@ export default {
     filter: {
       'select-user-enabled': 'Enabled or disabled users',
       'any-is-user-enabled': 'All users',
-      enabled: 'Disabled users',
-      disabled: 'Enabled users',
+      enabled: 'Enabled users',
+      disabled: 'Disabled users',
     },
     'search-enter': 'Enter search text',
     'full-official-name': 'Full official name',

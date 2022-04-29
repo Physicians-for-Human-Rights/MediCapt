@@ -58,13 +58,7 @@ export default function FormList({ route, navigation }: any) {
 
   useEffect(() => {
     doSearch()
-  }, [
-    filterUserType,
-    filterEnabledOrDisabled,
-    filterLocation,
-    filterSearchType,
-    filterText,
-  ])
+  }, [filterUserType, filterEnabledOrDisabled, filterLocation, filterText])
 
   return (
     <DashboardLayout
