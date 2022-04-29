@@ -34,6 +34,7 @@ import { unpackRemoteData, blobToBase64, base64ArrayBuffer } from 'utils/data'
 import {
   addOrReplaceFileToManifestByFilename,
   filetypeIsDataURI,
+  makeManifestEntry,
 } from 'utils/manifests'
 
 function Tabs({
@@ -292,15 +293,18 @@ export default function FormEditor({
   const setForm = useCallback(
     (form: FormType) => {
       setChanged(true)
-      setManifest(
-        addOrReplaceFileToManifestByFilename(
+      const formData = JSON.stringify(form)
+      const entry = makeManifestEntry(formData, 'form.yaml', 'text/yaml', false)
+      setManifest({
+        ...addOrReplaceFileToManifestByFilename(
           manifest,
-          JSON.stringify(form),
+          formData,
           'form.yaml',
           'text/yaml',
           false
-        )
-      )
+        ),
+        root: entry.sha256,
+      })
     },
     [manifest]
   )
