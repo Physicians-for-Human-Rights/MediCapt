@@ -120,24 +120,24 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       )
       const oldHashes = _.map(oldManifest.contents, v => v.sha256)
       const newHashes = _.map(newManifest.contents, v => v.sha256)
-      hashesToCheck = _.difference(oldHashes, newHashes)
+      hashesToCheck = _.difference(newHashes, oldHashes)
     } else {
       hashesToCheck = _.map(newManifest.contents, v => v.sha256)
     }
 
     for (const hash of hashesToCheck) {
-      const entry = _.find(newManifest.contents, e => e.sha256 == hash)
+      const entry = _.find(newManifest.contents, e => e.sha256 === hash)
       if (!entry)
         return bad(
           [hash, hashesToCheck, newManifest],
           'Hash missing from manifest'
         )
       if (
-        !s3ObjectExists(
+        !(await s3ObjectExists(
           process.env.form_bucket,
           hashFilename(existingForm.formUUID, entry.sha256, entry.filetype),
           s3
-        )
+        ))
       )
         return bad(entry, 'Required file not uploaded')
     }
@@ -154,7 +154,7 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       version: _.toString(_.toNumber(form.version) + 1),
     }
     const now = new Date()
-    const updateLatest: FormDynamoLatestToUpdateType = {
+    let updateLatest: FormDynamoLatestToUpdateType = {
       ...update,
       GSK2: 'DATE#' + now.toISOString(),
       GPK3: 'LA#' + update.language,
@@ -163,6 +163,8 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       GSK4: 'DATE#' + now.toISOString(),
       GPK5: 'LO#' + update.locationID,
       GSK5: 'DATE#' + now.toISOString(),
+      GPK6: (update.enabled ? 'Y#' : 'N#') + 'LO#' + update.locationID,
+      GSK6: 'PRIORITY#' + update.priority + 'DATE#' + now.toISOString(),
     }
 
     // Update latest, verifying that the version hasn't changed.
@@ -214,7 +216,7 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
         })
         .promise()
 
-      return good(newForm)
+      return good({ form: newForm, hashesToCheck })
     } catch (e) {
       return bad(e, 'Unknown error')
     }

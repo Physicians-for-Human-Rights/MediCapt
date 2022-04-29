@@ -58,8 +58,8 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
   context
 ) => {
   try {
-    let startKey = undefined as undefined | AWS.DynamoDB.Key
-    let filter = [] as QueryFilterForType<UserTypeFilter>
+    const startKey = undefined as undefined | AWS.DynamoDB.Key
+    const filter = [] as QueryFilterForType<UserTypeFilter>
     if (
       event.queryStringParameters &&
       'userType' in event.queryStringParameters &&
@@ -101,7 +101,7 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
     } else {
       return bad([], 'Must specify a valid user type')
     }
-    let combinedFilters: Record<string, QueryFilterMatching> = _.merge.apply(
+    const combinedFilters: Record<string, QueryFilterMatching> = _.merge.apply(
       null,
       // @ts-ignore
       filter
@@ -189,8 +189,8 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
               )
             : true) &&
           ('user-id-code' in combinedFilters &&
-          'eq' in combinedFilters['user-id-code']
-            ? e.userID === combinedFilters['user-id-code'].eq
+          'contains' in combinedFilters['user-id-code']
+            ? _.includes(e.userID, combinedFilters['user-id-code'].contains)
             : true) &&
           ('userType' in combinedFilters && 'eq' in combinedFilters.userType
             ? e.userType === combinedFilters.userType.eq

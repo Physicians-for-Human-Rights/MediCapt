@@ -363,7 +363,8 @@ export async function simpleDynamoQuery(
   pk: string,
   pkValue: string,
   sk?: string | undefined,
-  skValue?: string | undefined
+  skValue?: string | undefined,
+  skBeginsWith?: boolean | undefined
 ) {
   return await ddb
     .query({
@@ -372,7 +373,13 @@ export async function simpleDynamoQuery(
       Select: 'ALL_ATTRIBUTES',
       ExclusiveStartKey: startKey,
       ScanIndexForward: false,
-      KeyConditionExpression: '#pk = :pk' + (sk ? ' And #sk = :sk' : ''),
+      KeyConditionExpression:
+        '#pk = :pk' +
+        (sk
+          ? skBeginsWith
+            ? ' And begins_with(#sk, :sk)'
+            : ' And #sk = :sk'
+          : ''),
       ExpressionAttributeNames: {
         '#pk': pk,
         ...(sk && { '#sk': sk }),

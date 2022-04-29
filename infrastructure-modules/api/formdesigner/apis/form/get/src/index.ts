@@ -36,7 +36,6 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
   try {
     let startKey = undefined as undefined | AWS.DynamoDB.Key
     let filter = [] as QueryFilterForType<FormMetadata>
-    let sort = [] as QuerySort
     if (
       event.queryStringParameters &&
       'nextKey' in event.queryStringParameters &&
@@ -61,38 +60,16 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
         return bad(e, 'Bad query filter')
       }
     }
-    if (
-      event.queryStringParameters &&
-      'sort' in event.queryStringParameters &&
-      event.queryStringParameters['sort']
-    ) {
-      try {
-        sort = querySortSchema.parse(
-          JSON.parse(event.queryStringParameters['sort'])
-        ) as QuerySort
-      } catch (e) {
-        return bad(e, 'Bad query sort')
-      }
-    }
-    let combinedFilters: Record<string, QueryFilterMatching> = _.merge.apply(
+
+    const combinedFilters: Record<string, QueryFilterMatching> = _.merge.apply(
       null,
       // @ts-ignore
       filter
     )
     let rawItems: AWS.DynamoDB.ItemList = []
     let lastKey: undefined | AWS.DynamoDB.Key = undefined
-    if (_.isEmpty(filter)) {
-      const results = await simpleDynamoQuery(
-        ddb,
-        startKey,
-        process.env.form_table,
-        process.env.form_gsi_date,
-        'GPK2',
-        'VERSION#latest'
-      )
-      rawItems = results.Items ? results.Items : []
-      lastKey = results.LastEvaluatedKey
-    } else if ('formID' in combinedFilters && 'eq' in combinedFilters.formID) {
+
+    if ('formID' in combinedFilters && 'eq' in combinedFilters.formID) {
       const results = await simpleDynamoQuery(
         ddb,
         startKey,
@@ -152,11 +129,18 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
         return bad(e, 'Generic error LID')
       }
     } else {
-      return bad(
-        combinedFilters,
-        'Do not know how to handle this combination of filters'
+      const results = await simpleDynamoQuery(
+        ddb,
+        startKey,
+        process.env.form_table,
+        process.env.form_gsi_date,
+        'GPK2',
+        'VERSION#latest'
       )
+      rawItems = results.Items ? results.Items : []
+      lastKey = results.LastEvaluatedKey
     }
+
     try {
       var items = _.filter(
         _.map(rawItems, e =>
@@ -174,6 +158,9 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
             : true) &&
           ('locationID' in combinedFilters && 'eq' in combinedFilters.locationID
             ? e.locationID === combinedFilters.locationID.eq
+            : true) &&
+          ('enabled' in combinedFilters && 'eq' in combinedFilters.enabled
+            ? e.enabled === (combinedFilters.enabled.eq === 'enabled')
             : true)
       )
     } catch (e) {

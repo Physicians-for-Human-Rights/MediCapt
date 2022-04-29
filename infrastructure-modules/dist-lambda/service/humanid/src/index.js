@@ -80,7 +80,7 @@ async function create_humanid_of_size(prefix, n, machineId) {
         return humanId;
     }
 }
-let cacheTable = {};
+const cacheTable = {};
 const handler = async (event) => {
     switch (event.action) {
         case 'machineID-to-humanID': {

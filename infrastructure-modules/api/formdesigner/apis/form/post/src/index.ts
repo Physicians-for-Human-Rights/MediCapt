@@ -78,6 +78,12 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       GSK4: 'DATE#' + form.lastChangedDate.toISOString(),
       GPK5: 'LO#' + form.locationID,
       GSK5: 'DATE#' + form.lastChangedDate.toISOString(),
+      GPK6: (form.enabled ? 'Y#' : 'N#') + 'LO#' + form.locationID,
+      GSK6:
+        'PRIORITY#' +
+        form.priority +
+        'DATE#' +
+        form.lastChangedDate.toISOString(),
     }
     const formDynamoV1: FormDynamoVersionType = {
       ...form,

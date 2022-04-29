@@ -78,7 +78,7 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
         return bad(e, 'Bad query sort')
       }
     }
-    let combinedFilters: Record<string, QueryFilterMatching> = _.merge.apply(
+    const combinedFilters: Record<string, QueryFilterMatching> = _.merge.apply(
       null,
       // @ts-ignore
       filter

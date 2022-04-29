@@ -95,7 +95,7 @@ async function create_humanid_of_size(
   }
 }
 
-let cacheTable: Record<string, number> = {}
+const cacheTable: Record<string, number> = {}
 
 export const handler: Handler<HumanIDAction, HumanIDResponse> = async event => {
   switch (event.action) {

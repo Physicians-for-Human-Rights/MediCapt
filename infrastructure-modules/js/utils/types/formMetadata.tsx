@@ -147,6 +147,16 @@ export const formSchemaDynamoLatestToUpdatePart = z.object({
     .refine(v => _.startsWith(v, 'DATE#'), {
       message: 'GSK5 must start with DATE#',
     }),
+  // We only include this entry for enabled forms
+  // The PK will be Y#LO#location or N#LO#location for enabled and diabled forms
+  // The SK will be PRIORITY#nr#DATE#date
+  GPK6: z.string().nonempty(),
+  GSK6: z
+    .string()
+    .nonempty()
+    .refine(v => _.startsWith(v, 'PRIORITY#'), {
+      message: 'GSK6 must start with PRIORITY#',
+    }),
 })
 
 export const formSchemaDynamoLatestPart = formSchemaDynamoLatestToUpdatePart.extend(

@@ -48,6 +48,7 @@ resource "aws_s3_bucket_public_access_block" "forms" {
   bucket = resource.aws_s3_bucket.forms.id
   block_public_acls   = true
   block_public_policy = true
+  ignore_public_acls = true
   restrict_public_buckets = true
 }
 
@@ -113,6 +114,14 @@ module "dynamodb_table" {
     {
       name = "GSK5"
       type = "S"
+    },
+    {
+      name = "GPK6"
+      type = "S"
+    },
+    {
+      name = "GSK6"
+      type = "S"
     }
   ]
   global_secondary_index_map = [
@@ -165,7 +174,17 @@ module "dynamodb_table" {
       #
       read_capacity      = null
       write_capacity     = null
-    }    
+    },
+    {
+      name               = "LocationEnabledPriorityDate"
+      hash_key           = "GPK6"
+      range_key          = "GSK6"
+      projection_type    = "ALL"
+      non_key_attributes = null
+      #
+      read_capacity      = null
+      write_capacity     = null
+    }
   ]
 }
 

@@ -107,7 +107,7 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       })
     }
 
-    let userAttributes: AWS.CognitoIdentityServiceProvider.AttributeListType = []
+    const userAttributes: AWS.CognitoIdentityServiceProvider.AttributeListType = []
 
     const newLocations = splitLocations(user.allowed_locations)
     const callerLocations = splitLocations(
@@ -180,11 +180,13 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
         newLocations,
         async l =>
           // NB this would be faster if we checked if the user is already in that group.
-          await cognito.adminAddUserToGroup({
-            UserPoolId: user_pool_id,
-            Username: user.username,
-            GroupName: l,
-          })
+          await cognito
+            .adminAddUserToGroup({
+              UserPoolId: user_pool_id,
+              Username: user.username,
+              GroupName: l,
+            })
+            .promise()
       )
     )
 

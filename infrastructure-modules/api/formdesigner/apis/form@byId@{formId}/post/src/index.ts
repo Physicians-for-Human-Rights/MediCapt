@@ -81,7 +81,7 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
 
     if (metadata.manifestHash) {
       // Otherwise the manifest is new
-      let contents: FormFileWithPostLink[] = []
+      const contents: FormFileWithPostLink[] = []
 
       async function createFileLink(v: FormFileWithMD5Schema) {
         const filename = hashFilename(

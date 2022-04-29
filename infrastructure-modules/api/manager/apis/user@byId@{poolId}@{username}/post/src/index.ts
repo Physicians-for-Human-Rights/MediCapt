@@ -106,7 +106,7 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       })
       .promise()
 
-    let userAttributes: AWS.CognitoIdentityServiceProvider.AttributeListType = []
+    const userAttributes: AWS.CognitoIdentityServiceProvider.AttributeListType = []
     if (!existingUser.UserAttributes)
       return bad(existingUser, 'No user attributes')
 
@@ -237,11 +237,13 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
         toAddLocations,
         async l =>
           // NB this would be faster if we checked if the user is already in that group.
-          await cognito.adminAddUserToGroup({
-            UserPoolId: user_pool_id,
-            Username: username,
-            GroupName: l,
-          })
+          await cognito
+            .adminAddUserToGroup({
+              UserPoolId: user_pool_id,
+              Username: username,
+              GroupName: l,
+            })
+            .promise()
       )
     )
     await Promise.all(
@@ -249,11 +251,13 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
         toRemoveLocations,
         async l =>
           // NB this would be faster if we checked if the user is already in that group.
-          await cognito.adminRemoveUserFromGroup({
-            UserPoolId: user_pool_id,
-            Username: username,
-            GroupName: l,
-          })
+          await cognito
+            .adminRemoveUserFromGroup({
+              UserPoolId: user_pool_id,
+              Username: username,
+              GroupName: l,
+            })
+            .promise()
       )
     )
 
