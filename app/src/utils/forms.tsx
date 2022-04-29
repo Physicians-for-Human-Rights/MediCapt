@@ -11,12 +11,6 @@ import {
   FormConditional,
 } from 'utils/types/form'
 import { NamedFormSection, FormFns } from 'utils/types/formHelpers'
-import CryptoJS from 'crypto-js'
-import {
-  FormMetadata,
-  FormFileWitDataSchema,
-  FormManifestWithData,
-} from 'utils/types/formMetadata'
 import { RecordValuePath, FlatRecord, RecordValue } from 'utils/types/record'
 import { getFlatRecordValue, restrictRecordValueType } from './records'
 
