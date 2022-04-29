@@ -36,6 +36,7 @@ export default function FormList({ route, navigation }: any) {
   const [filterCountry, setFilterCountry] = useState('')
   const [filterLanguage, setFilterLanguage] = useState('')
   const [filterLocationID, setFilterLocationID] = useState('')
+  const [filterEnabled, setFilterEnabled] = useState('')
   const [filterSearchType, setFilterSearchType] = useState('')
   const [filterText, setFilterText] = useState(undefined as undefined | string)
   const [error, warning, success] = useInfo()
@@ -48,6 +49,7 @@ export default function FormList({ route, navigation }: any) {
       filterCountry,
       filterLanguage,
       filterLocationID,
+      filterEnabled,
       filterSearchType,
       filterText,
       e => handleStandardErrors(error, warning, success, e),
@@ -62,6 +64,7 @@ export default function FormList({ route, navigation }: any) {
     filterCountry,
     filterLanguage,
     filterLocationID,
+    filterEnabled,
     filterSearchType,
     filterText,
   ])
@@ -84,6 +87,8 @@ export default function FormList({ route, navigation }: any) {
           setFilterLanguage={setFilterLanguage}
           filterLocationID={filterLocationID}
           setFilterLocationID={setFilterLocationID}
+          filterEnabled={filterEnabled}
+          setFilterEnabled={setFilterEnabled}
           filterSearchType={filterSearchType}
           setFilterSearchType={setFilterSearchType}
           filterText={filterText}

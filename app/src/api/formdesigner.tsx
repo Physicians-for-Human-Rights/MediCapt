@@ -134,6 +134,7 @@ export async function findForms(
   filterCountry: string | undefined,
   filterLanguage: string | undefined,
   filterLocationID: string | undefined,
+  filterEnabled: string | undefined,
   filterSearchType: string | undefined,
   filterText: string | undefined,
   handleErrors: (err: any) => any,
@@ -146,6 +147,7 @@ export async function findForms(
     if (filterCountry) filters.push({ country: { eq: filterCountry } })
     if (filterLanguage) filters.push({ language: { eq: filterLanguage } })
     if (filterLocationID) filters.push({ locationID: { eq: filterLocationID } })
+    if (filterEnabled) filters.push({ enabled: { eq: filterEnabled } })
     if (filterText) filters.push({ locationID: { eq: filterText } })
     const data = await API.get('formdesigner', '/formdesigner/form', {
       queryStringParameters: {

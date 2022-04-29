@@ -124,7 +124,7 @@ export default {
     'select-country': 'Select country',
     'select-language': 'Select language',
     'select-location': 'Select location',
-    priority: 'Priority (1-10)',
+    priority: 'Priority (0-9)',
     'form-id': 'Form ID (automatically created)',
     version: 'Form version (automatic)',
     'created-on': 'Creation date (automatic)',
@@ -136,6 +136,12 @@ export default {
     'enable-form': 'Enable form',
   },
   form: {
+    filter: {
+      'select-form-enabled': 'Enabled or disabled forms',
+      'any-is-form-enabled': 'All forms',
+      enabled: 'Enabled forms',
+      disabled: 'Disabled forms',
+    },
     Yes: 'Yes',
     No: 'No',
     'select-value': 'Select a value',

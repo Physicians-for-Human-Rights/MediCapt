@@ -8,23 +8,9 @@ import { Platform } from 'react-native'
 import Form from 'components/Form'
 // @ts-ignore typescript doesn't support .web.js and .native.js files
 import CodeEditor from './CodeEditor'
-import {
-  FormMetadata,
-  FormFileWitDataSchema,
-  FormManifestWithData,
-} from 'utils/types/formMetadata'
-import {
-  isImage,
-  isInManifest,
-  filterManifest,
-  mapManifest,
-  addFileToManifest,
-  makeManifestEntry,
-  changeFilenameInManifest,
-  lookupManifest,
-} from 'utils/manifests'
+import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
+import { lookupManifest } from 'utils/manifests'
 import { useInfo } from 'utils/errors'
-import { useIsFocused } from '@react-navigation/native'
 
 const FormMemo = React.memo(Form)
 

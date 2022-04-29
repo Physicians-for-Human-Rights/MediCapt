@@ -226,14 +226,31 @@ export default function FormEditor({
   route,
   navigation,
 }: RootStackScreenProps<'FormEditor'>) {
-  const [error, warning, success] = useInfo()
+  const [changed, setChanged] = useState(false)
   const [waiting, setWaiting] = useState(null as null | string)
-  const [formMetadata, setFormMetadata] = useState(
+  const [formMetadata, setFormMetadataRaw] = useState(
     ((route.params && route.params.formMetadata) ||
       defaultFormMetadata) as Partial<FormMetadata>
   )
-  const [manifest, setManifest] = React.useState(defaultManifest)
+  const [manifest, setManifestRaw] = React.useState(defaultManifest)
 
+  // This is how we keep track of whether the form has been changed.
+  const setFormMetadata = useCallback(
+    x => {
+      setChanged(true)
+      setFormMetadataRaw(x)
+    },
+    [setFormMetadataRaw]
+  )
+  const setManifest = useCallback(
+    x => {
+      setChanged(true)
+      setManifestRaw(x)
+    },
+    [setManifestRaw]
+  )
+
+  // Load form on startup
   useEffect(() => {
     const fn = async () => {
       if (route.params && route.params.formMetadata) {
@@ -263,6 +280,7 @@ export default function FormEditor({
           contents,
         })
         setWaiting(null)
+        setChanged(false)
       }
     }
     fn()
@@ -273,6 +291,7 @@ export default function FormEditor({
 
   const setForm = useCallback(
     (form: FormType) => {
+      setChanged(true)
       setManifest(
         addOrReplaceFileToManifestByFilename(
           manifest,
@@ -294,7 +313,8 @@ export default function FormEditor({
           formMetadata={formMetadata}
           setFormMetadata={setFormMetadata}
           manifest={manifest}
-          changed={false}
+          changed={changed}
+          setChanged={setChanged}
           setWaiting={setWaiting}
         />
       )
@@ -347,7 +367,7 @@ export default function FormEditor({
         )
       }
       fullWidth={tabName === 'Editor'}
-      alertOnBack={true}
+      alertOnBack={changed}
     >
       <>
         <VStack

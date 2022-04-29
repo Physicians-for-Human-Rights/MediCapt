@@ -11,6 +11,7 @@ import {
   Center,
   Button,
   Icon,
+  Select,
 } from 'native-base'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
@@ -130,6 +131,8 @@ export default function FormList({
   setFilterLanguage,
   filterLocationID,
   setFilterLocationID,
+  filterEnabled,
+  setFilterEnabled,
   filterSearchType,
   setFilterSearchType,
   filterText,
@@ -149,6 +152,8 @@ export default function FormList({
   setFilterLocationID: React.Dispatch<React.SetStateAction<string>>
   filterSearchType: string
   setFilterSearchType: React.Dispatch<React.SetStateAction<string>>
+  filterEnabled: string
+  setFilterEnabled: React.Dispatch<React.SetStateAction<string>>
   filterText: string | undefined
   setFilterText: React.Dispatch<React.SetStateAction<string | undefined>>
   doSearch: () => any
@@ -192,6 +197,25 @@ export default function FormList({
             mx={{ md: 2, base: 0 }}
             my={{ md: 0, base: 2 }}
           />
+        </Center>
+        <Center>
+          <Select
+            size="md"
+            bg="white"
+            selectedValue={filterEnabled}
+            onValueChange={setFilterEnabled}
+            placeholder={t('form.filter.select-form-enabled')}
+            ml={{ base: 0, md: 2 }}
+          >
+            <Select.Item
+              key={'__any__'}
+              label={t('form.filter.any-is-form-enabled')}
+              value={''}
+            />
+            {['enabled', 'disabled'].map(e => (
+              <Select.Item key={e} label={t('form.filter.' + e)} value={e} />
+            ))}
+          </Select>
         </Center>
       </Stack>
       <HStack py={2} w="100%" justifyContent="center" bg={'muted.50'}>

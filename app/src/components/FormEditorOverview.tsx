@@ -49,12 +49,14 @@ export default function FormEditorOverview({
   setFormMetadata,
   manifest,
   changed,
+  setChanged,
   setWaiting,
 }: {
   formMetadata: Partial<FormMetadata>
   setFormMetadata: React.Dispatch<React.SetStateAction<Partial<FormMetadata>>>
   manifest: FormManifestWithData
   changed: boolean
+  setChanged: React.Dispatch<React.SetStateAction<Partial<boolean>>>
   setWaiting: React.Dispatch<React.SetStateAction<Partial<string | null>>>
 }) {
   const [error, warning, success] = useInfo()
@@ -74,6 +76,7 @@ export default function FormEditorOverview({
             formMetadata
           )
         )
+        setChanged(false)
       }
     )
 
@@ -138,6 +141,7 @@ export default function FormEditorOverview({
             remoteMetadata
           )
         )
+        setChanged(false)
       }
     )
 
