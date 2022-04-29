@@ -49,14 +49,15 @@ export default function FormEditorOverview({
   setFormMetadata,
   manifest,
   changed,
+  setWaiting,
 }: {
   formMetadata: Partial<FormMetadata>
   setFormMetadata: React.Dispatch<React.SetStateAction<Partial<FormMetadata>>>
   manifest: FormManifestWithData
   changed: boolean
+  setWaiting: React.Dispatch<React.SetStateAction<Partial<string | null>>>
 }) {
   const [error, warning, success] = useInfo()
-  const [waiting, setWaiting] = useState(null as null | string)
   const standardReporters = { setWaiting, error, warning, success }
 
   const createMode = !(formMetadata.formUUID && formMetadata.formUUID !== '')
@@ -347,7 +348,6 @@ export default function FormEditorOverview({
           size={4}
         />
       </VStack>
-      <Loading loading={waiting} />
     </VStack>
   )
 }

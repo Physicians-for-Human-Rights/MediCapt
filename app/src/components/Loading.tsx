@@ -1,5 +1,5 @@
 import React from 'react'
-import { HStack, Text, View, Spinner } from 'native-base'
+import { Heading, Center, HStack, Text, View, Spinner } from 'native-base'
 import { t } from 'i18n-js'
 
 const spinnerStyle = {
@@ -8,7 +8,7 @@ const spinnerStyle = {
   right: 0,
   top: 0,
   bottom: 0,
-  opacity: 0.3,
+  opacity: 0.5,
   backgroundColor: 'black',
   alignItems: 'center',
   justifyContent: 'center',
@@ -17,12 +17,15 @@ const spinnerStyle = {
 
 const Loading = ({ loading }: { loading: string | null }) => {
   return loading ? (
-    // @ts-ignore TODO why doesn't it 'center'?
     <View style={spinnerStyle}>
-      <HStack space={5}>
-        <Spinner size={'lg'} />
-        <Text color="black">Loading...</Text>
-      </HStack>
+      <Center>
+        <HStack space={5} justifyContent="center">
+          <Spinner size="lg" />
+          <Heading size="lg" color="white">
+            Loading...
+          </Heading>
+        </HStack>
+      </Center>
     </View>
   ) : (
     <></>

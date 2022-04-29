@@ -295,6 +295,7 @@ export default function FormEditor({
           setFormMetadata={setFormMetadata}
           manifest={manifest}
           changed={false}
+          setWaiting={setWaiting}
         />
       )
       break
@@ -332,10 +333,18 @@ export default function FormEditor({
       backButton={true}
       navigation={navigation}
       middlebar={
-        createMode ? <></> : <Tabs tabName={tabName} setTabName={setTabName} />
+        waiting || createMode ? (
+          <></>
+        ) : (
+          <Tabs tabName={tabName} setTabName={setTabName} />
+        )
       }
       mobileMiddlebar={
-        createMode ? <></> : <Tabs tabName={tabName} setTabName={setTabName} />
+        waiting || createMode ? (
+          <></>
+        ) : (
+          <Tabs tabName={tabName} setTabName={setTabName} />
+        )
       }
       fullWidth={tabName === 'Editor'}
       alertOnBack={true}
