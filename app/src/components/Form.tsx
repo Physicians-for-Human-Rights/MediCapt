@@ -16,11 +16,17 @@ import FormMenu from 'components/FormMenu'
 import FromTop from 'components/FormTop'
 
 import { FormType } from 'utils/types/form'
-import { RecordValue, RecordValuePath, FlatRecord } from 'utils/types/record'
+import {
+  RecordValue,
+  RecordValuePath,
+  FlatRecord,
+  recordValueSchema,
+} from 'utils/types/record'
 import { allFormRenderCommands } from 'utils/formRendering/commands'
 import { renderCommand } from 'utils/formRendering/renderer'
 import { transformToLayout } from 'utils/formRendering/transformations'
 import { nameFormSections, isSectionComplete } from 'utils/forms'
+import { flatRecordToRecordType } from 'utils/records'
 
 export default function Form({
   form,
@@ -30,7 +36,7 @@ export default function Form({
   form: FormType | undefined
   files: Record<string, string>
   noRenderCache?: boolean
-  onCancel: () => any
+  onCancel: () => void
 }) {
   // This can happen when editing forms live
   if (form === undefined) return null
@@ -76,6 +82,12 @@ export default function Form({
     [form, formSections, flatRecord]
   )
 
+  const onSaveAndExit = useCallback(() => {
+    const record = flatRecordToRecordType(flatRecord)
+    console.log(record)
+    // onCancel()
+  }, [flatRecord])
+
   const renderCommands = useMemo(() => {
     if (!_.isEmpty(formSections) && form && 'common' in form) {
       const sectionContent = formSections[currentSection]
@@ -90,7 +102,7 @@ export default function Form({
 
   const setRecordPath = useCallback(
     (path: RecordValuePath, value: RecordValue) => {
-      setFlatRecordValue(_.join(path, '.'), value)
+      setFlatRecordValue(_.join(path, '.'), recordValueSchema.parse(value))
     },
     [setFlatRecordValue]
   )
@@ -102,7 +114,7 @@ export default function Form({
 
   // TODO Debugging until this is tested
   const previousFlatRecord = usePrevious(flatRecord)
-  let changedPaths = []
+  const changedPaths = []
   for (const key of _.union(_.keys(flatRecord), _.keys(previousFlatRecord))) {
     if (previousFlatRecord && flatRecord[key] !== previousFlatRecord[key]) {
       changedPaths.push(key)
@@ -110,9 +122,7 @@ export default function Form({
   }
   if (1) {
     if (!_.isEqual(changedPaths, [])) {
-      const record = {}
-      _.map(flatRecord, (v, p) => _.set(record, p, v))
-      console.log('Record+paths', record, flatRecord)
+      console.log(flatRecord)
     }
   }
 
@@ -137,7 +147,7 @@ export default function Form({
           toggleMenu={toggleMenuVisible}
           isSectionCompleteList={isSectionCompleteList}
           onCancel={onCancel}
-          onSaveAndExit={onCancel}
+          onSaveAndExit={onSaveAndExit}
           onCompleteRecord={onCancel}
           onPrint={onCancel}
         />

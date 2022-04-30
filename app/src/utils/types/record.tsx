@@ -218,14 +218,14 @@ export const recordPartSchema: z.ZodType<RecordPart> = z.lazy(() =>
     z.intersection(
       recordValueByTypeSchema['list-with-parts'],
       z.object({
-        'list-parts': z.record(recordPartSchema),
+        'list-parts': z.record(recordPartSchema).optional(),
         parts: z.record(recordPartSchema).optional(),
       })
     ),
     z.intersection(
       recordValueByTypeSchema['repeat-list'],
       z.object({
-        repeat: z.record(recordPartSchema),
+        repeat: z.record(recordPartSchema).optional(),
       })
     ),
   ])
@@ -244,11 +244,11 @@ export type RecordPart =
       parts?: Record<string, RecordPart>
     })
   | (RecordValueByType['list-with-parts'] & {
-      'list-parts': Record<string, RecordPart>
+      'list-parts'?: Record<string, RecordPart>
       parts?: Record<string, RecordPart>
     })
   | (RecordValueByType['repeat-list'] & {
-      repeat: Record<string, RecordPart>
+      repeat?: Record<string, RecordPart>
     })
 export type RecordType = z.infer<typeof recordTypeSchema>
 
