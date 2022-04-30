@@ -6,7 +6,7 @@ import {
   RecordType,
   RecordPart,
   recordTypeSchema,
-  recordValueTypesSchema,
+  recordValueByTypeSchema,
 } from 'utils/types/record'
 import _ from 'lodash'
 
@@ -255,7 +255,7 @@ export function restrictRecordValueType(
   // if (recordValue?.type === expectedType) return recordValue
   // else return undefined
   if (recordValue?.type === undefined) return undefined
-  return recordValueTypesSchema[expectedType].parse(recordValue)
+  return recordValueByTypeSchema[expectedType].parse(recordValue)
 }
 
 export function flatRecordToRecordType(flatRecord: FlatRecord): RecordType {
