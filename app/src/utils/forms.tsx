@@ -12,15 +12,18 @@ import {
 } from 'utils/types/form'
 import { NamedFormSection, FormFns } from 'utils/types/formHelpers'
 import { RecordValuePath, FlatRecord, RecordValue } from 'utils/types/record'
-import { getFlatRecordValue, restrictRecordValueType } from './records'
+import { getFlatRecordValue } from './records'
 
 // Conditionals are either sections or parts
 export function shouldSkipConditional(
   conditional: FormConditional,
-  getValue: (path: RecordValuePath) => RecordValue | undefined
+  flatRecord: FlatRecord
 ) {
   if ('only-when' in conditional && conditional['only-when']) {
-    const condition = getValue(_.split(conditional['only-when'].path, '.'))
+    const condition = getFlatRecordValue(
+      flatRecord,
+      _.split(conditional['only-when'].path, '.')
+    )
     if (
       !condition ||
       condition.type !== 'bool' ||
@@ -29,7 +32,10 @@ export function shouldSkipConditional(
       return true
   }
   if ('only-not' in conditional && conditional['only-not']) {
-    const condition = getValue(_.split(conditional['only-not'].path, '.'))
+    const condition = getFlatRecordValue(
+      flatRecord,
+      _.split(conditional['only-not'].path, '.')
+    )
     if (
       condition &&
       condition.type === 'bool' &&
@@ -39,8 +45,8 @@ export function shouldSkipConditional(
   }
   if ('only-sex' in conditional) {
     const recordSex =
-      restrictRecordValueType(getValue(['inferred', 'sex']), 'sex') ||
-      restrictRecordValueType(getValue(['inferred', 'gender']), 'gender')
+      getFlatRecordValue(flatRecord, ['inferred', 'sex'], 'sex') ||
+      getFlatRecordValue(flatRecord, ['inferred', 'gender'], 'gender')
     switch (conditional['only-sex']) {
       case 'male':
         if (recordSex?.value === 'female') return true
@@ -58,15 +64,19 @@ export function shouldSkipConditional(
   }
   if ('only-gender' in conditional) {
     const recordGender =
-      restrictRecordValueType(getValue(['inferred', 'gender']), 'gender') ||
-      restrictRecordValueType(getValue(['inferred', 'sex']), 'sex')
+      getFlatRecordValue(flatRecord, ['inferred', 'gender'], 'gender') ||
+      getFlatRecordValue(flatRecord, ['inferred', 'sex'], 'sex')
     if (recordGender?.value !== conditional['only-gender']) return true
   }
   if ('only-child' in conditional) {
-    const aom = getValue(['inferred', 'age-of-majority'])
-    const age = getValue(['inferred', 'age'])
-    if (aom?.type === 'number' && age?.type === 'number' && aom >= age)
-      return true
+    const aom = getFlatRecordValue(
+      flatRecord,
+      ['inferred', 'age-of-majority'],
+      'number'
+    )
+    const age = getFlatRecordValue(flatRecord, ['inferred', 'age'], 'number')
+    // TODO: fix string comparison
+    if (aom && age && aom.value >= age.value) return true
   }
   return false
 }
@@ -98,7 +108,7 @@ export function mapSectionWithPaths<Return>(
   section: NamedFormSection,
   commonRefTable: Record<string, FormDefinition>,
   identity: Return,
-  getValue: (path: RecordValuePath) => RecordValue | undefined,
+  flatRecord: FlatRecord,
   fns: FormFns<Return>
 ): Return {
   // -------------------
@@ -127,7 +137,7 @@ export function mapSectionWithPaths<Return>(
       if (!_.isObject(formPart)) return identity
 
       // If the part isn't a reference and should be skipped
-      if (!('Ref' in formPart) && shouldSkipConditional(formPart, getValue)) {
+      if (!('Ref' in formPart) && shouldSkipConditional(formPart, flatRecord)) {
         return identity
       }
 
@@ -155,7 +165,7 @@ export function mapSectionWithPaths<Return>(
   ): Return {
     const repeatList = _.uniq([
       ...(repeated === 'at-least-one' ? ['at-least-one'] : []),
-      ...(restrictRecordValueType(getValue(repeatListRecordPath), 'repeat-list')
+      ...(getFlatRecordValue(flatRecord, repeatListRecordPath, 'repeat-list')
         ?.value || []),
     ])
 
@@ -234,7 +244,7 @@ export function mapSectionWithPaths<Return>(
               if (
                 'show-parts-when-true' in part &&
                 part['show-parts-when-true'] &&
-                restrictRecordValueType(getValue(recordPath), 'bool')?.value
+                getFlatRecordValue(flatRecord, recordPath, 'bool')?.value
               ) {
                 const resultsFromSubparts = handleFormPartsArray(
                   part['show-parts-when-true'],
@@ -255,8 +265,9 @@ export function mapSectionWithPaths<Return>(
             {
               const listOptions = resolveRef(part.options, commonRefTable)
               if (listOptions) {
-                const recordValue = restrictRecordValueType(
-                  getValue(recordPath),
+                const recordValue = getFlatRecordValue(
+                  flatRecord,
+                  recordPath,
                   'list-multiple'
                 )
 
@@ -318,7 +329,7 @@ export function mapSectionWithPaths<Return>(
   // -------------------
 
   if (
-    shouldSkipConditional(section, getValue) ||
+    shouldSkipConditional(section, flatRecord) ||
     _.isNil(section) ||
     _.isNil(section.parts) ||
     _.isNil(section.name)
@@ -340,8 +351,7 @@ export function isSectionComplete(
     section,
     commonRefTable,
     true,
-    (recordValuePath: RecordValuePath) =>
-      getFlatRecordValue(flatRecord, recordValuePath),
+    flatRecord,
     {
       pre: () => true,
       address: valuePath =>

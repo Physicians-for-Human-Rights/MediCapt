@@ -7,19 +7,10 @@ import {
   RecordPart,
   recordTypeSchema,
   recordValueByTypeSchema,
+  recordValueSchema,
 } from 'utils/types/record'
 import _ from 'lodash'
 
-export function getFlatRecordValue(
-  flatRecord: FlatRecord,
-  valuePath: RecordValuePath,
-  expectedType: 'repeat-list'
-): RecordValueByType['repeat-list'] | undefined
-export function getFlatRecordValue(
-  flatRecord: FlatRecord,
-  valuePath: RecordValuePath,
-  expectedType: 'list-with-parts'
-): RecordValueByType['list-with-parts'] | undefined
 export function getFlatRecordValue(
   flatRecord: FlatRecord,
   valuePath: RecordValuePath,
@@ -28,38 +19,8 @@ export function getFlatRecordValue(
 export function getFlatRecordValue(
   flatRecord: FlatRecord,
   valuePath: RecordValuePath,
-  expectedType: 'date'
-): RecordValueByType['date'] | undefined
-export function getFlatRecordValue(
-  flatRecord: FlatRecord,
-  valuePath: RecordValuePath,
-  expectedType: 'date-time'
-): RecordValueByType['date-time'] | undefined
-export function getFlatRecordValue(
-  flatRecord: FlatRecord,
-  valuePath: RecordValuePath,
   expectedType: 'number'
 ): RecordValueByType['number'] | undefined
-export function getFlatRecordValue(
-  flatRecord: FlatRecord,
-  valuePath: RecordValuePath,
-  expectedType: 'list'
-): RecordValueByType['list'] | undefined
-export function getFlatRecordValue(
-  flatRecord: FlatRecord,
-  valuePath: RecordValuePath,
-  expectedType: 'list-with-labels'
-): RecordValueByType['list-with-labels'] | undefined
-export function getFlatRecordValue(
-  flatRecord: FlatRecord,
-  valuePath: RecordValuePath,
-  expectedType: 'list-multiple'
-): RecordValueByType['list-multiple'] | undefined
-export function getFlatRecordValue(
-  flatRecord: FlatRecord,
-  valuePath: RecordValuePath,
-  expectedType: 'list-with-labels-multiple'
-): RecordValueByType['list-with-labels-multiple'] | undefined
 export function getFlatRecordValue(
   flatRecord: FlatRecord,
   valuePath: RecordValuePath,
@@ -98,6 +59,16 @@ export function getFlatRecordValue(
 export function getFlatRecordValue(
   flatRecord: FlatRecord,
   valuePath: RecordValuePath,
+  expectedType: 'date'
+): RecordValueByType['date'] | undefined
+export function getFlatRecordValue(
+  flatRecord: FlatRecord,
+  valuePath: RecordValuePath,
+  expectedType: 'date-time'
+): RecordValueByType['date-time'] | undefined
+export function getFlatRecordValue(
+  flatRecord: FlatRecord,
+  valuePath: RecordValuePath,
   expectedType: 'signature'
 ): RecordValueByType['signature'] | undefined
 export function getFlatRecordValue(
@@ -110,6 +81,36 @@ export function getFlatRecordValue(
   valuePath: RecordValuePath,
   expectedType: 'body-image'
 ): RecordValueByType['body-image'] | undefined
+export function getFlatRecordValue(
+  flatRecord: FlatRecord,
+  valuePath: RecordValuePath,
+  expectedType: 'list'
+): RecordValueByType['list'] | undefined
+export function getFlatRecordValue(
+  flatRecord: FlatRecord,
+  valuePath: RecordValuePath,
+  expectedType: 'list-with-labels'
+): RecordValueByType['list-with-labels'] | undefined
+export function getFlatRecordValue(
+  flatRecord: FlatRecord,
+  valuePath: RecordValuePath,
+  expectedType: 'list-multiple'
+): RecordValueByType['list-multiple'] | undefined
+export function getFlatRecordValue(
+  flatRecord: FlatRecord,
+  valuePath: RecordValuePath,
+  expectedType: 'list-with-labels-multiple'
+): RecordValueByType['list-with-labels-multiple'] | undefined
+export function getFlatRecordValue(
+  flatRecord: FlatRecord,
+  valuePath: RecordValuePath,
+  expectedType: 'list-with-parts'
+): RecordValueByType['list-with-parts'] | undefined
+export function getFlatRecordValue(
+  flatRecord: FlatRecord,
+  valuePath: RecordValuePath,
+  expectedType: 'repeat-list'
+): RecordValueByType['repeat-list'] | undefined
 export function getFlatRecordValue(
   flatRecord: FlatRecord,
   valuePath: RecordValuePath
@@ -120,10 +121,14 @@ export function getFlatRecordValue(
   valuePath: RecordValuePath,
   expectedType?: keyof RecordValueByType
 ) {
-  function restrictType(value?: RecordValue) {
-    if (!value?.type || !expectedType || value?.type === expectedType)
-      return value
-    else return undefined
+  function validateRecordValue(value?: RecordValue) {
+    if (!expectedType) {
+      return recordValueSchema.optional().parse(value)
+    } else if (!value?.type) {
+      return undefined
+    } else {
+      return recordValueByTypeSchema[expectedType].parse(value)
+    }
   }
 
   if (!valuePath) return undefined
@@ -132,14 +137,14 @@ export function getFlatRecordValue(
     switch (valuePath[1]) {
       case 'age-of-majority': {
         // TODO Should this vary by country?
-        return restrictType({
+        return validateRecordValue({
           type: 'number',
           value: '18',
         } as RecordValue)
       }
       case 'sex': {
         const sexEntries = _.filter(flatRecord, (v, _k) => v.type === 'sex')
-        if (sexEntries.length === 1) return restrictType(sexEntries[0])
+        if (sexEntries.length === 1) return validateRecordValue(sexEntries[0])
         else return undefined
       }
       case 'gender': {
@@ -147,7 +152,8 @@ export function getFlatRecordValue(
           flatRecord,
           (v, _k) => v.type === 'gender'
         )
-        if (genderEntries.length === 1) return restrictType(genderEntries[0])
+        if (genderEntries.length === 1)
+          return validateRecordValue(genderEntries[0])
         else return undefined
       }
       case 'age': {
@@ -155,7 +161,7 @@ export function getFlatRecordValue(
           flatRecord,
           (v, k) => _.includes(k, 'age') && v.type === 'number'
         )
-        return restrictType(recordData)
+        return validateRecordValue(recordData)
       }
       default:
         // TODO Error handling
@@ -164,98 +170,7 @@ export function getFlatRecordValue(
     }
   }
   const stringPath = _.join(valuePath, '.')
-  return restrictType(flatRecord[stringPath])
-}
-
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'repeat-list'
-): RecordValueByType['repeat-list'] | undefined
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'list-with-parts'
-): RecordValueByType['list-with-parts'] | undefined
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'bool'
-): RecordValueByType['bool'] | undefined
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'date'
-): RecordValueByType['date'] | undefined
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'date-time'
-): RecordValueByType['date-time'] | undefined
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'number'
-): RecordValueByType['number'] | undefined
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'list'
-): RecordValueByType['list'] | undefined
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'list-with-labels'
-): RecordValueByType['list-with-labels'] | undefined
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'list-multiple'
-): RecordValueByType['list-multiple'] | undefined
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'list-with-labels-multiple'
-): RecordValueByType['list-with-labels-multiple'] | undefined
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'text'
-): RecordValueByType['text'] | undefined
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'long-text'
-): RecordValueByType['long-text'] | undefined
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'email'
-): RecordValueByType['email'] | undefined
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'address'
-): RecordValueByType['address'] | undefined
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'phone-number'
-): RecordValueByType['phone-number'] | undefined
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'gender'
-): RecordValueByType['gender'] | undefined
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'sex'
-): RecordValueByType['sex'] | undefined
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'signature'
-): RecordValueByType['signature'] | undefined
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'photo'
-): RecordValueByType['photo'] | undefined
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: 'body-image'
-): RecordValueByType['body-image'] | undefined
-
-export function restrictRecordValueType(
-  recordValue: RecordValue | undefined,
-  expectedType: keyof RecordValueByType
-) {
-  // if (recordValue?.type === expectedType) return recordValue
-  // else return undefined
-  if (recordValue?.type === undefined) return undefined
-  return recordValueByTypeSchema[expectedType].parse(recordValue)
+  return validateRecordValue(flatRecord[stringPath])
 }
 
 export function flatRecordToRecordType(flatRecord: FlatRecord): RecordType {
