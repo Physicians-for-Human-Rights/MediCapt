@@ -164,7 +164,7 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       GPK5: 'LO#' + update.locationID,
       GSK5: 'DATE#' + now.toISOString(),
       GPK6: (update.enabled ? 'Y#' : 'N#') + 'LO#' + update.locationID,
-      GSK6: 'PRIORITY#' + update.priority + 'DATE#' + now.toISOString(),
+      GSK6: 'PRIORITY#' + update.priority + '#DATE#' + now.toISOString(),
     }
 
     // Update latest, verifying that the version hasn't changed.
