@@ -8,6 +8,7 @@ import {
   recordTypeSchema,
   recordValueByTypeSchema,
   recordValueSchema,
+  flatRecordSchema,
 } from 'utils/types/record'
 import _ from 'lodash'
 
@@ -218,5 +219,5 @@ export function recordTypeToFlatRecord(record: RecordType): FlatRecord {
     flattenParts(parts, ['sections', sectionName, 'parts'])
   })
 
-  return flatRecord
+  return flatRecordSchema.parse(flatRecord)
 }
