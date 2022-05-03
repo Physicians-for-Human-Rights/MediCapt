@@ -15,21 +15,21 @@ export function isPrimitiveType(x: any) {
 // TODO Forbid all labels like ^__.*__$
 
 export function ListSelectMultiple({
+  options,
   values,
+  other,
   otherChecked,
   otherText,
-  options,
-  other,
   togglePathValue,
   toggleOtherChecked,
   setOtherText,
   isDisabled,
 }: {
-  values: boolean[]
-  otherChecked: boolean | null
-  otherText: string | undefined
   options: MultipleFormValueTypes | undefined
-  other: 'text' | 'long-text' | undefined
+  values: boolean[]
+  other?: 'text' | 'long-text'
+  otherChecked?: boolean
+  otherText?: string
   togglePathValue: (idx: number) => void
   toggleOtherChecked: () => void
   setOtherText: (s: string | undefined) => void
@@ -43,51 +43,27 @@ export function ListSelectMultiple({
     300,
     [rawContents]
   )
-  const items =
-    options && _.isArray(options)
-      ? // @ts-ignore TODO type this
-        options.map((e: string, i: number) => {
-          if (_.isString(e) || _.isNumber(e)) {
-            return (
-              <Checkbox
-                // forces React to re-render component as opposed
-                // to using an old one (with outdated togglePathValue)
-                key={uuid.v4() as string}
-                colorScheme="blue"
-                isChecked={values[i]}
-                value={_.toString(i)}
-                my={2}
-                onChange={() => togglePathValue(i)}
-                accessibilityLabel={t('form.select-the-option') + ' ' + e}
-                isDisabled={isDisabled}
-              >
-                {e}
-              </Checkbox>
-            )
-          }
-          if (_.isObject(e)) {
-            return (
-              <Checkbox
-                // forces React to re-render component as opposed
-                // to using an old one (with outdated togglePathValue)
-                key={uuid.v4() as string}
-                colorScheme="blue"
-                isChecked={values[i]}
-                value={_.toString(i)}
-                my={2}
-                onChange={() => togglePathValue(i)}
-                accessibilityLabel={
-                  t('form.select-the-option') + ' ' + e[Object.keys(e)[0]].title
-                }
-                isDisabled={isDisabled}
-              >
-                {e[Object.keys(e)[0]].title}
-              </Checkbox>
-            )
-          }
-        })
-      : []
-  if (other && otherChecked !== null) {
+  const items = options
+    ? options.map((option, index) => {
+        return (
+          <Checkbox
+            // forces React to re-render component as opposed
+            // to using an old one (with outdated togglePathValue)
+            key={uuid.v4() as string}
+            colorScheme="blue"
+            isChecked={values[index]}
+            value={_.toString(index)}
+            my={2}
+            onChange={() => togglePathValue(index)}
+            accessibilityLabel={t('form.select-the-option') + ' ' + option}
+            isDisabled={isDisabled}
+          >
+            {option}
+          </Checkbox>
+        )
+      })
+    : []
+  if (other && otherChecked !== undefined) {
     items.push(
       <Checkbox
         // forces React to re-render component as opposed

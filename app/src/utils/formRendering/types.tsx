@@ -135,7 +135,7 @@ export type RenderCommand =
       }
     | {
         type: 'list-with-parts'
-        recordValue?: RecordValueByType['list-with-labels-multiple']
+        recordValue?: RecordValueByType['list-with-parts']
         options: FormPartMap[]
       }
     | {

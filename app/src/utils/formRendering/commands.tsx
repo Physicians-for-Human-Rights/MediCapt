@@ -274,18 +274,17 @@ export function allFormRenderCommands(
       }
     },
     'list-with-labels-multiple': (recordValuePath, part) => {
-      // TODO: switch from rendering with list-multiple to list-with-labels-multiple
       const listOptions = resolveRef(part.options, commonRefTable)
       if (listOptions) {
         renderCommands.push({
-          type: 'list-multiple',
+          type: 'list-with-labels-multiple',
           recordValue: getFlatRecordValue(
             flatRecord,
             recordValuePath,
-            'list-multiple'
+            'list-with-labels-multiple'
           ),
           other: part.other,
-          options: _.map(listOptions, kv => kv.key),
+          options: listOptions,
           valuePath: recordValuePath,
           key: _.join(recordValuePath, '.'),
           disable: isSkipped(flatRecord, recordValuePath),
@@ -293,21 +292,16 @@ export function allFormRenderCommands(
       }
     },
     'list-with-parts': (recordValuePath, part) => {
-      // TODO: switch from rendering with list-multiple to list-with-parts
       const listOptions = resolveRef(part.options, commonRefTable)
-      const listOptionsStrings = _.filter(
-        _.map(listOptions, formPartMap => Object.keys(formPartMap)[0]),
-        optionId => optionId !== ''
-      )
       if (listOptions) {
         renderCommands.push({
-          type: 'list-multiple',
+          type: 'list-with-parts',
           recordValue: getFlatRecordValue(
             flatRecord,
             recordValuePath,
-            'list-multiple'
+            'list-with-parts'
           ),
-          options: listOptionsStrings,
+          options: listOptions,
           valuePath: recordValuePath,
           key: _.join(recordValuePath, '.'),
           disable: isSkipped(flatRecord, recordValuePath),

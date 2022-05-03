@@ -159,11 +159,21 @@ export const recordValueByTypeSchema = {
   }),
   'list-with-labels-multiple': skippableValueSchema({
     type: z.literal('list-with-labels-multiple'),
-    value: z.string(),
+    value: z.object({
+      options: formKVRawTypeSchema.array(),
+      selections: z.boolean().array(),
+      otherChecked: z.boolean().optional(),
+      otherValue: z.string().optional(),
+    }),
   }),
   'list-with-parts': skippableValueSchema({
     type: z.literal('list-with-parts'),
-    value: z.string(),
+    value: z.object({
+      options: z.string().array(),
+      selections: z.boolean().array(),
+      otherChecked: z.boolean().optional(),
+      otherValue: z.string().optional(),
+    }),
   }),
   'repeat-list': skippableValueSchema({
     type: z.literal('repeat-list'),

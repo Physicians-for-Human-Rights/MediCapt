@@ -45,7 +45,7 @@ export default function Form({
     base: 'phone',
     md: 'compact',
     lg: 'large',
-  })
+  }) as 'phone' | 'compact' | 'large'
 
   const formSections = useMemo(() => nameFormSections(form.sections), [form])
   const [flatRecord, { set: setFlatRecordValue }] = useMap({} as FlatRecord)

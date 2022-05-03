@@ -268,7 +268,7 @@ export function mapSectionWithPaths<Return>(
                 const recordValue = getFlatRecordValue(
                   flatRecord,
                   recordPath,
-                  'list-multiple'
+                  'list-with-parts'
                 )
 
                 const subparts = listOptions.filter(
@@ -383,12 +383,12 @@ export function isSectionComplete(
         ),
       'list-with-labels-multiple': valuePath =>
         _.some(
-          getFlatRecordValue(flatRecord, valuePath, 'list-multiple')?.value
-            ?.selections
+          getFlatRecordValue(flatRecord, valuePath, 'list-with-labels-multiple')
+            ?.value?.selections
         ),
       'list-with-parts': valuePath =>
         _.some(
-          getFlatRecordValue(flatRecord, valuePath, 'list-multiple')?.value
+          getFlatRecordValue(flatRecord, valuePath, 'list-with-parts')?.value
             ?.selections
         ),
       'long-text': valuePath =>

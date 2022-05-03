@@ -48,6 +48,7 @@ import { RenderCommand } from 'utils/formRendering/types'
 // const CSkipButton = wrapCommandMemo(SkipButton)
 
 import { disabled, disabledBackground } from 'utils/formRendering/utils'
+import { FormPartMap } from 'utils/types/form'
 
 export function renderCommand(
   command: RenderCommand,
@@ -359,25 +360,26 @@ export function renderCommand(
       )
     }
     case 'list-multiple': {
-      const listValue = command.recordValue?.value
-      const options = listValue?.options || command.options
+      const previousRecordValue = command.recordValue?.value
+      const options = previousRecordValue?.options || command.options
       const selections =
-        listValue?.selections || _.times(options?.length, _.constant(false))
+        previousRecordValue?.selections || _.times(options.length, () => false)
+
       return (
         <ListSelectMultiple
           // command={command}
           isDisabled={command.disable}
-          values={selections}
-          otherChecked={!!listValue?.otherChecked}
-          otherText={listValue?.otherValue}
           options={command.options}
+          values={selections}
           other={command.other}
+          otherChecked={!!previousRecordValue?.otherChecked}
+          otherText={previousRecordValue?.otherValue}
           togglePathValue={(idx: number) => {
             setPath(command.valuePath, {
               ...command.recordValue,
               type: 'list-multiple',
               value: {
-                ...listValue,
+                ...previousRecordValue,
                 options,
                 selections: _.concat(
                   _.slice(selections, 0, idx),
@@ -392,10 +394,10 @@ export function renderCommand(
               ...command.recordValue,
               type: 'list-multiple',
               value: {
-                ...listValue,
+                ...previousRecordValue,
                 options,
                 selections,
-                otherChecked: !listValue?.otherChecked,
+                otherChecked: !previousRecordValue?.otherChecked,
               },
             })
           }}
@@ -405,7 +407,7 @@ export function renderCommand(
                 ...command.recordValue,
                 type: 'list-multiple',
                 value: {
-                  ...listValue,
+                  ...previousRecordValue,
                   options,
                   selections,
                   otherValue,
@@ -416,12 +418,128 @@ export function renderCommand(
         />
       )
     }
-    case 'list-with-labels-multiple':
-      // TODO
-      return <></>
-    case 'list-with-parts':
-      // TODO
-      return <></>
+    case 'list-with-labels-multiple': {
+      const previousRecordValue = command.recordValue?.value
+      const options = previousRecordValue?.options || command.options
+      const selections =
+        previousRecordValue?.selections || _.times(options.length, () => false)
+
+      return (
+        <ListSelectMultiple
+          // command={command}
+          isDisabled={command.disable}
+          options={command.options.map(({ key, value }) => `${key} (${value})`)}
+          values={selections}
+          other={command.other}
+          otherChecked={!!previousRecordValue?.otherChecked}
+          otherText={previousRecordValue?.otherValue}
+          togglePathValue={(idx: number) => {
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'list-with-labels-multiple',
+              value: {
+                ...previousRecordValue,
+                options,
+                selections: _.concat(
+                  _.slice(selections, 0, idx),
+                  !selections[idx],
+                  _.slice(selections, idx + 1)
+                ),
+              },
+            })
+          }}
+          toggleOtherChecked={() => {
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'list-with-labels-multiple',
+              value: {
+                ...previousRecordValue,
+                options,
+                selections,
+                otherChecked: !previousRecordValue?.otherChecked,
+              },
+            })
+          }}
+          setOtherText={(otherValue: string | undefined) => {
+            if (otherValue) {
+              setPath(command.valuePath, {
+                ...command.recordValue,
+                type: 'list-with-labels-multiple',
+                value: {
+                  ...previousRecordValue,
+                  options,
+                  selections,
+                  otherValue,
+                },
+              })
+            }
+          }}
+        />
+      )
+    }
+    case 'list-with-parts': {
+      const previousRecordValue = command.recordValue?.value
+      const options =
+        previousRecordValue?.options ||
+        _.filter(
+          _.map(command.options, (formPartMap: FormPartMap) => {
+            const formPart = formPartMap[Object.keys(formPartMap)[0]]
+            return 'title' in formPart ? formPart.title : ''
+          }),
+          optionId => optionId !== ''
+        )
+      const selections =
+        previousRecordValue?.selections || _.times(options.length, () => false)
+      return (
+        <ListSelectMultiple
+          // command={command}
+          isDisabled={command.disable}
+          options={options}
+          values={selections}
+          togglePathValue={(idx: number) => {
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'list-with-parts',
+              value: {
+                ...previousRecordValue,
+                options,
+                selections: _.concat(
+                  _.slice(selections, 0, idx),
+                  !selections[idx],
+                  _.slice(selections, idx + 1)
+                ),
+              },
+            })
+          }}
+          toggleOtherChecked={() => {
+            setPath(command.valuePath, {
+              ...command.recordValue,
+              type: 'list-with-parts',
+              value: {
+                ...previousRecordValue,
+                options,
+                selections,
+                otherChecked: !previousRecordValue?.otherChecked,
+              },
+            })
+          }}
+          setOtherText={(otherValue: string | undefined) => {
+            if (otherValue) {
+              setPath(command.valuePath, {
+                ...command.recordValue,
+                type: 'list-with-parts',
+                value: {
+                  ...previousRecordValue,
+                  options,
+                  selections,
+                  otherValue,
+                },
+              })
+            }
+          }}
+        />
+      )
+    }
     case 'long-text':
       return (
         <Center bg={disabled(command, disabledBackground)}>
