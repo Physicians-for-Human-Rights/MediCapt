@@ -206,28 +206,19 @@ export function mapSectionWithPaths<Return>(
 
     const pre = fns.pre(part, recordPath, index, formPartMap, partOptional)
 
-    let inner: Return | null = null
-    let subpartsResult: Return | null = null
+    let resultFromValue: Return | null = null
+    let resultsFromSubparts: Return[] = []
     // References are always to a list of parts.
     if ('Ref' in part) {
-      const resultsFromSubparts = handleFormPartsArray(
+      resultsFromSubparts = handleFormPartsArray(
         lookupPartRef(part, commonRefTable),
         recordPath
-      )
-      subpartsResult = fns.combineResultsFromSubparts(
-        resultsFromSubparts,
-        part,
-        null,
-        recordPath,
-        index,
-        formPartMap
       )
     } else {
       if ('type' in part) {
         // @ts-ignore TODO Errors out with expression produces a union type that is too complex to represent
         if (part && fns[part.type]) {
-          // @ts-ignore TODO Typescript doesn't seem willing to represent this type
-          inner = fns[part.type](
+          resultFromValue = fns[part.type](
             recordPath,
             part,
             recordPath,
@@ -246,17 +237,9 @@ export function mapSectionWithPaths<Return>(
                 part['show-parts-when-true'] &&
                 getFlatRecordValue(flatRecord, recordPath, 'bool')?.value
               ) {
-                const resultsFromSubparts = handleFormPartsArray(
+                resultsFromSubparts = handleFormPartsArray(
                   part['show-parts-when-true'],
                   recordPath.concat('parts')
-                )
-                subpartsResult = fns.combineResultsFromSubparts(
-                  resultsFromSubparts,
-                  part,
-                  inner,
-                  recordPath,
-                  index,
-                  formPartMap
                 )
               }
             }
@@ -270,52 +253,45 @@ export function mapSectionWithPaths<Return>(
                   recordPath,
                   'list-with-parts'
                 )
-
                 const subparts = listOptions.filter(
                   (_subpart, index) =>
                     recordValue?.value && recordValue.value.selections[index]
                 )
-                const resultsFromSubparts = handleFormPartsArray(
+                resultsFromSubparts = handleFormPartsArray(
                   subparts,
-                  recordPath.concat('list-with-parts')
-                )
-
-                subpartsResult = fns.combineResultsFromSubparts(
-                  resultsFromSubparts,
-                  part,
-                  inner,
-                  recordPath,
-                  index,
-                  formPartMap
+                  recordPath.concat('list-parts')
                 )
               }
             }
             break
         }
       }
-      if ('parts' in part && part.parts && part.parts !== undefined) {
+      if ('parts' in part && part.parts) {
         const subparts = resolveRef(part.parts, commonRefTable)
 
         if (subparts) {
-          const resultsFromSubparts = _.concat(
+          resultsFromSubparts = _.concat(
             handleFormPartsArray(subparts, recordPath.concat('parts')),
-            subpartsResult || []
-          )
-          subpartsResult = fns.combineResultsFromSubparts(
-            resultsFromSubparts,
-            part,
-            inner,
-            recordPath,
-            index,
-            formPartMap
+            resultsFromSubparts
           )
         }
       }
     }
+    const subpartsResult = resultsFromSubparts
+      ? fns.combineResultsFromSubparts(
+          resultsFromSubparts,
+          part,
+          resultFromValue,
+          recordPath,
+          index,
+          formPartMap
+        )
+      : null
+
     return fns.post(
       part,
       subpartsResult,
-      inner,
+      resultFromValue,
       recordPath,
       index,
       pre,
