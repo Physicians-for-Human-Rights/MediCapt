@@ -2,9 +2,8 @@ import React, { useState } from 'react'
 import { Select, ISelectProps, ISelectItemProps } from 'native-base'
 import { t } from 'i18n-js'
 import _ from 'lodash'
-import { useUser, useUserLocations } from 'utils/store'
+import { useUserLocations } from 'utils/store'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
-import { getLocationCached } from 'api/common'
 
 export default function SelectLocation({
   placeholder,

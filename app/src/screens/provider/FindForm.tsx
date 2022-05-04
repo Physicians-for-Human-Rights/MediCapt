@@ -24,14 +24,14 @@ import {
 } from '@expo/vector-icons'
 import DashboardLayout from 'components/DashboardLayout'
 import _ from 'lodash'
-import { default as RecordListComponent } from 'components/RecordList'
-import { RecordMetadata } from 'utils/types/recordMetadata'
+import { default as FormListComponent } from 'components/FormList'
+import { FormMetadata } from 'utils/types/formMetadata'
 import { useInfo, handleStandardErrors } from 'utils/errors'
-import { findRecords } from 'api/provider'
+import { findForms } from 'api/provider'
 import Loading from 'components/Loading'
 
-export default function RecordList({ route, navigation }: any) {
-  const [records, setRecords] = useState([] as RecordMetadata[])
+export default function FindForm({ route, navigation }: any) {
+  const [forms, setForms] = useState([] as FormMetadata[])
   const [nextKey, setNextKey] = useState(undefined as any)
   const [filterCountry, setFilterCountry] = useState('')
   const [filterLanguage, setFilterLanguage] = useState('')
@@ -43,17 +43,16 @@ export default function RecordList({ route, navigation }: any) {
   const [waiting, setWaiting] = useState(null as null | string)
 
   const doSearch = async () => {
-    findRecords(
+    findForms(
       () => setWaiting('Searching'),
       () => setWaiting(null),
       filterCountry,
       filterLanguage,
       filterLocationID,
-      filterEnabled,
       filterSearchType,
       filterText,
       e => handleStandardErrors(error, warning, success, e),
-      setRecords,
+      setForms,
       setNextKey
     )
   }
@@ -64,7 +63,6 @@ export default function RecordList({ route, navigation }: any) {
     filterCountry,
     filterLanguage,
     filterLocationID,
-    filterEnabled,
     filterSearchType,
     filterText,
   ])
@@ -74,11 +72,11 @@ export default function RecordList({ route, navigation }: any) {
       navigation={navigation}
       displaySidebar={false}
       displayScreenTitle={false}
-      title="Select a record"
+      title="Select a form"
     >
       <>
-        <RecordListComponent
-          records={records}
+        <FormListComponent
+          forms={forms}
           hasMore={false}
           loadMore={() => null}
           filterCountry={filterCountry}
@@ -87,17 +85,15 @@ export default function RecordList({ route, navigation }: any) {
           setFilterLanguage={setFilterLanguage}
           filterLocationID={filterLocationID}
           setFilterLocationID={setFilterLocationID}
-          filterEnabled={filterEnabled}
-          setFilterEnabled={setFilterEnabled}
           filterSearchType={filterSearchType}
           setFilterSearchType={setFilterSearchType}
           filterText={filterText}
           setFilterText={setFilterText}
           doSearch={doSearch}
-          selectItem={recordMetadata => {
+          selectItem={formMetadata => {
             navigation.navigate('RecordEditor', {
               ...route.params,
-              recordMetadata,
+              formMetadata,
             })
           }}
         />

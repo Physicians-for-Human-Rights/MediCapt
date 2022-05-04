@@ -118,10 +118,15 @@ export default function FormEditorOverview({
                   type: 'text/plain',
                 })
               : filetypeIsDataURI(e.filetype)
-              ? dataURItoBlob(lookupManifestSHA256(manifest, e.sha256)!.data)
-              : new Blob([lookupManifestSHA256(manifest, e.sha256)!.data], {
-                  type: e.filetype,
-                })
+              ? dataURItoBlob(
+                  lookupManifestSHA256(updatedManifest, e.sha256)!.data
+                )
+              : new Blob(
+                  [lookupManifestSHA256(updatedManifest, e.sha256)!.data],
+                  {
+                    type: e.filetype,
+                  }
+                )
           form.append('file', blob)
           try {
             await fetch(e.link.url, {

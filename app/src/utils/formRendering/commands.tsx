@@ -5,9 +5,9 @@ import { NamedFormSection } from 'utils/types/formHelpers'
 import { RecordPath } from 'utils/types/record'
 import { t } from 'i18n-js'
 import { resolveRef } from 'utils/forms'
-
 import { isPrimitiveType } from 'components/form-parts/List'
 import { RenderCommand, URI } from 'utils/formRendering/types'
+import { ManifestContents, lookupContentsByNameAndType } from 'utils/manifests'
 
 function getRepeatList(
   repeated: boolean | 'at-least-one',
@@ -38,7 +38,7 @@ function onlyDisableInner(path: RecordPath) {
 
 // Turn a section of a form into a list of flat render commands
 export function allFormRenderCommands(
-  files: Record<string, any>,
+  contents: ManifestContents,
   section: NamedFormSection,
   commonRefTable: Record<string, FormDefinition>,
   getRecordValue: GetValueFn
@@ -185,18 +185,36 @@ export function allFormRenderCommands(
             part['filename-female'] &&
             genderOrSex &&
             genderOrSex === 'female' &&
-            files[part['filename-female']]) ||
+            lookupContentsByNameAndType(
+              contents,
+              part['filename-female'],
+              'image/webp'
+            )) ||
           ('filename-inteserx' in part &&
             part['filename-intersex'] &&
             genderOrSex &&
             genderOrSex === 'intersex' &&
-            files[part['filename-intersex']]) ||
+            lookupContentsByNameAndType(
+              contents,
+              part['filename-intersex'],
+              'image/webp'
+            )) ||
           ('filename-male' in part &&
             part['filename-male'] &&
             genderOrSex &&
             genderOrSex === 'male' &&
-            files[part['filename-male']]) ||
-          ('filename' in part && part.filename && files[part.filename]) ||
+            lookupContentsByNameAndType(
+              contents,
+              part['filename-male'],
+              'image/webp'
+            )) ||
+          ('filename' in part &&
+            part.filename &&
+            lookupContentsByNameAndType(
+              contents,
+              part.filename,
+              'image/webp'
+            )) ||
           getPath(valuePath.concat('uri'), _.isString, null)
         if (backgroundImage === null) {
           // TODO

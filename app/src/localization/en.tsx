@@ -135,6 +135,26 @@ export default {
     'disable-form': 'Disable form',
     'enable-form': 'Enable form',
   },
+  record: {
+    filter: {
+      'select-record-sealed': 'Sealed or unsealed record',
+      'any-is-sealed': 'Any record',
+      enabled: 'Sealed records',
+      disabled: 'Unsealed records',
+    },
+    heading: {
+      patient: 'Patient',
+      form: 'Form',
+      'created-changed': 'Created / Changed',
+      sealed: 'Sealed',
+    },
+    'search-by': {
+      select: 'Select search type',
+      'record-id': 'Record ID',
+      'patient-name': 'Patient name',
+    },
+    'missing-patient-name': 'No patient name recorded',
+  },
   form: {
     filter: {
       'select-form-enabled': 'Enabled or disabled forms',

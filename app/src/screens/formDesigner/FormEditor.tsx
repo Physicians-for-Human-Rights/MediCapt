@@ -24,7 +24,6 @@ import FormEditorComponent from 'components/FormEditor'
 import FormEditorFiles from 'components/FormEditorFiles'
 import FormEditorPrinted from 'components/FormEditorPrinted'
 import FormEditorOverview from 'components/FormEditorOverview'
-import useMap from 'react-use/lib/useMap'
 import _ from 'lodash'
 import { readFile } from 'utils/forms'
 import { useInfo, handleStandardErrors } from 'utils/errors'
@@ -35,6 +34,7 @@ import {
   addOrReplaceFileToManifestByFilename,
   filetypeIsDataURI,
   makeManifestEntry,
+  fetchManifestContents,
 } from 'utils/manifests'
 
 function Tabs({
@@ -258,23 +258,7 @@ export default function FormEditor({
         setWaiting('Loading form')
         const r = await getForm(route.params.formMetadata.formUUID)
         setFormMetadata(r.metadata)
-        const contents = await Promise.all(
-          _.map(r.manifest.contents, async e => {
-            const response = await fetch(e.link)
-            const data = filetypeIsDataURI(e.filetype)
-              ? await blobToBase64(
-                  new Blob([await response.blob()], { type: e.filetype })
-                )
-              : await response.text()
-            return {
-              sha256: e.sha256,
-              md5: md5(data),
-              filename: e.filename,
-              data: data,
-              filetype: e.filetype,
-            }
-          })
-        )
+        const contents = await fetchManifestContents(r.manifest.contents)
         setManifest({
           'storage-version': '1.0.0',
           root: r.manifest.root,

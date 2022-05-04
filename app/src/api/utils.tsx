@@ -10,7 +10,7 @@ import {
 } from '@expo/vector-icons'
 import { handleStandardErrors } from 'utils/errors'
 
-export async function standardHandler(
+export async function standardHandler<T>(
   {
     setWaiting,
     error,
@@ -24,15 +24,17 @@ export async function standardHandler(
   },
   preMsg: string,
   postMsg: string,
-  apiCallFn: () => any
-) {
+  apiCallFn: () => T
+): Promise<T | null> {
   try {
     setWaiting(preMsg)
-    await apiCallFn()
-    success(postMsg)
+    const r = await apiCallFn()
+    postMsg && success(postMsg)
+    return r
   } catch (e) {
     handleStandardErrors(error, warning, success, e)
   } finally {
     setWaiting(null)
   }
+  return null
 }

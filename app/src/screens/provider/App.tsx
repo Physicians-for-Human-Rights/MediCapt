@@ -2,13 +2,16 @@ import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import Home from 'screens/provider/Home'
-import FormEditor from 'screens/provider/FormEditor'
+import RecordEditor from 'screens/provider/RecordEditor'
 import FindRecord from 'screens/provider/FindRecord'
+import FindForm from 'screens/provider/FindForm'
 import { RootStackParamList } from 'utils/provider/navigation'
+import { useUserLocations } from 'utils/store'
 
 const RootStack = createStackNavigator<RootStackParamList>()
 
 export default function App({}: {}) {
+  useUserLocations()
   return (
     <NavigationContainer>
       <RootStack.Navigator initialRouteName="Home">
@@ -18,14 +21,20 @@ export default function App({}: {}) {
           options={{ headerShown: false }}
         />
         <RootStack.Screen
-          name="FormEditor"
-          component={FormEditor}
+          name="RecordEditor"
+          component={RecordEditor}
           options={{
             headerShown: false,
+
             // TODO The signature component causes crashes in SkSurface::getCanvas unless we enable this
             // https://github.com/react-navigation/react-navigation/issues/9061
             animationEnabled: false,
           }}
+        />
+        <RootStack.Screen
+          name="FindForm"
+          component={FindForm}
+          options={{ headerShown: false }}
         />
         <RootStack.Screen
           name="FindRecord"
