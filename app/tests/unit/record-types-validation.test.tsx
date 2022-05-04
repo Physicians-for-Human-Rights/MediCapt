@@ -62,44 +62,6 @@ describe('Record typescript definition', () => {
       },
       nrOfCommands: 3,
       nrOfElements: 3,
-      // expectedGetCalls: [
-      //   {
-      //     path: [
-      //       'sections',
-      //       'test',
-      //       'parts',
-      //       'mypart',
-      //       'list-multiple',
-      //       'value',
-      //       0,
-      //     ],
-      //     defaultValue: false,
-      //   },
-      //   {
-      //     path: [
-      //       'sections',
-      //       'test',
-      //       'parts',
-      //       'mypart',
-      //       'list-multiple',
-      //       'value',
-      //       1,
-      //     ],
-      //     defaultValue: false,
-      //   },
-      //   {
-      //     path: [
-      //       'sections',
-      //       'test',
-      //       'parts',
-      //       'mypart',
-      //       'list-multiple',
-      //       'value',
-      //       2,
-      //     ],
-      //     defaultValue: false,
-      //   },
-      // ],
       events: [
         { type: 'fire', label: 'form.select-the-option OptionA' },
         { type: 'fire', label: 'form.select-the-option OptionC' },
@@ -150,12 +112,6 @@ describe('Record typescript definition', () => {
       },
       nrOfCommands: 3,
       nrOfElements: 3,
-      // expectedGetCalls: [
-      //   {
-      //     path: ['sections', 'test', 'parts', 'mypart'],
-      //     defaultValue: [],
-      //   },
-      // ],
       events: [{ type: 'fire', label: 'form.add-photo' }],
       waitforMs: true,
       expectedSetCalls: [
@@ -191,12 +147,6 @@ describe('Record typescript definition', () => {
       },
       nrOfCommands: 3,
       nrOfElements: 3,
-      // expectedGetCalls: [
-      //   {
-      //     path: ['sections', 'test', 'parts', 'mypart'],
-      //     defaultValue: '',
-      //   },
-      // ],
       events: [{ type: 'fire', label: 'button sex.Male' }],
       expectedSetCalls: [
         {
@@ -226,12 +176,6 @@ describe('Record typescript definition', () => {
       },
       nrOfCommands: 3,
       nrOfElements: 3,
-      // expectedGetCalls: [
-      //   {
-      //     path: ['sections', 'test', 'parts', 'mypart'],
-      //     defaultValue: '',
-      //   },
-      // ],
       events: [
         {
           type: 'text',
@@ -268,12 +212,6 @@ describe('Record typescript definition', () => {
       },
       nrOfCommands: 3,
       nrOfElements: 3,
-      // expectedGetCalls: [
-      //   {
-      //     path: ['sections', 'test', 'parts', 'mypart'],
-      //     defaultValue: '',
-      //   },
-      // ],
       events: [
         {
           type: 'text',
@@ -310,12 +248,6 @@ describe('Record typescript definition', () => {
       },
       nrOfCommands: 3,
       nrOfElements: 3,
-      // expectedGetCalls: [
-      //   {
-      //     path: ['sections', 'test', 'parts', 'mypart'],
-      //     defaultValue: '',
-      //   },
-      // ],
       events: [{ type: 'text', label: 'form.enter-text', value: 'mytext' }],
       waitforMs: true,
       expectedSetCalls: [
@@ -346,12 +278,6 @@ describe('Record typescript definition', () => {
       },
       nrOfCommands: 3,
       nrOfElements: 3,
-      // expectedGetCalls: [
-      //   {
-      //     path: ['sections', 'test', 'parts', 'mypart'],
-      //     defaultValue: '',
-      //   },
-      // ],
       events: [
         { type: 'text', label: 'form.enter-long-text', value: 'mytext' },
       ],
@@ -384,12 +310,6 @@ describe('Record typescript definition', () => {
       },
       nrOfCommands: 3,
       nrOfElements: 3,
-      // expectedGetCalls: [
-      //   {
-      //     path: ['sections', 'test', 'parts', 'mypart'],
-      //     defaultValue: '',
-      //   },
-      // ],
       events: [
         { type: 'text', label: 'form.enter-email', value: 'test@test.test' },
       ],
@@ -422,12 +342,6 @@ describe('Record typescript definition', () => {
       },
       nrOfCommands: 3,
       nrOfElements: 3,
-      // expectedGetCalls: [
-      //   {
-      //     path: ['sections', 'test', 'parts', 'mypart'],
-      //     defaultValue: '',
-      //   },
-      // ],
       events: [{ type: 'text', label: 'form.enter-number', value: '23' }],
       waitforMs: true,
       expectedSetCalls: [
@@ -458,12 +372,6 @@ describe('Record typescript definition', () => {
       },
       nrOfCommands: 3,
       nrOfElements: 3,
-      // expectedGetCalls: [
-      //   {
-      //     path: ['sections', 'test', 'parts', 'mypart'],
-      //     defaultValue: null,
-      //   },
-      // ],
       events: [
         { type: 'fire', label: 'form.enter-date-time' },
         { type: 'fire', label: 'Confirm' },
@@ -496,12 +404,6 @@ describe('Record typescript definition', () => {
       },
       nrOfCommands: 3,
       nrOfElements: 3,
-      // expectedGetCalls: [
-      //   {
-      //     path: ['sections', 'test', 'parts', 'mypart'],
-      //     defaultValue: null,
-      //   },
-      // ],
       events: [
         { type: 'fire', label: 'form.enter-date' },
         { type: 'fire', label: 'Confirm' },
@@ -534,12 +436,6 @@ describe('Record typescript definition', () => {
       },
       nrOfCommands: 3,
       nrOfElements: 3,
-      // expectedGetCalls: [
-      //   {
-      //     path: ['sections', 'test', 'parts', 'mypart'],
-      //     defaultValue: null,
-      //   },
-      // ],
       events: [{ type: 'fire', label: 'button form.Yes' }],
       expectedSetCalls: [
         {
@@ -569,12 +465,6 @@ describe('Record typescript definition', () => {
       },
       nrOfCommands: 3,
       nrOfElements: 3,
-      // expectedGetCalls: [
-      //   {
-      //     path: ['sections', 'test', 'parts', 'mypart'],
-      //     defaultValue: '',
-      //   },
-      // ],
       events: [{ type: 'fire', label: 'button gender.Female' }],
       expectedSetCalls: [
         {

@@ -85,7 +85,6 @@ export async function formFieldTest({
   sectionContents,
   nrOfCommands = 0,
   nrOfElements = 0,
-  // expectedGetCalls = [],
   events = [],
   expectedSetCalls = [],
   debugTest = false,
@@ -96,7 +95,6 @@ export async function formFieldTest({
   sectionContents: NamedFormSection
   nrOfCommands?: number
   nrOfElements?: number
-  // expectedGetCalls?: { path: RecordValuePath; defaultValue: any }[]
   events?: (
     | { type: 'fire'; label: string }
     | { type: 'text'; label: string; value: string }
@@ -110,7 +108,6 @@ export async function formFieldTest({
   const {
     debug,
     getAllByA11yLabel,
-    // getByText,
     flatRecord,
     setRecordPath,
     commands,
@@ -120,17 +117,9 @@ export async function formFieldTest({
   if (debugTest) {
     debug(expect.getState().currentTestName)
   }
-  //
+
   expect(commands).toHaveLength(nrOfCommands)
   expect(elements).toHaveLength(nrOfElements)
-  // expect(getRecordPath).toHaveBeenCalledTimes(expectedGetCalls.length)
-  // _.map(expectedGetCalls, (call, nr) =>
-  //   expect(getRecordPath).toHaveBeenNthCalledWith(
-  //     nr + 1,
-  //     call.path,
-  //     call.defaultValue
-  //   )
-  // )
 
   _.map(events, event => {
     if (event.type === 'fire')
@@ -138,17 +127,17 @@ export async function formFieldTest({
     if (event.type === 'text')
       fireEvent.changeText(getAllByA11yLabel(event.label)[0], event.value)
   })
-  //
+
   if (waitforMs) {
     await waitFor(() =>
       expect(setRecordPath).toHaveBeenCalledTimes(expectedSetCalls.length)
     )
   }
-  //
+
   if (debugTestAfterFire) {
     debug(expect.getState().currentTestName)
   }
-  //
+
   expect(setRecordPath).toHaveBeenCalledTimes(expectedSetCalls.length)
   _.map(expectedSetCalls, (call, nr) =>
     expect(setRecordPath).toHaveBeenNthCalledWith(nr + 1, call.path, call.value)
@@ -158,57 +147,3 @@ export async function formFieldTest({
     console.log('Record', JSON.stringify(record, null, 2))
   }
 }
-
-// export function populateTypes(
-//   section: NamedFormSection,
-//   commonRefTable: Record<string, FormDefinition>,
-//   flatRecord: FlatRecord
-// ) {
-//   const record = {} as Record<string, any>
-//   function setType(valuePath: (string | number)[], type: string) {
-//     record[_.join(_.dropRight(valuePath).concat('type'), '.')] = type
-//   }
-//   mapSectionWithPaths<any>(section, commonRefTable, null, getValue, {
-//     pre: () => null,
-//     address: valuePath => setType(valuePath, 'address'),
-//     'body-image': valuePath => setType(valuePath, 'body-image'),
-//     bool: valuePath => setType(valuePath, 'bool'),
-//     date: valuePath => setType(valuePath, 'date'),
-//     'date-time': valuePath => setType(valuePath, 'date-time'),
-//     email: valuePath => setType(valuePath, 'email'),
-//     gender: valuePath => setType(valuePath, 'gender'),
-//     list: valuePath => setType(valuePath, 'list'),
-//     'list-with-labels': valuePath => setType(valuePath, 'list-with-labels'),
-//     // TODO
-//     'list-multiple': () => null,
-//     // TODO
-//     'list-with-labels-multiple': () => null,
-//     // TODO
-//     'list-with-parts': valuePath => setType(valuePath, 'list-with-parts'),
-//     'long-text': valuePath => setType(valuePath, 'long-text'),
-//     number: valuePath => setType(valuePath, 'number'),
-//     'phone-number': valuePath => setType(valuePath, 'phone-number'),
-//     photo: valuePath => setType(valuePath, 'photo'),
-//     sex: valuePath => setType(valuePath, 'sex'),
-//     text: valuePath => setType(valuePath, 'text'),
-//     signature: valuePath => setType(valuePath, 'signature'),
-//     combineResultsFromParts: () => null,
-//     combineResultsFromSubparts: () => null,
-//     preRepeat: () => null,
-//     preEachRepeat: () => null,
-//     eachRepeat: () => null,
-//     postRepeated: () => null,
-//     post: () => null,
-//   })
-//   return record
-// }
-
-// export function formPathsToRecord(
-//   sectionContents: NamedFormSection,
-//   flatRecord: FlatRecord
-// ) {
-//   let record = { 'storage-version': '1.0.0', sections: {} } as RecordType
-//   populateTypes(sectionContents, {}, flatRecord)
-//   _.map(formPaths, (v, p) => {})
-//   return record
-// }
