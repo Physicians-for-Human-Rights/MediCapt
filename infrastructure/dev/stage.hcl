@@ -21,6 +21,7 @@ locals {
   }
   # Window in which Max is 30, set it to that in prod
   records_bucket_kms_deletion_window_in_days = 7
+  records_dynamodb_kms_deletion_window_in_days = 7
   #
   api_file = "api.yaml"
   #
