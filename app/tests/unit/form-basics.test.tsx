@@ -1,6 +1,6 @@
 import fs from 'fs'
 import yaml from 'js-yaml'
-import { FormType } from 'utils/formTypes'
+import { FormType } from 'utils/types/form'
 import _ from 'lodash'
 import { nameFormSections, isSectionComplete } from 'utils/forms'
 
@@ -13,9 +13,7 @@ describe('Basic operations on forms', () => {
     const sections = nameFormSections(form.sections)
     expect(
       _.reduce(
-        _.map(sections, section =>
-          isSectionComplete(section, form.common, () => undefined)
-        ),
+        _.map(sections, section => isSectionComplete(section, form.common, {})),
         (a, b) => a && b
       )
     ).toBe(false)

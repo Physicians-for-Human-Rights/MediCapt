@@ -110,6 +110,7 @@ export const recordValueByTypeSchema = {
   date: skippableValueSchema({
     type: z.literal('date'),
     value: dateSchema,
+    birthday: z.boolean().optional(),
   }),
   'date-time': skippableValueSchema({
     type: z.literal('date-time'),

@@ -6,7 +6,7 @@ import addFormats from 'ajv-formats'
 import betterAjvErrors from 'better-ajv-errors'
 
 const schema = createGenerator({
-  path: 'src/utils/formTypes.ts',
+  path: 'src/utils/types/form.tsx',
   tsconfig: 'tsconfig.dummy.json',
   type: '*',
 }).createSchema('FormType')
@@ -28,7 +28,7 @@ describe('Form typescript definition', () => {
     const valid = ajv.validate(schemaProcessed, dataProcessed)
     if (!valid) {
       console.log(
-        betterAjvErrors(schemaProcessed, dataProcessed, ajv.errors, {
+        betterAjvErrors(schemaProcessed, dataProcessed, ajv.errors || [], {
           format: 'cli',
           indent: 2,
         })
