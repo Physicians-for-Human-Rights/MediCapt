@@ -104,8 +104,8 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
           },
           Expires: 600,
           Conditions: [
-            // Images should not be larger than 1MB
-            ['content-length-range', 0, 1000000],
+            // Images/pdfs/etc. should not be larger than 5MB
+            ['content-length-range', 0, 5000000],
             ['eq', '$x-amz-server-side-encryption', 'aws:kms'],
           ],
         })

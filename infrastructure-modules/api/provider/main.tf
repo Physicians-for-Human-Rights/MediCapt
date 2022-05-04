@@ -23,24 +23,22 @@ resource "aws_api_gateway_rest_api" "provider" {
       region = var.aws_region
       account_id = data.aws_caller_identity.current.account_id
       # NB: Is there a way to pass in a map and do a lookup?
-      lambda_uri_providerCreateRecord                  = aws_lambda_function.lambdas["providerCreateRecord"].invoke_arn
-      lambda_uri_providerGetRecordById                 = aws_lambda_function.lambdas["providerGetRecordById"].invoke_arn
-      lambda_uri_providerUpdateRecordById              = aws_lambda_function.lambdas["providerUpdateRecordById"].invoke_arn
-      lambda_uri_providerDeleteRecordById              = aws_lambda_function.lambdas["providerDeleteRecordById"].invoke_arn
-      lambda_uri_providerSealRecordById                = aws_lambda_function.lambdas["providerSealRecordById"].invoke_arn
-      lambda_uri_providerUploadImageForRecordBy        = aws_lambda_function.lambdas["providerUploadImageForRecordBy"].invoke_arn
-      lambda_uri_providerGetImageByImageId             = aws_lambda_function.lambdas["providerGetImageByImageId"].invoke_arn
-      lambda_uri_providerDeleteImageByImageId          = aws_lambda_function.lambdas["providerDeleteImageByImageId"].invoke_arn
-      lambda_uri_providerGetOwnRecords                 = aws_lambda_function.lambdas["providerGetOwnRecords"].invoke_arn
-      lambda_uri_providerGetFormsByCountry             = aws_lambda_function.lambdas["providerGetFormsByCountry"].invoke_arn
-      lambda_uri_providerGetFormByUUID                 = aws_lambda_function.lambdas["providerGetFormByUUID"].invoke_arn
-      lambda_uri_providerPutSharedRecordById           = aws_lambda_function.lambdas["providerPutSharedRecordById"].invoke_arn
-      lambda_uri_providerGetRecordSharesById           = aws_lambda_function.lambdas["providerGetRecordSharesById"].invoke_arn
-      lambda_uri_providerGetSharedRecordById           = aws_lambda_function.lambdas["providerGetSharedRecordById"].invoke_arn
-      lambda_uri_providerDeleteSharedRecordById        = aws_lambda_function.lambdas["providerDeleteSharedRecordById"].invoke_arn
-      lambda_uri_providerGetSharedRecordImageByImageId = aws_lambda_function.lambdas["providerGetSharedRecordImageByImageId"].invoke_arn
-      lambda_uri_providerGetSharedRecordsByUser        = aws_lambda_function.lambdas["providerGetSharedRecordsByUser"].invoke_arn
-      lambda_uri_providerGetSharedRecordsWithUser      = aws_lambda_function.lambdas["providerGetSharedRecordsWithUser"].invoke_arn
+      lambda_uri_providerGetForms              = aws_lambda_function.lambdas["providerGetForms"].invoke_arn
+      lambda_uri_providerGetFormById           = aws_lambda_function.lambdas["providerGetFormById"].invoke_arn
+      lambda_uri_providerGetUserById           = aws_lambda_function.lambdas["providerGetUserById"].invoke_arn
+      lambda_uri_providerGetLocationById       = aws_lambda_function.lambdas["providerGetLocationById"].invoke_arn
+      lambda_uri_providerCreateRecord          = aws_lambda_function.lambdas["providerCreateRecord"].invoke_arn
+      lambda_uri_providerGetRecords            = aws_lambda_function.lambdas["providerGetRecords"].invoke_arn
+      lambda_uri_providerGetRecordById         = aws_lambda_function.lambdas["providerGetRecordById"].invoke_arn
+      lambda_uri_providerUpdateRecordById      = aws_lambda_function.lambdas["providerUpdateRecordById"].invoke_arn
+      lambda_uri_providerGetRecordMetadataById = aws_lambda_function.lambdas["providerGetRecordMetadataById"].invoke_arn
+      lambda_uri_providerCommitRecordById      = aws_lambda_function.lambdas["providerCommitRecordById"].invoke_arn
+      lambda_uri_providerSealRecordById        = aws_lambda_function.lambdas["providerSealRecordById"].invoke_arn
+      lambda_uri_providerGetRecordShares       = aws_lambda_function.lambdas["providerGetRecordShares"].invoke_arn
+      lambda_uri_providerCreateShareByRecordId = aws_lambda_function.lambdas["providerCreateShareByRecordId"].invoke_arn
+      lambda_uri_providerUpdateShareByShareId  = aws_lambda_function.lambdas["providerUpdateShareByShareId"].invoke_arn
+      lambda_uri_providerGetRecordByShareId    = aws_lambda_function.lambdas["providerGetRecordByShareId"].invoke_arn
+      lambda_uri_providerDeleteShareByShareId  = aws_lambda_function.lambdas["providerDeleteShareByShareId"].invoke_arn
     })
   endpoint_configuration {
     types = [var.endpoint_configuration]
@@ -51,24 +49,22 @@ resource "aws_api_gateway_deployment" "api" {
   # NB: Unfortunately, depends_on must be static in terraform.
   depends_on = [
     aws_api_gateway_rest_api.provider,
+    aws_lambda_function.lambdas["providerGetForms"],
+    aws_lambda_function.lambdas["providerGetFormById"],
+    aws_lambda_function.lambdas["providerGetUserById"],
+    aws_lambda_function.lambdas["providerGetLocationById"],
     aws_lambda_function.lambdas["providerCreateRecord"],
+    aws_lambda_function.lambdas["providerGetRecords"],
     aws_lambda_function.lambdas["providerGetRecordById"],
     aws_lambda_function.lambdas["providerUpdateRecordById"],
-    aws_lambda_function.lambdas["providerDeleteRecordById"],
+    aws_lambda_function.lambdas["providerGetRecordMetadataById"],
+    aws_lambda_function.lambdas["providerCommitRecordById"],
     aws_lambda_function.lambdas["providerSealRecordById"],
-    aws_lambda_function.lambdas["providerUploadImageForRecordBy"],
-    aws_lambda_function.lambdas["providerGetImageByImageId"],
-    aws_lambda_function.lambdas["providerDeleteImageByImageId"],
-    aws_lambda_function.lambdas["providerGetOwnRecords"],
-    aws_lambda_function.lambdas["providerGetFormsByCountry"],
-    aws_lambda_function.lambdas["providerGetFormByUUID"],
-    aws_lambda_function.lambdas["providerPutSharedRecordById"],
-    aws_lambda_function.lambdas["providerGetRecordSharesById"],
-    aws_lambda_function.lambdas["providerGetSharedRecordById"],
-    aws_lambda_function.lambdas["providerDeleteSharedRecordById"],
-    aws_lambda_function.lambdas["providerGetSharedRecordImageByImageId"],
-    aws_lambda_function.lambdas["providerGetSharedRecordsByUser"],
-    aws_lambda_function.lambdas["providerGetSharedRecordsWithUser"]
+    aws_lambda_function.lambdas["providerGetRecordShares"],
+    aws_lambda_function.lambdas["providerCreateShareByRecordId"],
+    aws_lambda_function.lambdas["providerUpdateShareByShareId"],
+    aws_lambda_function.lambdas["providerGetRecordByShareId"],
+    aws_lambda_function.lambdas["providerDeleteShareByShareId"]
   ]
   rest_api_id = aws_api_gateway_rest_api.provider.id
   # should be var.stage but see this issue, required for cloudwatch support
@@ -88,24 +84,22 @@ resource "aws_api_gateway_stage" "api" {
   depends_on = [
     aws_api_gateway_deployment.api,
     aws_api_gateway_rest_api.provider,
+    aws_lambda_function.lambdas["providerGetForms"],
+    aws_lambda_function.lambdas["providerGetFormById"],
+    aws_lambda_function.lambdas["providerGetUserById"],
+    aws_lambda_function.lambdas["providerGetLocationById"],
     aws_lambda_function.lambdas["providerCreateRecord"],
+    aws_lambda_function.lambdas["providerGetRecords"],
     aws_lambda_function.lambdas["providerGetRecordById"],
     aws_lambda_function.lambdas["providerUpdateRecordById"],
-    aws_lambda_function.lambdas["providerDeleteRecordById"],
+    aws_lambda_function.lambdas["providerGetRecordMetadataById"],
+    aws_lambda_function.lambdas["providerCommitRecordById"],
     aws_lambda_function.lambdas["providerSealRecordById"],
-    aws_lambda_function.lambdas["providerUploadImageForRecordBy"],
-    aws_lambda_function.lambdas["providerGetImageByImageId"],
-    aws_lambda_function.lambdas["providerDeleteImageByImageId"],
-    aws_lambda_function.lambdas["providerGetOwnRecords"],
-    aws_lambda_function.lambdas["providerGetFormsByCountry"],
-    aws_lambda_function.lambdas["providerGetFormByUUID"],
-    aws_lambda_function.lambdas["providerPutSharedRecordById"],
-    aws_lambda_function.lambdas["providerGetRecordSharesById"],
-    aws_lambda_function.lambdas["providerGetSharedRecordById"],
-    aws_lambda_function.lambdas["providerDeleteSharedRecordById"],
-    aws_lambda_function.lambdas["providerGetSharedRecordImageByImageId"],
-    aws_lambda_function.lambdas["providerGetSharedRecordsByUser"],
-    aws_lambda_function.lambdas["providerGetSharedRecordsWithUser"]
+    aws_lambda_function.lambdas["providerGetRecordShares"],
+    aws_lambda_function.lambdas["providerCreateShareByRecordId"],
+    aws_lambda_function.lambdas["providerUpdateShareByShareId"],
+    aws_lambda_function.lambdas["providerGetRecordByShareId"],
+    aws_lambda_function.lambdas["providerDeleteShareByShareId"]
   ]
   rest_api_id    = aws_api_gateway_rest_api.provider.id
   stage_name     = var.stage

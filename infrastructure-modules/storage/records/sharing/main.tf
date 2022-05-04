@@ -32,11 +32,29 @@ variable "dynamodb_point_in_time_recovery" {
   type        = bool
 }
 
+variable "records_dynamodb_kms_deletion_window_in_days" {
+  description = "Days of protection you want for your KMS for Dynamo"
+  type        = number
+}
+
+module "kms_key" {
+  source                   = "cloudposse/kms-key/aws"
+  version                  = "0.12.1"
+  name                     = "${var.stage}-${var.namespace}-sharing-dynamodb"
+  description              = "Key for the sharing dynamodb"
+  customer_master_key_spec = "SYMMETRIC_DEFAULT"
+  deletion_window_in_days  = var.records_dynamodb_kms_deletion_window_in_days
+  enable_key_rotation      = true
+  key_usage                = "ENCRYPT_DECRYPT"
+  alias                    = "alias/records_dynamodb_key"
+}
+
 module "dynamodb_table" {
   source = "cloudposse/dynamodb/aws" 
   version     = "0.29.4"
   name                         = "${var.namespace}-${var.stage}-record-sharing"
   enable_encryption	       = true
+  server_side_encryption_kms_key_arn = module.kms_key.key_arn
   enable_streams	       = false
   ttl_enabled	               = false
   # Once Medicapt scales sufficiently, it will be cheaper to configure autoscaling
@@ -154,8 +172,12 @@ EOF
 
 ###############################################################################
 
-output "dynamodb" {
+output "sharing_dynamodb" {
   value = module.dynamodb_table
+}
+
+output "sharing_dynamodb_kms" {
+  value = module.kms_key
 }
 
 output "associate_policy" {

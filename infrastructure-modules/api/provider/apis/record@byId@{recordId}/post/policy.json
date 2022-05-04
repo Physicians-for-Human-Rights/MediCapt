@@ -2,10 +2,27 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "Placeholder",
-      "Effect": "Deny",
-      "Action": ["ec2:*"],
-      "Resource": "*"
+      "Action": ["dynamodb:GetItem"],
+      "Effect": "Allow",
+      "Resource": ["${record_table_arn}", "${record_table_arn}/*"]
+    },
+    {
+      "Sid": "S3",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject"],
+      "Resource": ["${record_bucket_arn}/*", "${record_bucket_arn}"]
+    },
+    {
+      "Sid": "KMS",
+      "Effect": "Allow",
+      "Action": [
+        "kms:ReEncrypt",
+        "kms:GenerateDataKey",
+        "kms:Encrypt",
+        "kms:DescribeKey",
+        "kms:Decrypt"
+      ],
+      "Resource": ["${record_bucket_kms}", "${record_table_kms}"]
     }
   ]
 }

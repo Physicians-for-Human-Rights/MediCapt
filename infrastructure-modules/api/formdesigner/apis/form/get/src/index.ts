@@ -126,7 +126,7 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
         rawItems = results.Items ? results.Items : []
         lastKey = results.LastEvaluatedKey
       } catch (e) {
-        return bad(e, 'Generic error LID')
+        return bad(e, 'Generic error location')
       }
     } else {
       const results = await simpleDynamoQuery(

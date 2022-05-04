@@ -263,6 +263,78 @@ paths:
               type: "string"
             Access-Control-Allow-Origin:
               type: "string"
+  /provider/record/metadataById/{recordId}:
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - Record
+      summary: Get record metadata by ID
+      operationId: providerGetRecordMetadataById
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - name: recordId
+        in: path
+        description: ID of the record to return
+        required: true
+        type: string
+        format: uuid
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Record'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Record not found
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerGetRecordMetadataById}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
   /provider/record/commitById/{recordId}:
     post:
       security:
@@ -293,7 +365,7 @@ paths:
         405:
           description: Validation exception
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerUpdateRecordById}
+        uri: ${lambda_uri_providerCommitRecordById}
         responses:
           default:
             statusCode: "200"
@@ -367,7 +439,7 @@ paths:
         405:
           description: Validation exception
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerUpdateRecordById}
+        uri: ${lambda_uri_providerSealRecordById}
         responses:
           default:
             statusCode: "200"
@@ -598,7 +670,7 @@ paths:
         404:
           description: User not found
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerrGetUserById}
+        uri: ${lambda_uri_providerGetUserById}
         responses:
           default:
             statusCode: "200"
@@ -671,6 +743,300 @@ paths:
           description: Location not found
       x-amazon-apigateway-integration:
         uri: ${lambda_uri_providerGetLocationById}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+  /provider/share/record:
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - Share
+      summary: Get record shares
+      operationId: providerGetRecordShares
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - in: query
+        name: next
+        type: string
+        required: false
+        description: The token for the next page if any
+      - in: query
+        name: filter
+        type: string
+        required: false
+        description: A JSON filter
+      - in: query
+        name: sort
+        type: string
+        required: false
+        description: A JSON sort
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Record'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Record not found
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerGetRecordShares}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+  /provider/share/record/byRecordId/{recordId}:
+    post:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - Share
+      summary: Create a share by record ID
+      operationId: providerCreateShareByRecordId
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - name: recordId
+        in: path
+        description: ID of the record to return
+        required: true
+        type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Record'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Record not found
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerCreateShareByRecordId}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+  /provider/share/record/byId/{shareId}:
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - Share
+      summary: Get a record by share ID
+      operationId: providerGetRecordByShareId
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - name: shareId
+        in: path
+        description: ID of the share
+        required: true
+        type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Record'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Record not found
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerGetRecordByShareId}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    post:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - Share
+      summary: Update an existing share
+      operationId: providerUpdateShareByShareId
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      parameters:
+      - name: shareId
+        in: path
+        description: ID of the record to return
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: Updated record
+        required: true
+        schema:
+          $ref: '#/definitions/Record'
+      responses:
+        404:
+          description: Record not found
+        405:
+          description: Validation exception
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerUpdateShareByShareId}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    delete:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - Share
+      summary: Delete a share
+      operationId: providerDeleteShareByShareId
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - name: shareId
+        in: path
+        description: ID of the share
+        required: true
+        type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Record'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Record not found
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerDeleteShareByShareId}
         responses:
           default:
             statusCode: "200"

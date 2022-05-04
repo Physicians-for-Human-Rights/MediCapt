@@ -573,6 +573,8 @@ export function filetypeToExtension(filetype: string) {
       return 'webp'
     case 'text/yaml':
       return 'yaml'
+    case 'text/json':
+      return 'json'
     case 'application/pdf':
       return 'pdf'
     default:

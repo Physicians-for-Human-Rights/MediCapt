@@ -2,10 +2,9 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "Placeholder",
-      "Effect": "Deny",
-      "Action": ["ec2:*"],
-      "Resource": "*"
+      "Action": ["dynamodb:Query"],
+      "Effect": "Allow",
+      "Resource": ["${form_table_arn}", "${form_table_arn}/*"]
     }
   ]
 }

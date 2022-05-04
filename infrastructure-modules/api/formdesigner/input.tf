@@ -110,9 +110,6 @@ variable "user_pool_researcher_arn" {
   type = string
 }
 
-
-
-
 variable "image_bucket_provider" {
   description = "The provider image bucket"
   type = string

@@ -147,13 +147,13 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
     // been uploaded. Time to commit the update.
 
     const userUpdate = formMetadataSchemaByUser.strip().parse(form)
+    const now = new Date()
     const update: FormDynamoUpdateType = {
       ...userUpdate,
       lastChangedByUUID: event.requestContext.authorizer.claims.sub,
-      lastChangedDate: new Date(),
+      lastChangedDate: now,
       version: _.toString(_.toNumber(form.version) + 1),
     }
-    const now = new Date()
     let updateLatest: FormDynamoLatestToUpdateType = {
       ...update,
       GSK2: 'DATE#' + now.toISOString(),

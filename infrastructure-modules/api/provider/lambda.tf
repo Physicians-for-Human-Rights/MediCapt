@@ -1,7 +1,28 @@
 locals {
   lambdas = {
+    providerGetForms = {
+      path = "form/get"
+      reserved_concurrent_executions = null
+    }
+    providerGetFormById = {
+      path = "form@byId@{formId}/get"
+      reserved_concurrent_executions = null
+    }
+    providerGetUserById = {
+      path = "user@byId@{poolId}@{username}/get"
+      reserved_concurrent_executions = null
+    }
+    providerGetLocationById = {
+      path = "location@byId@{locationId}/get"
+      reserved_concurrent_executions = null
+    }
+    //
     providerCreateRecord = {
       path = "record/post"
+      reserved_concurrent_executions = null
+    }
+    providerGetRecords = {
+      path = "record/get"
       reserved_concurrent_executions = null
     }
     providerGetRecordById = {
@@ -12,64 +33,37 @@ locals {
       path = "record@byId@{recordId}/post"
       reserved_concurrent_executions = null
     }
-    providerDeleteRecordById = {
-      path = "record@byId@{recordId}/delete"
+    providerGetRecordMetadataById = {
+      path = "record@metadataById@{recordId}/get"
+      reserved_concurrent_executions = null
+    }
+    providerCommitRecordById = {
+      path = "record@commitById@{recordId}/post"
       reserved_concurrent_executions = null
     }
     providerSealRecordById = {
-      path = "record@seal@{recordId}/post"
+      path = "record@sealById@{recordId}/post"
       reserved_concurrent_executions = null
     }
-    providerUploadImageForRecordBy = {
-      path = "record@image@byId@{recordId}/post"
+    //
+    providerGetRecordShares = {
+      path = "share@record/get"
       reserved_concurrent_executions = null
     }
-    providerGetImageByImageId = {
-      path = "record@image@byId@{recordId}@{imageId}/get"
+    providerCreateShareByRecordId = {
+      path = "share@record@byRecordId@{recordId}/post"
       reserved_concurrent_executions = null
     }
-    providerDeleteImageByImageId = {
-      path = "record@image@byId@{recordId}@{imageId}/delete"
+    providerUpdateShareByShareId = {
+      path = "share@record@byId@{shareId}/post"
       reserved_concurrent_executions = null
     }
-    providerGetOwnRecords = {
-      path = "record@by-user/get"
-      reserved_concurrent_executions = null
-    }
-    providerGetFormsByCountry = {
-      path = "form@byCountry@{country}/get"
-      reserved_concurrent_executions = null
-    }
-    providerGetFormByUUID = {
-      path = "form@byId@{formId}/get"
-      reserved_concurrent_executions = null
-    }
-    providerPutSharedRecordById = {
-      path = "record@share@byId@{recordId}/post"
-      reserved_concurrent_executions = null
-    }
-    providerGetRecordSharesById = {
-      path = "record@share@byId@{recordId}/get"
-      reserved_concurrent_executions = null
-    }
-    providerGetSharedRecordById = {
+    providerGetRecordByShareId = {
       path = "share@record@byId@{shareId}/get"
       reserved_concurrent_executions = null
     }
-    providerDeleteSharedRecordById = {
+    providerDeleteShareByShareId = {
       path = "share@record@byId@{shareId}/delete"
-      reserved_concurrent_executions = null
-    }
-    providerGetSharedRecordImageByImageId = {
-      path = "share@record@image@byId@{shareId}@{imageId}/get"
-      reserved_concurrent_executions = null
-    }
-    providerGetSharedRecordsByUser = {
-      path = "share@record@by-user/get"
-      reserved_concurrent_executions = null
-    }
-    providerGetSharedRecordsWithUser = {
-      path = "share@record@with-user/get"
       reserved_concurrent_executions = null
     }
   }
@@ -104,7 +98,48 @@ resource "aws_lambda_function" "lambdas" {
   environment {
     variables = {
       humanid_lambda = var.humanid_lambda
-      location_table = var.location_table
+      location_table = var.location_dynamodb.table_name
+      location_gsi_id  = var.location_dynamodb.global_secondary_index_names[0]
+      location_gsi_date = var.location_dynamodb.global_secondary_index_names[1]
+      location_gsi_language = var.location_dynamodb.global_secondary_index_names[2]
+      location_gsi_country = var.location_dynamodb.global_secondary_index_names[3]
+      location_gsi_entity = var.location_dynamodb.global_secondary_index_names[4]
+      user_pool_provider = var.user_pool_provider
+      user_pool_associate = var.user_pool_associate
+      user_pool_manager = var.user_pool_manager
+      user_pool_formdesigner = var.user_pool_formdesigner
+      user_pool_researcher = var.user_pool_researcher
+      image_bucket_provider = var.image_bucket_provider
+      image_bucket_associate = var.image_bucket_associate
+      image_bucket_manager = var.image_bucket_manager
+      image_bucket_formdesigner = var.image_bucket_formdesigner
+      image_bucket_researcher = var.image_bucket_researcher
+      #
+      form_table = var.form_table
+      form_table_arn = var.form_table_arn
+      form_bucket = var.form_bucket
+      form_bucket_arn = var.form_bucket_arn
+      form_gsi_id  = var.form_dynamodb.global_secondary_index_names[0]
+      form_gsi_date = var.form_dynamodb.global_secondary_index_names[1]
+      form_gsi_language = var.form_dynamodb.global_secondary_index_names[2]
+      form_gsi_country = var.form_dynamodb.global_secondary_index_names[3]
+      form_gsi_location = var.form_dynamodb.global_secondary_index_names[4]
+      #
+      record_table = var.record_table
+      record_table_arn = var.record_table_arn
+      record_table_kms = var.record_table_arn
+      record_bucket = var.record_bucket
+      record_bucket_arn = var.record_bucket_arn
+      record_bucket_kms = var.record_bucket_arn
+      record_gsi_id  = var.record_dynamodb.global_secondary_index_names[0]
+      record_gsi_date  = var.record_dynamodb.global_secondary_index_names[1]
+      record_gsi_location = var.record_dynamodb.global_secondary_index_names[2]
+      record_gsi_createdby = var.record_dynamodb.global_secondary_index_names[3]
+      record_gsi_updatedby = var.record_dynamodb.global_secondary_index_names[4]
+      #
+      sharing_table = var.sharing_table
+      sharing_table_arn = var.sharing_table
+      sharing_table_kms = var.sharing_table
       # NB In a better world we would do:
       # depends_on = [
       #   aws_iam_role_policy_attachment.dead_letter[each.key],
@@ -153,6 +188,10 @@ resource "aws_iam_role" "lambdas" {
   assume_role_policy = templatefile("${path.module}/apis/${each.value.path}/assume-policy.json", {})
 }
 
+data "aws_kms_key" "bucket" {
+  key_id = "alias/aws/s3"
+}
+
 resource "aws_iam_role_policy" "per_lambda_json_policy" {
   for_each = local.lambdas
   #
@@ -161,7 +200,31 @@ resource "aws_iam_role_policy" "per_lambda_json_policy" {
   policy = templatefile("${path.module}/apis/${each.value.path}/policy.json",
     {
       humanid_lambda_arn = var.humanid_lambda_arn
-      location_table_arn = var.location_table_arn
+      location_table_arn = var.location_dynamodb.table_arn
+      user_pool_provider_arn = var.user_pool_provider_arn
+      user_pool_associate_arn = var.user_pool_associate_arn
+      user_pool_manager_arn = var.user_pool_manager_arn
+      user_pool_formdesigner_arn = var.user_pool_formdesigner_arn
+      user_pool_researcher_arn = var.user_pool_researcher_arn
+      image_bucket_provider_arn = var.image_bucket_provider_arn
+      image_bucket_associate_arn = var.image_bucket_associate_arn
+      image_bucket_manager_arn = var.image_bucket_manager_arn
+      image_bucket_formdesigner_arn = var.image_bucket_formdesigner_arn
+      image_bucket_researcher_arn = var.image_bucket_researcher_arn
+      image_kms_key_bucket_arn = data.aws_kms_key.bucket.arn
+      form_table = var.form_table
+      form_table_arn = var.form_table_arn
+      form_bucket = var.form_bucket
+      form_bucket_arn = var.form_bucket_arn
+      form_kms_key_bucket_arn = data.aws_kms_key.bucket.arn
+      record_table          = var.record_table
+      record_table_arn      = var.record_table_arn
+      record_table_kms      = var.record_table_kms.key_arn
+      record_bucket         = var.record_bucket
+      record_bucket_arn     = var.record_bucket_arn
+      record_bucket_kms     = var.record_bucket_kms.key_arn
+      sharing_table_arn     = var.sharing_table_arn
+      sharing_table_kms     = var.sharing_table_kms.key_arn
     }
   )
 }

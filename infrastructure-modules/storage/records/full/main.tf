@@ -72,12 +72,22 @@ module "s3_bucket" {
     "s3:GetBucketWebsite", 
     "s3:AbortMultipartUpload"
   ]
+  cors_rule_inputs = [{
+    allowed_headers = ["*"]
+    allowed_methods = ["GET", "PUT", "POST"]
+    allowed_origins = ["*"]
+    expose_headers  = []
+    max_age_seconds = 3000
+  }]
 }
 
-output "records_s3_bucket_arn" {
-  value = module.s3_bucket.bucket_arn
+output "records_s3_bucket" {
+  # NB There is nothing sensitive here.
+  # This module outputs empty sensitive values that we don't configure or use.
+  sensitive = true
+  value = module.s3_bucket
 }
 
-output "records_s3_bucket_id" {
-  value = module.s3_bucket.bucket_id
+output "records_s3_bucket_kms" {
+  value = module.kms_key
 }

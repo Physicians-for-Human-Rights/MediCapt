@@ -1,23 +1,154 @@
-'use strict'
-
+import _ from 'lodash'
 import { APIGatewayProxyWithCognitoAuthorizerHandler } from 'aws-lambda'
 import AWS from 'aws-sdk'
 AWS.config.update({
   region: process.env.AWS_REGION,
 })
+const s3 = new AWS.S3({ signatureVersion: 'v4', apiVersion: '2006-03-01' })
+const ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' })
+
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      humanid_lambda: string
+      record_table: string
+    }
+  }
+}
+
+import {
+  good,
+  bad,
+  DynamoDB,
+  zodDynamoUpdateExpression,
+  zodDynamoAttributeValues,
+  zodDynamoAttributeNames,
+  s3ObjectExists,
+  s3ReadObjectJSON,
+  hashFilename,
+} from 'common-utils'
+import {
+  RecordDynamoLatestToUpdateType,
+  RecordDynamoVersionType,
+  RecordDynamoUpdateType,
+  RecordMetadata,
+  recordMetadataSchema,
+  recordMetadataSchemaByUser,
+  recordSchemaDynamoVersion,
+  recordMetadataSchemaStrip,
+  recordSchemaDynamoLatestToUpdate,
+  recordManifestSchema,
+  recordSchemaUpdateSeal,
+  RecordDynamoUpdateSeal,
+} from 'utils/types/recordMetadata'
 
 export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
   event,
   context
 ) => {
-  console.log('ENVIRONMENT VARIABLES\n' + JSON.stringify(process.env, null, 2))
-  console.log('EVENT\n' + JSON.stringify(event, null, 2))
-  console.log('CONTEXT\n' + JSON.stringify(context, null, 2))
-  return {
-    statusCode: 200,
-    body: JSON.stringify([process.env, event, context], null, 2),
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-    },
+  try {
+    if (event.pathParameters && event.pathParameters.recordId) {
+      var recordId = event.pathParameters.recordId
+    } else {
+      return bad(event.pathParameters, 'Missing recordId parameter')
+    }
+    try {
+      var record = recordMetadataSchema.parse(
+        JSON.parse(event.body!)
+      ) as RecordMetadata
+    } catch (e) {
+      return bad(e, 'Bad input record')
+    }
+
+    // Get the existing entry, validate that it exists
+    try {
+      var item = await ddb
+        .getItem({
+          TableName: process.env.record_table,
+          Key: {
+            PK: { S: 'RECORD#' + recordId },
+            SK: { S: 'VERSION#latest' },
+          },
+        })
+        .promise()
+    } catch (e) {
+      return bad(e, 'No record exists to update')
+    }
+    try {
+      var existingRecord = recordMetadataSchemaStrip.parse(
+        DynamoDB.unmarshall(item.Item)
+      )
+    } catch (e) {
+      return bad(e, 'Bad record data')
+    }
+
+    if (existingRecord.sealed)
+      return bad(existingRecord, 'Record already sealed')
+
+    const now = new Date()
+    let updateLatest: RecordDynamoUpdateSeal = {
+      lastChangedByUUID: event.requestContext.authorizer.claims.sub,
+      lastChangedDate: now,
+      version: _.toString(_.toNumber(record.version) + 1),
+      sealed: true,
+    }
+
+    // Update latest, verifying that the version hasn't changed.
+    try {
+      var response = await ddb
+        .updateItem({
+          TableName: process.env.record_table,
+          Key: {
+            PK: { S: 'RECORD#' + recordId },
+            SK: { S: 'VERSION#latest' },
+          },
+          ReturnValues: 'ALL_NEW',
+          UpdateExpression: zodDynamoUpdateExpression(recordSchemaUpdateSeal),
+          ExpressionAttributeNames: zodDynamoAttributeNames(
+            recordSchemaUpdateSeal
+          ),
+          ExpressionAttributeValues: {
+            ...zodDynamoAttributeValues(recordSchemaUpdateSeal, updateLatest),
+            ':oldVersion': { S: record.version },
+          },
+          ConditionExpression: '#version = :oldVersion',
+        })
+        .promise()
+    } catch (e) {
+      return bad([], 'Record is out of date or does not exist')
+    }
+    try {
+      const newRecord = recordMetadataSchemaStrip.parse(
+        DynamoDB.unmarshall(_.mapValues(response.Attributes))
+      )
+
+      // Insert the versioned record for logging purposes
+      const recordDynamoNextVersion: RecordDynamoVersionType = recordSchemaDynamoVersion.parse(
+        {
+          ...newRecord,
+          PK: 'RECORD#' + newRecord.recordUUID,
+          SK: 'VERSION#' + newRecord.version,
+        }
+      )
+      await ddb
+        .putItem({
+          TableName: process.env.record_table,
+          Item: DynamoDB.marshall(recordDynamoNextVersion),
+        })
+        .promise()
+
+      return good({ record: newRecord })
+    } catch (e) {
+      return bad(e, 'Unknown error')
+    }
+  } catch (e) {
+    return bad(
+      [
+        e,
+        zodDynamoUpdateExpression(recordSchemaDynamoLatestToUpdate),
+        zodDynamoAttributeNames(recordSchemaDynamoLatestToUpdate),
+      ],
+      'Generic error'
+    )
   }
 }
