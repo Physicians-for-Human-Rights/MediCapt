@@ -28,7 +28,7 @@ const options = [
   {
     icon: <MaterialIcons name="add-box" />,
     label: 'Create a new record',
-    to: 'FormEditor',
+    to: 'FindForm',
   },
   {
     icon: <MaterialIcons name="search" />,

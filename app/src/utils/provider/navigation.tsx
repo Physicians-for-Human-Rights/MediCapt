@@ -1,10 +1,19 @@
 import { StackScreenProps } from '@react-navigation/stack'
+import { FormMetadata } from 'utils/types/formMetadata'
+import { RecordMetadata } from 'utils/types/recordMetadata'
 
 export type RootStackParamList = {
   Home: {}
   FindRecord: {}
+  FindForm: {}
   IncompleteRecords: {}
-  FormEditor: {}
+  RecordEditor:
+    | {
+        formMetadata: FormMetadata
+      }
+    | {
+        recordMetadata: RecordMetadata
+      }
   Sharing: {}
   Settings: {}
   Training: {}

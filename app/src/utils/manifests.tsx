@@ -20,6 +20,29 @@ import {
   FormFileWitDataSchema,
   FormManifestWithData,
 } from 'utils/types/formMetadata'
+import { blobToBase64 } from 'utils/data'
+
+export type ManifestContentsFile = {
+  data: string
+  sha256: string
+  md5: string
+  filename: string
+  filetype: string
+}
+
+export type ManifestContents = ManifestContentsFile[]
+export function lookupContentsByNameAndType(
+  contents: ManifestContents,
+  filename: string,
+  filetype: string
+) {
+  const r = _.find(
+    contents,
+    e => e.filename === filename && e.filetype === filetype
+  )
+  if (r) return r.data
+  return null
+}
 
 export function md5(data: string): string {
   return CryptoJS.enc.Base64.stringify(
@@ -173,4 +196,31 @@ export function addOrReplaceFileToManifestByFilename(
 
 export function filetypeIsDataURI(filetype: string) {
   return filetype === 'application/pdf' || filetype.startsWith('image/')
+}
+
+export async function fetchManifestContents(
+  contents: {
+    sha256: string
+    filetype: string
+    link: string
+    filename: string
+  }[]
+) {
+  return await Promise.all(
+    _.map(contents, async e => {
+      const response = await fetch(e.link)
+      const data = filetypeIsDataURI(e.filetype)
+        ? await blobToBase64(
+            new Blob([await response.blob()], { type: e.filetype })
+          )
+        : await response.text()
+      return {
+        sha256: e.sha256,
+        md5: md5(data),
+        filename: e.filename,
+        data: data,
+        filetype: e.filetype,
+      }
+    })
+  )
 }

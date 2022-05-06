@@ -40,6 +40,8 @@ export const formMetadataSchema = formMetadataSchemaByUser
 
 export const formMetadataSchemaStrip = formMetadataSchema.strip()
 
+// Manifests of various types
+
 export const formFileWithMD5Schema = z.object({
   sha256: z.string().nonempty(),
   md5: z.string().nonempty(),
@@ -146,6 +148,16 @@ export const formSchemaDynamoLatestToUpdatePart = z.object({
     .nonempty()
     .refine(v => _.startsWith(v, 'DATE#'), {
       message: 'GSK5 must start with DATE#',
+    }),
+  // We only include this entry for enabled forms
+  // The PK will be Y#LO#location or N#LO#location for enabled and diabled forms
+  // The SK will be PRIORITY#nr#DATE#date
+  GPK6: z.string().nonempty(),
+  GSK6: z
+    .string()
+    .nonempty()
+    .refine(v => _.startsWith(v, 'PRIORITY#'), {
+      message: 'GSK6 must start with PRIORITY#',
     }),
 })
 

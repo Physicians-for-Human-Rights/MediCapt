@@ -6,8 +6,8 @@ import { FlatRecord, RecordValuePath } from 'utils/types/record'
 import { getFlatRecordValue } from 'utils/records'
 import { t } from 'i18n-js'
 import { resolveRef } from 'utils/forms'
-
 import { RenderCommand } from 'utils/formRendering/types'
+import { ManifestContents, lookupContentsByNameAndType } from 'utils/manifests'
 
 function isSkipped(flatRecord: FlatRecord, path: RecordValuePath) {
   const prefixes = _.range(0, path.length + 1).map(pathLegth =>
@@ -23,7 +23,7 @@ function isSkipped(flatRecord: FlatRecord, path: RecordValuePath) {
 export function allFormRenderCommands(
   section: NamedFormSection,
   commonRefTable: Record<string, FormDefinition>,
-  files: Record<string, string>,
+  contents: ManifestContents,
   flatRecord: FlatRecord
 ) {
   let renderCommands: RenderCommand[] = []
@@ -123,7 +123,6 @@ export function allFormRenderCommands(
         getFlatRecordValue(flatRecord, ['inferred', 'gender'], 'gender')
           ?.value ||
         ''
-
       const recordValue = getFlatRecordValue(
         flatRecord,
         recordValuePath,
@@ -132,26 +131,39 @@ export function allFormRenderCommands(
       const formImage =
         ('filename-female' in part &&
           part['filename-female'] &&
-          genderOrSex &&
           genderOrSex === 'female' &&
-          files[part['filename-female']]) ||
+          lookupContentsByNameAndType(
+            contents,
+            part['filename-female'],
+            'image/webp'
+          )) ||
         ('filename-inteserx' in part &&
           part['filename-intersex'] &&
-          genderOrSex &&
           genderOrSex === 'intersex' &&
-          files[part['filename-intersex']]) ||
+          lookupContentsByNameAndType(
+            contents,
+            part['filename-intersex'],
+            'image/webp'
+          )) ||
         ('filename-male' in part &&
           part['filename-male'] &&
-          genderOrSex &&
           genderOrSex === 'male' &&
-          files[part['filename-male']]) ||
-        ('filename' in part && part.filename && files[part.filename])
+          lookupContentsByNameAndType(
+            contents,
+            part['filename-male'],
+            'image/webp'
+          )) ||
+        ('filename' in part &&
+          part.filename &&
+          lookupContentsByNameAndType(contents, part['filename'], 'image/webp'))
+
       if (!formImage) {
         // TODO
         console.log(
           'NO IMAGE, What do we do here? Prevent this from being filled out? Show a message?'
         )
       }
+
       renderCommands.push({
         type: 'body-image',
         recordValue,

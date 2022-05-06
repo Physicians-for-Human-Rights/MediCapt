@@ -5,10 +5,13 @@ import Home from 'screens/formDesigner/Home'
 import FormEditor from 'screens/formDesigner/FormEditor'
 import FormList from 'screens/formDesigner/FormList'
 import { RootStackParamList } from 'utils/formDesigner/navigation'
+import { useUserLocations } from 'utils/store'
 
 const RootStack = createStackNavigator<RootStackParamList>()
 
 export default function App({}: {}) {
+  // This preloads information about the locations we have access to
+  useUserLocations()
   return (
     <NavigationContainer>
       <RootStack.Navigator initialRouteName="Home">

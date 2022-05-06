@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react'
 import useMap from 'react-use/lib/useMap'
 import usePrevious from 'react-use/lib/usePrevious'
 import useSet from 'react-use/lib/useSet'
@@ -26,29 +26,64 @@ import { allFormRenderCommands } from 'utils/formRendering/commands'
 import { renderCommand } from 'utils/formRendering/renderer'
 import { transformToLayout } from 'utils/formRendering/transformations'
 import { nameFormSections, isSectionComplete } from 'utils/forms'
-import { flatRecordToRecordType } from 'utils/records'
+import { flatRecordToRecordType, recordTypeToFlatRecord } from 'utils/records'
+import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
+import { RecordType } from 'utils/types/record'
+import {
+  RecordMetadata,
+  RecordManifestWithData,
+} from 'utils/types/recordMetadata'
+import { lookupManifest } from 'utils/manifests'
+import { useInfo } from 'utils/errors'
+import yaml from 'js-yaml'
+
+// export default function Form({
+//   form,
+//   files,
+//   onCancel,
+//   onSaveAndExit,
+//   onComplete,
+// }: {
+//   form: FormType | undefined
+//   files: Record<string, string>
+//   noRenderCache?: boolean
+//   onCancel: () => void
+//   onSaveAndExit: () => any
+//   onComplete: () => any
+// }) {
+// =======
 
 export default function Form({
-  form,
-  files,
+  formMetadata,
+  formManifest,
+  recordMetadata,
+  recordManifest,
+  setRecord,
+  noRenderCache = false,
   onCancel,
+  onSaveAndExit,
+  onComplete,
 }: {
-  form: FormType | undefined
-  files: Record<string, string>
+  formMetadata: FormMetadata
+  formManifest: FormManifestWithData
+  recordMetadata: Partial<RecordMetadata>
+  recordManifest: RecordManifestWithData
+  setRecord: (record: RecordType) => void
   noRenderCache?: boolean
   onCancel: () => void
+  onSaveAndExit: () => void
+  onComplete: () => void
 }) {
-  // This can happen when editing forms live
-  if (form === undefined) return null
-
   const layoutType = useBreakpointValue({
     base: 'phone',
     md: 'compact',
     lg: 'large',
   }) as 'phone' | 'compact' | 'large'
 
+  const [form, setForm] = React.useState({} as FormType)
   const formSections = useMemo(() => nameFormSections(form.sections), [form])
-  const [flatRecord, { set: setFlatRecordValue }] = useMap({} as FlatRecord)
+  const [flatRecord, { set: setFlatRecordValue, setAll: setFlatRecord }] =
+    useMap({} as FlatRecord)
   const [keepAlive, { add: addKeepAlive, remove: removeKeepAlive }] = useSet(
     new Set([] as string[])
   )
@@ -82,23 +117,35 @@ export default function Form({
     [form, formSections, flatRecord]
   )
 
-  const onSaveAndExit = useCallback(() => {
-    const record = flatRecordToRecordType(flatRecord)
-    console.log(record)
-    // onCancel()
-  }, [flatRecord])
+  // const onSaveAndExit = useCallback(() => {
+  //   const record = flatRecordToRecordType(flatRecord)
+  //   console.log(record)
+  //   // onCancel()
+  // }, [flatRecord])
 
   const renderCommands = useMemo(() => {
     if (!_.isEmpty(formSections) && form && 'common' in form) {
       const sectionContent = formSections[currentSection]
       return transformToLayout(
-        allFormRenderCommands(sectionContent, form.common, files, flatRecord),
+        allFormRenderCommands(
+          sectionContent,
+          form.common,
+          _.concat(formManifest.contents || [], recordManifest.contents || []),
+          flatRecord
+        ),
         layoutType
       )
     } else {
       return []
     }
-  }, [formSections, currentSection, form, files, flatRecord])
+  }, [
+    formSections,
+    currentSection,
+    form,
+    formManifest,
+    recordManifest,
+    flatRecord,
+  ])
 
   const setRecordPath = useCallback(
     (path: RecordValuePath, value: RecordValue) => {
@@ -112,19 +159,68 @@ export default function Form({
     [setRecordPath, addKeepAlive, removeKeepAlive]
   )
 
-  // TODO Debugging until this is tested
   const previousFlatRecord = usePrevious(flatRecord)
-  const changedPaths = []
+  const changedPaths: string[] = []
   for (const key of _.union(_.keys(flatRecord), _.keys(previousFlatRecord))) {
     if (previousFlatRecord && flatRecord[key] !== previousFlatRecord[key]) {
       changedPaths.push(key)
     }
   }
+
+  // Pull the initial contents from the manifest
+  useEffect(() => {
+    try {
+      const formFile = lookupManifest(
+        formManifest,
+        e => e.filetype === 'text/yaml' && e.filename === 'form.yaml'
+      )
+      if (formFile) {
+        setForm(yaml.load(formFile.data) as FormType)
+      } else {
+        console.error('Bad form TODO')
+      }
+    } catch (e) {
+      // TODO Error handling
+      console.error(e)
+    }
+  }, [formManifest])
+
+  // Pull the initial contents from the manifest
+  useEffect(() => {
+    try {
+      const recordFile = lookupManifest(
+        recordManifest,
+        e => e.filetype === 'text/json' && e.filename === 'record.json'
+      )
+      if (recordFile) {
+        const record = recordTypeToFlatRecord(JSON.parse(recordFile.data))
+        setFlatRecord(record)
+      }
+    } catch (e) {
+      // TODO Error handling
+      console.error('Failed to pull record', e)
+    }
+  }, [])
+
+  // When we have meaningful changes, we sync up the record
+  useEffect(
+    () => {
+      if (!_.isEqual(changedPaths, [])) {
+        const record = flatRecordToRecordType(flatRecord)
+        setRecord(record)
+      }
+    } /*[changedPaths]*/
+  )
+
+  // TODO Debugging until this is tested
   if (1) {
     if (!_.isEqual(changedPaths, [])) {
       console.log(flatRecord)
     }
   }
+
+  // This can happen when editing forms live
+  if (form === undefined) return null
 
   return (
     <View flex={1}>
@@ -148,7 +244,7 @@ export default function Form({
           isSectionCompleteList={isSectionCompleteList}
           onCancel={onCancel}
           onSaveAndExit={onSaveAndExit}
-          onCompleteRecord={onCancel}
+          onCompleteRecord={onComplete}
           onPrint={onCancel}
         />
       ) : (

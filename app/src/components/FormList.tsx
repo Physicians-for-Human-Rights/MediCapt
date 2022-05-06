@@ -152,8 +152,8 @@ export default function FormList({
   setFilterLocationID: React.Dispatch<React.SetStateAction<string>>
   filterSearchType: string
   setFilterSearchType: React.Dispatch<React.SetStateAction<string>>
-  filterEnabled: string
-  setFilterEnabled: React.Dispatch<React.SetStateAction<string>>
+  filterEnabled?: string | undefined
+  setFilterEnabled?: React.Dispatch<React.SetStateAction<string>> | undefined
   filterText: string | undefined
   setFilterText: React.Dispatch<React.SetStateAction<string | undefined>>
   doSearch: () => any
@@ -198,25 +198,27 @@ export default function FormList({
             my={{ md: 0, base: 2 }}
           />
         </Center>
-        <Center>
-          <Select
-            size="md"
-            bg="white"
-            selectedValue={filterEnabled}
-            onValueChange={setFilterEnabled}
-            placeholder={t('form.filter.select-form-enabled')}
-            ml={{ base: 0, md: 2 }}
-          >
-            <Select.Item
-              key={'__any__'}
-              label={t('form.filter.any-is-form-enabled')}
-              value={''}
-            />
-            {['enabled', 'disabled'].map(e => (
-              <Select.Item key={e} label={t('form.filter.' + e)} value={e} />
-            ))}
-          </Select>
-        </Center>
+        {setFilterEnabled && (
+          <Center>
+            <Select
+              size="md"
+              bg="white"
+              selectedValue={filterEnabled}
+              onValueChange={setFilterEnabled}
+              placeholder={t('form.filter.select-form-enabled')}
+              ml={{ base: 0, md: 2 }}
+            >
+              <Select.Item
+                key={'__any__'}
+                label={t('form.filter.any-is-form-enabled')}
+                value={''}
+              />
+              {['enabled', 'disabled'].map(e => (
+                <Select.Item key={e} label={t('form.filter.' + e)} value={e} />
+              ))}
+            </Select>
+          </Center>
+        )}
       </Stack>
       <HStack py={2} w="100%" justifyContent="center" bg={'muted.50'}>
         <DebouncedTextInput

@@ -7,10 +7,13 @@ import FindUser from 'screens/manager/FindUser'
 import FindLocation from 'screens/manager/FindLocation'
 import EditLocation from 'screens/manager/EditLocation'
 import { RootStackParamList } from 'utils/manager/navigation'
+import { useUserLocations } from 'utils/store'
 
 const RootStack = createStackNavigator<RootStackParamList>()
 
 export default function App({}: {}) {
+  // This preloads information about the locations we have access to
+  useUserLocations()
   return (
     <NavigationContainer>
       <RootStack.Navigator initialRouteName="Home">
