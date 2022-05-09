@@ -57,16 +57,11 @@ export default function Form({
   onSaveAndExit: () => void
   onComplete: () => void
 }) {
-  const layoutType = useBreakpointValue({
-    base: 'phone',
-    md: 'compact',
-    lg: 'large',
-  }) as 'phone' | 'compact' | 'large'
-
   const [form, setForm] = React.useState({} as FormType)
-  const formSections = useMemo(() => nameFormSections(form.sections), [form])
   const [flatRecord, { set: setFlatRecordValue, setAll: setFlatRecord }] =
     useMap({} as FlatRecord)
+
+  const formSections = useMemo(() => nameFormSections(form.sections), [form])
   const [keepAlive, { add: addKeepAlive, remove: removeKeepAlive }] = useSet(
     new Set([] as string[])
   )
@@ -106,6 +101,12 @@ export default function Form({
   //   // onCancel()
   // }, [flatRecord])
 
+  const layoutType = useBreakpointValue({
+    base: 'phone',
+    md: 'compact',
+    lg: 'large',
+  }) as 'phone' | 'compact' | 'large'
+
   const renderCommands = useMemo(() => {
     if (!_.isEmpty(formSections) && form && 'common' in form) {
       const sectionContent = formSections[currentSection]
@@ -142,15 +143,7 @@ export default function Form({
     [setRecordPath, addKeepAlive, removeKeepAlive]
   )
 
-  const previousFlatRecord = usePrevious(flatRecord)
-  const changedPaths: string[] = []
-  for (const key of _.union(_.keys(flatRecord), _.keys(previousFlatRecord))) {
-    if (previousFlatRecord && flatRecord[key] !== previousFlatRecord[key]) {
-      changedPaths.push(key)
-    }
-  }
-
-  // Pull the initial contents from the manifest
+  // Pull the initial contents from the form manifest
   useEffect(() => {
     try {
       const formFile = lookupManifest(
@@ -166,9 +159,9 @@ export default function Form({
       // TODO Error handling
       console.error(e)
     }
-  }, [formManifest])
+  }, [formManifest, setForm])
 
-  // Pull the initial contents from the manifest
+  // Pull the initial contents from the record manifest
   useEffect(() => {
     try {
       const recordFile = lookupManifest(
@@ -183,24 +176,16 @@ export default function Form({
       // TODO Error handling
       console.error('Failed to pull record', e)
     }
-  }, [])
+  }, [recordManifest, setFlatRecord])
 
   // When we have meaningful changes, we sync up the record
-  useEffect(
-    () => {
-      if (!_.isEqual(changedPaths, [])) {
-        const record = flatRecordToRecordType(flatRecord)
-        setRecord(record)
-      }
-    } /*[changedPaths]*/
-  )
-
-  // TODO Debugging until this is tested
-  if (1) {
-    if (!_.isEqual(changedPaths, [])) {
-      console.log(flatRecord)
-    }
-  }
+  useEffect(() => {
+    const record = flatRecordToRecordType(flatRecord)
+    setRecord(record)
+    // TODO Debugging until this is tested
+    console.log(flatRecord)
+    console.log(record)
+  }, [flatRecord, setRecord])
 
   // This can happen when editing forms live
   if (form === undefined) return null
