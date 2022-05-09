@@ -1,27 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import {
-  Box,
-  HStack,
-  Icon,
-  Text,
-  VStack,
-  Avatar,
-  ScrollView,
-  Pressable,
-  useColorMode,
-  Center,
-  Input,
-  Fab,
-  IconButton,
-  Divider,
-  Button,
-} from 'native-base'
-import {
-  AntDesign,
-  Ionicons,
-  MaterialIcons,
-  MaterialCommunityIcons,
-} from '@expo/vector-icons'
 import DashboardLayout from 'components/DashboardLayout'
 import _ from 'lodash'
 import { default as FormListComponent } from 'components/FormList'

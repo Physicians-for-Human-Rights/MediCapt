@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react'
+import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import useMap from 'react-use/lib/useMap'
 import usePrevious from 'react-use/lib/usePrevious'
 import useSet from 'react-use/lib/useSet'
@@ -34,24 +34,7 @@ import {
   RecordManifestWithData,
 } from 'utils/types/recordMetadata'
 import { lookupManifest } from 'utils/manifests'
-import { useInfo } from 'utils/errors'
 import yaml from 'js-yaml'
-
-// export default function Form({
-//   form,
-//   files,
-//   onCancel,
-//   onSaveAndExit,
-//   onComplete,
-// }: {
-//   form: FormType | undefined
-//   files: Record<string, string>
-//   noRenderCache?: boolean
-//   onCancel: () => void
-//   onSaveAndExit: () => any
-//   onComplete: () => any
-// }) {
-// =======
 
 export default function Form({
   formMetadata,

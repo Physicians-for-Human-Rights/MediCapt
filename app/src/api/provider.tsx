@@ -1,49 +1,19 @@
 import _ from 'lodash'
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  Feather,
-  MaterialIcons,
-} from '@expo/vector-icons'
 import { API } from 'aws-amplify'
+import { LocationType, locationSchema } from 'utils/types/location'
+import { UserType, userSchema } from 'utils/types/user'
 import {
-  LocationType,
-  locationSchema,
-  LocationByUserType,
-  locationSchemaByUser,
-} from 'utils/types/location'
-import {
-  UserType,
-  userSchema,
-  UserByUserType,
-  userSchemaByUser,
-} from 'utils/types/user'
-import { FormType } from 'utils/types/form'
-import {
-  formMetadataSchemaByUser,
   formMetadataSchema,
-  formManifestSchema,
   formManifestWithLinksSchema,
-  FormMetadataByUser,
   FormMetadata,
-  FormManifest,
-  FormManifestWithLinks,
-  formManifestWithMD5Schema,
-  FormManifestWithMD5,
-  FormPostServer,
   FormGetServer,
-  formManifestWithPostLinksSchema,
 } from 'utils/types/formMetadata'
 import {
   recordMetadataSchemaByUser,
   recordMetadataSchema,
-  recordManifestSchema,
   recordManifestWithLinksSchema,
   RecordMetadataByUser,
   RecordMetadata,
-  RecordManifest,
-  RecordManifestWithLinks,
   recordManifestWithMD5Schema,
   RecordManifestWithMD5,
   RecordPostServer,
