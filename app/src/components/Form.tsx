@@ -178,14 +178,30 @@ export default function Form({
     }
   }, [recordManifest, setFlatRecord])
 
-  // When we have meaningful changes, we sync up the record
-  useEffect(() => {
-    const record = flatRecordToRecordType(flatRecord)
-    setRecord(record)
-    // TODO Debugging until this is tested
+  // // When we have meaningful changes, we sync up the record
+  // useEffect(() => {
+  //   const record = flatRecordToRecordType(flatRecord)
+  //   setRecord(record)
+  //   // TODO Debugging until this is tested
+  //   console.log(flatRecord)
+  //   console.log(record)
+  // }, [flatRecord, setRecord])
+
+  // TODO Debugging until this is tested
+  const previousFlatRecord = usePrevious(flatRecord)
+  const changedPaths = _.reduce(
+    _.union(_.keys(flatRecord), _.keys(previousFlatRecord)),
+    (changedPaths: string[], key) => {
+      if (previousFlatRecord && flatRecord[key] !== previousFlatRecord[key]) {
+        return changedPaths.concat(key)
+      }
+      return changedPaths
+    },
+    []
+  )
+  if (!_.isEqual(changedPaths, [])) {
     console.log(flatRecord)
-    console.log(record)
-  }, [flatRecord, setRecord])
+  }
 
   // This can happen when editing forms live
   if (form === undefined) return null
