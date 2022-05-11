@@ -40,7 +40,7 @@ export const useInfo = () => {
         description,
       })
     },
-  ]
+  ] as const
 }
 
 export function handleStandardErrors(

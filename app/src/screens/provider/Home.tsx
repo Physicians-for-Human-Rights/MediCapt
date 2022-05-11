@@ -1,27 +1,9 @@
 import React from 'react'
-import {
-  Box,
-  HStack,
-  Icon,
-  Text,
-  VStack,
-  Center,
-  Button,
-  Pressable,
-  Divider,
-  Hidden,
-  Square,
-  Circle,
-  FlatList,
-  useBreakpointValue,
-} from 'native-base'
+import { VStack, Center, FlatList, useBreakpointValue } from 'native-base'
 import BigTileButton from 'components/BigTileButton'
 import { MaterialIcons } from '@expo/vector-icons'
 import DashboardLayout from 'components/DashboardLayout'
-import {
-  RootStackScreenProps,
-  RootStackParamList,
-} from 'utils/formDesigner/navigation'
+import { RootStackScreenProps } from 'utils/formDesigner/navigation'
 import { useUser } from 'utils/store'
 
 const options = [

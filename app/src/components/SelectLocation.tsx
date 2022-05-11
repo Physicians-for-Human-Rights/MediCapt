@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Select, ISelectProps, ISelectItemProps } from 'native-base'
 import { t } from 'i18n-js'
 import _ from 'lodash'
@@ -32,7 +32,8 @@ export default function SelectLocation({
         selectedValue={value}
         placeholder={placeholder}
         onValueChange={setValue}
-        {...props}
+        // TODO: Props causing crash in Android version
+        // {...props}
       >
         {any ? (
           <Select.Item

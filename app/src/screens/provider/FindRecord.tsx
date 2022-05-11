@@ -6,8 +6,12 @@ import { RecordMetadata } from 'utils/types/recordMetadata'
 import { useInfo, handleStandardErrors } from 'utils/errors'
 import { findRecords } from 'api/provider'
 import Loading from 'components/Loading'
+import { RootStackScreenProps } from 'utils/provider/navigation'
 
-export default function RecordList({ route, navigation }: any) {
+export default function RecordList({
+  route,
+  navigation,
+}: RootStackScreenProps<'FindRecord'>) {
   const [records, setRecords] = useState([] as RecordMetadata[])
   const [nextKey, setNextKey] = useState(undefined as any)
   const [filterCountry, setFilterCountry] = useState('')

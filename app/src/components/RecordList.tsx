@@ -6,7 +6,6 @@ import {
   VStack,
   ScrollView,
   Pressable,
-  Input,
   Stack,
   Center,
   Button,
@@ -22,8 +21,6 @@ import { RecordMetadata } from 'utils/types/recordMetadata'
 import { FormMetadata } from 'utils/types/formMetadata'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import SelectLocation from 'components/SelectLocation'
-import AnyCountry from 'components/AnyCountry'
-import Language from 'components/Language'
 
 export function ListItem({
   item,

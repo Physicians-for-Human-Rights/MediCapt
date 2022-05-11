@@ -6,10 +6,14 @@ import { FormMetadata } from 'utils/types/formMetadata'
 import { useInfo, handleStandardErrors } from 'utils/errors'
 import { findForms } from 'api/provider'
 import Loading from 'components/Loading'
+import { RootStackScreenProps } from 'utils/provider/navigation'
 
-export default function FindForm({ route, navigation }: any) {
+export default function FindForm({
+  route,
+  navigation,
+}: RootStackScreenProps<'FindForm'>) {
   const [forms, setForms] = useState([] as FormMetadata[])
-  const [nextKey, setNextKey] = useState(undefined as any)
+  const [nextKey, setNextKey] = useState(undefined as undefined | string)
   const [filterCountry, setFilterCountry] = useState('')
   const [filterLanguage, setFilterLanguage] = useState('')
   const [filterLocationID, setFilterLocationID] = useState('')

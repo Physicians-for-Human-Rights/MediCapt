@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { VStack } from 'native-base'
-import useMap from 'react-use/lib/useMap'
 import _ from 'lodash'
 import Form from 'components/Form'
 import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/provider/navigation'
-import { FormType } from 'utils/types/form'
 import {
   getRecord,
   getForm,
@@ -14,18 +12,12 @@ import {
   updateRecord,
   sealRecord,
 } from 'api/provider'
-import {
-  FormMetadata,
-  FormManifest,
-  formManifestSchema,
-  FormManifestWithData,
-} from 'utils/types/formMetadata'
+import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
 import {
   addOrReplaceFileToManifestByFilename,
   makeManifestEntry,
   fetchManifestContents,
 } from 'utils/manifests'
-import { blobToBase64 } from 'utils/data'
 import Loading from 'components/Loading'
 import { RecordType } from 'utils/types/record'
 import {

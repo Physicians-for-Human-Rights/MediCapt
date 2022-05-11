@@ -278,7 +278,8 @@ export default function AnyCountry({
       selectedValue={value}
       placeholder={placeholder}
       onValueChange={setValue}
-      {...props}
+      // TODO: Props causing crash in Android version
+      // {...props}
     >
       {any ? (
         <Select.Item key={'__any__'} label={t(any)} value={''} {...itemProps} />

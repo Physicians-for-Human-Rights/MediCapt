@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
   Box,
   HStack,
@@ -6,7 +6,6 @@ import {
   VStack,
   ScrollView,
   Pressable,
-  Input,
   Stack,
   Center,
   Button,
@@ -281,7 +280,15 @@ export default function FormList({
           <ScrollView>
             <Box position="relative" display={{ md: 'none', base: 'flex' }}>
               {forms.map((item: FormMetadata, index: number) => {
-                return <ListItem item={item} key={index} onPress={selectItem} />
+                // TODO ListItem not clickable
+                // return <ListItem item={item} key={index} onPress={selectItem} />
+                return (
+                  <ListItemDesktop
+                    item={item}
+                    key={index}
+                    selectItem={selectItem}
+                  />
+                )
               })}
             </Box>
             <Box display={{ md: 'flex', base: 'none' }}>

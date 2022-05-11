@@ -1,14 +1,7 @@
 import React from 'react'
 import { Select, ISelectProps, ISelectItemProps } from 'native-base'
-import { t, locale } from 'i18n-js'
+import { t } from 'i18n-js'
 import _ from 'lodash'
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  Feather,
-  MaterialIcons,
-} from '@expo/vector-icons'
 
 export const languages = ['en', 'fr']
 
@@ -35,7 +28,8 @@ export default function Language({
       selectedValue={value}
       placeholder={placeholder}
       onValueChange={setValue}
-      {...props}
+      // TODO: Props causing crash in Android version
+      // {...props}
     >
       {any ? (
         <Select.Item key={'__any__'} label={t(any)} value={''} {...itemProps} />

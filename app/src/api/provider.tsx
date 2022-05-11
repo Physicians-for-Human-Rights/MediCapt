@@ -67,16 +67,16 @@ export async function getForm(formUUID: string): Promise<FormGetServer> {
 }
 
 export async function findForms(
-  pre: () => any,
-  post: () => any,
+  pre: () => void,
+  post: () => void,
   filterCountry: string | undefined,
   filterLanguage: string | undefined,
   filterLocationID: string | undefined,
   filterSearchType: string | undefined,
   filterText: string | undefined,
-  handleErrors: (err: any) => any,
-  setForms: (users: FormMetadata[]) => any,
-  setNextKey: (key: string) => any
+  handleErrors: (err: any) => void,
+  setForms: (users: FormMetadata[]) => void,
+  setNextKey: (key: string) => void
 ) {
   try {
     pre()

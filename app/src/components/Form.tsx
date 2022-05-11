@@ -26,7 +26,7 @@ import { allFormRenderCommands } from 'utils/formRendering/commands'
 import { renderCommand } from 'utils/formRendering/renderer'
 import { transformToLayout } from 'utils/formRendering/transformations'
 import { nameFormSections, isSectionComplete } from 'utils/forms'
-import { flatRecordToRecordType, recordTypeToFlatRecord } from 'utils/records'
+import { recordTypeToFlatRecord } from 'utils/records'
 import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
 import { RecordType } from 'utils/types/record'
 import {
