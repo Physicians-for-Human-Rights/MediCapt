@@ -97,12 +97,6 @@ export default function Form({
     [form, formSections, flatRecord]
   )
 
-  // const onSaveAndExit = useCallback(() => {
-  //   const record = flatRecordToRecordType(flatRecord)
-  //   console.log(record)
-  //   // onCancel()
-  // }, [flatRecord])
-
   const layoutType = useBreakpointValue({
     base: 'phone',
     md: 'compact',
@@ -184,29 +178,28 @@ export default function Form({
     }
   }, [recordManifest, setFlatRecord])
 
-  // // When we have meaningful changes, we sync up the record
-  // useEffect(() => {
-  //   const record = flatRecordToRecordType(flatRecord)
-  //   setRecord(record)
-  //   // TODO Debugging until this is tested
-  //   console.log(flatRecord)
-  //   console.log(record)
-  // }, [flatRecord, setRecord])
-
   // TODO Debugging until this is tested
   const previousFlatRecord = usePrevious(flatRecord)
   const changedPaths = _.reduce(
     _.union(_.keys(flatRecord), _.keys(previousFlatRecord)),
     (changedPaths: string[], key) => {
-      if (previousFlatRecord && flatRecord[key] !== previousFlatRecord[key]) {
+      if (
+        previousFlatRecord &&
+        !_.isEqual(flatRecord[key], previousFlatRecord[key])
+      ) {
         return changedPaths.concat(key)
       }
       return changedPaths
     },
     []
   )
-  if (!_.isEqual(changedPaths, [])) {
+  if (!_.isEmpty(changedPaths)) {
+    const record = flatRecordToRecordType(flatRecord)
+    setRecord(record)
+    console.log(changedPaths)
     console.log(flatRecord)
+    console.log(record)
+    console.log(recordTypeToFlatRecord(record))
   }
 
   // This can happen when editing forms live
