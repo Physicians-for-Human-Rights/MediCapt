@@ -199,7 +199,12 @@ export default function Form({
     console.log(changedPaths)
     console.log(flatRecord)
     console.log(record)
-    console.log(recordTypeToFlatRecord(record))
+    // TODO Remove after testing
+    if (!_.isEqual(flatRecord, recordTypeToFlatRecord(record))) {
+      console.error(
+        'recordTypeToFlatRecord(record) is not the same as flatRecord!'
+      )
+    }
   }
 
   // This can happen when editing forms live
