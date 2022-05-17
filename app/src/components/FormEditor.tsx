@@ -9,7 +9,10 @@ import Form from 'components/Form'
 // @ts-ignore typescript doesn't support .web.js and .native.js files
 import CodeEditor from './CodeEditor'
 import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
-import { lookupManifest } from 'utils/manifests'
+import {
+  lookupManifest,
+  addOrReplaceFileToManifestByFilename,
+} from 'utils/manifests'
 import { useInfo } from 'utils/errors'
 
 const FormMemo = React.memo(Form)
@@ -67,6 +70,7 @@ export default function FormEditor({
     sections: [],
   } as FormType)
   const [rawContents, setRawContents] = React.useState(contents)
+  const [localManifest, setLocalManifest] = React.useState(manifest)
 
   // TODO Is there a cleaner way to deal with getting a reference to the raw
   // contents? Could we merge rawContentsRef and setRawContents?
@@ -74,6 +78,18 @@ export default function FormEditor({
   useEffect(() => {
     rawContentsRef.current = rawContents
   }, [rawContents])
+
+  useEffect(() => {
+    setLocalManifest(
+      addOrReplaceFileToManifestByFilename(
+        manifest,
+        JSON.stringify(localForm),
+        'form.yaml',
+        'text/yaml',
+        false
+      )
+    )
+  }, [localForm, manifest])
 
   // Pull the initial contents from the manifest
   useEffect(() => {
@@ -160,10 +176,12 @@ export default function FormEditor({
           w={Math.round(window.width * (1 - ratio - padding)) + 'px'}
         >
           <FormMemo
-            files={{}}
-            form={localForm}
+            // @ts-ignore TODO partial forms should be ok
+            formMetadata={formMetadata}
+            formManifest={localManifest}
             noRenderCache={true}
             onCancel={onCancel}
+            disableMenu={true}
           />
         </Box>
       </HStack>

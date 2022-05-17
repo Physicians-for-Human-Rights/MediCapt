@@ -26,7 +26,7 @@ import { allFormRenderCommands } from 'utils/formRendering/commands'
 import { renderCommand } from 'utils/formRendering/renderer'
 import { transformToLayout } from 'utils/formRendering/transformations'
 import { nameFormSections, isSectionComplete } from 'utils/forms'
-import { recordTypeToFlatRecord } from 'utils/records'
+import { recordTypeToFlatRecord, flatRecordToRecordType } from 'utils/records'
 import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
 import { RecordType } from 'utils/types/record'
 import {
@@ -39,23 +39,25 @@ import yaml from 'js-yaml'
 export default function Form({
   formMetadata,
   formManifest,
-  recordMetadata,
-  recordManifest,
-  setRecord,
+  recordMetadata = undefined,
+  recordManifest = undefined,
+  setRecord = () => null,
   noRenderCache = false,
   onCancel,
   onSaveAndExit,
   onComplete,
+  disableMenu = false,
 }: {
   formMetadata: FormMetadata
   formManifest: FormManifestWithData
-  recordMetadata: Partial<RecordMetadata>
-  recordManifest: RecordManifestWithData
-  setRecord: (record: RecordType) => void
+  recordMetadata?: Partial<RecordMetadata>
+  recordManifest?: RecordManifestWithData
+  setRecord?: (record: RecordType) => void
   noRenderCache?: boolean
   onCancel: () => void
   onSaveAndExit: () => void
   onComplete: () => void
+  disableMenu?: boolean
 }) {
   const [form, setForm] = React.useState({} as FormType)
   const [flatRecord, { set: setFlatRecordValue, setAll: setFlatRecord }] =
@@ -114,7 +116,10 @@ export default function Form({
         allFormRenderCommands(
           sectionContent,
           form.common,
-          _.concat(formManifest.contents || [], recordManifest.contents || []),
+          _.concat(
+            formManifest.contents || [],
+            (recordManifest && recordManifest.contents) || []
+          ),
           flatRecord
         ),
         layoutType
@@ -163,6 +168,7 @@ export default function Form({
 
   // Pull the initial contents from the record manifest
   useEffect(() => {
+    if (!recordManifest) return
     try {
       const recordFile = lookupManifest(
         recordManifest,
@@ -220,7 +226,7 @@ export default function Form({
         isSectionCompleted={isSectionCompleteList[currentSection]}
         isMenuVisible={isMenuVisible}
       />
-      {isMenuVisible ? (
+      {isMenuVisible && !disableMenu ? (
         <FormMenu
           formSections={formSections}
           changeSection={setSection}

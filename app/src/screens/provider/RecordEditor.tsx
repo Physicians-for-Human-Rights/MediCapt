@@ -95,7 +95,7 @@ export default function RecordEditor({
         null) as FormMetadata | null
   )
   const [formManifest, setFormManifest] = React.useState(
-    {} as FormManifestWithData
+    null as null | FormManifestWithData
   )
 
   // This is how we keep track of whether the record has been changed.
