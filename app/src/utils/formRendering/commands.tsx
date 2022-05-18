@@ -49,8 +49,8 @@ export function allFormRenderCommands(
             type: 'divider',
             thickness: 1,
             w: '50%',
-            valuePath: recordValuePath.concat('divider'),
-            key: _.join(recordValuePath.concat('divider'), '.'),
+            valuePath: recordValuePath.concat('divider-pre'),
+            key: _.join(recordValuePath.concat('divider-pre'), '.'),
             disable: skipped,
           })
         }
@@ -418,8 +418,8 @@ export function allFormRenderCommands(
         renderCommands.push({
           type: 'divider',
           thickness: 1,
-          valuePath: recordValuePath.concat('divider'),
-          key: _.join(recordValuePath.concat('divider'), '.'),
+          valuePath: recordValuePath.concat('divider-post'),
+          key: _.join(recordValuePath.concat('divider-post'), '.'),
           disable: isSkipped(flatRecord, recordValuePath),
         })
       }

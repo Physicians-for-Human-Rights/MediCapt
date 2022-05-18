@@ -176,7 +176,7 @@ export function getFlatRecordValue(
 
 export function flatRecordToRecordType(flatRecord: FlatRecord): RecordType {
   const record = { sections: {} }
-  _.map(flatRecord, (v, p) => _.set(record, p, v))
+  _.map(_.cloneDeep(flatRecord), (v, p) => _.set(record, p, v))
   return recordTypeSchema.parse(record)
 }
 
