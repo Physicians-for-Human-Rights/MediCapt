@@ -175,8 +175,11 @@ export function getFlatRecordValue(
 }
 
 export function flatRecordToRecordType(flatRecord: FlatRecord): RecordType {
-  const record = { sections: {} }
-  _.map(flatRecord, (v, p) => _.set(record, p, v))
+  const record = {
+    'storage-version': '1.0.0',
+    sections: {},
+  }
+  _.map(_.cloneDeep(flatRecord), (v, p) => _.set(record, p, v))
   return recordTypeSchema.parse(record)
 }
 
@@ -193,13 +196,13 @@ export function recordTypeToFlatRecord(record: RecordType): FlatRecord {
       switch (part.type) {
         case 'repeat-list': {
           const { repeat, ...terminal } = part
-          flatRecord[_.join(path.concat(partName))] = terminal
+          flatRecord[_.join(path.concat(partName), '.')] = terminal
           if (repeat) flattenParts(repeat, path.concat(partName, 'repeat'))
           break
         }
         case 'list-with-parts': {
           const { parts, 'list-parts': listParts, ...terminal } = part
-          flatRecord[_.join(path.concat(partName))] = terminal
+          flatRecord[_.join(path.concat(partName), '.')] = terminal
           if (listParts)
             flattenParts(listParts, path.concat(partName, 'list-parts'))
           if (parts) flattenParts(parts, path.concat(partName, 'parts'))
@@ -207,7 +210,8 @@ export function recordTypeToFlatRecord(record: RecordType): FlatRecord {
         }
         default: {
           const { parts, ...terminal } = part
-          if (terminal) flatRecord[_.join(path.concat(partName))] = terminal
+          if (!_.isEmpty(terminal))
+            flatRecord[_.join(path.concat(partName), '.')] = terminal
           if (parts) flattenParts(parts, path.concat(partName, 'parts'))
         }
       }

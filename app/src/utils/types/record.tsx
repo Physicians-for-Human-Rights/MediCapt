@@ -242,7 +242,7 @@ export const recordPartSchema: z.ZodType<RecordPart> = z.lazy(() =>
   ])
 )
 export const recordTypeSchema = z.object({
-  'storage-version': z.literal('1.0.0').default('1.0.0'),
+  'storage-version': z.literal('1.0.0'),
   sections: z.record(
     z.object({
       parts: z.record(recordPartSchema),
