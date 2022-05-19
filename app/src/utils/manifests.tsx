@@ -46,13 +46,13 @@ export function lookupContentsByNameAndType(
 
 export function md5(data: string): string {
   return CryptoJS.enc.Base64.stringify(
-    CryptoJS.MD5(CryptoJS.enc.Latin1.parse(data))
+    CryptoJS.MD5(CryptoJS.enc.Utf8.parse(data))
   )
 }
 
 export function sha256(data: string): string {
   return CryptoJS.enc.Base64.stringify(
-    CryptoJS.SHA256(CryptoJS.enc.Latin1.parse(data))
+    CryptoJS.SHA256(CryptoJS.enc.Utf8.parse(data))
   )
 }
 
