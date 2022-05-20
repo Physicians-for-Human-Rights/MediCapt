@@ -96,7 +96,7 @@ export function ListItemDesktop({
               {t('tag.' + s)}
             </Text>
           ))}
-          <Text key={100}>{item.formID}</Text>
+          <Text>{item.formID}</Text>
         </VStack>
 
         <VStack w="20%">

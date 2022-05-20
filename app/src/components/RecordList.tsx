@@ -88,18 +88,21 @@ export function ListItemDesktop({
             {item.patientGender ? t(item.patientGender) : ''}
             {item.patientAge ? t(item.patientAge) : ''}
           </Text>
-          <Text key={100}>{item.recordID}</Text>
+          <Text>{item.recordID}</Text>
         </VStack>
 
         <VStack w="20%">
-          {_.split(item.tags, ',').map((s: string, n: number) => (
-            <Text isTruncated key={n}>
-              {t('tag.' + s)}
-            </Text>
-          ))}
-          <Text key={100}>TODO Form name</Text>
-          <Text key={100}>{item.formID}</Text>
-          <Text key={100}>{item.caseId ? item.caseId : ''}</Text>
+          {_.remove(
+            _.split(item.tags, ',').map((s: string, n: number) => (
+              <Text isTruncated key={n}>
+                {t('tag.' + s)}
+              </Text>
+            )),
+            ''
+          )}
+          <Text>TODO Form name</Text>
+          <Text>{item.formID}</Text>
+          <Text>{item.caseId ? item.caseId : ''}</Text>
         </VStack>
 
         <VStack w="20%">
