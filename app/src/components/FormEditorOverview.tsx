@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   HStack,
   VStack,
@@ -41,8 +41,67 @@ import {
   md5,
   lookupManifestSHA256,
   filetypeIsDataURI,
+  isInManifest,
+  lookupManifest,
 } from 'utils/manifests'
 import { dataURItoBlob } from 'utils/data'
+import yaml from 'js-yaml'
+
+export function listDuplicates<T>(arr: T[]): T[] {
+  return _.uniq(
+    _.filter(arr, (val, i, iteratee) => _.includes(iteratee, val, i + 1))
+  )
+}
+
+export function getFormPathsAndInfo(manifest: FormManifestWithData) {
+  const f = lookupManifest(
+    manifest,
+    e => e.filetype === 'text/yaml' && e.filename === 'form.yaml'
+  )
+  if (f) {
+    let pathsWithPeriods: { prefix: string; path: string }[] = []
+    const allPaths: string[] = []
+    function pathsPartMap(prefix: string, parts: any) {
+      for (const key in parts) {
+        if (_.includes(key, '.')) pathsWithPeriods.push({ prefix, path: key })
+        paths(prefix + '.' + key, parts[key])
+      }
+    }
+    function paths(prefix: string, data: any) {
+      if (_.isArray(data)) {
+        for (const e of data) {
+          paths(prefix, e)
+        }
+      } else if (_.isObject(data)) {
+        if ('type' in data) {
+          allPaths.push(prefix)
+          if (
+            'show-parts-when-true' in data &&
+            _.isArray(data['show-parts-when-true'])
+          ) {
+            paths(prefix + '.parts', data['show-parts-when-true'])
+          }
+          if ('list-with-parts' === data.type) {
+            pathsPartMap(prefix, data.options)
+          }
+          if ('parts' in data && _.isArray(data.parts)) {
+            pathsPartMap(prefix, data.parts)
+          }
+        } else {
+          for (const key in data) {
+            if (_.includes(key, '.'))
+              pathsWithPeriods.push({ prefix, path: key })
+            paths(prefix ? prefix + '.' + key : key, data[key])
+          }
+        }
+      }
+    }
+    const data = JSON.parse(f.data)
+    paths('', data)
+    return { paths: allPaths, pathsWithPeriods }
+  }
+  return { paths: [], pathsWithPeriods: [] }
+}
 
 export default function FormEditorOverview({
   formMetadata,
@@ -63,6 +122,16 @@ export default function FormEditorOverview({
   const standardReporters = { setWaiting, error, warning, success }
 
   const createMode = !(formMetadata.formUUID && formMetadata.formUUID !== '')
+
+  const [duplicatePaths, setDuplicatePaths] = useState([] as string[])
+  const [pathsWithPeriods, setPathsWithPeriods] = useState(
+    [] as { prefix: string; path: string }[]
+  )
+  useEffect(() => {
+    const r = getFormPathsAndInfo(manifest)
+    setDuplicatePaths(listDuplicates(r.paths))
+    setPathsWithPeriods(r.pathsWithPeriods)
+  }, [manifest])
 
   const handleCreateForm = () =>
     standardHandler(
@@ -281,6 +350,73 @@ export default function FormEditorOverview({
           }
         />
       </HStack>
+      <VStack mt={10} space={3} mb={5}>
+        <Badge
+          variant="solid"
+          bg="coolGray.400"
+          alignSelf="flex-start"
+          _text={{
+            color: 'coolGray.50',
+            fontWeight: 'bold',
+            fontSize: 'xs',
+          }}
+        >
+          FORM CHECKLIST
+        </Badge>
+        <NecessaryItem
+          isDone={isInManifest(manifest, e => e.filename == 'form.yaml')}
+          todoText="No form body filled out"
+          doneText="Form body exists"
+          size={4}
+          optional={false}
+          help="Click the editor tab and fill in the form body"
+        />
+        <NecessaryItem
+          isDone={false}
+          todoText="Using images that aren't uploaded"
+          doneText="All referenced images exist"
+          size={4}
+        />
+        <NecessaryItem
+          isDone={_.isEmpty(pathsWithPeriods)}
+          todoText="Form has paths with periods in it"
+          doneText="From paths have no periods"
+          size={4}
+          helpHeader="Paths with periods"
+          help={
+            'Your form has a path with a period. Any text in a form that comes before a colon is part of a path and cannot have a period in it. The following paths have periods in them.' +
+            JSON.stringify(pathsWithPeriods)
+          }
+        />
+        <NecessaryItem
+          isDone={_.isEmpty(duplicatePaths)}
+          todoText="From has duplicate paths"
+          doneText="Form paths are unique"
+          size={4}
+          helpHeader="Dupicate form paths"
+          help={
+            'Your form has duplicate paths in the definition. You must rename at least one these. ' +
+            duplicatePaths
+          }
+        />
+        <NecessaryItem
+          isDone={isInManifest(manifest, e => e.filename == 'form.pdf')}
+          todoText="No PDF uploaded"
+          doneText="PDF uploaded"
+          size={4}
+          optional={true}
+          help="Without a pdf form to fill out we will still generate a pdf with automatic formatting"
+        />
+        {isInManifest(manifest, e => e.filename == 'form.pdf') && (
+          <NecessaryItem
+            isDone={false}
+            todoText="Some parts of the PDF not filled out"
+            doneText="All PDF fields covered"
+            size={4}
+            help="TODO implement this"
+          />
+        )}
+      </VStack>
       {createMode ? (
         <HStack my={5} justifyContent="center">
           <Button
@@ -319,44 +455,6 @@ export default function FormEditorOverview({
           </Tooltip>
         </HStack>
       )}
-      <VStack mt={10} space={3}>
-        <Badge
-          variant="solid"
-          bg="coolGray.400"
-          alignSelf="flex-start"
-          _text={{
-            color: 'coolGray.50',
-            fontWeight: 'bold',
-            fontSize: 'xs',
-          }}
-        >
-          FORM CHECKLIST
-        </Badge>
-        <NecessaryItem
-          isDone={false}
-          todoText="No PDF uploaded"
-          doneText="Proper pdf uploaded"
-          size={4}
-        />
-        <NecessaryItem
-          isDone={false}
-          todoText="Using images that aren't uploaded"
-          doneText="All referenced images exist"
-          size={4}
-        />
-        <NecessaryItem
-          isDone={false}
-          todoText="Errors in the form definition"
-          doneText="Form definition is valid"
-          size={4}
-        />
-        <NecessaryItem
-          isDone={false}
-          todoText="Some parts of the PDF not filled out"
-          doneText="All PDF fields covered"
-          size={4}
-        />
-      </VStack>
     </VStack>
   )
 }

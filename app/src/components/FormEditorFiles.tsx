@@ -158,6 +158,7 @@ export default function FormEditorFiles({
                 todoText="PDF has no annotations!"
                 doneText="PDF has annotations"
                 size={4}
+                optional={false}
               />
               <Popover
                 trigger={triggerProps => {
