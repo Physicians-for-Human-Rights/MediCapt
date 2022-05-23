@@ -27,13 +27,22 @@ import { UserPoolId, userFullName } from 'utils/userTypes'
 
 export function ListItem({
   item,
-  onPress,
+  selectItem,
+  forms,
+  users,
 }: {
   item: RecordMetadata
-  onPress: (i: RecordMetadata) => any
+  selectItem: (i: RecordMetadata) => any
+  forms: Record<string, FormMetadata>
+  users: Record<string, Partial<UserType>>
 }) {
   return (
-    <Pressable p={2}>
+    <Pressable
+      p={2}
+      flex={1}
+      _hover={{ bg: 'coolGray.100' }}
+      onPress={() => selectItem(item)}
+    >
       <HStack justifyContent="space-between" w="100%">
         <HStack alignItems="center" space={4} w="70%">
           <VStack>
@@ -43,7 +52,7 @@ export function ListItem({
               fontSize="sm"
               _light={{ color: 'coolGray.900' }}
             >
-              {item.title}
+              {item.patientName || t('record.missing-patient-name')}
             </Text>
             <Text
               pl={3}
@@ -51,14 +60,42 @@ export function ListItem({
               fontSize="sm"
               _light={{ color: 'coolGray.900' }}
             >
-              {item.subtitle}
+              {item.patientGender ? t(item.patientGender) : ''}
+              {item.patientAge ? t(item.patientAge) : ''}
             </Text>
+            <Text
+              pl={3}
+              isTruncated
+              fontSize="sm"
+              _light={{ color: 'coolGray.900' }}
+            >
+              {forms[item.formUUID]
+                ? forms[item.formUUID].title
+                : 'Unknown form'}
+            </Text>
+            {forms[item.formUUID]
+              ? _.filter(
+                  _.split(forms[item.formUUID].tags, ','),
+                  e => e !== ''
+                ).map((s: string, n: number) => (
+                  <Text isTruncated key={n} pl={3}>
+                    {t('tag.' + s)}
+                  </Text>
+                ))
+              : ''}
           </VStack>
         </HStack>
         <VStack w="30%">
           <Text isTruncated fontSize="sm" _light={{ color: 'coolGray.900' }}>
-            {formatDate(item.createdDate, 'PPP')}
+            {formatDate(item.lastChangedDate, 'PPP')}
           </Text>
+          <Text isTruncated>
+            {userFullName(
+              users[item.lastChangedByUUID],
+              item.lastChangedByUUID
+            )}
+          </Text>
+          <Text>{item.caseId ? item.caseId : ''}</Text>
           <Text isTruncated fontSize="sm" _light={{ color: 'coolGray.900' }}>
             {item.recordID}
           </Text>
@@ -99,14 +136,16 @@ export function ListItemDesktop({
         </VStack>
 
         <VStack w="20%">
-          {_.remove(
-            _.split(item.tags, ',').map((s: string, n: number) => (
-              <Text isTruncated key={n}>
-                {t('tag.' + s)}
-              </Text>
-            )),
-            ''
-          )}
+          {forms && forms[item.formUUID]
+            ? _.filter(
+                _.split(forms[item.formUUID].tags, ','),
+                e => e !== ''
+              ).map((s: string, n: number) => (
+                <Text isTruncated key={n}>
+                  {t('tag.' + s)}
+                </Text>
+              ))
+            : ''}
           <Text>
             {forms[item.formUUID] ? forms[item.formUUID].title : 'Unknown form'}
           </Text>
@@ -339,7 +378,15 @@ export default function RecordList({
           <ScrollView>
             <Box position="relative" display={{ md: 'none', base: 'flex' }}>
               {records.map((item: RecordMetadata, index: number) => {
-                return <ListItem item={item} key={index} onPress={selectItem} />
+                return (
+                  <ListItem
+                    item={item}
+                    key={index}
+                    selectItem={selectItem}
+                    forms={forms}
+                    users={users}
+                  />
+                )
               })}
             </Box>
             <Box display={{ md: 'flex', base: 'none' }}>
