@@ -35,25 +35,27 @@ export default function SelectLocation({
         // TODO: Props causing crash in Android version
         // {...props}
       >
-        {any ? (
-          <Select.Item
-            key={'__any__'}
-            label={t(any)}
-            value={''}
-            {...itemProps}
-          />
-        ) : (
-          <></>
+        {_.concat(
+          any
+            ? [
+                <Select.Item
+                  key={'__any__'}
+                  label={t(any)}
+                  value={''}
+                  {...itemProps}
+                />,
+              ]
+            : [],
+          _.map(locations, e => (
+            <Select.Item
+              size={size}
+              key={_.isString(e) ? e : e.locationID}
+              label={_.isString(e) ? e : e.shortName}
+              value={_.isString(e) ? e : e.locationID}
+              {...itemProps}
+            />
+          ))
         )}
-        {_.map(locations, e => (
-          <Select.Item
-            size={size}
-            key={_.isString(e) ? e : e.locationID}
-            label={_.isString(e) ? e : e.shortName}
-            value={_.isString(e) ? e : e.locationID}
-            {...itemProps}
-          />
-        ))}
       </Select>
     )
   } else {

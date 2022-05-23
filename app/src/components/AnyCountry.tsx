@@ -281,20 +281,27 @@ export default function AnyCountry({
       // TODO: Props causing crash in Android version
       // {...props}
     >
-      {any ? (
-        <Select.Item key={'__any__'} label={t(any)} value={''} {...itemProps} />
-      ) : (
-        <></>
+      {_.concat(
+        any
+          ? [
+              <Select.Item
+                key={'__any__'}
+                label={t(any)}
+                value={''}
+                {...itemProps}
+              />,
+            ]
+          : [],
+        _.map(coutries, e => (
+          <Select.Item
+            size="md"
+            key={e}
+            label={t('country.' + e)}
+            value={e}
+            {...itemProps}
+          />
+        ))
       )}
-      {_.map(coutries, e => (
-        <Select.Item
-          size="md"
-          key={e}
-          label={t('country.' + e)}
-          value={e}
-          {...itemProps}
-        />
-      ))}
     </Select>
   )
 }

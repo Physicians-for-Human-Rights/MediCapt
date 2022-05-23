@@ -31,19 +31,26 @@ export default function Language({
       // TODO: Props causing crash in Android version
       // {...props}
     >
-      {any ? (
-        <Select.Item key={'__any__'} label={t(any)} value={''} {...itemProps} />
-      ) : (
-        <></>
+      {_.concat(
+        any
+          ? [
+              <Select.Item
+                key={'__any__'}
+                label={t(any)}
+                value={''}
+                {...itemProps}
+              />,
+            ]
+          : [],
+        languages.map(e => (
+          <Select.Item
+            key={e}
+            label={t('languages.' + e)}
+            value={e}
+            {...itemProps}
+          />
+        ))
       )}
-      {languages.map(e => (
-        <Select.Item
-          key={e}
-          label={t('languages.' + e)}
-          value={e}
-          {...itemProps}
-        />
-      ))}
     </Select>
   )
 }
