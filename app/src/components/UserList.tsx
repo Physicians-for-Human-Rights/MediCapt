@@ -20,7 +20,7 @@ import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import { UserType } from 'utils/types/user'
-import { UserTypeList } from 'utils/userTypes'
+import { UserKindList } from 'utils/userTypes'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
@@ -188,7 +188,7 @@ export default function UserList({
             onValueChange={setFilterUserType}
             placeholder={t('user.select-user-type')}
           >
-            {UserTypeList.map(e => (
+            {UserKindList.map(e => (
               <Select.Item key={e} label={t('user.' + e)} value={e} />
             ))}
           </Select>
