@@ -72,7 +72,7 @@ paths:
         405:
           description: Validation exception
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerUpdateRecordById}
+        uri: ${lambda_uri_providerCommitRecordById}
         responses:
           default:
             statusCode: "200"

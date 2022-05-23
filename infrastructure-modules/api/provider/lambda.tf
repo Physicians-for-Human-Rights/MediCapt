@@ -12,6 +12,10 @@ locals {
       path = "user@byId@{poolId}@{username}/get"
       reserved_concurrent_executions = null
     }
+    providerGetUserByUUID = {
+      path = "user@byUUID@{poolId}@{uuid}/get"
+      reserved_concurrent_executions = null
+    }
     providerGetLocationById = {
       path = "location@byId@{locationId}/get"
       reserved_concurrent_executions = null

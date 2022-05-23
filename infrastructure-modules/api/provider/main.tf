@@ -26,6 +26,7 @@ resource "aws_api_gateway_rest_api" "provider" {
       lambda_uri_providerGetForms              = aws_lambda_function.lambdas["providerGetForms"].invoke_arn
       lambda_uri_providerGetFormById           = aws_lambda_function.lambdas["providerGetFormById"].invoke_arn
       lambda_uri_providerGetUserById           = aws_lambda_function.lambdas["providerGetUserById"].invoke_arn
+      lambda_uri_providerGetUserByUUID         = aws_lambda_function.lambdas["providerGetUserByUUID"].invoke_arn
       lambda_uri_providerGetLocationById       = aws_lambda_function.lambdas["providerGetLocationById"].invoke_arn
       lambda_uri_providerCreateRecord          = aws_lambda_function.lambdas["providerCreateRecord"].invoke_arn
       lambda_uri_providerGetRecords            = aws_lambda_function.lambdas["providerGetRecords"].invoke_arn
@@ -52,6 +53,7 @@ resource "aws_api_gateway_deployment" "api" {
     aws_lambda_function.lambdas["providerGetForms"],
     aws_lambda_function.lambdas["providerGetFormById"],
     aws_lambda_function.lambdas["providerGetUserById"],
+    aws_lambda_function.lambdas["providerGetUserByUUID"],
     aws_lambda_function.lambdas["providerGetLocationById"],
     aws_lambda_function.lambdas["providerCreateRecord"],
     aws_lambda_function.lambdas["providerGetRecords"],
@@ -87,6 +89,7 @@ resource "aws_api_gateway_stage" "api" {
     aws_lambda_function.lambdas["providerGetForms"],
     aws_lambda_function.lambdas["providerGetFormById"],
     aws_lambda_function.lambdas["providerGetUserById"],
+    aws_lambda_function.lambdas["providerGetUserByUUID"],
     aws_lambda_function.lambdas["providerGetLocationById"],
     aws_lambda_function.lambdas["providerCreateRecord"],
     aws_lambda_function.lambdas["providerGetRecords"],

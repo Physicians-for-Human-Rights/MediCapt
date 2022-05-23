@@ -4,4 +4,5 @@ resource "aws_cloudwatch_log_group" "api" {
   tags = {
     stage = var.stage
   }
+  retention_in_days = 90
 }

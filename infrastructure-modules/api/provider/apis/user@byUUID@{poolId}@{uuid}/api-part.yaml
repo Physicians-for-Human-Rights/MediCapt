@@ -42,14 +42,14 @@ security:
 schemes:
 - https
 paths:
-  /provider/user/byId/{poolId}/{username}:
+  /provider/user/byUUID/{poolId}/{uuid}:
     get:
       security:
       - CognitoUserProvider: []
       tags:
       - User
       summary: Get a user by ID
-      operationId: providerGetUserById
+      operationId: providerGetUserByUUID
       produces:
       - application/json
       - application/xml
@@ -59,9 +59,9 @@ paths:
         description: The pool ID of this user
         required: true
         type: string
-      - name: username
+      - name: uuid
         in: path
-        description: ID of the user to return
+        description: UUID of the user to return
         required: true
         type: string
       responses:
@@ -74,7 +74,7 @@ paths:
         404:
           description: User not found
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerGetUserById}
+        uri: ${lambda_uri_providerGetUserByUUID}
         responses:
           default:
             statusCode: "200"

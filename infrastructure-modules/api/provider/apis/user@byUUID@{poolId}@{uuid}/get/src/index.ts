@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { UserType as CognitoUserType } from 'aws-sdk/clients/cognitoidentityserviceprovider'
 import { APIGatewayProxyWithCognitoAuthorizerHandler } from 'aws-lambda'
 import AWS from 'aws-sdk'
 AWS.config.update({
@@ -44,10 +45,10 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
     if (
       event.pathParameters &&
       event.pathParameters.poolId &&
-      event.pathParameters.username
+      event.pathParameters.uuid
     ) {
       var poolId = event.pathParameters.poolId
-      var username = event.pathParameters.username
+      var userUUID = event.pathParameters.uuid
       try {
         var user_pool_id: string
         var image_bucket_id: string
@@ -82,22 +83,27 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       return bad(event.pathParameters, 'Missing event parameters')
     }
 
-    let cognitoUser
+    let cognitoUser: CognitoUserType | null = null
     try {
-      cognitoUser = await cognito
-        .adminGetUser({
+      const r = await cognito
+        .listUsers({
           UserPoolId: user_pool_id,
-          Username: username,
+          // TODO Sanitize this userUUID
+          Filter: 'sub = "' + userUUID + '"',
         })
         .promise()
+      if (r.Users && r.Users.length === 1) {
+        cognitoUser = r.Users[0]
+      } else bad(null, 'Cognito did not return one user for this uuid')
     } catch (e) {
       return bad(e, 'Could not get user from cognito')
     }
 
+    if (!cognitoUser) return bad(null, 'Could not look up cogito user')
     const user = convertCognitoUser(cognitoUser, image_bucket_id, poolId, s3)
 
     return good(user)
   } catch (e) {
-    return bad(e, 'Generic error or user does not exist')
+    return bad(e, 'Generic error')
   }
 }

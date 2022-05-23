@@ -1,6 +1,7 @@
 resource "aws_api_gateway_domain_name" "api_domain" {
   domain_name = "${var.user_type}-api.${var.domain_name}"
   regional_certificate_arn = var.certificate_arn
+  security_policy = "TLS_1_2"
 
   endpoint_configuration {
     types = [var.endpoint_configuration]

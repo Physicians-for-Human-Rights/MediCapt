@@ -45,7 +45,7 @@ resource "aws_s3_bucket" "forms" {
 }
 
 resource "aws_s3_bucket_public_access_block" "forms" {
-  bucket = resource.aws_s3_bucket.forms.id
+  bucket = aws_s3_bucket.forms.id
   block_public_acls   = true
   block_public_policy = true
   ignore_public_acls = true

@@ -91,6 +91,9 @@ resource "aws_api_gateway_stage" "api" {
     destination_arn = aws_cloudwatch_log_group.api.arn
     format				= "$context.error.message,$context.error.messageString,$context.identity.sourceIp,$context.identity.caller,$context.identity.user,$context.requestTime,$context.httpMethod,$context.resourcePath,$context.protocol,$context.status,$context.responseLength,$context.requestId"
   }
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_api_gateway_method_settings" "settings" {
