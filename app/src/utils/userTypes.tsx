@@ -1,7 +1,8 @@
 import Amplify, { Auth } from 'aws-amplify'
 import config from '../../config.js'
+import { UserType } from 'utils/types/user'
 
-export enum UserType {
+export enum UserKind {
   Provider = 'Provider',
   Associate = 'Associate',
   Manager = 'Manager',
@@ -9,25 +10,33 @@ export enum UserType {
   Researcher = 'Researcher',
 }
 
-export const UserTypeNames = {
-  [UserType.Provider]: 'Healthcare provider',
-  [UserType.Associate]: 'Associate',
-  [UserType.Manager]: 'Manager',
-  [UserType.FormDesigner]: 'Form designer',
-  [UserType.Researcher]: 'Researcher',
+export const UserKindNames = {
+  [UserKind.Provider]: 'Healthcare provider',
+  [UserKind.Associate]: 'Associate',
+  [UserKind.Manager]: 'Manager',
+  [UserKind.FormDesigner]: 'Form designer',
+  [UserKind.Researcher]: 'Researcher',
 }
 
-export const UserTypeList = [
-  UserType.Provider,
-  UserType.Associate,
-  UserType.Manager,
-  UserType.FormDesigner,
-  UserType.Researcher,
+export const UserKindList = [
+  UserKind.Provider,
+  UserKind.Associate,
+  UserKind.Manager,
+  UserKind.FormDesigner,
+  UserKind.Researcher,
 ]
 
-export function reconfigureAmplifyForUserType(userType: UserType) {
-  switch (userType) {
-    case UserType.Provider:
+export const UserPoolId = {
+  Provider: config.cognito.provider.USER_POOL_ID,
+  Associate: config.cognito.associate.USER_POOL_ID,
+  Manager: config.cognito.manager.USER_POOL_ID,
+  FormDesigner: config.cognito.formdesigner.USER_POOL_ID,
+  Researcher: config.cognito.researcher.USER_POOL_ID,
+}
+
+export function reconfigureAmplifyForUserKind(userKind: UserKind) {
+  switch (userKind) {
+    case UserKind.Provider:
       Amplify.configure({
         Auth: {
           mandatorySignIn: true,
@@ -56,7 +65,7 @@ export function reconfigureAmplifyForUserType(userType: UserType) {
         },
       })
       return
-    case UserType.Associate:
+    case UserKind.Associate:
       Amplify.configure({
         Auth: {
           mandatorySignIn: true,
@@ -85,7 +94,7 @@ export function reconfigureAmplifyForUserType(userType: UserType) {
         },
       })
       return
-    case UserType.FormDesigner:
+    case UserKind.FormDesigner:
       Amplify.configure({
         Auth: {
           mandatorySignIn: true,
@@ -114,7 +123,7 @@ export function reconfigureAmplifyForUserType(userType: UserType) {
         },
       })
       return
-    case UserType.Researcher:
+    case UserKind.Researcher:
       Amplify.configure({
         Auth: {
           mandatorySignIn: true,
@@ -144,7 +153,7 @@ export function reconfigureAmplifyForUserType(userType: UserType) {
         // }
       })
       return
-    case UserType.Manager:
+    case UserKind.Manager:
       Amplify.configure({
         Auth: {
           mandatorySignIn: true,
@@ -174,4 +183,20 @@ export function reconfigureAmplifyForUserType(userType: UserType) {
       })
       return
   }
+}
+
+// We do a best effort to get some kind of name for this user
+export function userFullName(
+  user: Partial<UserType> | undefined | null,
+  placeholder: string
+) {
+  if (!user) {
+    return placeholder
+  }
+  if (user.formal_name) return user.formal_name
+  if (user.name) return user.name
+  if (user.email) return user.email
+  if (user.nickname) return user.nickname
+  if (user.userUUID) return user.userUUID
+  return placeholder
 }

@@ -145,7 +145,7 @@ export default {
     heading: {
       patient: 'Patient',
       form: 'Form',
-      'created-changed': 'Created / Changed',
+      'changed-created': 'Changed / Created',
       sealed: 'Sealed',
     },
     'search-by': {

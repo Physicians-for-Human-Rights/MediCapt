@@ -20,13 +20,13 @@ import styles from '../styles'
 import './Authentication.css'
 
 import {
-  UserType,
-  UserTypeList,
-  UserTypeNames,
-  reconfigureAmplifyForUserType,
+  UserKind,
+  UserKindList,
+  UserKindNames,
+  reconfigureAmplifyForUserKind,
 } from 'utils/userTypes'
 
-function Header(userType, setAccountType) {
+function Header(userKind, setAccountType) {
   const { tokens } = useTheme()
   return () => (
     <View>
@@ -52,10 +52,10 @@ function Header(userType, setAccountType) {
         </Heading>
       </Flex>
       <ButtonGroup
-        selected={userType}
+        selected={userKind}
         options={{
-          [UserTypeNames[UserType.Provider]]: UserType.Provider,
-          [UserTypeNames[UserType.Associate]]: UserType.Associate,
+          [UserKindNames[UserKind.Provider]]: UserKind.Provider,
+          [UserKindNames[UserKind.Associate]]: UserKind.Associate,
         }}
         onPress={setAccountType}
         pt={2}
@@ -64,11 +64,11 @@ function Header(userType, setAccountType) {
         justifyContent="center"
       />
       <ButtonGroup
-        selected={userType}
+        selected={userKind}
         options={{
-          [UserTypeNames[UserType.Manager]]: UserType.Manager,
-          [UserTypeNames[UserType.FormDesigner]]: UserType.FormDesigner,
-          [UserTypeNames[UserType.Researcher]]: UserType.Researcher,
+          [UserKindNames[UserKind.Manager]]: UserKind.Manager,
+          [UserKindNames[UserKind.FormDesigner]]: UserKind.FormDesigner,
+          [UserKindNames[UserKind.Researcher]]: UserKind.Researcher,
         }}
         onPress={setAccountType}
         pb={3}
@@ -91,27 +91,27 @@ function Footer() {
 
 export default function withAuthenticator(Component) {
   const AppWithAuthenticator = props => {
-    const [userType, setAccountType] = useState(null)
+    const [userKind, setAccountType] = useState(null)
     useMemo(async () => {
       let r = await AsyncStorage.getItem('@last_account_selection')
-      if (indexOf(UserTypeList, r) < 0) {
-        r = UserType.Provider
+      if (indexOf(UserKindList, r) < 0) {
+        r = UserKind.Provider
       }
       setAccountType(r)
-      reconfigureAmplifyForUserType(r)
+      reconfigureAmplifyForUserKind(r)
     }, [])
     useEffect(() => {
       async function fn() {
-        if (userType !== null) {
-          reconfigureAmplifyForUserType(userType)
-          await AsyncStorage.setItem('@last_account_selection', userType)
+        if (userKind !== null) {
+          reconfigureAmplifyForUserKind(userKind)
+          await AsyncStorage.setItem('@last_account_selection', userKind)
         }
       }
       fn()
     })
 
     const defaultComponents = {
-      Header: Header(userType, setAccountType),
+      Header: Header(userKind, setAccountType),
       SignIn: {
         Header: Authenticator.SignIn.Header,
         Footer: Authenticator.SignIn.Footer,
@@ -119,13 +119,13 @@ export default function withAuthenticator(Component) {
       Footer: Footer,
     }
 
-    if (userType === null || userType === undefined) {
+    if (userKind === null || userKind === undefined) {
       return <></>
     } else {
       return (
         <Authenticator components={defaultComponents} variation="modal">
           {({ signOut, user }) => (
-            <Component signOut={signOut} user={user} userType={userType} />
+            <Component signOut={signOut} user={user} userKind={userKind} />
           )}
         </Authenticator>
       )

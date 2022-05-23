@@ -24,7 +24,7 @@ import { QueryFilterForType } from 'utils/types/url'
 
 // User
 
-export async function getUser(
+export async function getUserByUsername(
   poolId: string,
   username: string
 ): Promise<Partial<UserType>> {
@@ -33,7 +33,19 @@ export async function getUser(
     '/provider/user/byId/' + poolId + '/' + username,
     {}
   )
-  return userSchema.parse(data)
+  return userSchema.partial().parse(data)
+}
+
+export async function getUserByUUID(
+  poolId: string,
+  uuid: string
+): Promise<Partial<UserType>> {
+  const data = await API.get(
+    'provider',
+    '/provider/user/byUUID/' + poolId + '/' + uuid,
+    {}
+  )
+  return userSchema.partial().parse(data)
 }
 
 // Location

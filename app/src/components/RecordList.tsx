@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Box,
   HStack,
@@ -21,6 +21,9 @@ import { RecordMetadata } from 'utils/types/recordMetadata'
 import { FormMetadata } from 'utils/types/formMetadata'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import SelectLocation from 'components/SelectLocation'
+import { getFormCached, getUserByUUIDCached } from 'api/common'
+import { UserType } from 'utils/types/user'
+import { UserPoolId, userFullName } from 'utils/userTypes'
 
 export function ListItem({
   item,
@@ -68,9 +71,13 @@ export function ListItem({
 export function ListItemDesktop({
   item,
   selectItem,
+  forms,
+  users,
 }: {
   item: RecordMetadata
   selectItem: (i: RecordMetadata) => any
+  forms: Record<string, FormMetadata>
+  users: Record<string, Partial<UserType>>
 }) {
   return (
     <Pressable
@@ -100,16 +107,25 @@ export function ListItemDesktop({
             )),
             ''
           )}
-          <Text>TODO Form name</Text>
+          <Text>
+            {forms[item.formUUID] ? forms[item.formUUID].title : 'Unknown form'}
+          </Text>
           <Text>{item.formID}</Text>
           <Text>{item.caseId ? item.caseId : ''}</Text>
         </VStack>
 
         <VStack w="20%">
-          <Text isTruncated>{formatDate(item.createdDate, 'PPP')}</Text>
-          <Text isTruncated>{item.createdByUUID}</Text>
           <Text isTruncated>{formatDate(item.lastChangedDate, 'PPP')}</Text>
-          <Text isTruncated>{item.lastChangedByUUID}</Text>
+          <Text isTruncated>
+            {userFullName(
+              users[item.lastChangedByUUID],
+              item.lastChangedByUUID
+            )}
+          </Text>
+          <Text isTruncated>{formatDate(item.createdDate, 'PPP')}</Text>
+          <Text isTruncated>
+            {userFullName(users[item.createdByUUID], item.createdByUUID)}
+          </Text>
         </VStack>
 
         <HStack w="5%">
@@ -145,7 +161,6 @@ export default function RecordList({
   selectItem,
 }: {
   records: RecordMetadata[]
-  forms: FormMetadata[]
   hasMore: boolean
   loadMore?: () => any
   itemsPerPage?: number
@@ -160,6 +175,48 @@ export default function RecordList({
   doSearch: () => any
   selectItem: (f: RecordMetadata) => any
 }) {
+  const [forms, setForms] = useState({} as Record<string, FormMetadata>)
+  const [users, setUsers] = useState({} as Record<string, Partial<UserType>>)
+
+  useEffect(() => {
+    async function recordsFn() {
+      const loadedForms = {} as Record<string, FormMetadata>
+      await Promise.all(
+        _.map(_.uniq(_.map(records, r => r.formUUID)), async formUUID => {
+          const result = await getFormCached(formUUID, () => null)
+          if (result) loadedForms[formUUID] = result.metadata
+          return result
+        })
+      )
+      setForms(loadedForms)
+    }
+    async function usersFn() {
+      const loadedUsers = {} as Record<string, Partial<UserType>>
+      await Promise.all(
+        _.map(
+          _.uniq(
+            _.concat(
+              _.map(records, r => r.createdByUUID),
+              _.map(records, r => r.lastChangedByUUID)
+            )
+          ),
+          async userUUID => {
+            const result = await getUserByUUIDCached(
+              'Provider',
+              userUUID,
+              () => null
+            )
+            if (result) loadedUsers[userUUID] = result
+            return result
+          }
+        )
+      )
+      setUsers(loadedUsers)
+    }
+    recordsFn()
+    usersFn()
+  }, [records])
+
   return (
     <>
       <Stack
@@ -304,7 +361,7 @@ export default function RecordList({
                 <Text
                   fontWeight="bold"
                   textAlign="left"
-                  w="25%"
+                  w="23%"
                   mb={3}
                   _light={{ color: 'coolGray.900' }}
                 >
@@ -313,16 +370,16 @@ export default function RecordList({
                 <Text
                   fontWeight="bold"
                   textAlign="left"
-                  w="20%"
+                  w="23%"
                   mb={3}
                   _light={{ color: 'coolGray.900' }}
                 >
-                  {t('record.heading.created-changed')}
+                  {t('record.heading.changed-created')}
                 </Text>
                 <Text
                   fontWeight="bold"
                   textAlign="left"
-                  w="10%"
+                  w="8%"
                   mb={3}
                   _light={{ color: 'coolGray.900' }}
                   mr={-1}
@@ -337,6 +394,8 @@ export default function RecordList({
                       item={item}
                       key={index}
                       selectItem={selectItem}
+                      forms={forms}
+                      users={users}
                     />
                   )
                 })}

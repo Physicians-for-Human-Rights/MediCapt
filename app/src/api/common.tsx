@@ -10,20 +10,23 @@ import {
 } from 'utils/types/formMetadata'
 import {
   getLocation as managerGetLocation,
-  getUser as managerGetUser,
+  getUserByUsername as managerGetUserByUsername,
+  getUserByUUID as managerGetUserByUUID,
 } from 'api/manager'
 import {
   getLocation as formdesignerGetLocation,
-  getUser as formdesignerGetUser,
+  getUserByUsername as formdesignerGetUserByUsername,
+  getUserByUUID as formdesignerGetUserByUUID,
   getForm as formdesignerGetForm,
 } from 'api/formdesigner'
 import {
   getLocation as providerGetLocation,
-  getUser as providerGetUser,
+  getUserByUsername as providerGetUserByUsername,
+  getUserByUUID as providerGetUserByUUID,
   getForm as providerGetForm,
 } from 'api/provider'
 
-export async function getUser(
+export async function getUserByUsername(
   poolId: string,
   username: string
 ): Promise<Partial<UserType | null>> {
@@ -32,23 +35,74 @@ export async function getUser(
     const ma = await API.endpoint('manager')
     const pr = await API.endpoint('provider')
     if (fd) {
-      return await formdesignerGetUser(poolId, username)
+      return await formdesignerGetUserByUsername(poolId, username)
     } else if (ma) {
-      return await managerGetUser(poolId, username)
+      return await managerGetUserByUsername(poolId, username)
     } else if (pr) {
-      return await providerGetUser(poolId, username)
+      return await providerGetUserByUsername(poolId, username)
     } else {
       throw new Error('User type cannot getUser')
     }
   } catch (e) {
+    console.error('Failed to get user by ID', e)
     return null
   }
 }
 
-export async function getUserCached(
+export async function getUserByUsernameCached(
+  poolId: string,
+  username: string,
+  notifyDone: (username: string, item: Partial<UserType> | null) => any
+): Promise<Partial<UserType> | null> {
+  const cached = Amplify.Cache.getItem('USER#' + username)
+  if (cached && 'status' in cached && cached.status === 'loaded') {
+    notifyDone(username, cached.item)
+    return cached.item
+  } else if (cached && 'status' in cached && cached.status === 'loading') {
+    return null
+  } else {
+    Amplify.Cache.setItem('USER#' + username, { status: 'loading' })
+    const item = await getUserByUsername(poolId, username)
+    if (item) {
+      Amplify.Cache.setItem('USER#' + username, {
+        status: 'loaded',
+        item,
+      })
+    } else {
+      Amplify.Cache.removeItem('USER#' + username)
+    }
+    if (item) notifyDone(username, item)
+    return item
+  }
+}
+
+export async function getUserByUUID(
+  poolId: string,
+  userUUID: string
+): Promise<Partial<UserType | null>> {
+  try {
+    const fd = await API.endpoint('formdesigner')
+    const ma = await API.endpoint('manager')
+    const pr = await API.endpoint('provider')
+    if (fd) {
+      return await formdesignerGetUserByUUID(poolId, userUUID)
+    } else if (ma) {
+      return await managerGetUserByUUID(poolId, userUUID)
+    } else if (pr) {
+      return await providerGetUserByUUID(poolId, userUUID)
+    } else {
+      throw new Error('User type cannot getUser')
+    }
+  } catch (e) {
+    console.error('Failed to get user by UUID', e)
+    return null
+  }
+}
+
+export async function getUserByUUIDCached(
   poolId: string,
   userUUID: string,
-  notifyDone: (userUUID: string, item: UserType | null) => any
+  notifyDone: (userUUID: string, item: Partial<UserType> | null) => any
 ): Promise<Partial<UserType> | null> {
   const cached = Amplify.Cache.getItem('USER#' + userUUID)
   if (cached && 'status' in cached && cached.status === 'loaded') {
@@ -58,7 +112,7 @@ export async function getUserCached(
     return null
   } else {
     Amplify.Cache.setItem('USER#' + userUUID, { status: 'loading' })
-    const item = await getUser(poolId, userUUID)
+    const item = await getUserByUUID(poolId, userUUID)
     if (item) {
       Amplify.Cache.setItem('USER#' + userUUID, {
         status: 'loaded',
@@ -67,11 +121,7 @@ export async function getUserCached(
     } else {
       Amplify.Cache.removeItem('USER#' + userUUID)
     }
-    notifyDone(
-      userUUID,
-      // @ts-ignore TODO What's up here?
-      item
-    )
+    if (item) notifyDone(userUUID, item)
     return item
   }
 }
@@ -165,8 +215,7 @@ export async function getFormCached(
     } else {
       Amplify.Cache.removeItem('FORM#' + formUUID)
     }
-    if (notifyDone)
-      notifyDone(formUUID, cached.item.metadata, cached.item.manifest)
+    if (item && notifyDone) notifyDone(formUUID, item.metadata, item.manifest)
     return item
   }
 }

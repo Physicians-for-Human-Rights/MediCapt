@@ -34,7 +34,7 @@ export async function createUser(user: UserByUserType) {
   }
 }
 
-export async function getUser(
+export async function getUserByUsername(
   poolId: string,
   username: string
 ): Promise<Partial<UserType>> {
@@ -43,7 +43,19 @@ export async function getUser(
     '/manager/user/byId/' + poolId + '/' + username,
     {}
   )
-  return userSchema.parse(data)
+  return userSchema.partial().parse(data)
+}
+
+export async function getUserByUUID(
+  poolId: string,
+  uuid: string
+): Promise<Partial<UserType>> {
+  const data = await API.get(
+    'manager',
+    '/manager/user/byId/' + poolId + '/' + uuid,
+    {}
+  )
+  return userSchema.partial().parse(data)
 }
 
 export async function updateUser(user: UserType) {

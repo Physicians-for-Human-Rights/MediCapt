@@ -31,10 +31,10 @@ import phr_logo from '../../assets/phr.png'
 import styles from '../styles'
 
 import {
-  UserType,
-  UserTypeList,
-  UserTypeNames,
-  reconfigureAmplifyForUserType,
+  UserKind,
+  UserKindList,
+  UserKindNames,
+  reconfigureAmplifyForUserKind,
 } from 'utils/userTypes'
 
 const logger = new Logger('SignIn')
@@ -114,7 +114,7 @@ class CustomSignIn extends AuthPiece {
   }
 }
 
-function Header(userType, setAccountType) {
+function Header(userKind, setAccountType) {
   return () => (
     <View
       style={{
@@ -126,10 +126,10 @@ function Header(userType, setAccountType) {
           Log in as
         </Heading>
         <ButtonGroup
-          selected={userType}
+          selected={userKind}
           options={{
-            [UserTypeNames[UserType.Provider]]: UserType.Provider,
-            [UserTypeNames[UserType.Associate]]: UserType.Associate,
+            [UserKindNames[UserKind.Provider]]: UserKind.Provider,
+            [UserKindNames[UserKind.Associate]]: UserKind.Associate,
           }}
           onPress={setAccountType}
           pt={2}
@@ -141,11 +141,11 @@ function Header(userType, setAccountType) {
           justifyContent="center"
         />
         <ButtonGroup
-          selected={userType}
+          selected={userKind}
           options={{
-            [UserTypeNames[UserType.Manager]]: UserType.Manager,
-            [UserTypeNames[UserType.FormDesigner]]: UserType.FormDesigner,
-            [UserTypeNames[UserType.Researcher]]: UserType.Researcher,
+            [UserKindNames[UserKind.Manager]]: UserKind.Manager,
+            [UserKindNames[UserKind.FormDesigner]]: UserKind.FormDesigner,
+            [UserKindNames[UserKind.Researcher]]: UserKind.Researcher,
           }}
           onPress={setAccountType}
           pb={3}
@@ -163,21 +163,21 @@ function Header(userType, setAccountType) {
 export default function withAuthenticator(Component) {
   const AppWithAuthenticator = () => {
     const [authState, setAuthState] = useState(null)
-    const [userType, setAccountType] = useState(null)
+    const [userKind, setAccountType] = useState(null)
     const [user, setUser] = useState(null)
     useMemo(async () => {
       let r = await AsyncStorage.getItem('@last_account_selection')
-      if (indexOf(UserTypeList, r) < 0) {
-        r = UserType.Provider
+      if (indexOf(UserKindList, r) < 0) {
+        r = UserKind.Provider
       }
       setAccountType(r)
-      reconfigureAmplifyForUserType(r)
+      reconfigureAmplifyForUserKind(r)
       return r
     }, [])
     useEffect(async () => {
-      if (userType !== null) {
-        await AsyncStorage.setItem('@last_account_selection', userType)
-        reconfigureAmplifyForUserType(userType)
+      if (userKind !== null) {
+        await AsyncStorage.setItem('@last_account_selection', userKind)
+        reconfigureAmplifyForUserKind(userKind)
       }
     })
     useEffect(async () => {
@@ -187,12 +187,12 @@ export default function withAuthenticator(Component) {
         setUser(null)
       }
     }, [authState])
-    const WrappedHeader = Header(userType, setAccountType)
-    if (userType === null || userType === undefined) {
+    const WrappedHeader = Header(userKind, setAccountType)
+    if (userKind === null || userKind === undefined) {
       return <></>
     }
     if (authState == 'signedIn' && user) {
-      return <Component user={user} userType={userType} />
+      return <Component user={user} userKind={userKind} />
     }
     return (
       <>

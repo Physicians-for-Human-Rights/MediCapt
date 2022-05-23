@@ -7,7 +7,7 @@ import withAuthenticator from 'screens/Authentication'
 import { StoreProvider, useUser, useSignOut } from 'utils/store'
 
 import { theme } from 'theme'
-import { UserType } from 'utils/userTypes'
+import { UserKind } from 'utils/userTypes'
 
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
@@ -38,11 +38,11 @@ i18n.defaultLocale = 'en'
 function App({
   signOut,
   user,
-  userType,
+  userKind,
 }: {
   signOut: () => any
   user: any
-  userType: UserType
+  userKind: UserKind
 }) {
   const [storeUser, setStoreUser] = useUser()
   const [storeSignOut, setStoreSignOut] = useSignOut()
@@ -52,16 +52,16 @@ function App({
     setStoreSignOut(signOut)
   }, [user, signOut])
 
-  switch (userType) {
-    case UserType.Provider:
+  switch (userKind) {
+    case UserKind.Provider:
       return <ProviderApp />
-    case UserType.Associate:
+    case UserKind.Associate:
       return <AssociateApp />
-    case UserType.Manager:
+    case UserKind.Manager:
       return <ManagerApp />
-    case UserType.FormDesigner:
+    case UserKind.FormDesigner:
       return <FormDesignerApp />
-    case UserType.Researcher:
+    case UserKind.Researcher:
       return <ResearcherApp />
   }
 }
