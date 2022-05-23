@@ -65,7 +65,7 @@ const FormTop = ({
             }
           />
         </HStack>
-        <VStack flex="3" justifyContent="center" alignItems="center" maxW={56}>
+        <VStack flex="3" justifyContent="center" alignItems="center">
           <Text
             color="coolGray.50"
             fontSize="lg"
@@ -79,7 +79,6 @@ const FormTop = ({
             color="coolGray.50"
             fontSize="lg"
             isTruncated
-            maxW={56}
             selectable={false}
           >
             {title}
