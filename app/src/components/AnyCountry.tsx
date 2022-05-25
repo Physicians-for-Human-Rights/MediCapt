@@ -278,8 +278,9 @@ export default function AnyCountry({
       selectedValue={value}
       placeholder={placeholder}
       onValueChange={setValue}
+      ml={3}
       // TODO: Props causing crash in Android version
-      // {...props}
+      {...props}
     >
       {_.concat(
         any

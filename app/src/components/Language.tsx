@@ -29,7 +29,7 @@ export default function Language({
       placeholder={placeholder}
       onValueChange={setValue}
       // TODO: Props causing crash in Android version
-      // {...props}
+      {...props}
     >
       {_.concat(
         any

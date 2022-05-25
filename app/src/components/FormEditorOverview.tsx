@@ -276,7 +276,6 @@ export default function FormEditorOverview({
           setValue={v => setFormMetadata({ ...formMetadata, country: v })}
           mx={3}
           mt={1}
-          mb={3}
         />
         <Language
           placeholder={t('form-editor.select-language')}
@@ -284,7 +283,6 @@ export default function FormEditorOverview({
           setValue={v => setFormMetadata({ ...formMetadata, language: v })}
           mx={3}
           mt={1}
-          mb={3}
         />
       </HStack>
       <HStack alignItems="center" justifyContent="space-between">
@@ -296,7 +294,6 @@ export default function FormEditorOverview({
           any={'1'}
           mx={3}
           mt={1}
-          mb={3}
         />
         <FloatingLabelInput
           label={t('form-editor.priority')}
