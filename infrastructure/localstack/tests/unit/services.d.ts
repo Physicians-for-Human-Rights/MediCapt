@@ -1,0 +1,1 @@
+../../../../medicapt-infrastructure-modules/services.d.ts
