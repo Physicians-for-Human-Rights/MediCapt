@@ -19,7 +19,7 @@ const options = [
   },
   {
     icon: <MaterialIcons name="history" />,
-    label: 'Incomplete records',
+    label: 'Your records',
     to: 'IncompleteRecords',
   },
   {

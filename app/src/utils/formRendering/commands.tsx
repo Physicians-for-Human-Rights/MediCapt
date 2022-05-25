@@ -120,6 +120,7 @@ export function allFormRenderCommands(
         valuePath: recordValuePath,
         key: _.join(recordValuePath, '.'),
         disable: isSkipped(flatRecord, recordValuePath),
+        recordSummary: part['record-summary'],
       }),
     'body-image': (recordValuePath, part) => {
       const genderOrSex: string =
@@ -213,6 +214,7 @@ export function allFormRenderCommands(
         valuePath: recordValuePath,
         key: _.join(recordValuePath, '.'),
         disable: isSkipped(flatRecord, recordValuePath),
+        recordSummary: part['record-summary'],
       }),
     'date-time': (recordValuePath, part) =>
       renderCommands.push({
@@ -235,8 +237,9 @@ export function allFormRenderCommands(
         valuePath: recordValuePath,
         key: _.join(recordValuePath, '.'),
         disable: isSkipped(flatRecord, recordValuePath),
+        recordSummary: part['record-summary'],
       }),
-    gender: recordValuePath =>
+    gender: (recordValuePath, part) =>
       renderCommands.push({
         type: 'gender',
         recordValue: getFlatRecordValue(flatRecord, recordValuePath, 'gender'),
@@ -258,6 +261,7 @@ export function allFormRenderCommands(
         valuePath: recordValuePath,
         key: _.join(recordValuePath, '.'),
         disable: isSkipped(flatRecord, recordValuePath),
+        recordSummary: part['record-summary'],
       }),
     list: (recordValuePath, part) => {
       const listOptions = resolveRef(part.options, commonRefTable)
@@ -371,7 +375,7 @@ export function allFormRenderCommands(
         key: _.join(recordValuePath, '.'),
         disable: isSkipped(flatRecord, recordValuePath),
       }),
-    'phone-number': recordValuePath =>
+    'phone-number': (recordValuePath, part) =>
       renderCommands.push({
         type: 'phone-number',
         recordValue: getFlatRecordValue(
@@ -382,6 +386,7 @@ export function allFormRenderCommands(
         valuePath: recordValuePath,
         key: _.join(recordValuePath, '.'),
         disable: isSkipped(flatRecord, recordValuePath),
+        recordSummary: part['record-summary'],
       }),
     photo: recordValuePath => {
       const recordValue = getFlatRecordValue(
@@ -449,6 +454,7 @@ export function allFormRenderCommands(
         valuePath: recordValuePath,
         key: _.join(recordValuePath, '.'),
         disable: isSkipped(flatRecord, recordValuePath),
+        recordSummary: part['record-summary'],
       }),
     combineResultsFromParts: () => null,
     combineResultsFromSubparts: () => null,
@@ -513,10 +519,6 @@ export function allFormRenderCommands(
           recordValue: repeatListRecordValue,
           title: 'title' in part ? part.title : '',
           partRepeated: part.repeated,
-          // repeatList:
-          //   repeatListRecordValue?.value ||
-          //   (part.repeated === 'at-least-one' ? ['at-least-one'] : []),
-          // repeatListPath: recordValuePath,
           valuePath: recordValuePath,
           key: _.join(recordValuePath.concat('add-repeat-button'), '.'),
           disable: isSkipped(flatRecord, recordValuePath),
@@ -536,9 +538,6 @@ export function allFormRenderCommands(
           title: 'title' in part ? part.title : '',
           partRepeated: part.repeated,
           repeatId: repeatId,
-          // repeatList:
-          // repeatListRecordValue?.value ||
-          // (part.repeated === 'at-least-one' ? ['at-least-one'] : []),
           valuePath: repeatListRecordPath,
           key: _.join(recordPath.concat('add-repeat-button'), '.'),
           disable: isSkipped(flatRecord, repeatListRecordPath),

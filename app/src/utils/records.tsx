@@ -123,12 +123,17 @@ export function getFlatRecordValue(
   expectedType?: keyof RecordValueByType
 ) {
   function validateRecordValue(value?: RecordValue) {
-    if (!expectedType) {
-      return recordValueSchema.optional().parse(value)
-    } else if (!value?.type) {
+    try {
+      if (!expectedType) {
+        return recordValueSchema.optional().parse(value)
+      } else if (!value?.type) {
+        return undefined
+      } else {
+        return recordValueByTypeSchema[expectedType].parse(value)
+      }
+    } catch (e) {
+      console.error('TODO Do something when a record fails to validate', e)
       return undefined
-    } else {
-      return recordValueByTypeSchema[expectedType].parse(value)
     }
   }
 

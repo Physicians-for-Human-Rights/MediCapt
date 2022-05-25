@@ -60,8 +60,25 @@ export function ListItem({
               fontSize="sm"
               _light={{ color: 'coolGray.900' }}
             >
-              {item.patientGender ? t(item.patientGender) : ''}
-              {item.patientAge ? t(item.patientAge) : ''}
+              {item.patientGender ? t('gender.' + item.patientGender) : ''}
+            </Text>
+            <Text
+              pl={3}
+              isTruncated
+              fontSize="sm"
+              _light={{ color: 'coolGray.900' }}
+            >
+              {item.patientDateOfBirth > new Date('January 01 1500')
+                ? formatDate(item.patientDateOfBirth, 'PPP')
+                : ''}
+            </Text>
+            <Text
+              pl={3}
+              isTruncated
+              fontSize="sm"
+              _light={{ color: 'coolGray.900' }}
+            >
+              {item.patientAddress ? item.patientAddress : ''}
             </Text>
             <Text
               pl={3}
@@ -129,8 +146,15 @@ export function ListItemDesktop({
             {item.patientName || t('record.missing-patient-name')}
           </Text>
           <Text isTruncated ml={2}>
-            {item.patientGender ? t(item.patientGender) : ''}
-            {item.patientAge ? t(item.patientAge) : ''}
+            {item.patientGender ? t('gender.' + item.patientGender) : ''}
+          </Text>
+          <Text isTruncated ml={2}>
+            {item.patientDateOfBirth > new Date('January 01 1500')
+              ? formatDate(item.patientDateOfBirth, 'PPP')
+              : ''}
+          </Text>
+          <Text isTruncated ml={2}>
+            {item.patientAddress ? item.patientAddress : ''}
           </Text>
           <Text>{item.recordID}</Text>
         </VStack>

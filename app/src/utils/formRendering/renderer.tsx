@@ -43,6 +43,7 @@ import { unDataURI } from 'utils/data'
 // @ts-ignore TODO TS doesn't understand .native.js and .web.js files
 import { convertToWebP } from 'utils/imageConverter'
 import { wrapCommandMemo } from 'utils/memo'
+import { RecordMetadata } from 'utils/types/recordMetadata'
 
 const CDebouncedTextInput = wrapCommandMemo(DebouncedTextInput)
 const CButtonGroup = wrapCommandMemo(ButtonGroup)
@@ -59,6 +60,8 @@ const CSkipButton = wrapCommandMemo(SkipButton)
 export function renderCommand(
   command: RenderCommand,
   setPath: (path: RecordValuePath, value: RecordValue) => void,
+  recordMetadata: RecordMetadata | undefined,
+  setRecordMetadata: (r: RecordMetadata) => void,
   addPhotoToManifest: (uri: string) => any,
   removePhotoFromManifest: (sha256: string) => any,
   addKeepAlive: (n: string) => void,
@@ -131,6 +134,15 @@ export function renderCommand(
                 type: 'address',
                 value: text,
               })
+              if (
+                recordMetadata &&
+                command.recordSummary === 'patient-address'
+              ) {
+                setRecordMetadata({
+                  ...recordMetadata,
+                  patientAddress: text,
+                })
+              }
             }}
             debounceMs={500}
             size="md"
@@ -167,7 +179,7 @@ export function renderCommand(
                   addPhotoToManifest(webpUri)
                   return {
                     'date-taken': photo['date-taken'],
-                    sha256: sha256(unDataURI(webpUri)),
+                    sha256: sha256(unDataURI(webpUri), true),
                   }
                 })
               ),
@@ -185,7 +197,7 @@ export function renderCommand(
               ...command.recordValue,
               type: 'body-image',
               value: {
-                imageHash: sha256(unDataURI(command.image)),
+                imageHash: sha256(unDataURI(command.image), true),
                 annotations: newAnnotations,
               },
             })
@@ -206,7 +218,7 @@ export function renderCommand(
               ...command.recordValue,
               type: 'body-image',
               value: {
-                imageHash: sha256(unDataURI(command.image)),
+                imageHash: sha256(unDataURI(command.image), true),
                 annotations: array,
               },
             })
@@ -245,13 +257,28 @@ export function renderCommand(
           date={command.recordValue?.value}
           open={() => addKeepAlive(_.join(command.valuePath, '.'))}
           close={() => removeKeepAlive(_.join(command.valuePath, '.'))}
-          setDate={(date: Date) =>
+          setDate={(date: Date) => {
             setPath(command.valuePath, {
               ...command.recordValue,
               type: 'date',
               value: date,
             })
-          }
+            if (recordMetadata && command.recordSummary === 'incident-date') {
+              setRecordMetadata({
+                ...recordMetadata,
+                incidentDate: date,
+              })
+            }
+            if (
+              recordMetadata &&
+              command.recordSummary === 'patient-date-of-birth'
+            ) {
+              setRecordMetadata({
+                ...recordMetadata,
+                patientDateOfBirth: date,
+              })
+            }
+          }}
         />
       )
     case 'date-time':
@@ -280,13 +307,19 @@ export function renderCommand(
           <CDebouncedTextInput
             command={command}
             isDisabled={command.disable}
-            onChangeText={text =>
+            onChangeText={text => {
               setPath(command.valuePath, {
                 ...command.recordValue,
                 type: 'email',
                 value: text,
               })
-            }
+              if (recordMetadata && command.recordSummary === 'patient-email') {
+                setRecordMetadata({
+                  ...recordMetadata,
+                  patientEmail: text,
+                })
+              }
+            }}
             debounceMs={500}
             size="md"
             bg="coolGray.100"
@@ -309,13 +342,19 @@ export function renderCommand(
           isDisabled={command.disable}
           selected={command.recordValue?.value || ''}
           options={command.options}
-          onPress={v =>
+          onPress={v => {
             setPath(command.valuePath, {
               ...command.recordValue,
               type: 'gender',
               value: v as string,
             })
-          }
+            if (recordMetadata && command.recordSummary === 'patient-gender') {
+              setRecordMetadata({
+                ...recordMetadata,
+                patientGender: v as string,
+              })
+            }
+          }}
           fullwidth={command.fullwidth}
           maxW={command.maxW}
         />
@@ -670,7 +709,7 @@ export function renderCommand(
               ...command.recordValue,
               type: 'photo',
               value: _.concat(recordPhotos, {
-                sha256: sha256(unDataURI(webpUri)),
+                sha256: sha256(unDataURI(webpUri), true),
                 'date-taken': dateTaken,
               }),
             })
@@ -727,7 +766,7 @@ export function renderCommand(
                 type: 'signature',
                 value: {
                   'date-signed': new Date(),
-                  sha256: sha256(unDataURI(webpUri)),
+                  sha256: sha256(unDataURI(webpUri), true),
                 },
               })
             } else if (command.recordValue?.value.sha256) {
@@ -754,6 +793,12 @@ export function renderCommand(
                 type: 'text',
                 value: text,
               })
+              if (recordMetadata && command.recordSummary === 'patient-name') {
+                setRecordMetadata({
+                  ...recordMetadata,
+                  patientName: text,
+                })
+              }
             }}
             debounceMs={500}
             placeholder={command.placeholder}
@@ -826,6 +871,8 @@ export function renderCommand(
           {renderCommand(
             command.contents,
             setPath,
+            recordMetadata,
+            setRecordMetadata,
             addPhotoToManifest,
             removePhotoFromManifest,
             addKeepAlive,
@@ -842,6 +889,8 @@ export function renderCommand(
           {renderCommand(
             command.left,
             setPath,
+            recordMetadata,
+            setRecordMetadata,
             addPhotoToManifest,
             removePhotoFromManifest,
             addKeepAlive,
@@ -850,6 +899,8 @@ export function renderCommand(
           {renderCommand(
             command.right,
             setPath,
+            recordMetadata,
+            setRecordMetadata,
             addPhotoToManifest,
             removePhotoFromManifest,
             addKeepAlive,
@@ -867,6 +918,8 @@ export function renderCommand(
             {renderCommand(
               command.left,
               setPath,
+              recordMetadata,
+              setRecordMetadata,
               addPhotoToManifest,
               removePhotoFromManifest,
               addKeepAlive,
@@ -875,6 +928,8 @@ export function renderCommand(
             {renderCommand(
               command.right,
               setPath,
+              recordMetadata,
+              setRecordMetadata,
               addPhotoToManifest,
               removePhotoFromManifest,
               addKeepAlive,
@@ -884,6 +939,8 @@ export function renderCommand(
           {renderCommand(
             command.description,
             setPath,
+            recordMetadata,
+            setRecordMetadata,
             addPhotoToManifest,
             removePhotoFromManifest,
             addKeepAlive,
@@ -892,7 +949,7 @@ export function renderCommand(
         </VStack>
       )
     default:
-      console.log('Unknown render command', command)
+      console.error('Unknown render command', command)
       return null
   }
 }

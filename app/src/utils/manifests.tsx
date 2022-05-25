@@ -73,15 +73,19 @@ export function lookupContentsSHA256(
   return _.find(contents, e => e.sha256 === sha256)?.data
 }
 
-export function md5(data: string): string {
+export function md5(data: string, isBinary: boolean): string {
   return CryptoJS.enc.Base64.stringify(
-    CryptoJS.MD5(CryptoJS.enc.Utf8.parse(data))
+    CryptoJS.MD5(
+      (isBinary ? CryptoJS.enc.Latin1.parse : CryptoJS.enc.Utf8.parse)(data)
+    )
   )
 }
 
-export function sha256(data: string): string {
+export function sha256(data: string, isBinary: boolean): string {
   return CryptoJS.enc.Base64.stringify(
-    CryptoJS.SHA256(CryptoJS.enc.Utf8.parse(data))
+    CryptoJS.SHA256(
+      (isBinary ? CryptoJS.enc.Latin1.parse : CryptoJS.enc.Utf8.parse)(data)
+    )
   )
 }
 
@@ -100,8 +104,8 @@ export function makeManifestEntry(
     data,
     filename,
     filetype,
-    sha256: sha256(isDataURI ? unDataURI(data) : data),
-    md5: md5(isDataURI ? unDataURI(data) : data),
+    sha256: sha256(isDataURI ? unDataURI(data) : data, isBinary(filetype)),
+    md5: md5(isDataURI ? unDataURI(data) : data, isBinary(filetype)),
   }
 }
 
@@ -215,6 +219,15 @@ export function isImage(f: ManifestFileWithData) {
   )
 }
 
+export function isBinary(filetype: string) {
+  return (
+    filetype === 'image/webp' ||
+    filetype === 'image/png' ||
+    filetype === 'image/jpeg' ||
+    filetype === 'application/pdf'
+  )
+}
+
 export function addOrReplaceFileToManifestByFilename(
   manifest: ManifestWithData,
   data: string,
@@ -296,7 +309,7 @@ export async function fetchManifestContents(
         : await response.text()
       return {
         sha256: e.sha256,
-        md5: md5(data),
+        md5: md5(data, isBinary(e.filetype)),
         filename: e.filename,
         data: data,
         filetype: e.filetype,

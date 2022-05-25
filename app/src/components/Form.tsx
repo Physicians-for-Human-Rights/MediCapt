@@ -47,14 +47,17 @@ function getRecordFromManifest(
   if (!recordManifest) return {}
   const r = getRecordTypeFormManifest(recordManifest)
   if (!r || r instanceof ZodError) {
-    console.log('FIXME OLD STYLE RECORD')
+    console.log(r, 'FIXME OLD STYLE RECORD')
     return {}
   }
   return recordTypeToFlatRecord(r)
 }
 
 export default function Form({
+  formMetadata,
   formManifest,
+  recordMetadata = undefined,
+  setRecordMetadata = () => null,
   recordManifest,
   addPhotoToManifest = () => null,
   removePhotoFromManifest = () => null,
@@ -66,6 +69,7 @@ export default function Form({
   formMetadata: FormMetadata
   formManifest: FormManifestWithData
   recordMetadata?: RecordMetadata
+  setRecordMetadata?: (r: RecordMetadata) => void
   recordManifest?: RecordManifestWithData
   addPhotoToManifest?: (uri: string) => any
   removePhotoFromManifest?: (sha256: string) => any
@@ -153,6 +157,8 @@ export default function Form({
       renderCommand(
         item,
         setRecordPath,
+        recordMetadata,
+        setRecordMetadata,
         addPhotoToManifest,
         removePhotoFromManifest,
         addKeepAlive,
@@ -164,6 +170,8 @@ export default function Form({
       removePhotoFromManifest,
       addKeepAlive,
       removeKeepAlive,
+      recordMetadata,
+      setRecordMetadata,
     ]
   )
 

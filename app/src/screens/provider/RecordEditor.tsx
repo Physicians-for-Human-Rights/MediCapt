@@ -161,7 +161,11 @@ export default function RecordEditor({
               locationID: formMetadata.locationID,
               patientName: '',
               patientGender: '',
-              patientAge: '',
+              patientAddress: '',
+              patientDateOfBirth: new Date('January 01 1001'), // TODO Do better
+              patientPhoneNumber: '',
+              patientEmail: '',
+              incidentDate: new Date('January 01 1001'), // TODO Do better
               caseId: '',
               manifestHash: '',
               manifestMD5: '',
@@ -212,7 +216,11 @@ export default function RecordEditor({
               locationID: formMetadata.locationID,
               patientName: '',
               patientGender: '',
-              patientAge: '',
+              patientAddress: '',
+              patientDateOfBirth: new Date('January 01 1001'), // TODO Do better
+              patientPhoneNumber: '',
+              patientEmail: '',
+              incidentDate: new Date('January 01 1001'), // TODO Do better
               caseId: '',
               manifestHash: '',
               manifestMD5: '',
@@ -273,6 +281,7 @@ export default function RecordEditor({
                 formMetadata={formMetadata}
                 formManifest={formManifest}
                 recordMetadata={recordMetadata}
+                setRecordMetadata={setRecordMetadata}
                 recordManifest={recordManifest}
                 addPhotoToManifest={addPhotoToManifest}
                 removePhotoFromManifest={removePhotoFromManifest}

@@ -166,8 +166,8 @@ export default function FormEditorOverview({
         )
         const remoteMetadata = {
           ...updatedMetadata,
-          manifestHash: sha256(manifestData),
-          manifestMD5: md5(manifestData),
+          manifestHash: sha256(manifestData, false),
+          manifestMD5: md5(manifestData, false),
         }
         const { metadata: newMetadata, manifest: newManifest } =
           await updateForm(

@@ -107,8 +107,8 @@ export async function updateRecord(
 
   const updatedRecordMetadata = {
     ...recordMetadata,
-    manifestHash: sha256(recordManifestString),
-    manifestMD5: md5(recordManifestString),
+    manifestHash: sha256(recordManifestString, false),
+    manifestMD5: md5(recordManifestString, false),
   }
 
   const { manifest: updatedRecordManifestWithPostLinks } =
