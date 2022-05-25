@@ -1,38 +1,59 @@
-import { Platform } from 'react-native'
-import * as FileSystem from 'expo-file-system'
 import _ from 'lodash'
-import { Asset } from 'expo-asset'
-import {
-  FormValueType,
-  FormPart,
-  FormSectionMap,
-  FormPartMap,
-  FormDefinition,
-  FormRef,
-  FormSection,
-} from 'utils/types/form'
-import { NamedFormSection, FormFns } from 'utils/types/formHelpers'
-import { RecordPath } from 'utils/types/record'
 import CryptoJS from 'crypto-js'
 import { unDataURI } from 'utils/data'
-import {
-  FormMetadata,
-  FormFileWitDataSchema,
-  FormManifestWithData,
-} from 'utils/types/formMetadata'
 import { blobToBase64 } from 'utils/data'
+import {
+  FormManifest,
+  FormManifestFile,
+  FormManifestFileWithData,
+  FormManifestFileWithLink,
+  FormManifestFileWithMD5,
+  FormManifestFileWithPostLink,
+  FormManifestWithData,
+  FormManifestWithLinks,
+  FormManifestWithMD5,
+  FormManifestWithPostLinks,
+} from './types/formMetadata'
+import {
+  RecordManifest,
+  RecordManifestFile,
+  RecordManifestFileWithData,
+  RecordManifestFileWithLink,
+  RecordManifestFileWithMD5,
+  RecordManifestFileWithPostLink,
+  RecordManifestWithData,
+  RecordManifestWithLinks,
+  RecordManifestWithMD5,
+  RecordManifestWithPostLinks,
+} from './types/recordMetadata'
+import { RecordType, recordTypeSchema } from './types/record'
+import yaml from 'js-yaml'
+import { FormType } from './types/form'
 
-export type ManifestContentsFile = {
-  data: string
-  sha256: string
-  md5: string
-  filename: string
-  filetype: string
-}
+export type Manifest = FormManifest | RecordManifest
+export type ManifestWithMD5 = FormManifestWithMD5 | RecordManifestWithMD5
+export type ManifestWithPostLinks =
+  | FormManifestWithPostLinks
+  | RecordManifestWithPostLinks
+export type ManifestWithLinks = FormManifestWithLinks | RecordManifestWithLinks
+export type ManifestWithData = FormManifestWithData | RecordManifestWithData
 
-export type ManifestContents = ManifestContentsFile[]
+export type ManifestFile = FormManifestFile | RecordManifestFile
+export type ManifestFileWithMD5 =
+  | FormManifestFileWithMD5
+  | RecordManifestFileWithMD5
+export type ManifestFileWithPostLink =
+  | FormManifestFileWithPostLink
+  | RecordManifestFileWithPostLink
+export type ManifestFileWithLink =
+  | FormManifestFileWithLink
+  | RecordManifestFileWithLink
+export type ManifestFileWithData =
+  | FormManifestFileWithData
+  | RecordManifestFileWithData
+
 export function lookupContentsByNameAndType(
-  contents: ManifestContents,
+  contents: ManifestFileWithData[],
   filename: string,
   filetype: string
 ) {
@@ -42,6 +63,13 @@ export function lookupContentsByNameAndType(
   )
   if (r) return r.data
   return null
+}
+
+export function lookupContentsSHA256(
+  contents: ManifestFileWithData[],
+  sha256: string
+) {
+  return _.find(contents, e => e.sha256 === sha256)?.data
 }
 
 export function md5(data: string): string {
@@ -66,7 +94,7 @@ export function makeManifestEntry(
   filename: string,
   filetype: string,
   isDataURI: boolean
-): FormFileWitDataSchema {
+): ManifestFileWithData {
   return {
     data,
     filename,
@@ -77,12 +105,12 @@ export function makeManifestEntry(
 }
 
 export function addFileToManifest(
-  manifest: FormManifestWithData,
+  manifest: ManifestWithData,
   data: string,
   filename: string,
   filetype: string,
   isDataURI: boolean
-): FormManifestWithData {
+): ManifestWithData {
   return {
     ...manifest,
     contents: _.concat(manifest.contents, [
@@ -91,10 +119,21 @@ export function addFileToManifest(
   }
 }
 
+export function removeFileFromManifestSHA256(
+  manifest: ManifestWithData,
+  sha256: string
+): ManifestWithData {
+  const index = _.findIndex(manifest.contents, e => e.sha256 === sha256)
+  return {
+    ...manifest,
+    contents: _.filter(manifest.contents, (_, i) => i !== index),
+  }
+}
+
 export function mapManifest(
-  manifest: FormManifestWithData,
-  fn: (f: FormFileWitDataSchema) => FormFileWitDataSchema
-): FormManifestWithData {
+  manifest: ManifestWithData,
+  fn: (f: ManifestFileWithData) => ManifestFileWithData
+): ManifestWithData {
   return {
     ...manifest,
     contents: _.map(manifest.contents, fn),
@@ -102,7 +141,7 @@ export function mapManifest(
 }
 
 export function changeFilenameInManifest(
-  manifest: FormManifestWithData,
+  manifest: ManifestWithData,
   sha256: string,
   newFilename: string
 ) {
@@ -115,9 +154,9 @@ export function changeFilenameInManifest(
 }
 
 export function filterManifest(
-  manifest: FormManifestWithData,
-  fn: (f: FormFileWitDataSchema) => boolean
-): FormManifestWithData {
+  manifest: ManifestWithData,
+  fn: (f: ManifestFileWithData) => boolean
+): ManifestWithData {
   return {
     ...manifest,
     contents: _.filter(manifest.contents, fn),
@@ -125,21 +164,21 @@ export function filterManifest(
 }
 
 export function isInManifest(
-  manifest: FormManifestWithData,
-  fn: (f: FormFileWitDataSchema) => boolean
+  manifest: ManifestWithData,
+  fn: (f: ManifestFileWithData) => boolean
 ): boolean {
   return !!_.find(manifest.contents, fn)
 }
 
 export function lookupManifestSHA256(
-  manifest: FormManifestWithData,
+  manifest: ManifestWithData,
   sha256: string
 ) {
   return _.find(manifest.contents, e => e.sha256 === sha256)
 }
 
 export function isInManifestByNameAndType(
-  manifest: FormManifestWithData,
+  manifest: ManifestWithData,
   filename: string,
   filetype: string
 ): boolean {
@@ -150,7 +189,7 @@ export function isInManifestByNameAndType(
 }
 
 export function lookupManifestByNameAndType(
-  manifest: FormManifestWithData,
+  manifest: ManifestWithData,
   filename: string,
   filetype: string
 ) {
@@ -161,13 +200,13 @@ export function lookupManifestByNameAndType(
 }
 
 export function lookupManifest(
-  manifest: FormManifestWithData,
-  fn: (f: FormFileWitDataSchema) => boolean
+  manifest: ManifestWithData,
+  fn: (f: ManifestFileWithData) => boolean
 ) {
   return _.find(manifest.contents, e => fn(e))
 }
 
-export function isImage(f: FormFileWitDataSchema) {
+export function isImage(f: ManifestFileWithData) {
   return (
     f.filetype === 'image/webp' ||
     f.filetype === 'image/png' ||
@@ -176,12 +215,12 @@ export function isImage(f: FormFileWitDataSchema) {
 }
 
 export function addOrReplaceFileToManifestByFilename(
-  manifest: FormManifestWithData,
+  manifest: ManifestWithData,
   data: string,
   filename: string,
   filetype: string,
   isDataURI: boolean
-): FormManifestWithData {
+): ManifestWithData {
   if (isInManifestByNameAndType(manifest, filename, filetype)) {
     return mapManifest(manifest, e => {
       if (e.filename === filename && e.filetype === filetype) {
@@ -194,18 +233,55 @@ export function addOrReplaceFileToManifestByFilename(
   }
 }
 
+export function addOrReplaceRecordTypeInManifest(
+  recordManifest: RecordManifestWithData,
+  record: RecordType
+): ManifestWithData {
+  return addOrReplaceFileToManifestByFilename(
+    recordManifest,
+    JSON.stringify(record),
+    'record.json',
+    'text/json',
+    false
+  )
+}
+
+export function getRecordTypeFormManifest(
+  recordManifest: RecordManifestWithData
+): RecordType {
+  const recordFile = lookupManifest(
+    recordManifest,
+    e => e.filetype === 'text/json' && e.filename === 'record.json'
+  )
+  if (recordFile) return recordTypeSchema.parse(JSON.parse(recordFile.data))
+  else
+    return recordTypeSchema.parse({
+      'storage-version': '1.0.0',
+      sections: {},
+    })
+}
+
+export function getFormTypeFromManifest(
+  formManifest: FormManifestWithData
+): FormType {
+  const formFile = lookupManifest(
+    formManifest,
+    e => e.filetype === 'text/yaml' && e.filename === 'form.yaml'
+  )
+  if (formFile) {
+    return yaml.load(formFile.data) as FormType
+  } else {
+    return {} as FormType
+  }
+}
+
 export function filetypeIsDataURI(filetype: string) {
   return filetype === 'application/pdf' || filetype.startsWith('image/')
 }
 
 export async function fetchManifestContents(
-  contents: {
-    sha256: string
-    filetype: string
-    link: string
-    filename: string
-  }[]
-) {
+  contents: ManifestFileWithLink[]
+): Promise<ManifestFileWithData[]> {
   return await Promise.all(
     _.map(contents, async e => {
       const response = await fetch(e.link)

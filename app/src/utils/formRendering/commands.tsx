@@ -2,12 +2,16 @@ import _ from 'lodash'
 import { FormDefinition, FormKVRawType } from 'utils/types/form'
 import { mapSectionWithPaths } from 'utils/forms'
 import { NamedFormSection } from 'utils/types/formHelpers'
-import { FlatRecord, RecordValuePath } from 'utils/types/record'
+import { FlatRecord, RecordPhoto, RecordValuePath } from 'utils/types/record'
 import { getFlatRecordValue } from 'utils/records'
 import { t } from 'i18n-js'
 import { resolveRef } from 'utils/forms'
 import { RenderCommand } from 'utils/formRendering/types'
-import { ManifestContents, lookupContentsByNameAndType } from 'utils/manifests'
+import {
+  ManifestFileWithData,
+  lookupContentsByNameAndType,
+  lookupContentsSHA256,
+} from 'utils/manifests'
 
 function isSkipped(flatRecord: FlatRecord, path: RecordValuePath) {
   const prefixes = _.range(0, path.length + 1).map(pathLegth =>
@@ -23,7 +27,7 @@ function isSkipped(flatRecord: FlatRecord, path: RecordValuePath) {
 export function allFormRenderCommands(
   section: NamedFormSection,
   commonRefTable: Record<string, FormDefinition>,
-  contents: ManifestContents,
+  contents: ManifestFileWithData[],
   flatRecord: FlatRecord
 ) {
   let renderCommands: RenderCommand[] = []
@@ -128,7 +132,10 @@ export function allFormRenderCommands(
         recordValuePath,
         'body-image'
       )
-      const formImage =
+
+      let image =
+        (recordValue &&
+          lookupContentsSHA256(contents, recordValue?.value.imageHash)) ||
         ('filename-female' in part &&
           part['filename-female'] &&
           genderOrSex === 'female' &&
@@ -155,19 +162,36 @@ export function allFormRenderCommands(
           )) ||
         ('filename' in part &&
           part.filename &&
-          lookupContentsByNameAndType(contents, part['filename'], 'image/webp'))
+          lookupContentsByNameAndType(
+            contents,
+            part['filename'],
+            'image/webp'
+          )) ||
+        null
 
-      if (!formImage) {
-        // TODO
+      if (image === null) {
+        // TODO: Should we do anything else?
+        image =
+          'https://www.publicdomainpictures.net/pictures/280000/velka/not-found-image-15383864787lu.jpg'
         console.log(
           'NO IMAGE, What do we do here? Prevent this from being filled out? Show a message?'
         )
       }
 
+      const recordPhotosToPhotos = (recordPhotos: RecordPhoto[]) =>
+        _.map(recordPhotos, recordPhoto => ({
+          'date-taken': recordPhoto['date-taken'],
+          uri: lookupContentsSHA256(contents, recordPhoto.sha256) || '',
+        }))
+
       renderCommands.push({
         type: 'body-image',
         recordValue,
-        formImage: formImage || '',
+        image,
+        imageAnnotations: _.map(recordValue?.value.annotations, annotation => ({
+          ...annotation,
+          photos: recordPhotosToPhotos(annotation.photos),
+        })),
         valuePath: recordValuePath,
         key: _.join(recordValuePath, '.'),
         disable: isSkipped(flatRecord, recordValuePath),
@@ -359,14 +383,24 @@ export function allFormRenderCommands(
         key: _.join(recordValuePath, '.'),
         disable: isSkipped(flatRecord, recordValuePath),
       }),
-    photo: recordValuePath =>
+    photo: recordValuePath => {
+      const recordValue = getFlatRecordValue(
+        flatRecord,
+        recordValuePath,
+        'photo'
+      )
       renderCommands.push({
         type: 'photo',
-        recordValue: getFlatRecordValue(flatRecord, recordValuePath, 'photo'),
+        recordValue,
+        photos: _.map(recordValue?.value, recordPhoto => ({
+          uri: lookupContentsSHA256(contents, recordPhoto.sha256) || '',
+          'date-taken': recordPhoto['date-taken'],
+        })),
         valuePath: recordValuePath,
         key: _.join(recordValuePath, '.'),
         disable: isSkipped(flatRecord, recordValuePath),
-      }),
+      })
+    },
     sex: recordValuePath =>
       renderCommands.push({
         type: 'sex',
@@ -390,18 +424,23 @@ export function allFormRenderCommands(
         key: _.join(recordValuePath, '.'),
         disable: isSkipped(flatRecord, recordValuePath),
       }),
-    signature: recordValuePath =>
+    signature: recordValuePath => {
+      const recordValue = getFlatRecordValue(
+        flatRecord,
+        recordValuePath,
+        'signature'
+      )
       renderCommands.push({
         type: 'signature',
-        recordValue: getFlatRecordValue(
-          flatRecord,
-          recordValuePath,
-          'signature'
-        ),
+        recordValue,
+        imageUri:
+          recordValue?.value.sha256 &&
+          lookupContentsSHA256(contents, recordValue?.value.sha256),
         valuePath: recordValuePath,
         key: _.join(recordValuePath, '.'),
         disable: isSkipped(flatRecord, recordValuePath),
-      }),
+      })
+    },
     text: (recordValuePath, part) =>
       renderCommands.push({
         type: 'text',

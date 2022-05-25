@@ -41,7 +41,7 @@ export function formSectionRenderTest(sectionContents: NamedFormSection) {
   const addKeepAlive: (a: string) => void = jest.fn()
   const removeKeepAlive: (a: string) => void = jest.fn()
 
-  const commands = allFormRenderCommands(sectionContents, {}, {}, flatRecord)
+  const commands = allFormRenderCommands(sectionContents, {}, [], flatRecord)
   const elements = _.map(commands, command =>
     React.cloneElement(
       renderCommand(command, setRecordPath, addKeepAlive, removeKeepAlive) || (

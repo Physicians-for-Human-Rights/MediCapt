@@ -1,4 +1,7 @@
+import { ImageAnnotation } from 'components/form-parts/BodyImage'
+import Photo from 'components/form-parts/Photo'
 import _ from 'lodash'
+import { ManifestFileWithData } from 'utils/manifests'
 import { FormKVRawType, FormPartMap } from 'utils/types/form'
 import {
   RecordValuePath,
@@ -73,7 +76,8 @@ export type RenderCommand =
     | {
         type: 'body-image'
         recordValue?: RecordValueByType['body-image']
-        formImage: string
+        image: string
+        imageAnnotations: ImageAnnotation[]
       }
     | {
         type: 'bool'
@@ -155,7 +159,11 @@ export type RenderCommand =
         recordValue?: RecordValueByType['phone-number']
         maxW?: string
       }
-    | { type: 'photo'; recordValue?: RecordValueByType['photo'] }
+    | {
+        type: 'photo'
+        recordValue?: RecordValueByType['photo']
+        photos: Photo[]
+      }
     | {
         type: 'sex'
         recordValue?: RecordValueByType['sex']
@@ -166,6 +174,7 @@ export type RenderCommand =
     | {
         type: 'signature'
         recordValue?: RecordValueByType['signature']
+        imageUri?: string
       }
     | {
         type: 'text'

@@ -15,7 +15,6 @@ import {
 } from 'native-base'
 import * as ImagePicker from 'expo-image-picker'
 import { Camera } from 'expo-camera'
-import { RecordPhoto, RecordValueByType } from 'utils/types/record'
 import { Feather, MaterialIcons } from '@expo/vector-icons'
 import { disabledBackground } from 'utils/formRendering/utils'
 import { t } from 'i18n-js'
@@ -23,11 +22,15 @@ import _ from 'lodash'
 import { useWindowDimensions } from 'react-native'
 
 type PhotoSelectorProps = {
-  photos: RecordValueByType['photo']['value']
-  addPhoto: (photo: RecordPhoto) => void
-  removePhoto: (n: number) => void
+  photos: Photo[]
+  addPhoto: (photo: Photo) => any
+  removePhoto: (n: number) => any
   isDisabled: boolean
   onlyOne?: boolean
+}
+type Photo = {
+  uri: string
+  'date-taken'?: Date
 }
 
 const disabledStyle = { backgroundColor: disabledBackground }

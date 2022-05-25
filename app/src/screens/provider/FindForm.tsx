@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import DashboardLayout from 'components/DashboardLayout'
 import _ from 'lodash'
 import { default as FormListComponent } from 'components/FormList'
 import { FormMetadata } from 'utils/types/formMetadata'
 import { useInfo, handleStandardErrors } from 'utils/errors'
-import { findForms } from 'api/provider'
 import Loading from 'components/Loading'
 import { RootStackScreenProps } from 'utils/provider/navigation'
+import { getForms } from '../../utils/localStore/store'
 
 export default function FindForm({
   route,
@@ -14,28 +14,32 @@ export default function FindForm({
 }: RootStackScreenProps<'FindForm'>) {
   const [forms, setForms] = useState([] as FormMetadata[])
   const [nextKey, setNextKey] = useState(undefined as undefined | string)
+
   const [filterCountry, setFilterCountry] = useState('')
   const [filterLanguage, setFilterLanguage] = useState('')
   const [filterLocationID, setFilterLocationID] = useState('')
-  const [filterEnabled, setFilterEnabled] = useState('')
-  const [filterSearchType, setFilterSearchType] = useState('')
   const [filterText, setFilterText] = useState(undefined as undefined | string)
+  const [filterSearchType, setFilterSearchType] = useState('')
+
   const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
 
   const doSearch = async () => {
-    findForms(
-      () => setWaiting('Searching'),
-      () => setWaiting(null),
-      filterCountry,
-      filterLanguage,
-      filterLocationID,
-      filterSearchType,
-      filterText,
-      e => handleStandardErrors(error, warning, success, e),
-      setForms,
-      setNextKey
-    )
+    setWaiting('Searching')
+    try {
+      const [forms, nextKey] = await getForms({
+        country: filterCountry,
+        language: filterLanguage,
+        locationId: filterLocationID,
+        text: filterText,
+        searchType: filterSearchType,
+      })
+      setForms(forms)
+      setNextKey(nextKey)
+    } catch (e) {
+      handleStandardErrors(error, warning, success, e)
+    }
+    setWaiting(null)
   }
 
   useEffect(() => {
@@ -44,8 +48,8 @@ export default function FindForm({
     filterCountry,
     filterLanguage,
     filterLocationID,
-    filterSearchType,
     filterText,
+    filterSearchType,
   ])
 
   return (

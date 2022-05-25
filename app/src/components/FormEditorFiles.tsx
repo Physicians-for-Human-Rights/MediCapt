@@ -23,13 +23,10 @@ import * as DocumentPicker from 'expo-document-picker'
 import { readImage, stripFileExtension } from 'utils/forms'
 import _ from 'lodash'
 import NecessaryItem from 'components/NecessaryItem'
-import { convertToWebP } from 'utils/imageConverter.web.js'
+// @ts-ignore TODO TS doesn't understand .native.js and .web.js files
+import { convertToWebP } from 'utils/imageConverter'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
-import {
-  FormMetadata,
-  FormFileWitDataSchema,
-  FormManifestWithData,
-} from 'utils/types/formMetadata'
+import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
 import {
   isImage,
   isInManifest,

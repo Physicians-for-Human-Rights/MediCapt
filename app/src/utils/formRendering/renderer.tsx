@@ -1,10 +1,5 @@
 import _ from 'lodash'
-import {
-  RecordValuePath,
-  RecordValue,
-  ImageAnnotation,
-  RecordPhoto,
-} from 'utils/types/record'
+import { RecordValuePath, RecordValue } from 'utils/types/record'
 import React from 'react'
 import { t } from 'i18n-js'
 import { MaterialIcons } from '@expo/vector-icons'
@@ -22,45 +17,58 @@ import {
 } from 'native-base'
 // @ts-ignore TODO TS doesn't understand .native.tsx and .web.tsx files
 import DateTimePicker from 'components/DateTimePicker'
-// @ts-ignore typescript doesn't like platform-specific modules
-import Signature from 'components/Signature'
+// @ts-ignore TODO TS doesn't understand .native.tsx and .web.tsx files
+import Signature from '../../components/Signature'
 import { List, ListSelectMultiple } from 'components/form-parts/List'
 import ButtonGroup from 'components/form-parts/ButtonGroup'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import Photo from 'components/form-parts/Photo'
-import BodyImage from 'components/form-parts/BodyImage'
+import BodyImage, { ImageAnnotation } from 'components/form-parts/BodyImage'
 import CustomButton from 'components/form-parts/Button'
 import SkipButton from 'components/form-parts/SkipButton'
 
 import { RenderCommand } from 'utils/formRendering/types'
-// import { wrapCommandMemo } from 'utils/memo'
-
-// const CDebouncedTextInput = wrapCommandMemo(DebouncedTextInput)
-// const CButtonGroup = wrapCommandMemo(ButtonGroup)
-// const CBodyImage = wrapCommandMemo(BodyImage)
-// const CDateTimePicker = wrapCommandMemo(DateTimePicker)
-// const CList = wrapCommandMemo(List)
-// const CListSelectMultiple = wrapCommandMemo(ListSelectMultiple)
-// const CPhoto = wrapCommandMemo(Photo)
-// const CSignature = wrapCommandMemo(Signature)
-// const CCenter = wrapCommandMemo(Center)
-// const CCustomButton = wrapCommandMemo(CustomButton)
-// const CSkipButton = wrapCommandMemo(SkipButton)
-
 import { disabled, disabledBackground } from 'utils/formRendering/utils'
 import { FormPartMap } from 'utils/types/form'
+import {
+  RecordManifestWithData,
+  recordManifestWithDataSchema,
+} from 'utils/types/recordMetadata'
+import {
+  addFileToManifest,
+  removeFileFromManifestSHA256,
+  sha256,
+} from 'utils/manifests'
+import { unDataURI } from 'utils/data'
+// @ts-ignore TODO TS doesn't understand .native.js and .web.js files
+import { convertToWebP } from 'utils/imageConverter'
+import { wrapCommandMemo } from 'utils/memo'
+
+const CDebouncedTextInput = wrapCommandMemo(DebouncedTextInput)
+const CButtonGroup = wrapCommandMemo(ButtonGroup)
+const CBodyImage = wrapCommandMemo(BodyImage)
+const CDateTimePicker = wrapCommandMemo(DateTimePicker)
+const CList = wrapCommandMemo(List)
+const CListSelectMultiple = wrapCommandMemo(ListSelectMultiple)
+const CPhoto = wrapCommandMemo(Photo)
+const CSignature = wrapCommandMemo(Signature)
+const CCenter = wrapCommandMemo(Center)
+const CCustomButton = wrapCommandMemo(CustomButton)
+const CSkipButton = wrapCommandMemo(SkipButton)
 
 export function renderCommand(
   command: RenderCommand,
   setPath: (path: RecordValuePath, value: RecordValue) => void,
+  addPhotoToManifest: (uri: string) => any,
+  removePhotoFromManifest: (sha256: string) => any,
   addKeepAlive: (n: string) => void,
   removeKeepAlive: (n: string) => void
 ) {
   switch (command.type) {
     case 'title':
       return (
-        <Center
-          // command={command}
+        <CCenter
+          command={command}
           bg={disabled(command, disabledBackground)}
           pt={4}
           pb={2}
@@ -75,7 +83,7 @@ export function renderCommand(
           >
             {command.title}
           </Heading>
-        </Center>
+        </CCenter>
       )
     case 'description':
       return (
@@ -95,8 +103,8 @@ export function renderCommand(
       // it doesn't get stuck
       return (
         <Center bg={disabled(command, disabledBackground)}>
-          <SkipButton
-            // command={command}
+          <CSkipButton
+            command={command}
             isDisabled={false}
             skippable={true}
             skipped={command.value?.skipped || false}
@@ -114,8 +122,8 @@ export function renderCommand(
     case 'address':
       return (
         <Center bg={disabled(command, disabledBackground)}>
-          <DebouncedTextInput
-            // command={command}
+          <CDebouncedTextInput
+            command={command}
             isDisabled={command.disable}
             onChangeText={text => {
               setPath(command.valuePath, {
@@ -141,38 +149,64 @@ export function renderCommand(
         </Center>
       )
     case 'body-image': {
-      const image = command.recordValue?.value?.uri || command.formImage
-      const annotations = command.recordValue?.value?.annotations || []
       return (
-        <BodyImage
-          // command={command}
+        <CBodyImage
+          command={command}
           isDisabled={command.disable}
-          imageURI={image}
-          annotations={annotations}
-          addMarkerData={(toAdd: ImageAnnotation, index: number | null) => {
-            let array = _.cloneDeep(annotations)
-            if (index !== null) {
-              array.splice(index, 1, toAdd)
-            } else {
-              array = array.concat(toAdd)
+          image={command.image}
+          annotations={command.imageAnnotations}
+          addAnnotation={async (
+            annotation: ImageAnnotation,
+            index: number | null
+          ) => {
+            const recordAnnotation = {
+              ...annotation,
+              photos: await Promise.all(
+                _.map(annotation.photos, async photo => {
+                  const webpUri = await convertToWebP(photo.uri)
+                  addPhotoToManifest(webpUri)
+                  return {
+                    'date-taken': photo['date-taken'],
+                    sha256: sha256(unDataURI(webpUri)),
+                  }
+                })
+              ),
             }
+            let newAnnotations = [
+              ...(command.recordValue?.value.annotations || []),
+            ]
+            if (index !== null) {
+              newAnnotations.splice(index, 1, recordAnnotation)
+            } else {
+              newAnnotations = newAnnotations.concat(recordAnnotation)
+            }
+
             setPath(command.valuePath, {
               ...command.recordValue,
               type: 'body-image',
               value: {
-                uri: image,
-                annotations: array,
+                imageHash: sha256(unDataURI(command.image)),
+                annotations: newAnnotations,
               },
             })
           }}
-          removeMarkerData={(n: number) => {
+          removeAnnotation={(n: number) => {
+            const annotations = command.recordValue?.value.annotations
+
+            if (!annotations)
+              throw Error("Can't remove annotations since none exist.")
+
+            _.forEach(annotations[n].photos, photo =>
+              removePhotoFromManifest(photo.sha256)
+            )
+
             const array = _.cloneDeep(annotations)
             _.pullAt(array, [n])
             setPath(command.valuePath, {
               ...command.recordValue,
               type: 'body-image',
               value: {
-                uri: image,
+                imageHash: sha256(unDataURI(command.image)),
                 annotations: array,
               },
             })
@@ -182,8 +216,8 @@ export function renderCommand(
     }
     case 'bool':
       return (
-        <ButtonGroup
-          // command={command}
+        <CButtonGroup
+          command={command}
           bg={disabled(command, disabledBackground)}
           isDisabled={command.disable}
           selected={command.recordValue?.value}
@@ -203,9 +237,10 @@ export function renderCommand(
       )
     case 'date':
       return (
-        <DateTimePicker
-          // command={command}
-          isDisaxbled={command.disable}
+        <CDateTimePicker
+          command={command}
+          //@ts-ignore
+          isDisabled={command.disable}
           title={command.title}
           date={command.recordValue?.value}
           open={() => addKeepAlive(_.join(command.valuePath, '.'))}
@@ -221,8 +256,9 @@ export function renderCommand(
       )
     case 'date-time':
       return (
-        <DateTimePicker
-          // command={command}
+        <CDateTimePicker
+          command={command}
+          //@ts-ignore
           isDisabled={command.disable}
           title={command.title}
           date={command.recordValue?.value}
@@ -241,8 +277,8 @@ export function renderCommand(
     case 'email':
       return (
         <Center bg={disabled(command, disabledBackground)}>
-          <DebouncedTextInput
-            // command={command}
+          <CDebouncedTextInput
+            command={command}
             isDisabled={command.disable}
             onChangeText={text =>
               setPath(command.valuePath, {
@@ -267,8 +303,8 @@ export function renderCommand(
       )
     case 'gender':
       return (
-        <ButtonGroup
-          // command={command}
+        <CButtonGroup
+          command={command}
           bg={disabled(command, disabledBackground)}
           isDisabled={command.disable}
           selected={command.recordValue?.value || ''}
@@ -289,8 +325,8 @@ export function renderCommand(
       const selection = listValue ? listValue.selection : null
       const otherValue = listValue ? listValue.otherValue : null
       return (
-        <List
-          // command={command}
+        <CList
+          command={command}
           isDisabled={command.disable}
           options={command.options}
           value={selection}
@@ -326,8 +362,8 @@ export function renderCommand(
       const selection = listValue ? listValue.selection : null
       const otherValue = listValue ? listValue.otherValue : null
       return (
-        <List
-          // command={command}
+        <CList
+          command={command}
           isDisabled={command.disable}
           withLabels
           options={command.options}
@@ -366,8 +402,8 @@ export function renderCommand(
         previousRecordValue?.selections || _.times(options.length, () => false)
 
       return (
-        <ListSelectMultiple
-          // command={command}
+        <CListSelectMultiple
+          command={command}
           isDisabled={command.disable}
           options={command.options}
           values={selections}
@@ -425,8 +461,8 @@ export function renderCommand(
         previousRecordValue?.selections || _.times(options.length, () => false)
 
       return (
-        <ListSelectMultiple
-          // command={command}
+        <CListSelectMultiple
+          command={command}
           isDisabled={command.disable}
           options={command.options.map(({ key, value }) => `${key} (${value})`)}
           values={selections}
@@ -491,8 +527,8 @@ export function renderCommand(
       const selections =
         previousRecordValue?.selections || _.times(options.length, () => false)
       return (
-        <ListSelectMultiple
-          // command={command}
+        <CListSelectMultiple
+          command={command}
           isDisabled={command.disable}
           options={options}
           values={selections}
@@ -543,8 +579,8 @@ export function renderCommand(
     case 'long-text':
       return (
         <Center bg={disabled(command, disabledBackground)}>
-          <DebouncedTextInput
-            // command={command}
+          <CDebouncedTextInput
+            command={command}
             isDisabled={command.disable}
             onChangeText={text => {
               setPath(command.valuePath, {
@@ -569,8 +605,8 @@ export function renderCommand(
     case 'number':
       return (
         <Center bg={disabled(command, disabledBackground)}>
-          <DebouncedTextInput
-            // command={command}
+          <CDebouncedTextInput
+            command={command}
             isDisabled={command.disable}
             onChangeText={text => {
               setPath(command.valuePath, {
@@ -596,8 +632,8 @@ export function renderCommand(
     case 'phone-number':
       return (
         <Center bg={disabled(command, disabledBackground)}>
-          <DebouncedTextInput
-            // command={command}
+          <CDebouncedTextInput
+            command={command}
             isDisabled={command.disable}
             onChangeText={text => {
               setPath(command.valuePath, {
@@ -620,35 +656,40 @@ export function renderCommand(
           />
         </Center>
       )
-    case 'photo':
-      const photos = command.recordValue?.value || []
+    case 'photo': {
+      const recordPhotos = command.recordValue?.value || []
       return (
-        <Photo
-          // command={command}
+        <CPhoto
+          command={command}
           isDisabled={command.disable}
-          photos={photos}
-          addPhoto={(toAdd: RecordPhoto) => {
+          photos={command.photos}
+          addPhoto={async ({ uri, 'date-taken': dateTaken }) => {
+            const webpUri = await convertToWebP(uri)
+            addPhotoToManifest(webpUri)
             setPath(command.valuePath, {
               ...command.recordValue,
               type: 'photo',
-              value: photos.concat(toAdd),
+              value: _.concat(recordPhotos, {
+                sha256: sha256(unDataURI(webpUri)),
+                'date-taken': dateTaken,
+              }),
             })
           }}
           removePhoto={(n: number) => {
-            const array = _.cloneDeep(photos)
-            _.pullAt(array, [n])
+            removePhotoFromManifest(recordPhotos[n].sha256)
             setPath(command.valuePath, {
               ...command.recordValue,
               type: 'photo',
-              value: array,
+              value: _.filter(recordPhotos, (_, i) => i !== n),
             })
           }}
         />
       )
+    }
     case 'sex':
       return (
-        <ButtonGroup
-          // command={command}
+        <CButtonGroup
+          command={command}
           bg={disabled(command, disabledBackground)}
           isDisabled={command.disable}
           selected={command.recordValue?.value || ''}
@@ -666,30 +707,46 @@ export function renderCommand(
       )
     case 'signature':
       return (
-        <Signature
+        <CSignature
           command={command}
+          //@ts-ignore
           isDisabled={command.disable}
-          imageURI={command.recordValue?.value}
+          imageURI={command.imageUri}
           open={() => {
             addKeepAlive(_.join(command.valuePath, '.'))
           }}
           close={() => {
             removeKeepAlive(_.join(command.valuePath, '.'))
           }}
-          setSignature={(signature: string) =>
-            setPath(command.valuePath, {
-              ...command.recordValue,
-              type: 'signature',
-              value: signature,
-            })
-          }
+          setSignature={async (signatureUri: string | undefined) => {
+            if (signatureUri) {
+              const webpUri: string = await convertToWebP(signatureUri)
+              addPhotoToManifest(webpUri)
+              setPath(command.valuePath, {
+                ...command.recordValue,
+                type: 'signature',
+                value: {
+                  'date-signed': new Date(),
+                  sha256: sha256(unDataURI(webpUri)),
+                },
+              })
+            } else if (command.recordValue?.value.sha256) {
+              const previousHash = command.recordValue.value.sha256
+              removePhotoFromManifest(previousHash)
+              setPath(command.valuePath, {
+                ...command.recordValue,
+                type: 'signature',
+                value: {},
+              })
+            }
+          }}
         />
       )
     case 'text':
       return (
         <Center bg={disabled(command, disabledBackground)}>
-          <DebouncedTextInput
-            // command={command}
+          <CDebouncedTextInput
+            command={command}
             isDisabled={command.disable}
             onChangeText={text => {
               setPath(command.valuePath, {
@@ -717,8 +774,8 @@ export function renderCommand(
         (command.partRepeated === 'at-least-one' ? ['at-least-one'] : [])
       return (
         <Center bg={disabled(command, disabledBackground)}>
-          <CustomButton
-            // command={command}
+          <CCustomButton
+            command={command}
             isDisabled={command.disable}
             key={command.key}
             text={'Add ' + _.lowerCase(command.title)}
@@ -743,8 +800,8 @@ export function renderCommand(
         (command.partRepeated === 'at-least-one' ? ['at-least-one'] : [])
       return (
         <Center bg={disabled(command, disabledBackground)}>
-          <CustomButton
-            // command={command}
+          <CCustomButton
+            command={command}
             isDisabled={command.disable}
             key={command.key}
             text={'Remove ' + _.lowerCase(command.title)}
@@ -769,6 +826,8 @@ export function renderCommand(
           {renderCommand(
             command.contents,
             setPath,
+            addPhotoToManifest,
+            removePhotoFromManifest,
             addKeepAlive,
             removeKeepAlive
           )}
@@ -780,8 +839,22 @@ export function renderCommand(
           bg={disabled(command, disabledBackground)}
           justifyContent="space-between"
         >
-          {renderCommand(command.left, setPath, addKeepAlive, removeKeepAlive)}
-          {renderCommand(command.right, setPath, addKeepAlive, removeKeepAlive)}
+          {renderCommand(
+            command.left,
+            setPath,
+            addPhotoToManifest,
+            removePhotoFromManifest,
+            addKeepAlive,
+            removeKeepAlive
+          )}
+          {renderCommand(
+            command.right,
+            setPath,
+            addPhotoToManifest,
+            removePhotoFromManifest,
+            addKeepAlive,
+            removeKeepAlive
+          )}
         </HStack>
       )
     case 'row-with-description':
@@ -794,12 +867,16 @@ export function renderCommand(
             {renderCommand(
               command.left,
               setPath,
+              addPhotoToManifest,
+              removePhotoFromManifest,
               addKeepAlive,
               removeKeepAlive
             )}
             {renderCommand(
               command.right,
               setPath,
+              addPhotoToManifest,
+              removePhotoFromManifest,
               addKeepAlive,
               removeKeepAlive
             )}
@@ -807,6 +884,8 @@ export function renderCommand(
           {renderCommand(
             command.description,
             setPath,
+            addPhotoToManifest,
+            removePhotoFromManifest,
             addKeepAlive,
             removeKeepAlive
           )}

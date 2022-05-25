@@ -38,26 +38,9 @@ export const recordMetadataSchema = recordMetadataSchemaByUser
   })
   .strict()
 
-export const recordMetadataSchemaStrip = recordMetadataSchema.strip()
-
 // Manifests of various types
 
-export const recordFileWithMD5Schema = z.object({
-  sha256: z.string().nonempty(),
-  md5: z.string().nonempty(),
-  filetype: z.string().nonempty(),
-  filename: z.string().nonempty(),
-})
-
-export const recordManifestWithMD5Schema = z
-  .object({
-    'storage-version': z.literal('1.0.0'),
-    contents: z.array(recordFileWithMD5Schema),
-    root: z.string(),
-  })
-  .strict()
-
-export const recordFileSchema = z.object({
+export const recordManifestFileSchema = z.object({
   sha256: z.string().nonempty(),
   filetype: z.string().nonempty(),
   filename: z.string().nonempty(),
@@ -66,38 +49,62 @@ export const recordFileSchema = z.object({
 export const recordManifestSchema = z
   .object({
     'storage-version': z.literal('1.0.0'),
-    contents: z.array(recordFileSchema),
+    contents: z.array(recordManifestFileSchema),
     root: z.string(),
   })
   .strict()
 
-export const recordFileWithPostLinkSchema = z.object({
-  sha256: z.string().nonempty(),
-  filetype: z.string().nonempty(),
-  link: s3PresignedPost,
-  filename: z.string().nonempty(),
+export const recordManifestFileWithMD5Schema = recordManifestFileSchema.extend({
+  md5: z.string().nonempty(),
 })
+
+export const recordManifestWithMD5Schema = z
+  .object({
+    'storage-version': z.literal('1.0.0'),
+    contents: z.array(recordManifestFileWithMD5Schema),
+    root: z.string(),
+  })
+  .strict()
+
+export const recordManifestFileWithPostLinkSchema =
+  recordManifestFileSchema.extend({
+    link: s3PresignedPost,
+  })
 
 export const recordManifestWithPostLinksSchema = z
   .object({
     'storage-version': z.literal('1.0.0'),
     root: z.string(),
-    contents: z.array(recordFileWithPostLinkSchema),
+    contents: z.array(recordManifestFileWithPostLinkSchema),
   })
   .strict()
 
-export const recordFileWithLinkSchema = z.object({
-  sha256: z.string().nonempty(),
-  filetype: z.string().nonempty(),
-  link: z.string().nonempty(),
-  filename: z.string().nonempty(),
-})
+export const recordManifestFileWithLinkSchema = recordManifestFileSchema.extend(
+  {
+    link: z.string().nonempty(),
+  }
+)
 
 export const recordManifestWithLinksSchema = z
   .object({
     'storage-version': z.literal('1.0.0'),
     root: z.string(),
-    contents: z.array(recordFileWithLinkSchema),
+    contents: z.array(recordManifestFileWithLinkSchema),
+  })
+  .strict()
+
+export const recordManifestFileWithDataSchema = recordManifestFileSchema.extend(
+  {
+    md5: z.string().nonempty(),
+    data: z.string().nonempty(),
+  }
+)
+
+export const recordManifestWithDataSchema = z
+  .object({
+    'storage-version': z.literal('1.0.0'),
+    contents: z.array(recordManifestFileWithDataSchema),
+    root: z.string(),
   })
   .strict()
 
@@ -232,20 +239,32 @@ export const recordSchemaUpdateSeal = z
 
 export type RecordMetadataByUser = z.infer<typeof recordMetadataSchemaByUser>
 export type RecordMetadata = z.infer<typeof recordMetadataSchema>
-export type RecordFile = z.infer<typeof recordFileSchema>
+
+export type RecordManifestFile = z.infer<typeof recordManifestFileSchema>
 export type RecordManifest = z.infer<typeof recordManifestSchema>
-export type RecordFileWithMD5Schema = z.infer<typeof recordFileWithMD5Schema>
-export type RecordFileWithLink = z.infer<typeof recordFileWithLinkSchema>
-export type RecordManifestWithMD5 = z.infer<typeof recordManifestWithMD5Schema>
-export type RecordManifestWithLinks = z.infer<
-  typeof recordManifestWithLinksSchema
+export type RecordManifestFileWithMD5 = z.infer<
+  typeof recordManifestFileWithMD5Schema
 >
-export type RecordFileWithPostLink = z.infer<
-  typeof recordFileWithPostLinkSchema
+export type RecordManifestWithMD5 = z.infer<typeof recordManifestWithMD5Schema>
+export type RecordManifestFileWithPostLink = z.infer<
+  typeof recordManifestFileWithPostLinkSchema
 >
 export type RecordManifestWithPostLinks = z.infer<
   typeof recordManifestWithPostLinksSchema
 >
+export type RecordManifestFileWithLink = z.infer<
+  typeof recordManifestFileWithLinkSchema
+>
+export type RecordManifestWithLinks = z.infer<
+  typeof recordManifestWithLinksSchema
+>
+export type RecordManifestFileWithData = z.infer<
+  typeof recordManifestFileWithDataSchema
+>
+export type RecordManifestWithData = z.infer<
+  typeof recordManifestWithDataSchema
+>
+
 export type RecordPostServer = {
   metadata: RecordMetadata
   manifest: RecordManifestWithPostLinks
@@ -270,24 +289,3 @@ export type RecordDynamoLatestToUpdateType = z.infer<
 >
 
 export type RecordDynamoUpdateSeal = z.infer<typeof recordSchemaUpdateSeal>
-
-export const recordFileWithDataSchema = z.object({
-  sha256: z.string().nonempty(),
-  md5: z.string().nonempty(),
-  filename: z.string().nonempty(),
-  data: z.string().nonempty(),
-  filetype: z.string().nonempty(),
-})
-
-export const recordManifestWithDataSchema = z
-  .object({
-    'storage-version': z.literal('1.0.0'),
-    contents: z.array(recordFileWithDataSchema),
-    root: z.string(),
-  })
-  .strict()
-
-export type RecordFileWitDataSchema = z.infer<typeof recordFileWithDataSchema>
-export type RecordManifestWithData = z.infer<
-  typeof recordManifestWithDataSchema
->

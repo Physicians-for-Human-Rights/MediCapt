@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react'
+import React, { useState, useCallback } from 'react'
 import useMap from 'react-use/lib/useMap'
 import usePrevious from 'react-use/lib/usePrevious'
 import useSet from 'react-use/lib/useSet'
@@ -15,12 +15,11 @@ import { View, useBreakpointValue } from 'native-base'
 import FormMenu from 'components/FormMenu'
 import FromTop from 'components/FormTop'
 
-import { FormType } from 'utils/types/form'
 import {
   RecordValue,
   RecordValuePath,
-  FlatRecord,
   recordValueSchema,
+  RecordType,
 } from 'utils/types/record'
 import { allFormRenderCommands } from 'utils/formRendering/commands'
 import { renderCommand } from 'utils/formRendering/renderer'
@@ -28,42 +27,47 @@ import { transformToLayout } from 'utils/formRendering/transformations'
 import { nameFormSections, isSectionComplete } from 'utils/forms'
 import { recordTypeToFlatRecord, flatRecordToRecordType } from 'utils/records'
 import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
-import { RecordType } from 'utils/types/record'
 import {
   RecordMetadata,
   RecordManifestWithData,
 } from 'utils/types/recordMetadata'
-import { lookupManifest } from 'utils/manifests'
-import yaml from 'js-yaml'
+import {
+  getFormTypeFromManifest,
+  getRecordTypeFormManifest,
+} from 'utils/manifests'
+
+export type FormProps = {
+  formMetadata: FormMetadata
+  formManifest: FormManifestWithData
+  recordMetadata?: RecordMetadata
+  recordManifest?: RecordManifestWithData
+  addPhotoToManifest?: (uri: string) => any
+  removePhotoFromManifest?: (sha256: string) => any
+  noRenderCache?: boolean
+  onCancel: () => any
+  onSaveAndExit: (record: RecordType) => any
+  onComplete: (record: RecordType) => any
+  disableMenu?: boolean
+}
 
 export default function Form({
-  formMetadata,
   formManifest,
-  recordMetadata = undefined,
-  recordManifest = undefined,
-  setRecord = () => null,
-  noRenderCache = false,
+  recordManifest,
+  addPhotoToManifest = () => null,
+  removePhotoFromManifest = () => null,
   onCancel,
   onSaveAndExit,
   onComplete,
   disableMenu = false,
-}: {
-  formMetadata: FormMetadata
-  formManifest: FormManifestWithData
-  recordMetadata?: Partial<RecordMetadata>
-  recordManifest?: RecordManifestWithData
-  setRecord?: (record: RecordType) => void
-  noRenderCache?: boolean
-  onCancel: () => void
-  onSaveAndExit: () => void
-  onComplete: () => void
-  disableMenu?: boolean
-}) {
-  const [form, setForm] = React.useState({} as FormType)
-  const [flatRecord, { set: setFlatRecordValue, setAll: setFlatRecord }] =
-    useMap({} as FlatRecord)
+}: FormProps) {
+  const [flatRecord, { set: setFlatRecordValue }] = useMap(
+    recordManifest
+      ? recordTypeToFlatRecord(getRecordTypeFormManifest(recordManifest))
+      : {}
+  )
 
-  const formSections = useMemo(() => nameFormSections(form.sections), [form])
+  const form = getFormTypeFromManifest(formManifest)
+  const formSections = nameFormSections(form.sections)
   const [keepAlive, { add: addKeepAlive, remove: removeKeepAlive }] = useSet(
     new Set([] as string[])
   )
@@ -87,14 +91,20 @@ export default function Form({
     rawToggleMenuVisible()
   }, [rawToggleMenuVisible])
 
-  const isSectionCompleteList = useMemo(
-    () =>
-      form
-        ? _.map(formSections, section =>
-            isSectionComplete(section, form.common, flatRecord)
-          )
-        : [],
-    [form, formSections, flatRecord]
+  const isSectionCompleteList = form
+    ? _.map(formSections, section =>
+        isSectionComplete(section, form.common, flatRecord)
+      )
+    : []
+
+  const onSaveAndExitRecord = useCallback(
+    () => onSaveAndExit(flatRecordToRecordType(flatRecord)),
+    [onSaveAndExit, flatRecord]
+  )
+
+  const onCompleteRecord = useCallback(
+    () => onComplete(flatRecordToRecordType(flatRecord)),
+    [onComplete, flatRecord]
   )
 
   const layoutType = useBreakpointValue({
@@ -103,32 +113,21 @@ export default function Form({
     lg: 'large',
   }) as 'phone' | 'compact' | 'large'
 
-  const renderCommands = useMemo(() => {
-    if (!_.isEmpty(formSections) && form && 'common' in form) {
-      const sectionContent = formSections[currentSection]
-      return transformToLayout(
-        allFormRenderCommands(
-          sectionContent,
-          form.common,
-          _.concat(
-            formManifest.contents || [],
-            (recordManifest && recordManifest.contents) || []
+  const renderCommands =
+    !_.isEmpty(formSections) && form && 'common' in form
+      ? transformToLayout(
+          allFormRenderCommands(
+            formSections[currentSection],
+            form.common,
+            _.concat(
+              formManifest.contents || [],
+              recordManifest?.contents || []
+            ),
+            flatRecord
           ),
-          flatRecord
-        ),
-        layoutType
-      )
-    } else {
-      return []
-    }
-  }, [
-    formSections,
-    currentSection,
-    form,
-    formManifest,
-    recordManifest,
-    flatRecord,
-  ])
+          layoutType
+        )
+      : []
 
   const setRecordPath = useCallback(
     (path: RecordValuePath, value: RecordValue) => {
@@ -138,47 +137,25 @@ export default function Form({
   )
   const renderItem = useCallback(
     ({ item }) =>
-      renderCommand(item, setRecordPath, addKeepAlive, removeKeepAlive),
-    [setRecordPath, addKeepAlive, removeKeepAlive]
+      renderCommand(
+        item,
+        setRecordPath,
+        addPhotoToManifest,
+        removePhotoFromManifest,
+        addKeepAlive,
+        removeKeepAlive
+      ),
+    [
+      setRecordPath,
+      addPhotoToManifest,
+      removePhotoFromManifest,
+      addKeepAlive,
+      removeKeepAlive,
+    ]
   )
 
-  // Pull the initial contents from the form manifest
-  useEffect(() => {
-    try {
-      const formFile = lookupManifest(
-        formManifest,
-        e => e.filetype === 'text/yaml' && e.filename === 'form.yaml'
-      )
-      if (formFile) {
-        setForm(yaml.load(formFile.data) as FormType)
-      } else {
-        console.error('Bad form TODO')
-      }
-    } catch (e) {
-      // TODO Error handling
-      console.error(e)
-    }
-  }, [formManifest, setForm])
-
-  // Pull the initial contents from the record manifest
-  useEffect(() => {
-    if (!recordManifest) return
-    try {
-      const recordFile = lookupManifest(
-        recordManifest,
-        e => e.filetype === 'text/json' && e.filename === 'record.json'
-      )
-      if (recordFile) {
-        const record = recordTypeToFlatRecord(JSON.parse(recordFile.data))
-        setFlatRecord(record)
-      }
-    } catch (e) {
-      // TODO Error handling
-      console.error('Failed to pull record', e)
-    }
-  }, [recordManifest, setFlatRecord])
-
-  // TODO Debugging until this is tested
+  // Calculate changed paths, and if there are any,
+  // call setRecord with the new record
   const previousFlatRecord = usePrevious(flatRecord)
   const changedPaths = _.reduce(
     _.union(_.keys(flatRecord), _.keys(previousFlatRecord)),
@@ -195,8 +172,7 @@ export default function Form({
   )
   if (!_.isEmpty(changedPaths)) {
     const record = flatRecordToRecordType(flatRecord)
-    setRecord(record)
-    console.log(changedPaths)
+    console.log(recordManifest)
     console.log(flatRecord)
     console.log(record)
     // TODO Remove after testing
@@ -231,8 +207,8 @@ export default function Form({
           toggleMenu={toggleMenuVisible}
           isSectionCompleteList={isSectionCompleteList}
           onCancel={onCancel}
-          onSaveAndExit={onSaveAndExit}
-          onCompleteRecord={onComplete}
+          onSaveAndExit={onSaveAndExitRecord}
+          onCompleteRecord={onCompleteRecord}
           onPrint={onCancel}
         />
       ) : (

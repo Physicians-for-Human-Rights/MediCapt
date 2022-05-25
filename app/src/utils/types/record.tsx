@@ -2,48 +2,18 @@ import { z, ZodRawShape } from 'zod'
 import { dateSchema } from './common'
 
 // -------------------
-//   Record Metadata
-// -------------------
-
-export const recordMetadataSchema = z
-  .object({
-    recordUUID: z.string().nonempty(),
-    recordID: z.string().nonempty(),
-    locationUUID: z.string().nonempty(),
-    createdDate: z.date(),
-    providerCreatedUUID: z.string().nonempty(),
-    formUUID: z.string().nonempty(),
-    formName: z.string().nonempty(),
-    formTags: z.string().nonempty(),
-    formVersion: z.string().nonempty(),
-    completed: z.boolean(),
-    completedDate: z.date().nullable(),
-    providerCompletedUUID: z.string().nonempty(),
-    lastChangedDate: z.date(),
-    providerLastChangedUUID: z.string().nonempty(),
-    patientName: z.string().nonempty(),
-    patientGender: z.string().nonempty(),
-    patientAge: z.string().nonempty(),
-    patientUUID: z.string().nonempty(),
-    caseId: z.string().nonempty(),
-    recordStorageVersion: z.literal('1.0.0'),
-  })
-  .strict()
-
-export type RecordMetadata = z.infer<typeof recordMetadataSchema>
-
-// -------------------
 //  Record Value Types
 // -------------------
 
 export const recordPhotoSchema = z.object({
-  uri: z.string().nonempty(),
+  sha256: z.string().nonempty(),
   'date-taken': dateSchema.optional(),
 })
-export const imageAnnotationSchema = z.object({
+export const recordImageAnnotationSchema = z.object({
   location: z.object({
-    x: z.number().int().min(0).max(10000),
-    y: z.number().int().min(0).max(10000),
+    // TODO: should coordinates be ints
+    x: z.number().min(0).max(10000),
+    y: z.number().min(0).max(10000),
   }),
   text: z.string(),
   photos: recordPhotoSchema.array(),
@@ -105,7 +75,6 @@ export const recordValueByTypeSchema = {
   sex: skippableValueSchema({
     type: z.literal('sex'),
     value: z.string(), // z.enum(['male', 'female', 'intersex']),
-    skipped: z.boolean().optional(),
   }),
   date: skippableValueSchema({
     type: z.literal('date'),
@@ -118,9 +87,11 @@ export const recordValueByTypeSchema = {
   }),
   signature: skippableValueSchema({
     type: z.literal('signature'),
-    value: z.string().nonempty(),
-    signer: z.string().optional(),
-    'date-signed': dateSchema.optional(),
+    value: z.object({
+      sha256: z.string().optional(),
+      signer: z.string().optional(),
+      'date-signed': dateSchema.optional(),
+    }),
   }),
   photo: skippableValueSchema({
     type: z.literal('photo'),
@@ -129,8 +100,8 @@ export const recordValueByTypeSchema = {
   'body-image': skippableValueSchema({
     type: z.literal('body-image'),
     value: z.object({
-      uri: z.string(),
-      annotations: imageAnnotationSchema.array(),
+      imageHash: z.string(),
+      annotations: recordImageAnnotationSchema.array(),
     }),
   }),
   list: skippableValueSchema({
@@ -206,7 +177,7 @@ export const recordSimpleValueSchema = z.union([
 ])
 
 export type RecordPhoto = z.infer<typeof recordPhotoSchema>
-export type ImageAnnotation = z.infer<typeof imageAnnotationSchema>
+export type RecordImageAnnotation = z.infer<typeof recordImageAnnotationSchema>
 // export type MultipleFormValueTypes = z.infer<
 //   typeof multipleFormValueTypesSchema
 // >

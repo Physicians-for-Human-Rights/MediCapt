@@ -280,15 +280,7 @@ export default function FormList({
           <ScrollView>
             <Box position="relative" display={{ md: 'none', base: 'flex' }}>
               {forms.map((item: FormMetadata, index: number) => {
-                // TODO ListItem not clickable
-                // return <ListItem item={item} key={index} onPress={selectItem} />
-                return (
-                  <ListItemDesktop
-                    item={item}
-                    key={index}
-                    selectItem={selectItem}
-                  />
-                )
+                return <ListItem item={item} key={index} onPress={selectItem} />
               })}
             </Box>
             <Box display={{ md: 'flex', base: 'none' }}>

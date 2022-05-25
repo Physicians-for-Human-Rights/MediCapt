@@ -23,7 +23,7 @@ import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import SelectLocation from 'components/SelectLocation'
 import { getFormCached, getUserByUUIDCached } from 'api/common'
 import { UserType } from 'utils/types/user'
-import { UserPoolId, userFullName } from 'utils/userTypes'
+import { userFullName } from 'utils/userTypes'
 
 export function ListItem({
   item,
@@ -186,8 +186,6 @@ export function ListItemDesktop({
 
 export default function RecordList({
   records,
-  hasMore = false,
-  loadMore,
   filterLocationID,
   setFilterLocationID,
   filterSealed,
@@ -205,10 +203,10 @@ export default function RecordList({
   itemsPerPage?: number
   filterLocationID: string
   setFilterLocationID: React.Dispatch<React.SetStateAction<string>>
-  filterSearchType: string
-  setFilterSearchType: React.Dispatch<React.SetStateAction<string>>
   filterSealed?: string | undefined
   setFilterSealed?: React.Dispatch<React.SetStateAction<string>> | undefined
+  filterSearchType: string
+  setFilterSearchType: React.Dispatch<React.SetStateAction<string>>
   filterText: string | undefined
   setFilterText: React.Dispatch<React.SetStateAction<string | undefined>>
   doSearch: () => any
@@ -308,6 +306,7 @@ export default function RecordList({
             selectedValue={filterSearchType}
             onValueChange={setFilterSearchType}
             placeholder={t('record.search-by.select')}
+            // TODO props causing crashes on Android
             ml={{ base: 0, md: 2 }}
             w={{ md: '80%', lg: '80%', base: '80%' }}
           >

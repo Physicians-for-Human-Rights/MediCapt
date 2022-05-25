@@ -38,11 +38,23 @@ export const formMetadataSchema = formMetadataSchemaByUser
   })
   .strict()
 
-export const formMetadataSchemaStrip = formMetadataSchema.strip()
-
 // Manifests of various types
 
-export const formFileWithMD5Schema = z.object({
+export const formManifestFileSchema = z.object({
+  sha256: z.string().nonempty(),
+  filetype: z.string().nonempty(),
+  filename: z.string().nonempty(),
+})
+
+export const formManifestSchema = z
+  .object({
+    'storage-version': z.literal('1.0.0'),
+    contents: z.array(formManifestFileSchema),
+    root: z.string(),
+  })
+  .strict()
+
+export const formManifestFileWithMD5Schema = z.object({
   sha256: z.string().nonempty(),
   md5: z.string().nonempty(),
   filetype: z.string().nonempty(),
@@ -52,26 +64,12 @@ export const formFileWithMD5Schema = z.object({
 export const formManifestWithMD5Schema = z
   .object({
     'storage-version': z.literal('1.0.0'),
-    contents: z.array(formFileWithMD5Schema),
+    contents: z.array(formManifestFileWithMD5Schema),
     root: z.string(),
   })
   .strict()
 
-export const formFileSchema = z.object({
-  sha256: z.string().nonempty(),
-  filetype: z.string().nonempty(),
-  filename: z.string().nonempty(),
-})
-
-export const formManifestSchema = z
-  .object({
-    'storage-version': z.literal('1.0.0'),
-    contents: z.array(formFileSchema),
-    root: z.string(),
-  })
-  .strict()
-
-export const formFileWithPostLinkSchema = z.object({
+export const formManifestFileWithPostLinkSchema = z.object({
   sha256: z.string().nonempty(),
   filetype: z.string().nonempty(),
   link: s3PresignedPost,
@@ -82,11 +80,11 @@ export const formManifestWithPostLinksSchema = z
   .object({
     'storage-version': z.literal('1.0.0'),
     root: z.string(),
-    contents: z.array(formFileWithPostLinkSchema),
+    contents: z.array(formManifestFileWithPostLinkSchema),
   })
   .strict()
 
-export const formFileWithLinkSchema = z.object({
+export const formManifestFileWithLinkSchema = z.object({
   sha256: z.string().nonempty(),
   filetype: z.string().nonempty(),
   link: z.string().nonempty(),
@@ -97,7 +95,23 @@ export const formManifestWithLinksSchema = z
   .object({
     'storage-version': z.literal('1.0.0'),
     root: z.string(),
-    contents: z.array(formFileWithLinkSchema),
+    contents: z.array(formManifestFileWithLinkSchema),
+  })
+  .strict()
+
+export const formManifestFileWithDataSchema = z.object({
+  sha256: z.string().nonempty(),
+  md5: z.string().nonempty(),
+  filename: z.string().nonempty(),
+  data: z.string().nonempty(),
+  filetype: z.string().nonempty(),
+})
+
+export const formManifestWithDataSchema = z
+  .object({
+    'storage-version': z.literal('1.0.0'),
+    contents: z.array(formManifestFileWithDataSchema),
+    root: z.string(),
   })
   .strict()
 
@@ -234,16 +248,28 @@ export const formSchemaDynamoLatestToUpdate = formSchemaDynamoLatestToUpdatePart
 
 export type FormMetadataByUser = z.infer<typeof formMetadataSchemaByUser>
 export type FormMetadata = z.infer<typeof formMetadataSchema>
-export type FormFile = z.infer<typeof formFileSchema>
+
+export type FormManifestFile = z.infer<typeof formManifestFileSchema>
 export type FormManifest = z.infer<typeof formManifestSchema>
-export type FormFileWithMD5Schema = z.infer<typeof formFileWithMD5Schema>
-export type FormFileWithLink = z.infer<typeof formFileWithLinkSchema>
+export type FormManifestFileWithMD5 = z.infer<
+  typeof formManifestFileWithMD5Schema
+>
 export type FormManifestWithMD5 = z.infer<typeof formManifestWithMD5Schema>
-export type FormManifestWithLinks = z.infer<typeof formManifestWithLinksSchema>
-export type FormFileWithPostLink = z.infer<typeof formFileWithPostLinkSchema>
+export type FormManifestFileWithPostLink = z.infer<
+  typeof formManifestFileWithPostLinkSchema
+>
 export type FormManifestWithPostLinks = z.infer<
   typeof formManifestWithPostLinksSchema
 >
+export type FormManifestFileWithLink = z.infer<
+  typeof formManifestFileWithLinkSchema
+>
+export type FormManifestWithLinks = z.infer<typeof formManifestWithLinksSchema>
+export type FormManifestFileWithData = z.infer<
+  typeof formManifestFileWithDataSchema
+>
+export type FormManifestWithData = z.infer<typeof formManifestWithDataSchema>
+
 export type FormPostServer = {
   metadata: FormMetadata
   manifest: FormManifestWithPostLinks
@@ -266,22 +292,3 @@ export type FormDynamoLatestUpdateType = z.infer<
 export type FormDynamoLatestToUpdateType = z.infer<
   typeof formSchemaDynamoLatestToUpdate
 >
-
-export const formFileWithDataSchema = z.object({
-  sha256: z.string().nonempty(),
-  md5: z.string().nonempty(),
-  filename: z.string().nonempty(),
-  data: z.string().nonempty(),
-  filetype: z.string().nonempty(),
-})
-
-export const formManifestWithDataSchema = z
-  .object({
-    'storage-version': z.literal('1.0.0'),
-    contents: z.array(formFileWithDataSchema),
-    root: z.string(),
-  })
-  .strict()
-
-export type FormFileWitDataSchema = z.infer<typeof formFileWithDataSchema>
-export type FormManifestWithData = z.infer<typeof formManifestWithDataSchema>

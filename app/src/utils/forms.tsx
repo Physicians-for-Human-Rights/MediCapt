@@ -382,7 +382,7 @@ export function isSectionComplete(
       text: valuePath =>
         getFlatRecordValue(flatRecord, valuePath, 'text')?.value != undefined,
       signature: valuePath =>
-        getFlatRecordValue(flatRecord, valuePath, 'signature')?.value !=
+        getFlatRecordValue(flatRecord, valuePath, 'signature')?.value.sha256 !=
         undefined,
       combineResultsFromParts: results =>
         _.reduce(results, (a, b) => a && b, true as boolean),

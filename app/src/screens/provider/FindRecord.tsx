@@ -4,51 +4,43 @@ import _ from 'lodash'
 import { default as RecordListComponent } from 'components/RecordList'
 import { RecordMetadata } from 'utils/types/recordMetadata'
 import { useInfo, handleStandardErrors } from 'utils/errors'
-import { findRecords } from 'api/provider'
 import Loading from 'components/Loading'
 import { RootStackScreenProps } from 'utils/provider/navigation'
+import { getRecords } from '../../utils/localStore/store'
 
 export default function RecordList({
   route,
   navigation,
 }: RootStackScreenProps<'FindRecord'>) {
   const [records, setRecords] = useState([] as RecordMetadata[])
-  const [nextKey, setNextKey] = useState(undefined as any)
-  const [filterCountry, setFilterCountry] = useState('')
-  const [filterLanguage, setFilterLanguage] = useState('')
+  const [nextKey, setNextKey] = useState(undefined as undefined | string)
+
   const [filterLocationID, setFilterLocationID] = useState('')
-  const [filterEnabled, setFilterEnabled] = useState('')
   const [filterSearchType, setFilterSearchType] = useState('')
   const [filterText, setFilterText] = useState(undefined as undefined | string)
+
   const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
 
   const doSearch = async () => {
-    findRecords(
-      () => setWaiting('Searching'),
-      () => setWaiting(null),
-      filterCountry,
-      filterLanguage,
-      filterLocationID,
-      filterEnabled,
-      filterSearchType,
-      filterText,
-      e => handleStandardErrors(error, warning, success, e),
-      setRecords,
-      setNextKey
-    )
+    setWaiting('Searching')
+    try {
+      const [records, nextKey] = await getRecords({
+        locationId: filterLocationID,
+        searchType: filterSearchType,
+        text: filterText,
+      })
+      setRecords(records)
+      setNextKey(nextKey)
+    } catch (e) {
+      handleStandardErrors(error, warning, success, e)
+    }
+    setWaiting(null)
   }
 
   useEffect(() => {
     doSearch()
-  }, [
-    filterCountry,
-    filterLanguage,
-    filterLocationID,
-    filterEnabled,
-    filterSearchType,
-    filterText,
-  ])
+  }, [filterLocationID, filterSearchType, filterText])
 
   return (
     <DashboardLayout
@@ -62,14 +54,8 @@ export default function RecordList({
           records={records}
           hasMore={false}
           loadMore={() => null}
-          filterCountry={filterCountry}
-          setFilterCountry={setFilterCountry}
-          filterLanguage={filterLanguage}
-          setFilterLanguage={setFilterLanguage}
           filterLocationID={filterLocationID}
           setFilterLocationID={setFilterLocationID}
-          filterEnabled={filterEnabled}
-          setFilterEnabled={setFilterEnabled}
           filterSearchType={filterSearchType}
           setFilterSearchType={setFilterSearchType}
           filterText={filterText}

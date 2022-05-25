@@ -179,7 +179,7 @@ export function flatRecordToRecordType(flatRecord: FlatRecord): RecordType {
     'storage-version': '1.0.0',
     sections: {},
   }
-  _.map(_.cloneDeep(flatRecord), (v, p) => _.set(record, p, v))
+  _.map(flatRecord, (v, p) => _.set(record, p, _.clone(v)))
   return recordTypeSchema.parse(record)
 }
 

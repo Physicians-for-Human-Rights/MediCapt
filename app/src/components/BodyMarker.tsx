@@ -7,11 +7,10 @@ import {
   Platform,
   GestureResponderEvent,
 } from 'react-native'
-import { ImageAnnotation, RecordPhoto } from 'utils/types/record'
+import Photo from 'components/form-parts/Photo'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
-import Photo from 'components/form-parts/Photo'
 
 function squareToImageCoordinates(
   p: {
@@ -60,6 +59,15 @@ function imageToSquareCoordinates(
   }
 }
 
+export type BodyMarkerAnnotation = {
+  location: {
+    x: number
+    y: number
+  }
+  text: string
+  photos: Photo[]
+}
+
 function BodyMarker({
   baseImage,
   annotations,
@@ -69,8 +77,8 @@ function BodyMarker({
   isDisabled,
 }: {
   baseImage: string
-  annotations: ImageAnnotation[]
-  onAnnotate?: (annotation: ImageAnnotation, index: number | null) => any
+  annotations: BodyMarkerAnnotation[]
+  onAnnotate?: (annotation: BodyMarkerAnnotation, index: number | null) => any
   onDeleteAnnotation?: (index: number) => any
   onCoverPress?: () => any
   isDisabled: boolean
@@ -88,7 +96,7 @@ function BodyMarker({
     null as null | { x: number; y: number }
   )
   const [currentAnnotation, setCurrentAnnotation] = useState('')
-  const [currentPhotos, setCurrentPhotos] = useState([] as RecordPhoto[])
+  const [currentPhotos, setCurrentPhotos] = useState([] as Photo[])
   const [isMarkerModalOpen, setMarkerModalOpen] = useState(false)
 
   useEffect(() => {
@@ -103,7 +111,7 @@ function BodyMarker({
   const onPress = (
     location: { x: number; y: number },
     text?: string,
-    photos?: RecordPhoto[],
+    photos?: Photo[],
     index?: number
   ) => {
     if (index === undefined) {
@@ -272,7 +280,7 @@ function BodyMarker({
               <Photo
                 isDisabled={isDisabled}
                 photos={currentPhotos || []}
-                addPhoto={(toAdd: RecordPhoto) => {
+                addPhoto={(toAdd: Photo) => {
                   setCurrentPhotos(currentPhotos.concat(toAdd))
                 }}
                 removePhoto={(n: number) => {

@@ -17,10 +17,11 @@ import {
   recordManifestWithMD5Schema,
   RecordManifestWithMD5,
   RecordPostServer,
-  RecordGetServer,
   recordManifestWithPostLinksSchema,
+  RecordGetServer,
 } from 'utils/types/recordMetadata'
 import { QueryFilterForType } from 'utils/types/url'
+import { z } from 'zod'
 
 // User
 
@@ -78,41 +79,37 @@ export async function getForm(formUUID: string): Promise<FormGetServer> {
   }
 }
 
-export async function findForms(
-  pre: () => void,
-  post: () => void,
-  filterCountry: string | undefined,
-  filterLanguage: string | undefined,
-  filterLocationID: string | undefined,
-  filterSearchType: string | undefined,
-  filterText: string | undefined,
-  handleErrors: (err: any) => void,
-  setForms: (users: FormMetadata[]) => void,
-  setNextKey: (key: string) => void
-) {
-  try {
-    pre()
-    let filters: QueryFilterForType<LocationType> = []
-    if (filterCountry) filters.push({ country: { eq: filterCountry } })
-    if (filterLanguage) filters.push({ language: { eq: filterLanguage } })
-    if (filterLocationID) filters.push({ locationID: { eq: filterLocationID } })
-    if (filterText) filters.push({ locationID: { eq: filterText } })
-    //
-    // NB Providers are only allowed to see forms which are enabled
-    filters.push({ enabled: { eq: 'enabled' } })
-    const data = await API.get('provider', '/provider/form', {
-      queryStringParameters: {
-        filter: JSON.stringify(filters),
-      },
-    })
-    // @ts-ignore TODO
-    setForms(_.map(data.items, formMetadataSchema.parse))
-    setNextKey(data.nextKey)
-  } catch (e) {
-    handleErrors(e)
-  } finally {
-    post()
-  }
+export type GetFormsFilters = {
+  country?: string
+  language?: string
+  locationId?: string
+  text?: string
+  searchType?: string
+}
+export async function getForms(
+  filters: GetFormsFilters
+): Promise<[FormMetadata[], string | undefined]> {
+  let queryFilters: QueryFilterForType<LocationType> = []
+  if (filters.country) queryFilters.push({ country: { eq: filters.country } })
+  if (filters.language)
+    queryFilters.push({ language: { eq: filters.language } })
+  if (filters.locationId)
+    queryFilters.push({ locationID: { eq: filters.locationId } })
+  if (filters.text) queryFilters.push({ locationID: { eq: filters.text } })
+
+  //
+  // NB Providers are only allowed to see forms which are enabled
+  queryFilters.push({ enabled: { eq: 'enabled' } })
+  const data = await API.get('provider', '/provider/form', {
+    queryStringParameters: {
+      filter: JSON.stringify(queryFilters),
+    },
+  })
+
+  return [
+    _.map(data.items, item => formMetadataSchema.parse(item)),
+    z.string().optional().parse(data.nextKey),
+  ]
 }
 
 // Records
@@ -183,40 +180,36 @@ export async function getRecord(recordUUID: string): Promise<RecordGetServer> {
   }
 }
 
-export async function findRecords(
-  pre: () => any,
-  post: () => any,
-  filterCountry: string | undefined,
-  filterLanguage: string | undefined,
-  filterLocationID: string | undefined,
-  filterEnabled: string | undefined,
-  filterSearchType: string | undefined,
-  filterText: string | undefined,
-  handleErrors: (err: any) => any,
-  setRecords: (users: RecordMetadata[]) => any,
-  setNextKey: (key: string) => any
-) {
-  try {
-    pre()
-    let filters: QueryFilterForType<LocationType> = []
-    if (filterCountry) filters.push({ country: { eq: filterCountry } })
-    if (filterLanguage) filters.push({ language: { eq: filterLanguage } })
-    if (filterLocationID) filters.push({ locationID: { eq: filterLocationID } })
-    if (filterEnabled) filters.push({ enabled: { eq: filterEnabled } })
-    if (filterText) filters.push({ locationID: { eq: filterText } })
-    const data = await API.get('provider', '/provider/record', {
-      queryStringParameters: {
-        filter: JSON.stringify(filters),
-      },
-    })
-    // @ts-ignore TODO
-    setRecords(_.map(data.items, recordMetadataSchema.parse))
-    setNextKey(data.nextKey)
-  } catch (e) {
-    handleErrors(e)
-  } finally {
-    post()
-  }
+export type GetRecordsFilters = {
+  country?: string
+  language?: string
+  locationId?: string
+  enabled?: string
+  searchType?: string
+  text?: string
+}
+export async function getRecords(
+  filters: GetRecordsFilters
+): Promise<[RecordMetadata[], string | undefined]> {
+  let queryFilters: QueryFilterForType<LocationType> = []
+  if (filters.country) queryFilters.push({ country: { eq: filters.country } })
+  if (filters.language)
+    queryFilters.push({ language: { eq: filters.language } })
+  if (filters.locationId)
+    queryFilters.push({ locationID: { eq: filters.locationId } })
+  if (filters.enabled) queryFilters.push({ enabled: { eq: filters.enabled } })
+  if (filters.text) queryFilters.push({ locationID: { eq: filters.text } })
+
+  const data = await API.get('provider', '/provider/record', {
+    queryStringParameters: {
+      filter: JSON.stringify(queryFilters),
+    },
+  })
+
+  return [
+    _.map(data.items, item => recordMetadataSchema.parse(item)),
+    z.string().optional().parse(data.nextKey),
+  ]
 }
 
 export async function sealRecord(recordUUID: string): Promise<RecordMetadata> {

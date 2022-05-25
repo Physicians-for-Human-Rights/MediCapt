@@ -1,34 +1,31 @@
 import React, { useState } from 'react'
 import { Box, Icon, Button, Center, Modal } from 'native-base'
-import { ImageAnnotation } from 'utils/types/record'
-import BodyMarker from 'components/BodyMarker'
+import BodyMarker, { BodyMarkerAnnotation } from 'components/BodyMarker'
 import { useWindowDimensions } from 'react-native'
 import { disabledBackground } from 'utils/formRendering/utils'
 import { AntDesign } from '@expo/vector-icons'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 
+export type ImageAnnotation = BodyMarkerAnnotation
+
 function BodyImage({
-  imageURI,
+  image,
   annotations,
-  addMarkerData,
-  removeMarkerData,
+  addAnnotation: addMarker,
+  removeAnnotation: removeMarker,
   isDisabled,
 }: {
-  imageURI: string
+  image: string
   annotations: ImageAnnotation[]
-  addMarkerData: (marker: ImageAnnotation, index: number | null) => void
-  removeMarkerData: (n: number) => void
+  addAnnotation: (marker: ImageAnnotation, index: number | null) => any
+  removeAnnotation: (n: number) => any
   isDisabled: boolean
 }) {
   const window = useWindowDimensions()
   const modalSize = Math.min(window.height, window.width)
 
   const [isOpen, setOpen] = useState(false)
-
-  const image =
-    imageURI ||
-    'https://www.publicdomainpictures.net/pictures/280000/velka/not-found-image-15383864787lu.jpg'
 
   const internalClose = () => {
     setOpen(false)
@@ -71,8 +68,8 @@ function BodyImage({
                   isDisabled={false}
                   baseImage={image}
                   annotations={annotations}
-                  onAnnotate={addMarkerData}
-                  onDeleteAnnotation={removeMarkerData}
+                  onAnnotate={addMarker}
+                  onDeleteAnnotation={removeMarker}
                 />
               </Box>
             </Center>
