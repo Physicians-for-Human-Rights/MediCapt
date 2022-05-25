@@ -104,7 +104,7 @@ export default function RecordEditor({
     }
 
     fetchData()
-  }, [recordMetadata, formMetadata])
+  }, [])
 
   const addPhotoToManifest = useCallback((uri: string) => {
     const fileType = uri.split(',')[0].split(':')[1].split(';')[0]
