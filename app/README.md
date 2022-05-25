@@ -8,7 +8,8 @@ yarn install
 ```
 
 When infrastructure that the app relies on changes you will want to run
-`update-config.sh`. This requires that you have a terraform checkout.
+`update-config.sh`. This requires that you have a terraform checkout. Or you ask
+someone with access to the backend for the `config.json` file.
 
 ## Run
 
