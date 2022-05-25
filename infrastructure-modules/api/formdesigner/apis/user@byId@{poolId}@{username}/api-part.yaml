@@ -1,0 +1,337 @@
+swagger: '2.0'
+info:
+  description: |
+    Medicapt API for form designers
+  version: 1.0.0
+  title: Medicapt API - Form deigners
+  termsOfService: TODO
+  contact:
+    email: TODO@TODO.TODO
+  license:
+    name: TODO
+    url: https://formdesigner-api.dev.medicapt.click
+securityDefinitions:
+  CognitoUserProvider:
+    type: apiKey
+    name: Authorization
+    in: header
+    x-amazon-apigateway-authtype: cognito_user_pools
+    x-amazon-apigateway-authorizer:
+      type: cognito_user_pools
+      providerARNs:
+      - ${cognito_user_pool_formdesigner_arn}
+x-amazon-apigateway-gateway-responses:
+  ACCESS_DENIED:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  DEFAULT_4XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  DEFAULT_5XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  MISSING_AUTHENTICATION_TOKEN:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+security:
+  - CognitoUserProvider: []
+schemes:
+- https
+paths:
+  /formdesigner/user/byId/{poolId}/{username}:
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - User
+      summary: Get a user by ID
+      operationId: formdesignerGetUserById
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - name: poolId
+        in: path
+        description: The pool ID of this user
+        required: true
+        type: string
+      - name: username
+        in: path
+        description: ID of the user to return
+        required: true
+        type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: User not found
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_formdesignerrGetUserById}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+definitions:
+  Empty: {}
+  User:
+    type: object
+    properties:
+      storage-version:
+        type: string
+        enum:
+        - 1.0.0
+      username:
+        type: string
+        minLength: 1
+      email:
+        type: string
+        minLength: 1
+      birthdate:
+        type: string
+        format: date-time
+      name:
+        type: string
+        minLength: 1
+      nickname:
+        type: string
+        minLength: 1
+      formal_name:
+        type: string
+        minLength: 1
+      gender:
+        type: string
+        minLength: 1
+      phone_number:
+        type: string
+        minLength: 1
+      official_id_type:
+        type: string
+        minLength: 1
+      official_id_code:
+        type: string
+        minLength: 1
+      official_id_expires:
+        type: string
+        format: date-time
+      official_id_image:
+        type: string
+        minLength: 1
+      address:
+        type: string
+        minLength: 1
+      country:
+        type: string
+        minLength: 1
+      language:
+        type: string
+        minLength: 1
+      expiry_date:
+        type: string
+        format: date-time
+      allowed_locations:
+        type: string
+      userType:
+        type: string
+        enum:
+        - Provider
+        - Associate
+        - Manager
+        - FormDesigner
+        - Researcher
+      enabled:
+        type: boolean
+      userUUID:
+        type: string
+        minLength: 1
+      userID:
+        type: string
+        minLength: 1
+      created_by:
+        type: string
+        minLength: 1
+      created_time:
+        type: string
+        format: date-time
+      last_updated_time:
+        type: string
+        format: date-time
+      status:
+        type: string
+    required:
+    - storage-version
+    - username
+    - email
+    - birthdate
+    - name
+    - nickname
+    - formal_name
+    - gender
+    - phone_number
+    - official_id_type
+    - official_id_code
+    - official_id_expires
+    - official_id_image
+    - address
+    - country
+    - language
+    - expiry_date
+    - allowed_locations
+    - userType
+    - enabled
+    - userUUID
+    - userID
+    - created_by
+    - created_time
+    - last_updated_time
+  Location:
+      type: object
+      properties:
+        storage-version:
+          type: string
+          enum:
+          - 1.0.0
+        country:
+          type: string
+          minLength: 2
+          maxLength: 2
+        language:
+          type: string
+          minLength: 2
+          maxLength: 2
+        legalName:
+          type: string
+          minLength: 1
+        shortName:
+          type: string
+          minLength: 1
+        entityType:
+          type: string
+          enum:
+          - medical-facility
+          - police-station
+          - refugee-camp
+        address:
+          type: string
+          minLength: 1
+        mailingAddress:
+          type: string
+          minLength: 1
+        coordinates:
+          type: string
+          minLength: 1
+        phoneNumber:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          format: email
+          minLength: 1
+        enabled:
+          type: boolean
+        tags:
+          type: string
+        locationUUID:
+          type: string
+          minLength: 1
+          format: uuid
+        locationID:
+          type: string
+          minLength: 1
+        createdDate:
+          type: string
+          format: date-time
+        createdByUUID:
+          type: string
+          minLength: 1
+          format: uuid
+        lastChangedByUUID:
+          type: string
+          minLength: 1
+          format: uuid
+        lastChangedDate:
+          type: string
+          format: date-time
+        version:
+          type: string
+          minLength: 1
+      required:
+      - storage-version
+      - country
+      - language
+      - legalName
+      - shortName
+      - entityType
+      - address
+      - mailingAddress
+      - coordinates
+      - phoneNumber
+      - email
+      - enabled
+      - locationUUID
+      - locationID
+      - createdDate
+      - createdByUUID
+      - lastChangedByUUID
+      - lastChangedDate
+      - version
+  Form:
+      type: object
+      properties:
+        storage-version:
+          type: string
+          enum:
+          - 1.0.0
+  FormFromServer:
+      type: object
+      properties:
+        storage-version:
+          type: string
+          enum:
+          - 1.0.0

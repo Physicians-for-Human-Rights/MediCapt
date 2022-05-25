@@ -1,0 +1,372 @@
+swagger: '2.0'
+info:
+  description: |
+    Medicapt API for healthcare associates
+  version: 1.0.0
+  title: Medicapt API - Associates
+  termsOfService: TODO
+  contact:
+    email: TODO@TODO.TODO
+  license:
+    name: TODO
+    url: https://associate-api.dev.medicapt.click
+securityDefinitions:
+  CognitoUserProvider:
+    type: apiKey
+    name: Authorization
+    in: header
+    x-amazon-apigateway-authtype: cognito_user_pools
+    x-amazon-apigateway-authorizer:
+      type: cognito_user_pools
+      providerARNs:
+      - ${cognito_user_pool_associate_arn}
+x-amazon-apigateway-gateway-responses:
+  ACCESS_DENIED:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  DEFAULT_4XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  DEFAULT_5XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  MISSING_AUTHENTICATION_TOKEN:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+security:
+  - CognitoUserProvider: []
+schemes:
+- https
+paths:
+  /associate/share/record/byId/{shareId}:
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - share
+      summary: Get a shared record by share ID
+      operationId: associateGetSharedRecordById
+      produces:
+      - application/json
+      parameters:
+      - name: shareId
+        in: path
+        description: ID of the record to return
+        required: true
+        type: string
+        format: uuid
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Share'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Record not found
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_associateGetSharedRecordById}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    delete:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - share
+      summary: Deletes a record share. You lose access to this record.
+      operationId: associateDeleteSharedRecordById
+      produces:
+      - application/json
+      parameters:
+      - name: shareId
+        in: path
+        description: ID of share to delete
+        required: true
+        type: string
+        format: uuid
+      responses:
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Record not found
+        405:
+          description: Record already sealed
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_associateDeleteSharedRecordById}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+  /associate/share/record/image/byId/{shareId}/{imageId}:
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - share
+      summary: Get an image in a record
+      operationId: associateGetSharedRecordImageByImageId
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: shareId
+        in: path
+        description: The share id
+        required: true
+        type: string
+        format: uuid
+      - name: imageId
+        in: path
+        description: The uuid of the image
+        required: true
+        type: string
+        format: uuid
+      responses:
+        400:
+          description: Record already sealed
+        404:
+          description: Record or image not found
+        405:
+          description: Validation exception
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_associateGetSharedRecordImageByImageId}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+  /associate/share/with-user:
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - share
+      summary: List your own shared records
+      operationId: associateGetSharedRecordsWithUser
+      produces:
+      - application/json
+      parameters:
+      - in: query
+        name: offset
+        type: integer
+        required: false
+        default: 0
+        minimum: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: limit
+        type: integer
+        required: false
+        default: 20
+        minimum: 1
+        maximum: 100
+        description: The numbers of items to return.
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Share'
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+        400:
+          description: Invalid status value
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_associateGetSharedRecordsWithUser}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+definitions:
+  Empty: {}
+  RecordMetadata:
+    type: object
+    properties:
+      form_id:
+        type: string
+        format: uuid
+      createdAt:
+        type: string
+        format: date
+      name:
+        type: string
+      age:
+        type: number
+      editedAt:
+        type: string
+        format: date
+      form_contents:
+        type: object
+  Record:
+    type: object
+    properties:
+      form_uuid:
+        type: string
+        format: uuid
+      name:
+        type: string
+      form_contents:
+        type: object
+  FormMetadata:
+    type: object
+    properties:
+      formUUID:
+        type: string
+        format: uuid
+      name:
+        type: string
+      subtitle:
+        type: string
+      country:
+        type: string
+      version:
+        type: string
+      tag:
+        type: string
+      form_id:
+        type: string
+  Form:
+    type: object
+    properties:
+      form_uuid:
+        type: string
+        format: uuid
+      form_details:
+        type: object
+  Share:
+    type: object
+    properties:
+      shareUUID:
+        type: string
+        format: uuid
+      formMetadata:
+        type: object
+      form:
+        type: object

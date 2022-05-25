@@ -1,0 +1,27 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "lambda:InvokeFunction",
+      "Effect": "Allow",
+      "Resource": "${humanid_lambda_arn}"
+    },
+    {
+      "Action": "dynamodb:PutItem",
+      "Effect": "Allow",
+      "Resource": "${location_table_arn}"
+    },
+    {
+      "Sid": "Cognito",
+      "Effect": "Allow",
+      "Action": ["cognito-idp:CreateGroup"],
+      "Resource": [
+        "${user_pool_provider_arn}",
+        "${user_pool_associate_arn}",
+        "${user_pool_manager_arn}",
+        "${user_pool_formdesigner_arn}",
+        "${user_pool_researcher_arn}"
+      ]
+    }
+  ]
+}

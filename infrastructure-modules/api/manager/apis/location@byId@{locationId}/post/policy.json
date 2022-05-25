@@ -1,0 +1,10 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": ["dynamodb:UpdateItem", "dynamodb:PutItem"],
+      "Effect": "Allow",
+      "Resource": "${location_table_arn}"
+    }
+  ]
+}

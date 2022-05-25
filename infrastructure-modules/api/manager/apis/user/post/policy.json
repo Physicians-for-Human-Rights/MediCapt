@@ -1,0 +1,55 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "lambda:InvokeFunction",
+      "Effect": "Allow",
+      "Resource": "${humanid_lambda_arn}"
+    },
+    {
+      "Sid": "Cognito",
+      "Effect": "Allow",
+      "Action": [
+        "cognito-idp:AdminAddUserToGroup",
+        "cognito-idp:AdminUpdateUserAttributes",
+        "cognito-idp:AdminCreateUser"
+      ],
+      "Resource": [
+        "${user_pool_provider_arn}",
+        "${user_pool_associate_arn}",
+        "${user_pool_manager_arn}",
+        "${user_pool_formdesigner_arn}",
+        "${user_pool_researcher_arn}"
+      ]
+    },
+    {
+      "Sid": "S3",
+      "Effect": "Allow",
+      "Action": ["s3:PutObject", "s3:GetObject"],
+      "Resource": [
+        "${image_bucket_provider_arn}/*",
+        "${image_bucket_associate_arn}/*",
+        "${image_bucket_manager_arn}/*",
+        "${image_bucket_formdesigner_arn}/*",
+        "${image_bucket_researcher_arn}/*",
+        "${image_bucket_provider_arn}",
+        "${image_bucket_associate_arn}",
+        "${image_bucket_manager_arn}",
+        "${image_bucket_formdesigner_arn}",
+        "${image_bucket_researcher_arn}"
+      ]
+    },
+    {
+      "Sid": "S3KMS",
+      "Effect": "Allow",
+      "Action": [
+        "kms:ReEncrypt",
+        "kms:GenerateDataKey",
+        "kms:Encrypt",
+        "kms:DescribeKey",
+        "kms:Decrypt"
+      ],
+      "Resource": "${image_kms_key_bucket_arn}"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": ["dynamodb:GetItem"],
+      "Effect": "Allow",
+      "Resource": "${form_table_arn}"
+    },
+    {
+      "Action": ["dynamodb:GetItem"],
+      "Effect": "Allow",
+      "Resource": "${form_table_arn}/*"
+    },
+    {
+      "Sid": "S3",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject"],
+      "Resource": ["${form_bucket_arn}/*", "${form_bucket_arn}"]
+    },
+    {
+      "Sid": "S3KMS",
+      "Effect": "Allow",
+      "Action": ["kms:Decrypt"],
+      "Resource": "${form_kms_key_bucket_arn}"
+    }
+  ]
+}

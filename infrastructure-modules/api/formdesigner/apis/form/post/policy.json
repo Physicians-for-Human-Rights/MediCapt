@@ -1,0 +1,15 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "lambda:InvokeFunction",
+      "Effect": "Allow",
+      "Resource": "${humanid_lambda_arn}"
+    },
+    {
+      "Action": "dynamodb:PutItem",
+      "Effect": "Allow",
+      "Resource": "${form_table_arn}"
+    }
+  ]
+}

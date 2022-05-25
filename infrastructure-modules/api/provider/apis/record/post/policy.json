@@ -1,0 +1,21 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "lambda:InvokeFunction",
+      "Effect": "Allow",
+      "Resource": "${humanid_lambda_arn}"
+    },
+    {
+      "Action": "dynamodb:PutItem",
+      "Effect": "Allow",
+      "Resource": "${record_table_arn}"
+    },
+    {
+      "Sid": "S3KMS",
+      "Effect": "Allow",
+      "Action": ["kms:Decrypt"],
+      "Resource": "${record_table_kms}"
+    }
+  ]
+}

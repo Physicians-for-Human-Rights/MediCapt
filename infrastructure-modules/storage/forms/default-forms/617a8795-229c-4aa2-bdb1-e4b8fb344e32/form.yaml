@@ -1,0 +1,990 @@
+name: Post Rape Care Form
+subtitle: Keyna MOH 363
+country: KE
+date: 2019-07-01
+created-date: 2019-07-01
+tag: sexual-assault
+values:
+  - key: lab-sample-destination
+    value:
+      - destination:
+          title: Destination
+          field:
+            type: list
+          select-multiple: true
+          list-options:
+            - National government lab
+            - Health facility lab
+      - comments:
+          title: Comments
+          field:
+            type: text
+            placeholder: comments
+  - key: lab-sample-type-a
+    value:
+      - wet-prep-microscope:
+          title: Wet prep microscope
+          field:
+            type: bool
+          parts:
+            Ref: lab-sample-destination
+      - dna:
+          title: DNA
+          field:
+            type: bool
+          parts:
+            Ref: lab-sample-destination
+      - culture-and-sensitivity:
+          title: Culture and sensitivity
+          field:
+            type: bool
+          parts:
+            Ref: lab-sample-destination
+  - key: counties-code-list
+    value:
+      - key: Mombasa
+        value: "001"
+      - key: Kwale
+        value: "002"
+      - key: Kilifi
+        value: "003"
+      - key: Tana river
+        value: "004"
+      - key: Lamu
+        value: "005"
+      - key: Taita taveta
+        value: "006"
+      - key: Garissa
+        value: "007"
+      - key: Wajir
+        value: "008"
+      - key: Mandera
+        value: "009"
+      - key: Marsabit
+        value: "010"
+      - key: Isiolo
+        value: "011"
+      - key: Meru
+        value: "012"
+      - key: Tharaka-nithi
+        value: "013"
+      - key: Embu
+        value: "014"
+      - key: Kitui
+        value: "015"
+      - key: Machakos
+        value: "016"
+      - key: Makueni
+        value: "017"
+      - key: Nyandarua
+        value: "018"
+      - key: Nyeri
+        value: "019"
+      - key: Kirinyaga
+        value: "020"
+      - key: Muranga
+        value: "021"
+      - key: Kiambu
+        value: "022"
+      - key: Turkana
+        value: "023"
+      - key: West pokot
+        value: "024"
+      - key: Samburu
+        value: "025"
+      - key: Transzoia
+        value: "026"
+      - key: Uasin gishu
+        value: "027"
+      - key: Elgeyo marakwet
+        value: "028"
+      - key: Nandi
+        value: "029"
+      - key: Baringo
+        value: "030"
+      - key: Laikipia
+        value: "031"
+      - key: Nakuru
+        value: "032"
+      - key: Narok
+        value: "033"
+      - key: Kajiado
+        value: "034"
+      - key: Kericho
+        value: "035"
+      - key: Bomet
+        value: "036"
+      - key: Kakamega
+        value: "037"
+      - key: Vihiga
+        value: "038"
+      - key: Bungoma
+        value: "039"
+      - key: Busia
+        value: "040"
+      - key: Siaya
+        value: "041"
+      - key: Kisumu
+        value: "042"
+      - key: Homabay
+        value: "043"
+      - key: Migori
+        value: "044"
+      - key: Kisii
+        value: "045"
+      - key: Nyamira
+        value: "046"
+      - key: Nairobi
+        value: "047"
+root:
+  - consent:
+      title: Consent
+      parts:
+      - medical-exam:
+          text: I AUTHORIZE the clinician to conduct a medical examination including a pelvic exam.
+          consent-required: true
+          field:
+            type: bool
+      - evidence:
+          text: I AUTHORIZE the clinician to collect evidence, such as bodily fluid samples, collection of clothing, hair combings, scrapings or cuttings of finger nails, blood samples, and photographs.
+          consent-required: true
+          field:
+            type: bool
+      - police-information:
+          text: I agree for the INFORMATION I am providing to the clinician in this document ALONG WITH MY NAME to be sent to the police or prosecutors at the end of this visit for purposes of a criminal investigation. I understand the potential risks involved and that refusal to share any of this information WILL NOT affect my access to medical care and treatment.
+          field:
+            type: bool
+      - police-evidence:
+          text: I agree for the EVIDENCE I am providing to the clinician in this document ALONG WITH MY NAME to be sent to the police or prosecutors at the end of this visit for purposes of a criminal investigation. I understand the potential risks involved and that refusal to share any of the evidence WILL NOT affect my access to medical care and treatment.
+          field:
+            type: bool
+      - police-photos:
+          text: I agree for the PHOTOS I am providing to the clinician in this document ALONG WITH MY NAME to be sent to the police or prosecutors at the end of this visit for purposes of a criminal investigation. I understand the potential risks involved and that refusal to share any of the photos WILL NOT affect my access to medical care and treatment.
+          field:
+            type: bool
+      - proxy:
+          title: Proxy
+          parts:
+          - is-proxy:
+              title: I am responding on behalf of a minor or disabled person
+              field:
+                type: bool
+          - reason:
+              title: The person you are speaking for is
+              only-when:
+                path: root.consent.proxy.parts.is-proxy.field.value
+                value: true
+              field:
+                type: list
+                select-multiple: true
+                list-options:
+                  - minor
+                  - disabled
+      - coercion:
+          title: My responses were reached without coercion or pressure from anyone.
+          consent-required: true
+          field:
+            type: bool
+      - signature:
+          title: Signature
+          consent-required: true
+          field:
+            type: signature
+  - clinic:
+      title: Clinic
+      parts:
+      - date:
+          title: Date form completed
+          field:
+            type: date
+      - county-code:
+          title: County code
+          field:
+            type: list-with-labels
+            list-options:
+              Ref: counties-code-list
+            other-allowed: true
+      - sub-county-code:
+          title: Sub-county code
+          field:
+            type: text
+            placeholder: code
+      - facility-name:
+          title: Facility name
+          field:
+            type: text
+            placeholder: name
+      - op-ip-number:
+          title: OP/IP Number
+          field:
+            type: number
+            placeholder: number
+      - mfl-code:
+          title: MFL Code
+          field:
+            type: text
+            placeholder: code
+      - time:
+          title: Date and time of exam
+          field:
+            type: date-time
+  - demographics:
+      title: Demographics
+      parts:
+      - name:
+          title: Name
+          repeated: true
+          field:
+            type: text
+          if-unknown:
+            value: Unknown
+      - date:
+          title: Date of birth
+          field:
+            type: date
+      - gender:
+          title: Gender
+          field:
+            type: gender
+      - address:
+          title: Address
+          field:
+            type: address
+      - phone-number:
+          title: Phone number
+          field:
+            type: phone-number
+      - disabilities:
+          title: Disabilities
+          repeated: true
+          field:
+            type: long-text
+      - orphaned-vulnerable-child:
+          title: Orphaned Vulnerable Child
+          field:
+            type: bool
+      - marital-status:
+          title: Marital status
+          field:
+            type: text
+      - citizenship:
+          title: Citizenship
+          field:
+            type: text
+  - incident-basics:
+      title: Incident basics
+      parts:
+      - time:
+          title: Date and time of incident
+          field:
+            type: date-time
+      - nr-of-perpetrators:
+          title: Number of perpetrators
+          field:
+            type: number
+      - perpetrator:
+          title: Alleged perpetrators
+          repeated: true
+          parts:
+          - name:
+              title: Name
+              field:
+                type: text
+              if-unknown:
+                value: Unknown
+          - relationship:
+              title: Relationship
+              field:
+                type: text
+              if-unknown:
+                value: Unknown
+          - gender:
+              title: Gender
+              field:
+                type: gender
+              if-unknown:
+                value: Unknown
+          - gender:
+              title: Estimated age
+              field:
+                type: number
+              if-unknown:
+                value: Unknown
+      - location:
+          title: Location
+          parts:
+          - county-code:
+              title: County code
+              field:
+                type: list-with-labels
+                list-options:
+                  Ref: counties-code-list
+                other-allowed: true
+          - sub-county-code:
+              title: Sub-county code
+              field:
+                type: text
+          - landmark:
+              title: Landmark
+              field:
+                type: text
+      - chief-complaints:
+          title: Chief complaints
+          parts:
+          - observed:
+              title: What is observed
+              field:
+                type: long-text
+          - reported:
+              title: What is reported
+              field:
+                type: long-text
+  - incident-details:
+      title: Incident details
+      parts:
+      - circumstance:
+          title: Circumstances and survivor account
+          description: How, where, what was used? Struggle?
+          field:
+            type: long-text
+      - type-of-violence:
+          title: Type of sexual violence
+          field:
+            type: list
+            select-multiple: true
+            list-options:
+              - oral
+              - vaginal
+              - anal
+            other:
+              title: other
+              field:
+                type: text
+      - condom:
+          title: Use of condom
+          field:
+            type: bool
+          if-unknown:
+            value: Unknown
+      - police-report:
+          title: Police report
+          parts:
+          - was-filed:
+              title: Was a report already made?
+              field:
+                type: bool
+                only-when-true:
+                  title: Police station
+                  field:
+                    type: long-text
+          - time:
+              title: Date and time of incident
+              field:
+                type: date-time
+      - healthcare-facility:
+          title: Previous healthcare facility
+          parts:
+          - did-attend:
+              title: Was a previous facility attended?
+              field:
+                type: bool
+          - name:
+              title: Name of facility
+              only-when:
+                path: root.incident.healthcare-facility.did-attend.value
+                value: true
+              field:
+                type: long-text
+          - time:
+              title: Date and time facility was attended
+              only-when:
+                path: root.incident.healthcare-facility.did-attend.value
+                value: true
+              field:
+                type: date-time
+          - was-treated:
+              title: Were you treated?
+              only-when:
+                path: root.incident.healthcare-facility.did-attend.value
+                value: true
+              field:
+                type: bool
+          - referral:
+              title: Were you given referral notes?
+              only-when:
+                path: root.incident.healthcare-facility.did-attend.value
+                value: true
+              field:
+                type: bool
+  - history:
+      title: Significant medical or surgical history
+      parts:
+        - history:
+            field:
+              type: long-text
+  - comments:
+      title: Other information
+      parts:
+        - observations:
+            field:
+              type: long-text
+              placeholder: Information provided by the patient or observed by the clinician
+  - general-condition:
+      title: General condition
+      parts:
+        - bp:
+            title: BP
+            field:
+              type: number
+        - pulse-rate:
+            title: Pulse rate
+            field:
+              type: number
+        - respiratory-rate:
+            title: Respiratory rate
+            field:
+              type: number
+        - temperature:
+            title: Temperature
+            field:
+              type: number
+        - demeanor:
+            title: Demeanor
+            field:
+              type: long-text
+  - physical-exam:
+      title: Physical exam
+      parts:
+          - anterior:
+              field:
+                type: body-image
+                generic-image: anterior.png
+          - posterior:
+              field:
+                type: body-image
+                generic-image: posterior.png
+          - top:
+              field:
+                type: body-image
+                generic-image: top.png
+          - bottom:
+              field:
+                type: body-image
+                generic-image: bottom.png
+  - ob-gyn-history:
+      title: OB/GYN history
+      only-when:
+        path: root.demographics.gender.field.value
+        value: female
+      parts:
+          - parity:
+              title: Parity
+              field:
+                type: number
+          - contraception:
+              title: Contraception type
+              field:
+                type: text
+          - lmp:
+              title: Last menstrual period
+              field:
+                type: number
+          - known-pregnancy:
+              title: Known pregnancy?
+              field:
+                type: bool
+          - last-consensual-intercourse:
+              title: Date of last consensual intercourse
+              field:
+                type: date
+              if-unknown:
+                value: Unknown
+  - genital-exam:
+      title: Genital examination
+      show-body-images:
+        gender-path: root.demographics.parts.gender.field.value
+        female-images:
+          - female-1.png
+          - female-2.png
+          - female-3.png
+        male-images:
+          - male-1.png
+          - male-2.png
+          - male-3.png
+      parts:
+        - physical-injuries:
+            title: Physical injuries
+            field:
+              type: long-text
+        - outer-genitalia:
+            title: Outer genitalia
+            field:
+              type: long-text
+        - vagina:
+            title: Vagina
+            only-when:
+              path: root.demographics.parts.gender.field.value
+              value: female
+            field:
+              type: long-text
+        - hymen:
+            title: Hymen
+            only-when:
+              path: root.demographics.parts.gender.field.value
+              value: female
+            field:
+              type: long-text
+        - anus:
+            title: Anus
+            field:
+              type: long-text
+        - other:
+            title: Other significant orifices
+            required: false
+            field:
+              type: long-text
+        - comments:
+            title: Comments
+            required: false
+            field:
+              type: long-text
+  - forensic:
+      title: Forensic exam
+      parts:
+      - change-clothes:
+          title: Did survivor change clothes?
+          field:
+            type: bool
+      - state-of-clothes:
+          title: State of clothes
+          field:
+            type: long-text
+      - clothes-transported:
+          title: How were the clothes transported?
+          field:
+            type: list
+            select-multiple: true
+            list-options:
+              - plastic bag
+              - non plastic bag
+            other:
+              title: other
+              field:
+                type: text
+      - clothes-to-police:
+          title: Were clothes handed to the police?
+          field:
+            type: bool
+      - toilet:
+          title: Did the survivor go the toilet?
+          field:
+            type: list
+            select-multiple: true
+            list-options:
+              - short call
+              - long call
+      - bath-or-cleaning:
+          title: Did the survivor have a bath or clean themselves?
+          field:
+            type: bool
+            only-when-true:
+              title: Details
+              field:
+                type: long-text
+      - marks-on-perpetrator:
+          title: Did the survivor leave any marks on the perpetrator?
+          field:
+            type: bool
+            only-when-true:
+              title: Details
+              field:
+                type: long-text
+  - immediate-management:
+      title: Immediate management
+      parts:
+      - pep:
+          title: PEP first dose
+          field:
+            type: bool
+            only-when-true:
+              title: Number of tablets
+              field:
+                type: number
+      - ecp:
+          title: ECP given
+          field:
+            type: bool
+      - stitching:
+          title: Stitching / surgical toilet done
+          field:
+            type: bool
+            only-when-true:
+              title: Comment
+              field:
+                type: long-text
+      - sti:
+          title: STI treatment given
+          field:
+            type: bool
+            only-when-true:
+              title: Comment
+              field:
+                type: long-text
+      - other:
+          title: Any other treatment or medication given?
+          required: false
+          field:
+            type: long-text
+  - referrals:
+      title: Referrals
+      parts:
+        - referral-list:
+            field:
+              type: list
+              select-multiple: true
+              list-options:
+                - police station
+                - HIV test
+                - laboratory
+                - legal
+                - trauma counseling
+                - safe shelter
+                - OPD/CCC/HIV clinic
+              other:
+                title: other
+                field:
+                  type: long-text
+  - laboratory-samples:
+      title: Laboratory samples
+      parts:
+        - samples:
+            title: Sample
+            field:
+              type: list-with-parts
+              select-multiple: true
+              repeated: true
+              parts:
+                - outer-genital-swab:
+                    title: Outer genital swab
+                    parts:
+                      Ref: lab-sample-type-a
+                - anal-swab:
+                    title: Anal swab
+                    parts:
+                      Ref: lab-sample-type-a
+                - skin-swab:
+                    title: Anal swab
+                    parts:
+                      Ref: lab-sample-type-a
+                - oral-swab:
+                    title: Oral swab
+                    parts:
+                      Ref: lab-sample-type-a
+                - oral-swab:
+                    title: Oral swab
+                    parts:
+                      Ref: lab-sample-type-a
+                - other-swab:
+                    title: Other swab
+                    field:
+                      type: text
+                    parts:
+                      Ref: lab-sample-type-a
+                - high-vaginal-swab:
+                    title: High vaginal swab
+                    parts:
+                      - wet-prep-microscope:
+                          title: Wet prep microscope
+                          field:
+                            type: bool
+                          parts:
+                            Ref: lab-sample-destination
+                - urine:
+                    title: Urine
+                    parts:
+                      - pregnancy-test:
+                          title: Pregnancy test
+                          field:
+                            type: bool
+                          parts:
+                            Ref: lab-sample-destination
+                      - microscopy:
+                          title: Microscopy
+                          field:
+                            type: bool
+                          parts:
+                            Ref: lab-sample-destination
+                      - drugs-and-alcohol:
+                          title: Drugs and alcohol
+                          field:
+                            type: bool
+                          parts:
+                            Ref: lab-sample-destination
+                      - other:
+                          title: other
+                          field:
+                            type: text
+                          parts:
+                            Ref: lab-sample-destination
+                - blood:
+                    title: Blood
+                    parts:
+                      - hemoglobin:
+                          title: Hemoglobin
+                          field:
+                            type: bool
+                          parts:
+                            Ref: lab-sample-destination
+                      - hiv-test:
+                          title: HIV test
+                          field:
+                            type: bool
+                          parts:
+                            Ref: lab-sample-destination
+                      - SGPT-GOT:
+                          title: SGPT/GOT
+                          field:
+                            type: bool
+                          parts:
+                            Ref: lab-sample-destination
+                      - VDRL:
+                          title: VDRL
+                          field:
+                            type: bool
+                          parts:
+                            Ref: lab-sample-destination
+                      - DNA:
+                          title: DNA
+                          field:
+                            type: bool
+                          parts:
+                            Ref: lab-sample-destination
+                - public-hair:
+                    title: Pubic hair
+                    parts:
+                      - DNA:
+                          title: DNA
+                          field:
+                            type: bool
+                          parts:
+                            Ref: lab-sample-destination
+                - nail-clippings:
+                    title: Nail clippings
+                    parts:
+                      - DNA:
+                          title: DNA
+                          field:
+                            type: bool
+                          parts:
+                            Ref: lab-sample-destination
+                - foreign-bodies:
+                    title: Foreign bodies
+                    parts:
+                      - DNA:
+                          title: DNA
+                          field:
+                            type: bool
+                          parts:
+                            Ref: lab-sample-destination
+                - other:
+                    title: Other
+                    field:
+                      type: long-text
+                    parts:
+                      - other:
+                          title: Other
+                          field:
+                            type: long-text
+                          parts:
+                            Ref: lab-sample-destination
+        - chain-of-custody:
+            title: Chain of custody
+            parts:
+            - packed:
+                title: What samples where packed and issued
+                field:
+                  type: long-text
+            - by:
+                title: By
+                parts:
+                  - name:
+                      title: Name of examining clinician
+                      field:
+                        type: text
+                  - signature:
+                      title: Signature
+                      field:
+                        type: signature
+                  - date:
+                      title: Date
+                      field:
+                        type: date            
+            - to:
+                required: false
+                title: To
+                parts:
+                  - name:
+                      title: Name of police officer
+                      field:
+                        type: text
+                  - signature:
+                      title: Signature
+                      field:
+                        type: signature
+                  - date:
+                      title: Date
+                      field:
+                        type: date
+  - psychological-assessment:
+      title: Psychological assessment
+      parts:
+      - general:
+          title: General appearance and behavior
+          description: Note appearance (appear older or younger than stated age), gait, dressing, grooming (neat or unkempt) and posture.
+          field:
+            type: long-text
+      - rapport:
+          title: Rapport
+          description: Easy to establish, initially difficult but easier over time, difficult to establish.
+          field:
+            type: long-text
+      - mood:
+          title: Mood
+          description: How he/she feels most days (happy, sad, hopeless, euphoric, elevated, depressed, irritable, anxious, angry, easily upset).
+          field:
+            type: long-text
+      - affect:
+          title: Affect
+          description: Physical manifestation of the mood e.g. labile (emotions that are freely expressed and tend to alter quickly and spontaneously like sobbing and laughing at the same time), blunt/ flat, appropriate/ inappropriate to content.
+          field:
+            type: long-text
+      - speech:
+          title: Speech
+          description: Rate, volume, speed, pressured (tends to speak rapidly and frenziedly), quality (clear or mumbling), impoverished (monosyllables, hesitant).
+          field:
+            type: long-text
+      - perception:
+          title: Perception
+          description: Disturbances e.g. Hallucination, feeling of unreality (corroborative history may be needed to ascertain details)
+          field:
+            type: long-text
+      - thought-content:
+          title: Thought content
+          description: Suicidal and homicidal ideation (ideas but no plan or intent; clear/unclear plan but no intent; ideas coupled with clear plan and intent to carry it out); any preoccupying thoughts.
+          field:
+            type: long-text
+      - thought-process:
+          title: Thought process
+          description: Goal-directed/logical ideas, loosened associations / flight of ideas / illogical, relevant, circumstantial (drifting but often coming back to the point), ability to abstract, perseveration (constant repetition, lacking ability to switch ideas).
+          field:
+            type: long-text
+      - children:
+          title: Children's thought process
+          description: (or children use wishes and dreams, and art/ play therapy to assess the thought process and content. Through drawing and play (e.g. use of toys. Allow the child to comment on the drawing and report verbatim.
+          field:
+            type: long-text
+          only-when:
+            path: root.demographics.parts.date.value
+            is-child: true
+      - children-unconscious:
+          title: Children's unconscious
+          description: Assess the unconscious world of the child by asking about feelings e.g. ask the child to report the feeling that he/she commonly experiences and ask what makes him/her feel that way
+          field:
+            type: long-text
+          only-when:
+            path: root.demographics.parts.date.value
+            is-child: true
+  - cognitive-function:
+        title: Cognitive function
+        parts:
+        - memory:
+            title: Memory
+            description: Recent memory, long-term and short term memory (past several days, months, years).
+            field:
+              type: long-text
+        - orientation:
+            title: Orientation
+            description: Orientation to time, place, person i.e. ability to recognize time, where they are, people around etc.
+            field:
+              type: long-text
+        - concentration:
+            title: Concentration
+            description: Ability to pay attention e.g. counting or spelling backwards, small tasks.
+            field:
+              type: long-text
+        - intelligence:
+            title: Intelligence
+            description: Use of vocabulary (compare level of education with case presentation; above average, average, below average).
+            field:
+              type: long-text
+        - judgment:
+            title: Judgment
+            description: Ability to understand relations between facts and to draw conclusions; responses in social situations.
+            field:
+              type: long-text
+  - psychological-conclusions:
+      title: Psychological assessment conclusions
+      parts:
+       - insight-level:
+           title: Insight level
+           description: Realizing that there are physical or mental problems; denial of illness, ascribing blame to outside factors; recognizing need for treatment (Indicate whether insight level is; present, fair, not present)
+           field:
+             type: long-text
+       - recommendation:
+           title: Recommendation following assessment
+           field:
+             type: long-text
+       - referral-point:
+           title: Referral points
+           field:
+             type: long-text
+       - referral-uptake:
+           title: Referral uptake since last visit e.g. other medical services, children's department, police, legal aid, shelter etc.
+           field:
+             type: long-text
+       - by:
+           title: By
+           parts:
+             - name:
+                 title: Name of examining clinician
+                 field:
+                   type: text
+             - signature:
+                 title: Signature
+                 field:
+                   type: signature
+             - date:
+                 title: Date
+                 field:
+                   type: date            
+       - to:
+           required: false
+           title: To
+           parts:
+             - name:
+                 title: Name of police officer
+                 field:
+                   type: text
+             - signature:
+                 title: Signature
+                 field:
+                   type: signature
+             - date:
+                 title: Date
+                 field:
+                   type: date
+  - attestation:
+      title: Physician attestation
+      parts:
+        - record:
+            title: I hereby attest that this medical record entry accurately reflects the history and physical examination that I obtained in my capacity as the evaluating clinician.
+            field:
+              type: bool
+        - record:
+            title: I do hereby attest that this information is true, accurate and complete to the best of my knowledge.
+            field:
+              type: bool
+        - signature:
+            title: Signature
+            field:
+              type: signature

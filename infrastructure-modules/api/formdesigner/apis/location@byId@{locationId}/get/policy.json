@@ -1,0 +1,10 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": ["dynamodb:GetItem", "dynamodb:Query"],
+      "Effect": "Allow",
+      "Resource": ["${location_table_arn}", "${location_table_arn}/*"]
+    }
+  ]
+}

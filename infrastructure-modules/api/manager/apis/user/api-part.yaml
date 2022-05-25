@@ -1,0 +1,177 @@
+swagger: '2.0'
+info:
+  description: |
+    Medicapt API for user managers
+  version: 1.0.0
+  title: Medicapt API - User managers
+  termsOfService: TODO
+  contact:
+    email: TODO@TODO.TODO
+  license:
+    name: TODO
+    url: https://manager-api.dev.medicapt.click
+securityDefinitions:
+  CognitoUserProvider:
+    type: apiKey
+    name: Authorization
+    in: header
+    x-amazon-apigateway-authtype: cognito_user_pools
+    x-amazon-apigateway-authorizer:
+      type: cognito_user_pools
+      providerARNs:
+      - ${cognito_user_pool_manager_arn}
+x-amazon-apigateway-gateway-responses:
+  ACCESS_DENIED:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  DEFAULT_4XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  DEFAULT_5XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  MISSING_AUTHENTICATION_TOKEN:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+security:
+  - CognitoUserProvider: []
+schemes:
+- https
+paths:
+  /manager/user:
+    post:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - User
+      summary: Add a new user
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      operationId: managerCreateUser
+      parameters:
+      - in: body
+        name: body
+        description: Create a new user
+        required: true
+        schema:
+          $ref: '#/definitions/User'
+      responses:
+        405:
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/User'
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_managerCreateUser}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    get:
+      security:
+      - CognitoUserProvider: []
+      tags:
+      - User
+      summary: List users
+      operationId: managerGetUsers
+      produces:
+      - application/json
+      - application/xml
+      parameters:
+      - in: query
+        name: next
+        type: string
+        required: false
+        description: The token for the next page if any
+      - in: query
+        name: filter
+        type: string
+        required: false
+        description: A JSON filter
+      - in: query
+        name: sort
+        type: string
+        required: false
+        description: A JSON sort
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+        400:
+          description: Invalid status value
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_managerGetUsers}
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "NEVER"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+definitions:
+  Empty: {}
+  User:
+    type: object
+    properties:
+      userUUID:
+        type: string
+        format: uuid
+  Location:
+    type: object
+    properties:
+      locationUUID:
+        type: string
+        format: uuid
+      name:
+        type: string
+      form_contents:
+        type: object

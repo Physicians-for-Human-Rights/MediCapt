@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "baseUrl": "./js/",
+    "strict": true,
+    "module": "CommonJS",
+    "resolveJsonModule": true,
+    "lib": ["esnext"],
+    "moduleResolution": "node",
+    "noEmit": false,
+    "skipLibCheck": true,
+    "outDir": "dist-lambda",
+    "jsx": "react-native"
+  },
+  "include": ["./**/*.ts"],
+  "exclude": ["node_modules", "dist-lambda", "./**/*.js", "./**/*.jsx"]
+}
