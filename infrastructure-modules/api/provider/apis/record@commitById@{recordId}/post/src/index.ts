@@ -196,7 +196,7 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
         })
         .promise()
     } catch (e) {
-      return bad([], 'Record is out of date or does not exist')
+      return bad(e, 'Record is out of date or does not exist')
     }
     try {
       const newRecord = recordMetadataSchemaStrip.parse(

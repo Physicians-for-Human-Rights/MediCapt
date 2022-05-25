@@ -11,10 +11,14 @@ export const recordMetadataSchemaByUser = z
     formID: z.string().nonempty(),
     formVersion: z.string().nonempty(),
     locationID: z.string().nonempty(),
-    // We may not know this information
+    // We may not know this information for some records
     patientName: z.string(),
     patientGender: z.string(),
-    patientAge: z.string(),
+    patientAddress: z.string(),
+    patientDateOfBirth: dateSchema,
+    patientPhoneNumber: z.string(),
+    patientEmail: z.string(),
+    incidentDate: dateSchema,
     // This is a link to some external case id, if it exists
     caseId: z.string(),
     manifestHash: z.string(),
