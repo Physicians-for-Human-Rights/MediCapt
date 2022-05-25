@@ -9,6 +9,8 @@ import {
   FlatList,
 } from 'react-native'
 import _ from 'lodash'
+import { useInfo } from 'utils/errors'
+import { ZodError } from 'zod'
 
 import { View, useBreakpointValue } from 'native-base'
 
@@ -20,6 +22,7 @@ import {
   RecordValuePath,
   recordValueSchema,
   RecordType,
+  FlatRecord,
 } from 'utils/types/record'
 import { allFormRenderCommands } from 'utils/formRendering/commands'
 import { renderCommand } from 'utils/formRendering/renderer'
@@ -36,18 +39,18 @@ import {
   getRecordTypeFormManifest,
 } from 'utils/manifests'
 
-export type FormProps = {
-  formMetadata: FormMetadata
-  formManifest: FormManifestWithData
-  recordMetadata?: RecordMetadata
-  recordManifest?: RecordManifestWithData
-  addPhotoToManifest?: (uri: string) => any
-  removePhotoFromManifest?: (sha256: string) => any
-  noRenderCache?: boolean
-  onCancel: () => any
-  onSaveAndExit: (record: RecordType) => any
-  onComplete: (record: RecordType) => any
-  disableMenu?: boolean
+// FIXME Temproary hack before rewriting Form to invert control back to
+// RecordEditor and show error messages
+function getRecordFromManifest(
+  recordManifest: RecordManifestWithData | undefined
+): FlatRecord {
+  if (!recordManifest) return {}
+  const r = getRecordTypeFormManifest(recordManifest)
+  if (!r || r instanceof ZodError) {
+    console.log('FIXME OLD STYLE RECORD')
+    return {}
+  }
+  return recordTypeToFlatRecord(r)
 }
 
 export default function Form({
@@ -59,11 +62,21 @@ export default function Form({
   onSaveAndExit,
   onComplete,
   disableMenu = false,
-}: FormProps) {
+}: {
+  formMetadata: FormMetadata
+  formManifest: FormManifestWithData
+  recordMetadata?: RecordMetadata
+  recordManifest?: RecordManifestWithData
+  addPhotoToManifest?: (uri: string) => any
+  removePhotoFromManifest?: (sha256: string) => any
+  noRenderCache?: boolean
+  onCancel: () => any
+  onSaveAndExit: (record: RecordType) => any
+  onComplete: (record: RecordType) => any
+  disableMenu?: boolean
+}) {
   const [flatRecord, { set: setFlatRecordValue }] = useMap(
-    recordManifest
-      ? recordTypeToFlatRecord(getRecordTypeFormManifest(recordManifest))
-      : {}
+    getRecordFromManifest(recordManifest)
   )
 
   const form = getFormTypeFromManifest(formManifest)
@@ -172,11 +185,11 @@ export default function Form({
   )
   if (!_.isEmpty(changedPaths)) {
     const record = flatRecordToRecordType(flatRecord)
-    console.log(recordManifest)
-    console.log(flatRecord)
-    console.log(record)
     // TODO Remove after testing
     if (!_.isEqual(flatRecord, recordTypeToFlatRecord(record))) {
+      console.log('RM', recordManifest)
+      console.log('FR', flatRecord)
+      console.log('R', record)
       console.error(
         'recordTypeToFlatRecord(record) is not the same as flatRecord!'
       )

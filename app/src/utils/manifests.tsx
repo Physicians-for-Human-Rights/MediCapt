@@ -29,6 +29,7 @@ import {
 import { RecordType, recordTypeSchema } from './types/record'
 import yaml from 'js-yaml'
 import { FormType } from './types/form'
+import { ZodError } from 'zod'
 
 export type Manifest = FormManifest | RecordManifest
 export type ManifestWithMD5 = FormManifestWithMD5 | RecordManifestWithMD5
@@ -248,31 +249,34 @@ export function addOrReplaceRecordTypeInManifest(
 
 export function getRecordTypeFormManifest(
   recordManifest: RecordManifestWithData
-): RecordType {
+): RecordType | ZodError | null {
   const recordFile = lookupManifest(
     recordManifest,
     e => e.filetype === 'text/json' && e.filename === 'record.json'
   )
-  if (recordFile) return recordTypeSchema.parse(JSON.parse(recordFile.data))
-  else
-    return recordTypeSchema.parse({
-      'storage-version': '1.0.0',
-      sections: {},
-    })
+  if (recordFile) {
+    try {
+      return recordTypeSchema.parse(JSON.parse(recordFile.data))
+    } catch (err) {
+      if (err instanceof ZodError) {
+        return err
+      }
+      throw err
+    }
+  } else return null
 }
 
 export function getFormTypeFromManifest(
   formManifest: FormManifestWithData
-): FormType {
+): FormType | null {
   const formFile = lookupManifest(
     formManifest,
     e => e.filetype === 'text/yaml' && e.filename === 'form.yaml'
   )
   if (formFile) {
     return yaml.load(formFile.data) as FormType
-  } else {
-    return {} as FormType
   }
+  return null
 }
 
 export function filetypeIsDataURI(filetype: string) {
