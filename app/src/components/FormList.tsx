@@ -22,16 +22,17 @@ import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import SelectLocation from 'components/SelectLocation'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
+import { Platform } from 'react-native'
 
 export function ListItem({
   item,
-  onPress,
+  selectItem,
 }: {
   item: FormMetadata
-  onPress: (i: FormMetadata) => any
+  selectItem: (i: FormMetadata) => any
 }) {
   return (
-    <Pressable p={2}>
+    <Pressable p={2} onPress={() => selectItem(item)}>
       <HStack justifyContent="space-between" w="100%">
         <HStack alignItems="center" space={4} w="70%">
           <VStack>
@@ -172,8 +173,9 @@ export default function FormList({
             any={'user.any-location'}
             value={filterLocationID}
             setValue={setFilterLocationID}
-            mx={{ md: 2, base: 0 }}
-            my={{ md: 0, base: 2 }}
+            mx={Platform.OS === 'android' ? 0 : { md: 2, base: 0 }}
+            my={Platform.OS === 'android' ? 1 : { md: 0, base: 2 }}
+            w={Platform.OS === 'android' ? '80%' : undefined}
           />
         </Center>
         <Center>
@@ -183,7 +185,9 @@ export default function FormList({
             value={filterCountry}
             setValue={setFilterCountry}
             any={'location.any-country'}
-            mt={{ md: 0, base: 2 }}
+            mt={Platform.OS === 'android' ? 0 : { md: 0, base: 2 }}
+            ml={Platform.OS === 'android' ? 0 : 3}
+            w={Platform.OS === 'android' ? '80%' : undefined}
           />
         </Center>
         <Center>
@@ -193,8 +197,9 @@ export default function FormList({
             value={filterLanguage}
             setValue={setFilterLanguage}
             any={'location.any-language'}
-            mx={{ md: 2, base: 0 }}
-            my={{ md: 0, base: 2 }}
+            mx={Platform.OS === 'android' ? 0 : { md: 2, base: 0 }}
+            my={Platform.OS === 'android' ? 1 : { md: 0, base: 2 }}
+            w={Platform.OS === 'android' ? '80%' : undefined}
           />
         </Center>
         {setFilterEnabled && (
@@ -280,7 +285,9 @@ export default function FormList({
           <ScrollView>
             <Box position="relative" display={{ md: 'none', base: 'flex' }}>
               {forms.map((item: FormMetadata, index: number) => {
-                return <ListItem item={item} key={index} onPress={selectItem} />
+                return (
+                  <ListItem item={item} key={index} selectItem={selectItem} />
+                )
               })}
             </Box>
             <Box display={{ md: 'flex', base: 'none' }}>

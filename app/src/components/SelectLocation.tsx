@@ -32,7 +32,6 @@ export default function SelectLocation({
         selectedValue={value}
         placeholder={placeholder}
         onValueChange={setValue}
-        // TODO: Props causing crash in Android version
         {...props}
       >
         {_.concat(

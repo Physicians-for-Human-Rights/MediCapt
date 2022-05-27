@@ -24,8 +24,9 @@ import SelectLocation from 'components/SelectLocation'
 import { getFormCached, getUserByUUIDCached } from 'api/common'
 import { UserType } from 'utils/types/user'
 import { userFullName } from 'utils/userTypes'
+import { Platform } from 'react-native'
 
-export function ListItem({
+export function ListItemMobile({
   item,
   selectItem,
   forms,
@@ -54,32 +55,42 @@ export function ListItem({
             >
               {item.patientName || t('record.missing-patient-name')}
             </Text>
-            <Text
-              pl={3}
-              isTruncated
-              fontSize="sm"
-              _light={{ color: 'coolGray.900' }}
-            >
-              {item.patientGender ? t('gender.' + item.patientGender) : ''}
-            </Text>
-            <Text
-              pl={3}
-              isTruncated
-              fontSize="sm"
-              _light={{ color: 'coolGray.900' }}
-            >
-              {item.patientDateOfBirth > new Date('January 01 1500')
-                ? formatDate(item.patientDateOfBirth, 'PPP')
-                : ''}
-            </Text>
-            <Text
-              pl={3}
-              isTruncated
-              fontSize="sm"
-              _light={{ color: 'coolGray.900' }}
-            >
-              {item.patientAddress ? item.patientAddress : ''}
-            </Text>
+            {item.patientGender ? (
+              <Text
+                pl={3}
+                isTruncated
+                fontSize="sm"
+                _light={{ color: 'coolGray.900' }}
+              >
+                t('gender.' + item.patientGender){' '}
+              </Text>
+            ) : (
+              <></>
+            )}
+            {item.patientDateOfBirth > new Date('January 01 1500') ? (
+              <Text
+                pl={3}
+                isTruncated
+                fontSize="sm"
+                _light={{ color: 'coolGray.900' }}
+              >
+                formatDate(item.patientDateOfBirth, 'PPP')
+              </Text>
+            ) : (
+              <></>
+            )}
+            {item.patientAddress ? (
+              <Text
+                pl={3}
+                isTruncated
+                fontSize="sm"
+                _light={{ color: 'coolGray.900' }}
+              >
+                item.patientAddress
+              </Text>
+            ) : (
+              <></>
+            )}
             <Text
               pl={3}
               isTruncated
@@ -90,18 +101,21 @@ export function ListItem({
                 ? forms[item.formUUID].title
                 : 'Unknown form'}
             </Text>
-            {forms[item.formUUID]
-              ? _.filter(
-                  _.split(forms[item.formUUID].tags, ','),
-                  e => e !== ''
-                ).map((s: string, n: number) => (
-                  <Text isTruncated key={n} pl={3}>
-                    {t('tag.' + s)}
-                  </Text>
-                ))
-              : ''}
+            {forms[item.formUUID] ? (
+              _.filter(
+                _.split(forms[item.formUUID].tags, ','),
+                e => e !== ''
+              ).map((s: string, n: number) => (
+                <Text isTruncated key={n} pl={3}>
+                  {t('tag.' + s)}
+                </Text>
+              ))
+            ) : (
+              <Text></Text>
+            )}
           </VStack>
         </HStack>
+
         <VStack w="30%">
           <Text isTruncated fontSize="sm" _light={{ color: 'coolGray.900' }}>
             {formatDate(item.lastChangedDate, 'PPP')}
@@ -112,10 +126,10 @@ export function ListItem({
               item.lastChangedByUUID
             )}
           </Text>
-          <Text>{item.caseId ? item.caseId : ''}</Text>
           <Text isTruncated fontSize="sm" _light={{ color: 'coolGray.900' }}>
             {item.recordID}
           </Text>
+          {item.caseId ? <Text>item.caseId</Text> : <></>}
         </VStack>
       </HStack>
     </Pressable>
@@ -160,16 +174,18 @@ export function ListItemDesktop({
         </VStack>
 
         <VStack w="20%">
-          {forms && forms[item.formUUID]
-            ? _.filter(
-                _.split(forms[item.formUUID].tags, ','),
-                e => e !== ''
-              ).map((s: string, n: number) => (
-                <Text isTruncated key={n}>
-                  {t('tag.' + s)}
-                </Text>
-              ))
-            : ''}
+          {forms && forms[item.formUUID] ? (
+            _.filter(
+              _.split(forms[item.formUUID].tags, ','),
+              e => e !== ''
+            ).map((s: string, n: number) => (
+              <Text isTruncated key={n}>
+                {t('tag.' + s)}
+              </Text>
+            ))
+          ) : (
+            <Text></Text>
+          )}
           <Text>
             {forms[item.formUUID] ? forms[item.formUUID].title : 'Unknown form'}
           </Text>
@@ -292,11 +308,12 @@ export default function RecordList({
             any={'user.any-location'}
             value={filterLocationID}
             setValue={setFilterLocationID}
-            mx={{ md: 2, base: 0 }}
-            my={{ md: 0, base: 2 }}
+            mx={Platform.OS === 'android' ? 0 : { md: 2, base: 0 }}
+            my={Platform.OS === 'android' ? 2 : { md: 0, base: 2 }}
+            w={Platform.OS === 'android' ? '80%' : undefined}
           />
         </Center>
-        {setFilterSealed && (
+        {setFilterSealed ? (
           <Center>
             <Select
               size="md"
@@ -304,7 +321,7 @@ export default function RecordList({
               selectedValue={filterSealed}
               onValueChange={setFilterSealed}
               placeholder={t('record.filter.select-record-sealed')}
-              ml={{ base: 0, md: 2 }}
+              ml={Platform.OS === 'android' ? 0 : { base: 0, md: 2 }}
             >
               <Select.Item
                 key={'__any__'}
@@ -320,9 +337,19 @@ export default function RecordList({
               ))}
             </Select>
           </Center>
+        ) : (
+          <></>
         )}
       </Stack>
-      <HStack py={2} w="100%" justifyContent="center" bg={'muted.50'}>
+      <Stack
+        direction={{ md: 'row', base: 'column' }}
+        pt={0}
+        pb={2}
+        space={2}
+        w="100%"
+        justifyContent="center"
+        bg={'muted.50'}
+      >
         <Center>
           <Select
             size="md"
@@ -331,8 +358,8 @@ export default function RecordList({
             onValueChange={setFilterSearchType}
             placeholder={t('record.search-by.select')}
             // TODO props causing crashes on Android
-            ml={{ base: 0, md: 2 }}
-            w={{ md: '80%', lg: '80%', base: '80%' }}
+            ml={Platform.OS === 'android' ? 0 : { base: 0, md: 2 }}
+            w={Platform.OS === 'android' ? '90%' : '100%'}
           >
             {['record-id', 'patient-name'].map(e => (
               <Select.Item
@@ -343,48 +370,57 @@ export default function RecordList({
             ))}
           </Select>
         </Center>
-        <DebouncedTextInput
-          flex={{ md: undefined, lg: undefined, base: 1 }}
-          w={{ md: '50%', lg: '50%', base: '30%' }}
-          py={3}
-          mx={{ base: 2, md: 0 }}
-          mr={{ base: 4, md: 4, lg: 5, xl: 10 }}
-          bg="white"
-          InputLeftElement={
-            <Icon
-              as={<AntDesign name="search1" />}
-              size={{ base: '4', md: '4' }}
-              my={2}
-              ml={2}
-              _light={{
-                color: 'coolGray.400',
-              }}
-            />
-          }
-          size="lg"
-          color="black"
-          placeholder={t('user.search.form-names-and-tags')}
-          debounceMs={1000}
-          value={filterText}
-          onChangeText={setFilterText}
-        />
-        <Button
-          onPress={() => {
-            setFilterLocationID('')
-            setFilterSearchType('')
-            setFilterText('')
-          }}
-          leftIcon={<Icon as={MaterialIcons} name="close" />}
-          size="sm"
-          mr={2}
-        />
-        <Button
-          onPress={doSearch}
-          leftIcon={<Icon as={MaterialIcons} name="refresh" />}
-          size="sm"
-          mr={2}
-        />
-      </HStack>
+        <HStack justifyContent="center">
+          <DebouncedTextInput
+            flex={{ md: undefined, lg: undefined, base: 1 }}
+            w={
+              Platform.OS === 'android'
+                ? '97%'
+                : { md: '50%', lg: '50%', base: '97%' }
+            }
+            py={0}
+            ml={Platform.OS === 'android' ? 2 : { base: 2, md: 4 }}
+            mr={
+              Platform.OS === 'android' ? 2 : { base: 4, md: 4, lg: 5, xl: 10 }
+            }
+            bg="white"
+            minH={10}
+            InputLeftElement={
+              <Icon
+                as={<AntDesign name="search1" />}
+                size={{ base: '4', md: '4' }}
+                my={2}
+                ml={2}
+                _light={{
+                  color: 'coolGray.400',
+                }}
+              />
+            }
+            size="lg"
+            color="black"
+            placeholder={t('user.search.form-names-and-tags')}
+            debounceMs={1000}
+            value={filterText}
+            onChangeText={setFilterText}
+          />
+          <Button
+            onPress={() => {
+              setFilterLocationID('')
+              setFilterSearchType('')
+              setFilterText('')
+            }}
+            leftIcon={<Icon as={MaterialIcons} name="close" size="sm" />}
+            size="sm"
+            mr={2}
+          />
+          <Button
+            onPress={doSearch}
+            leftIcon={<Icon as={MaterialIcons} name="refresh" size="sm" />}
+            size="sm"
+            mr={2}
+          />
+        </HStack>
+      </Stack>
       <VStack
         px={{ base: 4, md: 8 }}
         py={{ base: 2, md: 8 }}
@@ -402,7 +438,7 @@ export default function RecordList({
             <Box position="relative" display={{ md: 'none', base: 'flex' }}>
               {records.map((item: RecordMetadata, index: number) => {
                 return (
-                  <ListItem
+                  <ListItemMobile
                     item={item}
                     key={index}
                     selectItem={selectItem}

@@ -15,6 +15,7 @@ import {
   Select,
 } from 'native-base'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
+import { Platform } from 'react-native'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
@@ -185,7 +186,8 @@ export default function LocationList({
             value={filterCountry}
             setValue={setFilterCountry}
             any={'location.any-country'}
-            mt={{ md: 0, base: 2 }}
+            mt={Platform.OS === 'android' ? 2 : { md: 0, base: 2 }}
+            w={Platform.OS === 'android' ? '80%' : undefined}
           />
         </Center>
         <Center>
@@ -195,8 +197,9 @@ export default function LocationList({
             value={filterLanguage}
             setValue={setFilterLanguage}
             any={'location.any-language'}
-            mx={{ md: 2, base: 0 }}
-            my={{ md: 0, base: 2 }}
+            mx={Platform.OS === 'android' ? 0 : { md: 2, base: 0 }}
+            my={Platform.OS === 'android' ? 2 : { md: 0, base: 2 }}
+            w={Platform.OS === 'android' ? '80%' : undefined}
           />
         </Center>
         <Center>

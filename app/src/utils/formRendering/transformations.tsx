@@ -2,7 +2,22 @@ import _ from 'lodash'
 import { RenderCommand } from 'utils/formRendering/types'
 
 export function transformToPhoneLayout(commands: RenderCommand[]) {
-  return commands
+  return _.concat(commands, [
+    {
+      type: 'padding',
+      padding: '100%',
+      contents: {
+        type: 'description',
+        description: '\n\n',
+        disable: false,
+        valuePath: [],
+        key: 'D0',
+      },
+      disable: false,
+      valuePath: [],
+      key: 'D0',
+    },
+  ])
 }
 
 const shortControls = new Set([

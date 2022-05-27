@@ -5,12 +5,18 @@ import useSet from 'react-use/lib/useSet'
 import useToggle from 'react-use/lib/useToggle'
 import {
   Keyboard,
+  KeyboardAvoidingView,
   // Don't use the native-base FlatList. It's buggy!
   FlatList,
 } from 'react-native'
 import _ from 'lodash'
 import { useInfo } from 'utils/errors'
 import { ZodError } from 'zod'
+import {
+  KeyboardAwareFlatList,
+  KeyboardAwareScrollView,
+} from 'react-native-keyboard-aware-scroll-view'
+import { Platform } from 'react-native'
 
 import { View, useBreakpointValue } from 'native-base'
 
@@ -233,12 +239,14 @@ export default function Form({
           onPrint={onCancel}
         />
       ) : (
-        <FlatList
+        <KeyboardAwareFlatList
           style={style}
           data={renderCommands}
           renderItem={renderItem}
           initialNumToRender={10}
           windowSize={25}
+          keyboardDismissMode="none"
+          removeClippedSubviews={false}
         />
       )}
     </View>
