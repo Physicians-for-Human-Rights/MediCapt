@@ -19,6 +19,23 @@ On the phone with `expo start` Note that you also need to install the expo app.
 
 Any changes that you make will lead to the website and the app reloading.
 
+## Building on Android
+
+```
+sudo apt-get install openjdk-8-jdk
+
+# Switch to java 8
+sudo update-alternatives --config java
+
+./sdkmanager --install "ndk;21.1.6352462"
+/home/andrei/pkg/android-studio-sdk/tools/bin/sdkmanager --licenses
+
+export ANDROID_SDK_ROOT=/home/andrei/pkg/android-studio-sdk
+export ANDROID_NDK_HOME=/home/andrei/pkg/android-studio-sdk/ndk/24.0.8215888
+
+expo run:android
+```
+
 ## Form elements
 
 If you add a new form element you need to plug that change through several parts
