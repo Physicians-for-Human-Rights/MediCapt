@@ -62,7 +62,7 @@ export function ListItemMobile({
                 fontSize="sm"
                 _light={{ color: 'coolGray.900' }}
               >
-                t('gender.' + item.patientGender){' '}
+                {t('gender.' + item.patientGender)}
               </Text>
             ) : (
               <></>
@@ -74,7 +74,7 @@ export function ListItemMobile({
                 fontSize="sm"
                 _light={{ color: 'coolGray.900' }}
               >
-                formatDate(item.patientDateOfBirth, 'PPP')
+                {formatDate(item.patientDateOfBirth, 'PPP')}
               </Text>
             ) : (
               <></>
@@ -86,7 +86,7 @@ export function ListItemMobile({
                 fontSize="sm"
                 _light={{ color: 'coolGray.900' }}
               >
-                item.patientAddress
+                {item.patientAddress}
               </Text>
             ) : (
               <></>
