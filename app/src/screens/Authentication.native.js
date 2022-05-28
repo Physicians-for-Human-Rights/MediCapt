@@ -140,21 +140,25 @@ function Header(userKind, setAccountType) {
           maxW="40%"
           justifyContent="center"
         />
-        <ButtonGroup
-          selected={userKind}
-          options={{
-            [UserKindNames[UserKind.Manager]]: UserKind.Manager,
-            [UserKindNames[UserKind.FormDesigner]]: UserKind.FormDesigner,
-            [UserKindNames[UserKind.Researcher]]: UserKind.Researcher,
-          }}
-          onPress={setAccountType}
-          pb={3}
-          colorScheme="red"
-          size="md"
-          flex={0}
-          maxW="40%"
-          justifyContent="center"
-        />
+        {false ? (
+          <ButtonGroup
+            selected={userKind}
+            options={{
+              [UserKindNames[UserKind.Manager]]: UserKind.Manager,
+              [UserKindNames[UserKind.FormDesigner]]: UserKind.FormDesigner,
+              [UserKindNames[UserKind.Researcher]]: UserKind.Researcher,
+            }}
+            onPress={setAccountType}
+            pb={3}
+            colorScheme="red"
+            size="md"
+            flex={0}
+            maxW="40%"
+            justifyContent="center"
+          />
+        ) : (
+          <></>
+        )}
       </View>
     </View>
   )
