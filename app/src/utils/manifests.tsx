@@ -228,6 +228,11 @@ export function isBinary(filetype: string) {
   )
 }
 
+export function filetypeToMimetype(filetype: string) {
+  if (filetype == 'manifest') return 'application/json'
+  return filetype
+}
+
 export function addOrReplaceFileToManifestByFilename(
   manifest: ManifestWithData,
   data: string,
@@ -304,7 +309,10 @@ export async function fetchManifestContents(
       const response = await fetch(e.link)
       const data = filetypeIsDataURI(e.filetype)
         ? await blobToBase64(
-            new Blob([await response.blob()], { type: e.filetype })
+            response.blob
+              ? new Blob([await response.blob()], { type: e.filetype })
+              : // NB This appears only on android, no idea why
+                new Blob([await response.text()], { type: e.filetype })
           )
         : await response.text()
       return {

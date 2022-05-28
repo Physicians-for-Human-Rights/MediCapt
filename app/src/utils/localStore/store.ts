@@ -20,6 +20,7 @@ import {
   lookupManifestSHA256,
   md5,
   sha256,
+  filetypeToMimetype,
 } from 'utils/manifests'
 import {
   FormManifestFileWithLink,
@@ -123,24 +124,38 @@ export async function updateRecord(
     for (const field in e.link.fields) {
       record.append(field, e.link.fields[field])
     }
-    const blob =
-      e.filename === 'manifest' && e.filetype === 'manifest'
-        ? new Blob([recordManifestString], {
-            type: 'text/plain',
-          })
-        : filetypeIsDataURI(e.filetype)
-        ? dataURItoBlob(lookupManifestSHA256(recordManifest, e.sha256)!.data)
-        : new Blob([lookupManifestSHA256(recordManifest, e.sha256)!.data], {
-            type: e.filetype,
-          })
-    record.append('file', blob)
+    // This is disabled intentionally, it is the blob version of the upload
+    // code. I thought this is the better way, but it fails on android.
+    if (0) {
+      const blob =
+        e.filename === 'manifest' && e.filetype === 'manifest'
+          ? new Blob([recordManifestString], {
+              type: 'text/plain',
+            })
+          : filetypeIsDataURI(e.filetype)
+          ? dataURItoBlob(lookupManifestSHA256(recordManifest, e.sha256)!.data)
+          : new Blob([lookupManifestSHA256(recordManifest, e.sha256)!.data], {
+              type: e.filetype,
+            })
+      record.append('file', blob)
+    } else {
+      record.append(
+        'file',
+        e.filename === 'manifest' && e.filetype === 'manifest'
+          ? recordManifestString
+          : filetypeIsDataURI(e.filetype)
+          ? lookupManifestSHA256(recordManifest, e.sha256)!.data
+          : lookupManifestSHA256(recordManifest, e.sha256)!.data
+      )
+    }
     try {
       await fetch(e.link.url, {
         method: 'POST',
-        headers: {},
+        headers: new Headers({}),
         body: record,
       })
     } catch (err) {
+      console.error('Failed to upload', recordMetadata, recordManifest, e, err)
       throw Error(`Failed to upload ${e} \n ${err}`)
     }
   }

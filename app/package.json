@@ -113,11 +113,23 @@
     "jest-extended": "^2.0.0",
     "json-schema-faker": "^0.5.0-rcv.41",
     "prettier": "^2.5.1",
+    "react-devtools": "4.22.0",
+    "react-devtools-core": "4.22.0",
     "react-error-overlay": "6.0.9",
     "react-refresh": "^0.11.0",
     "ts-json-schema-generator": "^0.97.0",
     "typescript": "~4.5.5",
     "webpack-hot-middleware": "^2.25.1"
+  },
+  "overrides": {
+    "react-native": {
+      "react-devtools": "4.22.0",
+      "react-devtools-core": "4.22.0"
+    }
+  },
+  "resolutions": {
+    "react-devtools": "4.22.0",
+    "react-devtools-core": "4.22.0"
   },
   "jest": {
     "preset": "jest-expo",
