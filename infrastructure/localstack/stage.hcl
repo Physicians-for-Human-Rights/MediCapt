@@ -5,7 +5,7 @@ locals {
   namespace           = "${get_env("TG_STATE_PREFIX", "")}medicapt"
   # TODO Change this
   user_reply_to_email = "andrei@0xab.com"
-  base_source_url     = "${get_parent_terragrunt_dir()}/../../medicapt-infrastructure-modules//"
+  base_source_url     = "${get_parent_terragrunt_dir()}/../../infrastructure-modules//"
   account_id          = "926951938632"
   # TODO Cognito update for prod
   temporary_password_validity_days = 10
