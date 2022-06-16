@@ -57,7 +57,8 @@ export default function FormEditorFiles({
     if (result.type !== 'cancel') {
       const data = await readImage(result.uri, 'data:application/pdf,')
       if (data) {
-        if (_.isArrayBuffer(data)) throw new Error('array buffer')
+        if (_.isArrayBuffer(data))
+          throw new Error('BUG: You can only add array buffers')
         setManifest(
           addFileToManifest(
             filterManifest(manifest, f => f.filename !== 'form.pdf'),
