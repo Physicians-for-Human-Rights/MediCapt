@@ -19,7 +19,7 @@ securityDefinitions:
     x-amazon-apigateway-authorizer:
       type: cognito_user_pools
       providerARNs:
-      - ${cognito_user_pool_associate_arn}
+        - ${cognito_user_pool_associate_arn}
 x-amazon-apigateway-gateway-responses:
   ACCESS_DENIED:
     responseParameters:
@@ -40,25 +40,25 @@ x-amazon-apigateway-gateway-responses:
 security:
   - CognitoUserProvider: []
 schemes:
-- https
+  - https
 paths:
   /associate/share/record/byId/{shareId}:
     get:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - share
+        - share
       summary: Get a shared record by share ID
       operationId: associateGetSharedRecordById
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: shareId
-        in: path
-        description: ID of the record to return
-        required: true
-        type: string
-        format: uuid
+        - name: shareId
+          in: path
+          description: ID of the record to return
+          required: true
+          type: string
+          format: uuid
       responses:
         200:
           description: successful operation
@@ -72,26 +72,26 @@ paths:
         uri: ${lambda_uri_associateGetSharedRecordById}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     delete:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - share
+        - share
       summary: Deletes a record share. You lose access to this record.
       operationId: associateDeleteSharedRecordById
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: shareId
-        in: path
-        description: ID of share to delete
-        required: true
-        type: string
-        format: uuid
+        - name: shareId
+          in: path
+          description: ID of share to delete
+          required: true
+          type: string
+          format: uuid
       responses:
         400:
           description: Invalid ID supplied
@@ -103,10 +103,10 @@ paths:
         uri: ${lambda_uri_associateDeleteSharedRecordById}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     options:
       summary: CORS support
       description: |
@@ -125,12 +125,12 @@ paths:
               "statusCode" : 200
             }
         responses:
-          "default":
-            statusCode: "200"
+          'default':
+            statusCode: '200'
             responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
             responseTemplates:
               application/json: |
                 {}
@@ -139,36 +139,36 @@ paths:
           description: Default response for CORS method
           headers:
             Access-Control-Allow-Headers:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Methods:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Origin:
-              type: "string"
+              type: 'string'
   /associate/share/record/image/byId/{shareId}/{imageId}:
     get:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - share
+        - share
       summary: Get an image in a record
       operationId: associateGetSharedRecordImageByImageId
       consumes:
-      - application/json
+        - application/json
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: shareId
-        in: path
-        description: The share id
-        required: true
-        type: string
-        format: uuid
-      - name: imageId
-        in: path
-        description: The uuid of the image
-        required: true
-        type: string
-        format: uuid
+        - name: shareId
+          in: path
+          description: The share id
+          required: true
+          type: string
+          format: uuid
+        - name: imageId
+          in: path
+          description: The uuid of the image
+          required: true
+          type: string
+          format: uuid
       responses:
         400:
           description: Record already sealed
@@ -180,10 +180,10 @@ paths:
         uri: ${lambda_uri_associateGetSharedRecordImageByImageId}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     options:
       summary: CORS support
       description: |
@@ -202,12 +202,12 @@ paths:
               "statusCode" : 200
             }
         responses:
-          "default":
-            statusCode: "200"
+          'default':
+            statusCode: '200'
             responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
             responseTemplates:
               application/json: |
                 {}
@@ -216,37 +216,37 @@ paths:
           description: Default response for CORS method
           headers:
             Access-Control-Allow-Headers:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Methods:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Origin:
-              type: "string"
+              type: 'string'
   /associate/share/with-user:
     get:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - share
+        - share
       summary: List your own shared records
       operationId: associateGetSharedRecordsWithUser
       produces:
-      - application/json
+        - application/json
       parameters:
-      - in: query
-        name: offset
-        type: integer
-        required: false
-        default: 0
-        minimum: 0
-        description: The number of items to skip before starting to collect the result set.
-      - in: query
-        name: limit
-        type: integer
-        required: false
-        default: 20
-        minimum: 1
-        maximum: 100
-        description: The numbers of items to return.
+        - in: query
+          name: offset
+          type: integer
+          required: false
+          default: 0
+          minimum: 0
+          description: The number of items to skip before starting to collect the result set.
+        - in: query
+          name: limit
+          type: integer
+          required: false
+          default: 20
+          minimum: 1
+          maximum: 100
+          description: The numbers of items to return.
       responses:
         200:
           description: successful operation
@@ -256,17 +256,17 @@ paths:
               $ref: '#/definitions/Share'
           headers:
             Access-Control-Allow-Origin:
-              type: "string"
+              type: 'string'
         400:
           description: Invalid status value
       x-amazon-apigateway-integration:
         uri: ${lambda_uri_associateGetSharedRecordsWithUser}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     options:
       summary: CORS support
       description: |
@@ -285,12 +285,12 @@ paths:
               "statusCode" : 200
             }
         responses:
-          "default":
-            statusCode: "200"
+          'default':
+            statusCode: '200'
             responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
             responseTemplates:
               application/json: |
                 {}
@@ -299,11 +299,11 @@ paths:
           description: Default response for CORS method
           headers:
             Access-Control-Allow-Headers:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Methods:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Origin:
-              type: "string"
+              type: 'string'
 definitions:
   Empty: {}
   RecordMetadata:

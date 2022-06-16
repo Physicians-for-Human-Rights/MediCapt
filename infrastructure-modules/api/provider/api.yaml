@@ -19,7 +19,7 @@ securityDefinitions:
     x-amazon-apigateway-authorizer:
       type: cognito_user_pools
       providerARNs:
-      - ${cognito_user_pool_provider_arn}
+        - ${cognito_user_pool_provider_arn}
 x-amazon-apigateway-gateway-responses:
   ACCESS_DENIED:
     responseParameters:
@@ -40,27 +40,27 @@ x-amazon-apigateway-gateway-responses:
 security:
   - CognitoUserProvider: []
 schemes:
-- https
+  - https
 paths:
   /provider/record:
     post:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - Record
+        - Record
       summary: Add a new record
       consumes:
-      - application/json
+        - application/json
       produces:
-      - application/json
+        - application/json
       operationId: providerCreateRecord
       parameters:
-      - in: body
-        name: body
-        description: Create a new record
-        required: true
-        schema:
-          $ref: '#/definitions/Record'
+        - in: body
+          name: body
+          description: Create a new record
+          required: true
+          schema:
+            $ref: '#/definitions/Record'
       responses:
         405:
           description: Invalid input
@@ -70,36 +70,36 @@ paths:
         uri: ${lambda_uri_providerCreateRecord}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     get:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - Record
+        - Record
       summary: Get records
       operationId: providerGetRecords
       produces:
-      - application/json
-      - application/xml
+        - application/json
+        - application/xml
       parameters:
-      - in: query
-        name: next
-        type: string
-        required: false
-        description: The token for the next page if any
-      - in: query
-        name: filter
-        type: string
-        required: false
-        description: A JSON filter
-      - in: query
-        name: sort
-        type: string
-        required: false
-        description: A JSON sort
+        - in: query
+          name: next
+          type: string
+          required: false
+          description: The token for the next page if any
+        - in: query
+          name: filter
+          type: string
+          required: false
+          description: A JSON filter
+        - in: query
+          name: sort
+          type: string
+          required: false
+          description: A JSON sort
       responses:
         200:
           description: successful operation
@@ -115,10 +115,10 @@ paths:
         uri: ${lambda_uri_providerGetRecords}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     options:
       summary: CORS support
       description: |
@@ -137,12 +137,12 @@ paths:
               "statusCode" : 200
             }
         responses:
-          "default":
-            statusCode: "200"
+          'default':
+            statusCode: '200'
             responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
             responseTemplates:
               application/json: |
                 {}
@@ -151,28 +151,28 @@ paths:
           description: Default response for CORS method
           headers:
             Access-Control-Allow-Headers:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Methods:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Origin:
-              type: "string"
+              type: 'string'
   /provider/record/byId/{recordId}:
     get:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - Record
+        - Record
       summary: Get a record by ID
       operationId: providerGetRecordById
       produces:
-      - application/json
-      - application/xml
+        - application/json
+        - application/xml
       parameters:
-      - name: recordId
-        in: path
-        description: ID of the record to return
-        required: true
-        type: string
+        - name: recordId
+          in: path
+          description: ID of the record to return
+          required: true
+          type: string
       responses:
         200:
           description: successful operation
@@ -186,33 +186,33 @@ paths:
         uri: ${lambda_uri_providerGetRecordById}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     post:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - Record
+        - Record
       summary: Update an existing record
       operationId: providerUpdateRecordById
       consumes:
-      - application/x-www-form-urlencoded
+        - application/x-www-form-urlencoded
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: recordId
-        in: path
-        description: ID of the record to return
-        required: true
-        type: string
-      - in: body
-        name: body
-        description: Updated record
-        required: true
-        schema:
-          $ref: '#/definitions/Record'
+        - name: recordId
+          in: path
+          description: ID of the record to return
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Updated record
+          required: true
+          schema:
+            $ref: '#/definitions/Record'
       responses:
         404:
           description: Record not found
@@ -222,10 +222,10 @@ paths:
         uri: ${lambda_uri_providerUpdateRecordById}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     options:
       summary: CORS support
       description: |
@@ -244,12 +244,12 @@ paths:
               "statusCode" : 200
             }
         responses:
-          "default":
-            statusCode: "200"
+          'default':
+            statusCode: '200'
             responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
             responseTemplates:
               application/json: |
                 {}
@@ -258,29 +258,29 @@ paths:
           description: Default response for CORS method
           headers:
             Access-Control-Allow-Headers:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Methods:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Origin:
-              type: "string"
+              type: 'string'
   /provider/record/metadataById/{recordId}:
     get:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - Record
+        - Record
       summary: Get record metadata by ID
       operationId: providerGetRecordMetadataById
       produces:
-      - application/json
-      - application/xml
+        - application/json
+        - application/xml
       parameters:
-      - name: recordId
-        in: path
-        description: ID of the record to return
-        required: true
-        type: string
-        format: uuid
+        - name: recordId
+          in: path
+          description: ID of the record to return
+          required: true
+          type: string
+          format: uuid
       responses:
         200:
           description: successful operation
@@ -294,10 +294,10 @@ paths:
         uri: ${lambda_uri_providerGetRecordMetadataById}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     options:
       summary: CORS support
       description: |
@@ -316,12 +316,12 @@ paths:
               "statusCode" : 200
             }
         responses:
-          "default":
-            statusCode: "200"
+          'default':
+            statusCode: '200'
             responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
             responseTemplates:
               application/json: |
                 {}
@@ -330,35 +330,35 @@ paths:
           description: Default response for CORS method
           headers:
             Access-Control-Allow-Headers:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Methods:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Origin:
-              type: "string"
+              type: 'string'
   /provider/record/commitById/{recordId}:
     post:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - Record
+        - Record
       summary: Commit a record update
       operationId: providerCommitRecordById
       consumes:
-      - application/x-www-form-urlencoded
+        - application/x-www-form-urlencoded
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: recordId
-        in: path
-        description: ID of the record
-        required: true
-        type: string
-      - in: body
-        name: body
-        description: Updated record
-        required: true
-        schema:
-          $ref: '#/definitions/Record'
+        - name: recordId
+          in: path
+          description: ID of the record
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Updated record
+          required: true
+          schema:
+            $ref: '#/definitions/Record'
       responses:
         404:
           description: Record not found
@@ -368,10 +368,10 @@ paths:
         uri: ${lambda_uri_providerCommitRecordById}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     options:
       summary: CORS support
       description: |
@@ -390,12 +390,12 @@ paths:
               "statusCode" : 200
             }
         responses:
-          "default":
-            statusCode: "200"
+          'default':
+            statusCode: '200'
             responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
             responseTemplates:
               application/json: |
                 {}
@@ -404,35 +404,35 @@ paths:
           description: Default response for CORS method
           headers:
             Access-Control-Allow-Headers:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Methods:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Origin:
-              type: "string"
+              type: 'string'
   /provider/record/sealById/{recordId}:
     post:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - Record
+        - Record
       summary: Seal a record record
       operationId: providerSealRecordById
       consumes:
-      - application/x-www-form-urlencoded
+        - application/x-www-form-urlencoded
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: recordId
-        in: path
-        description: ID of the record
-        required: true
-        type: string
-      - in: body
-        name: body
-        description: Updated record
-        required: true
-        schema:
-          $ref: '#/definitions/Record'
+        - name: recordId
+          in: path
+          description: ID of the record
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Updated record
+          required: true
+          schema:
+            $ref: '#/definitions/Record'
       responses:
         404:
           description: Record not found
@@ -442,10 +442,10 @@ paths:
         uri: ${lambda_uri_providerSealRecordById}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     options:
       summary: CORS support
       description: |
@@ -464,12 +464,12 @@ paths:
               "statusCode" : 200
             }
         responses:
-          "default":
-            statusCode: "200"
+          'default':
+            statusCode: '200'
             responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
             responseTemplates:
               application/json: |
                 {}
@@ -478,38 +478,38 @@ paths:
           description: Default response for CORS method
           headers:
             Access-Control-Allow-Headers:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Methods:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Origin:
-              type: "string"
+              type: 'string'
   /provider/form:
     get:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - Form
+        - Form
       summary: Get forms
       operationId: providerGetForms
       produces:
-      - application/json
-      - application/xml
+        - application/json
+        - application/xml
       parameters:
-      - in: query
-        name: next
-        type: string
-        required: false
-        description: The token for the next page if any
-      - in: query
-        name: filter
-        type: string
-        required: false
-        description: A JSON filter
-      - in: query
-        name: sort
-        type: string
-        required: false
-        description: A JSON sort
+        - in: query
+          name: next
+          type: string
+          required: false
+          description: The token for the next page if any
+        - in: query
+          name: filter
+          type: string
+          required: false
+          description: A JSON filter
+        - in: query
+          name: sort
+          type: string
+          required: false
+          description: A JSON sort
       responses:
         200:
           description: successful operation
@@ -525,10 +525,10 @@ paths:
         uri: ${lambda_uri_providerGetForms}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     options:
       summary: CORS support
       description: |
@@ -547,12 +547,12 @@ paths:
               "statusCode" : 200
             }
         responses:
-          "default":
-            statusCode: "200"
+          'default':
+            statusCode: '200'
             responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
             responseTemplates:
               application/json: |
                 {}
@@ -561,29 +561,29 @@ paths:
           description: Default response for CORS method
           headers:
             Access-Control-Allow-Headers:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Methods:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Origin:
-              type: "string"
+              type: 'string'
   /provider/form/byId/{formId}:
     get:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - Form
+        - Form
       summary: Get a form by ID
       operationId: providerGetFormById
       produces:
-      - application/json
-      - application/xml
+        - application/json
+        - application/xml
       parameters:
-      - name: formId
-        in: path
-        description: ID of the form to return
-        required: true
-        type: string
-        format: uuid
+        - name: formId
+          in: path
+          description: ID of the form to return
+          required: true
+          type: string
+          format: uuid
       responses:
         200:
           description: successful operation
@@ -597,10 +597,10 @@ paths:
         uri: ${lambda_uri_providerGetFormById}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     options:
       summary: CORS support
       description: |
@@ -619,12 +619,12 @@ paths:
               "statusCode" : 200
             }
         responses:
-          "default":
-            statusCode: "200"
+          'default':
+            statusCode: '200'
             responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
             responseTemplates:
               application/json: |
                 {}
@@ -633,33 +633,33 @@ paths:
           description: Default response for CORS method
           headers:
             Access-Control-Allow-Headers:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Methods:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Origin:
-              type: "string"
+              type: 'string'
   /provider/user/byId/{poolId}/{username}:
     get:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - User
+        - User
       summary: Get a user by ID
       operationId: providerGetUserById
       produces:
-      - application/json
-      - application/xml
+        - application/json
+        - application/xml
       parameters:
-      - name: poolId
-        in: path
-        description: The pool ID of this user
-        required: true
-        type: string
-      - name: username
-        in: path
-        description: ID of the user to return
-        required: true
-        type: string
+        - name: poolId
+          in: path
+          description: The pool ID of this user
+          required: true
+          type: string
+        - name: username
+          in: path
+          description: ID of the user to return
+          required: true
+          type: string
       responses:
         200:
           description: successful operation
@@ -673,10 +673,10 @@ paths:
         uri: ${lambda_uri_providerGetUserById}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     options:
       summary: CORS support
       description: |
@@ -695,12 +695,12 @@ paths:
               "statusCode" : 200
             }
         responses:
-          "default":
-            statusCode: "200"
+          'default':
+            statusCode: '200'
             responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
             responseTemplates:
               application/json: |
                 {}
@@ -709,33 +709,33 @@ paths:
           description: Default response for CORS method
           headers:
             Access-Control-Allow-Headers:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Methods:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Origin:
-              type: "string"
+              type: 'string'
   /provider/user/byUUID/{poolId}/{uuid}:
     get:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - User
+        - User
       summary: Get a user by ID
       operationId: providerGetUserByUUID
       produces:
-      - application/json
-      - application/xml
+        - application/json
+        - application/xml
       parameters:
-      - name: poolId
-        in: path
-        description: The pool ID of this user
-        required: true
-        type: string
-      - name: uuid
-        in: path
-        description: UUID of the user to return
-        required: true
-        type: string
+        - name: poolId
+          in: path
+          description: The pool ID of this user
+          required: true
+          type: string
+        - name: uuid
+          in: path
+          description: UUID of the user to return
+          required: true
+          type: string
       responses:
         200:
           description: successful operation
@@ -749,10 +749,10 @@ paths:
         uri: ${lambda_uri_providerGetUserByUUID}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     options:
       summary: CORS support
       description: |
@@ -771,12 +771,12 @@ paths:
               "statusCode" : 200
             }
         responses:
-          "default":
-            statusCode: "200"
+          'default':
+            statusCode: '200'
             responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
             responseTemplates:
               application/json: |
                 {}
@@ -785,29 +785,29 @@ paths:
           description: Default response for CORS method
           headers:
             Access-Control-Allow-Headers:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Methods:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Origin:
-              type: "string"
+              type: 'string'
   /provider/location/byId/{locationId}:
     get:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - Location
+        - Location
       summary: Get a location by ID
       operationId: providerGetLocationById
       produces:
-      - application/json
-      - application/xml
+        - application/json
+        - application/xml
       parameters:
-      - name: locationId
-        in: path
-        description: ID of the location to return
-        required: true
-        type: string
-        format: uuid
+        - name: locationId
+          in: path
+          description: ID of the location to return
+          required: true
+          type: string
+          format: uuid
       responses:
         200:
           description: successful operation
@@ -821,10 +821,10 @@ paths:
         uri: ${lambda_uri_providerGetLocationById}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     options:
       summary: CORS support
       description: |
@@ -843,12 +843,12 @@ paths:
               "statusCode" : 200
             }
         responses:
-          "default":
-            statusCode: "200"
+          'default':
+            statusCode: '200'
             responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
             responseTemplates:
               application/json: |
                 {}
@@ -857,38 +857,38 @@ paths:
           description: Default response for CORS method
           headers:
             Access-Control-Allow-Headers:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Methods:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Origin:
-              type: "string"
+              type: 'string'
   /provider/share/record:
     get:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - Share
+        - Share
       summary: Get record shares
       operationId: providerGetRecordShares
       produces:
-      - application/json
-      - application/xml
+        - application/json
+        - application/xml
       parameters:
-      - in: query
-        name: next
-        type: string
-        required: false
-        description: The token for the next page if any
-      - in: query
-        name: filter
-        type: string
-        required: false
-        description: A JSON filter
-      - in: query
-        name: sort
-        type: string
-        required: false
-        description: A JSON sort
+        - in: query
+          name: next
+          type: string
+          required: false
+          description: The token for the next page if any
+        - in: query
+          name: filter
+          type: string
+          required: false
+          description: A JSON filter
+        - in: query
+          name: sort
+          type: string
+          required: false
+          description: A JSON sort
       responses:
         200:
           description: successful operation
@@ -904,10 +904,10 @@ paths:
         uri: ${lambda_uri_providerGetRecordShares}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     options:
       summary: CORS support
       description: |
@@ -926,12 +926,12 @@ paths:
               "statusCode" : 200
             }
         responses:
-          "default":
-            statusCode: "200"
+          'default':
+            statusCode: '200'
             responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
             responseTemplates:
               application/json: |
                 {}
@@ -940,28 +940,28 @@ paths:
           description: Default response for CORS method
           headers:
             Access-Control-Allow-Headers:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Methods:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Origin:
-              type: "string"
+              type: 'string'
   /provider/share/record/byRecordId/{recordId}:
     post:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - Share
+        - Share
       summary: Create a share by record ID
       operationId: providerCreateShareByRecordId
       produces:
-      - application/json
-      - application/xml
+        - application/json
+        - application/xml
       parameters:
-      - name: recordId
-        in: path
-        description: ID of the record to return
-        required: true
-        type: string
+        - name: recordId
+          in: path
+          description: ID of the record to return
+          required: true
+          type: string
       responses:
         200:
           description: successful operation
@@ -975,10 +975,10 @@ paths:
         uri: ${lambda_uri_providerCreateShareByRecordId}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     options:
       summary: CORS support
       description: |
@@ -997,12 +997,12 @@ paths:
               "statusCode" : 200
             }
         responses:
-          "default":
-            statusCode: "200"
+          'default':
+            statusCode: '200'
             responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
             responseTemplates:
               application/json: |
                 {}
@@ -1011,28 +1011,28 @@ paths:
           description: Default response for CORS method
           headers:
             Access-Control-Allow-Headers:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Methods:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Origin:
-              type: "string"
+              type: 'string'
   /provider/share/record/byId/{shareId}:
     get:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - Share
+        - Share
       summary: Get a record by share ID
       operationId: providerGetRecordByShareId
       produces:
-      - application/json
-      - application/xml
+        - application/json
+        - application/xml
       parameters:
-      - name: shareId
-        in: path
-        description: ID of the share
-        required: true
-        type: string
+        - name: shareId
+          in: path
+          description: ID of the share
+          required: true
+          type: string
       responses:
         200:
           description: successful operation
@@ -1046,33 +1046,33 @@ paths:
         uri: ${lambda_uri_providerGetRecordByShareId}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     post:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - Share
+        - Share
       summary: Update an existing share
       operationId: providerUpdateShareByShareId
       consumes:
-      - application/x-www-form-urlencoded
+        - application/x-www-form-urlencoded
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: shareId
-        in: path
-        description: ID of the record to return
-        required: true
-        type: string
-      - in: body
-        name: body
-        description: Updated record
-        required: true
-        schema:
-          $ref: '#/definitions/Record'
+        - name: shareId
+          in: path
+          description: ID of the record to return
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Updated record
+          required: true
+          schema:
+            $ref: '#/definitions/Record'
       responses:
         404:
           description: Record not found
@@ -1082,26 +1082,26 @@ paths:
         uri: ${lambda_uri_providerUpdateShareByShareId}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     delete:
       security:
-      - CognitoUserProvider: []
+        - CognitoUserProvider: []
       tags:
-      - Share
+        - Share
       summary: Delete a share
       operationId: providerDeleteShareByShareId
       produces:
-      - application/json
-      - application/xml
+        - application/json
+        - application/xml
       parameters:
-      - name: shareId
-        in: path
-        description: ID of the share
-        required: true
-        type: string
+        - name: shareId
+          in: path
+          description: ID of the share
+          required: true
+          type: string
       responses:
         200:
           description: successful operation
@@ -1115,10 +1115,10 @@ paths:
         uri: ${lambda_uri_providerDeleteShareByShareId}
         responses:
           default:
-            statusCode: "200"
-        passthroughBehavior: "NEVER"
-        httpMethod: "POST"
-        type: "aws_proxy"
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
     options:
       summary: CORS support
       description: |
@@ -1137,12 +1137,12 @@ paths:
               "statusCode" : 200
             }
         responses:
-          "default":
-            statusCode: "200"
+          'default':
+            statusCode: '200'
             responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
             responseTemplates:
               application/json: |
                 {}
@@ -1151,11 +1151,11 @@ paths:
           description: Default response for CORS method
           headers:
             Access-Control-Allow-Headers:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Methods:
-              type: "string"
+              type: 'string'
             Access-Control-Allow-Origin:
-              type: "string"
+              type: 'string'
 definitions:
   Empty: {}
   User:
@@ -1164,7 +1164,7 @@ definitions:
       storage-version:
         type: string
         enum:
-        - 1.0.0
+          - 1.0.0
       username:
         type: string
         minLength: 1
@@ -1218,11 +1218,11 @@ definitions:
       userType:
         type: string
         enum:
-        - Provider
-        - Associate
-        - Manager
-        - FormDesigner
-        - Researcher
+          - Provider
+          - Associate
+          - Manager
+          - FormDesigner
+          - Researcher
       enabled:
         type: boolean
       userUUID:
@@ -1243,103 +1243,103 @@ definitions:
       status:
         type: string
     required:
-    - storage-version
-    - username
-    - email
-    - birthdate
-    - name
-    - nickname
-    - formal_name
-    - gender
-    - phone_number
-    - official_id_type
-    - official_id_code
-    - official_id_expires
-    - official_id_image
-    - address
-    - country
-    - language
-    - expiry_date
-    - allowed_locations
-    - userType
-    - enabled
-    - userUUID
-    - userID
-    - created_by
-    - created_time
-    - last_updated_time
+      - storage-version
+      - username
+      - email
+      - birthdate
+      - name
+      - nickname
+      - formal_name
+      - gender
+      - phone_number
+      - official_id_type
+      - official_id_code
+      - official_id_expires
+      - official_id_image
+      - address
+      - country
+      - language
+      - expiry_date
+      - allowed_locations
+      - userType
+      - enabled
+      - userUUID
+      - userID
+      - created_by
+      - created_time
+      - last_updated_time
   Location:
-      type: object
-      properties:
-        storage-version:
-          type: string
-          enum:
+    type: object
+    properties:
+      storage-version:
+        type: string
+        enum:
           - 1.0.0
-        country:
-          type: string
-          minLength: 2
-          maxLength: 2
-        language:
-          type: string
-          minLength: 2
-          maxLength: 2
-        legalName:
-          type: string
-          minLength: 1
-        shortName:
-          type: string
-          minLength: 1
-        entityType:
-          type: string
-          enum:
+      country:
+        type: string
+        minLength: 2
+        maxLength: 2
+      language:
+        type: string
+        minLength: 2
+        maxLength: 2
+      legalName:
+        type: string
+        minLength: 1
+      shortName:
+        type: string
+        minLength: 1
+      entityType:
+        type: string
+        enum:
           - medical-facility
           - police-station
           - refugee-camp
-        address:
-          type: string
-          minLength: 1
-        mailingAddress:
-          type: string
-          minLength: 1
-        coordinates:
-          type: string
-          minLength: 1
-        phoneNumber:
-          type: string
-          minLength: 1
-        email:
-          type: string
-          format: email
-          minLength: 1
-        enabled:
-          type: boolean
-        tags:
-          type: string
-        locationUUID:
-          type: string
-          minLength: 1
-          format: uuid
-        locationID:
-          type: string
-          minLength: 1
-        createdDate:
-          type: string
-          format: date-time
-        createdByUUID:
-          type: string
-          minLength: 1
-          format: uuid
-        lastChangedByUUID:
-          type: string
-          minLength: 1
-          format: uuid
-        lastChangedDate:
-          type: string
-          format: date-time
-        version:
-          type: string
-          minLength: 1
-      required:
+      address:
+        type: string
+        minLength: 1
+      mailingAddress:
+        type: string
+        minLength: 1
+      coordinates:
+        type: string
+        minLength: 1
+      phoneNumber:
+        type: string
+        minLength: 1
+      email:
+        type: string
+        format: email
+        minLength: 1
+      enabled:
+        type: boolean
+      tags:
+        type: string
+      locationUUID:
+        type: string
+        minLength: 1
+        format: uuid
+      locationID:
+        type: string
+        minLength: 1
+      createdDate:
+        type: string
+        format: date-time
+      createdByUUID:
+        type: string
+        minLength: 1
+        format: uuid
+      lastChangedByUUID:
+        type: string
+        minLength: 1
+        format: uuid
+      lastChangedDate:
+        type: string
+        format: date-time
+      version:
+        type: string
+        minLength: 1
+    required:
       - storage-version
       - country
       - language
@@ -1360,16 +1360,16 @@ definitions:
       - lastChangedDate
       - version
   Form:
-      type: object
-      properties:
-        storage-version:
-          type: string
-          enum:
+    type: object
+    properties:
+      storage-version:
+        type: string
+        enum:
           - 1.0.0
   Record:
-      type: object
-      properties:
-        storage-version:
-          type: string
-          enum:
+    type: object
+    properties:
+      storage-version:
+        type: string
+        enum:
           - 1.0.0

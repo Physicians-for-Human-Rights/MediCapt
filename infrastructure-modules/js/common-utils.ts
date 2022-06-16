@@ -328,7 +328,7 @@ function formatSet(data: any, options: any) {
       break
     case 'Number':
       // @ts-ignore
-      map['NS'] = values.map(function(value) {
+      map['NS'] = values.map(function (value) {
         return value.toString()
       })
   }
@@ -601,4 +601,12 @@ export function hashFilename(uuid: string, hash: string, filetype: string) {
 // validating UUIDs!
 export function isUUIDOrInternalID(s: string) {
   return s.length === 36
+}
+
+export function acceptedVersions(event: any, def = ['1.0.0']) {
+  return event.headers['acceptedversions'] || event.headers['AcceptedVersions']
+    ? JSON.parse(
+        event.headers['acceptedversions'] || event.headers['AcceptedVersions']
+      )
+    : def
 }
