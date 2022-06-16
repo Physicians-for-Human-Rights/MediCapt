@@ -99,6 +99,9 @@ function Signature({
                 ref={ref}
                 onOK={onSave}
                 onEmpty={onEmpty}
+                // NB imageType={'image/jpeg'} is broken!
+                // You must get a png instead.
+                imageType={'image/png'}
               />
             </Box>
           </Modal.Body>
