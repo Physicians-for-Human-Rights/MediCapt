@@ -43,3 +43,11 @@ of the application. It probably needs to also exist as part of the record, and
 not just the form. It will need to be added to the map function in forms.tsx
 which will guide you to other locations to update. Don't forget to add a test
 for that form element.
+
+## Debugging
+
+Word of caution while debugging. Turning on the react native debugger triggers
+bugs in expo, this is a well known issue that manifests in different ways. In
+our case, base64 encodings of received images will contain mostly As after the
+first few characters. This causes images to fail to display. Don't debug image
+issues with the debuger on and remember to run it off.
