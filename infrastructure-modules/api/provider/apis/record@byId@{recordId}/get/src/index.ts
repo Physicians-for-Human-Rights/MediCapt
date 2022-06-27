@@ -21,10 +21,10 @@ declare global {
 import { good, bad, DynamoDB, hashFilename } from 'common-utils'
 import {
   recordMetadataSchemaStrip,
-  recordManifestSchema,
-  RecordFileWithLink,
+  RecordManifestFileWithLink,
   RecordManifestWithLinks,
-  RecordFile,
+  RecordManifestFile,
+  recordManifestSchema,
 } from 'utils/types/recordMetadata'
 
 export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
@@ -50,7 +50,7 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       const record = recordMetadataSchemaStrip.parse(
         DynamoDB.unmarshall(item.Item)
       )
-      function createLink(v: RecordFile): RecordFileWithLink {
+      function createLink(v: RecordManifestFile): RecordManifestFileWithLink {
         return {
           sha256: v.sha256,
           filetype: v.filetype,

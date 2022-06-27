@@ -19,25 +19,15 @@ declare global {
   }
 }
 
-import {
-  good,
-  bad,
-  DynamoDB,
-  zodDynamoUpdateExpression,
-  zodDynamoAttributeValues,
-  zodDynamoAttributeNames,
-  s3ObjectExists,
-  s3ReadObjectJSON,
-  hashFilename,
-} from 'common-utils'
+import { good, bad, DynamoDB, s3ObjectExists, hashFilename } from 'common-utils'
 import {
   RecordMetadata,
   recordMetadataSchema,
   recordMetadataSchemaStrip,
   recordManifestWithMD5Schema,
-  RecordFileWithPostLink,
+  RecordManifestFileWithPostLink,
   RecordManifestWithPostLinks,
-  RecordFileWithMD5Schema,
+  RecordManifestFileWithMD5,
 } from 'utils/types/recordMetadata'
 
 export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
@@ -89,9 +79,9 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
 
     if (metadata.manifestHash) {
       // Otherwise the manifest is new
-      const contents: RecordFileWithPostLink[] = []
+      const contents: RecordManifestFileWithPostLink[] = []
 
-      async function createFileLink(v: RecordFileWithMD5Schema) {
+      async function createFileLink(v: RecordManifestFileWithMD5) {
         const filename = hashFilename(
           existingRecord.recordUUID,
           v.sha256,

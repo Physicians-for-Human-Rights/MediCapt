@@ -46,7 +46,7 @@ export function toDataURI(data: string, filetype: string) {
   return 'data:' + filetype + ';base64,' + btoa(unescape(data))
 }
 
-// TODO
+// TODO This type would be more accurate:
 // export function blobToBase64(blob: Blob): Promise<string | ArrayBuffer> {
 export function blobToBase64(blob: Blob): Promise<string> {
   return new Promise((resolve, _) => {
@@ -59,15 +59,22 @@ export function blobToBase64(blob: Blob): Promise<string> {
   })
 }
 
+export function isBinary(filetype: string) {
+  return (
+    filetype === 'image/webp' ||
+    filetype === 'image/png' ||
+    filetype === 'image/jpeg' ||
+    filetype === 'application/pdf'
+  )
+}
+
 // This converts remote data, which is a raw binary stream, or text, etc. into
-// whatever internal representation we use for that data. Generally, our binary
-// data is stored as dataURIs
+// whatever internal representation we use for that data. We store binary data
+// as data URIs.
 export async function unpackRemoteData(data: string, filetype: string) {
-  if (filetype.startsWith('application/pdf') || filetype.startsWith('image/'))
-    // return 'data:' + filetype + ';base64,' + atob(data)
+  if (isBinary(filetype))
     // @ts-ignore TODO
     return await blobToBase64(new Blob([data], { type: filetype }))
-  // return toDataURI(data, filetype)
   else return data
 }
 

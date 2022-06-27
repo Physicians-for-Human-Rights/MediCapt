@@ -29,15 +29,13 @@ import {
 } from 'common-utils'
 import {
   RecordDynamoLatestToUpdateType,
-  RecordDynamoVersionType,
   RecordDynamoUpdateType,
   RecordMetadata,
   recordMetadataSchema,
   recordMetadataSchemaByUser,
-  recordSchemaDynamoVersion,
   recordMetadataSchemaStrip,
-  recordSchemaDynamoLatestToUpdate,
   recordManifestSchema,
+  recordSchemaDynamoLatestToUpdate,
 } from 'utils/types/recordMetadata'
 
 export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
@@ -180,10 +178,12 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
           },
           ReturnValues: 'ALL_NEW',
           UpdateExpression: zodDynamoUpdateExpression(
-            recordSchemaDynamoLatestToUpdate
+            recordSchemaDynamoLatestToUpdate,
+            updateLatest
           ),
           ExpressionAttributeNames: zodDynamoAttributeNames(
-            recordSchemaDynamoLatestToUpdate
+            recordSchemaDynamoLatestToUpdate,
+            updateLatest
           ),
           ExpressionAttributeValues: {
             ...zodDynamoAttributeValues(
@@ -196,40 +196,59 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
         })
         .promise()
     } catch (e) {
-      return bad(e, 'Record is out of date or does not exist')
+      return bad(
+        [
+          e,
+          recordSchemaDynamoLatestToUpdate,
+          updateLatest,
+          {
+            TableName: process.env.record_table,
+            Key: {
+              PK: { S: 'RECORD#' + recordId },
+              SK: { S: 'VERSION#latest' },
+            },
+            ReturnValues: 'ALL_NEW',
+            UpdateExpression: zodDynamoUpdateExpression(
+              recordSchemaDynamoLatestToUpdate,
+              updateLatest
+            ),
+            ExpressionAttributeNames: zodDynamoAttributeNames(
+              recordSchemaDynamoLatestToUpdate,
+              updateLatest
+            ),
+            ExpressionAttributeValues: {
+              ...zodDynamoAttributeValues(
+                recordSchemaDynamoLatestToUpdate,
+                updateLatest
+              ),
+              ':oldVersion': { S: record.version },
+            },
+            ConditionExpression: '#version = :oldVersion',
+          },
+        ],
+        'Record is out of date, does not exist, or update failed'
+      )
     }
     try {
       const newRecord = recordMetadataSchemaStrip.parse(
         DynamoDB.unmarshall(_.mapValues(response.Attributes))
       )
 
-      // Insert the versioned record for logging purposes
-      const recordDynamoNextVersion: RecordDynamoVersionType = recordSchemaDynamoVersion.parse(
-        {
-          ...newRecord,
-          PK: 'RECORD#' + newRecord.recordUUID,
-          SK: 'VERSION#' + newRecord.version,
-        }
-      )
-      await ddb
-        .putItem({
-          TableName: process.env.record_table,
-          Item: DynamoDB.marshall(recordDynamoNextVersion),
-        })
-        .promise()
+      await s3.upload({
+        Bucket: process.env.record_bucket,
+        Key: hashFilename(
+          existingRecord.recordUUID,
+          existingRecord.manifestHash,
+          'metadata'
+        ),
+        Body: JSON.stringify(newRecord),
+      })
 
       return good({ record: newRecord, hashesToCheck })
     } catch (e) {
       return bad(e, 'Unknown error')
     }
   } catch (e) {
-    return bad(
-      [
-        e,
-        zodDynamoUpdateExpression(recordSchemaDynamoLatestToUpdate),
-        zodDynamoAttributeNames(recordSchemaDynamoLatestToUpdate),
-      ],
-      'Generic error'
-    )
+    return bad(e, 'Generic error')
   }
 }

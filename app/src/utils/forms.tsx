@@ -500,7 +500,7 @@ export async function readFile(filename: string, virtualAsset: string) {
       content = await readImage(f.localUri, 'data:image/png;base64,')
       break
     case 'jpg':
-      content = await readImage(f.localUri, 'data:image/jpg;base64,')
+      content = await readImage(f.localUri, 'data:image/jpeg;base64,')
       break
     default:
       // TODO Error handling

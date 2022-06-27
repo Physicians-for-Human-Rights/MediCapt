@@ -38,3 +38,22 @@ export async function standardHandler<T>(
   }
   return null
 }
+
+export function schemaVersions(schema: any) {
+  if (
+    schema.shape &&
+    schema.shape['storage-version'] &&
+    schema.shape['storage-version'].value
+  )
+    return [schema.shape['storage-version'].value]
+
+  if (
+    schema._def &&
+    schema._def.typeName === 'ZodDiscriminatedUnion' &&
+    schema._def.discriminator === 'storage-version'
+  ) {
+    return Array.from(schema._def.options.keys())
+  }
+  console.error('BUG cannot determine this schema version', schema)
+  throw 'BUG Cannot determine schema version'
+}

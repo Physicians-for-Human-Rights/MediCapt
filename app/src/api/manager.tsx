@@ -20,13 +20,20 @@ import {
   userSchemaByUser,
 } from 'utils/types/user'
 import { QueryFilterForType } from 'utils/types/url'
+import { schemaVersions } from 'api/utils'
 
 // User
 
 export async function createUser(user: UserByUserType) {
   userSchemaByUser.parse(user)
+  schemaVersions(userSchema)
   const data = await API.post('manager', '/manager/user', {
     body: user,
+    headers: {
+      AcceptedVersions: JSON.stringify({
+        user: schemaVersions(userSchema),
+      }),
+    },
   })
   return {
     user: userSchema.parse(data.user),
@@ -41,7 +48,11 @@ export async function getUserByUsername(
   const data = await API.get(
     'manager',
     '/manager/user/byId/' + poolId + '/' + username,
-    {}
+    {
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(userSchema)),
+      },
+    }
   )
   return userSchema.partial().parse(data)
 }
@@ -53,7 +64,11 @@ export async function getUserByUUID(
   const data = await API.get(
     'manager',
     '/manager/user/byId/' + poolId + '/' + uuid,
-    {}
+    {
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(userSchema)),
+      },
+    }
   )
   return userSchema.partial().parse(data)
 }
@@ -65,6 +80,11 @@ export async function updateUser(user: UserType) {
     '/manager/user/byId/' + user.userType + '/' + user.username,
     {
       body: user,
+      headers: {
+        AcceptedVersions: JSON.stringify({
+          user: schemaVersions(userSchema),
+        }),
+      },
     }
   )
   return {
@@ -99,6 +119,9 @@ export async function findUsers(
         userType: JSON.stringify(filterUserType),
         filter: JSON.stringify(filters),
       },
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(userSchema)),
+      },
     })
     // @ts-ignore TODO
     setUsers(_.map(data.items, userSchema.partial().parse))
@@ -116,6 +139,9 @@ export async function createLocation(location: LocationByUserType) {
   locationSchemaByUser.parse(location)
   const data = await API.post('manager', '/manager/location', {
     body: location,
+    headers: {
+      AcceptedVersions: JSON.stringify(schemaVersions(locationSchema)),
+    },
   })
   return locationSchema.parse(data)
 }
@@ -124,7 +150,11 @@ export async function getLocation(locationUUID: string) {
   const data = await API.get(
     'manager',
     '/manager/location/byId/' + locationUUID,
-    {}
+    {
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(locationSchema)),
+      },
+    }
   )
   return locationSchema.parse(data)
 }
@@ -136,6 +166,9 @@ export async function updateLocation(location: LocationType) {
     '/manager/location/byId/' + location.locationUUID,
     {
       body: location,
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(locationSchema)),
+      },
     }
   )
   return locationSchema.parse(data)
@@ -148,6 +181,9 @@ export async function deleteLocation(location: LocationType) {
     '/manager/location/byId/' + location.locationUUID,
     {
       body: location,
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(locationSchema)),
+      },
     }
   )
   return null
@@ -174,6 +210,9 @@ export async function findLocations(
     const data = await API.get('manager', '/manager/location', {
       queryStringParameters: {
         filter: JSON.stringify(filters),
+      },
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(locationSchema)),
       },
     })
     // @ts-ignore If this fails, the server gave us bad data

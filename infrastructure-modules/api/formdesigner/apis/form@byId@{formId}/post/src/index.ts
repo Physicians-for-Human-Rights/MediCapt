@@ -33,9 +33,9 @@ import {
   formMetadataSchema,
   formMetadataSchemaStrip,
   formManifestWithMD5Schema,
-  FormFileWithPostLink,
+  FormManifestFileWithPostLink,
   FormManifestWithPostLinks,
-  FormFileWithMD5Schema,
+  FormManifestFileWithMD5,
 } from 'utils/types/formMetadata'
 
 export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
@@ -81,9 +81,9 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
 
     if (metadata.manifestHash) {
       // Otherwise the manifest is new
-      const contents: FormFileWithPostLink[] = []
+      const contents: FormManifestFileWithPostLink[] = []
 
-      async function createFileLink(v: FormFileWithMD5Schema) {
+      async function createFileLink(v: FormManifestFileWithMD5) {
         const filename = hashFilename(
           existingForm.formUUID,
           v.sha256,

@@ -143,7 +143,7 @@ export function allFormRenderCommands(
           lookupContentsByNameAndType(
             contents,
             part['filename-female'],
-            'image/webp'
+            'image/'
           )) ||
         ('filename-inteserx' in part &&
           part['filename-intersex'] &&
@@ -151,7 +151,7 @@ export function allFormRenderCommands(
           lookupContentsByNameAndType(
             contents,
             part['filename-intersex'],
-            'image/webp'
+            'image/'
           )) ||
         ('filename-male' in part &&
           part['filename-male'] &&
@@ -159,15 +159,11 @@ export function allFormRenderCommands(
           lookupContentsByNameAndType(
             contents,
             part['filename-male'],
-            'image/webp'
+            'image/'
           )) ||
         ('filename' in part &&
           part.filename &&
-          lookupContentsByNameAndType(
-            contents,
-            part['filename'],
-            'image/webp'
-          )) ||
+          lookupContentsByNameAndType(contents, part['filename'], 'image/')) ||
         null
 
       if (image === null) {

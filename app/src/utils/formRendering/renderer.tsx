@@ -41,7 +41,7 @@ import {
 } from 'utils/manifests'
 import { unDataURI } from 'utils/data'
 // @ts-ignore TODO TS doesn't understand .native.js and .web.js files
-import { convertToWebP } from 'utils/imageConverter'
+import { tryConvertToWebP } from 'utils/imageConverter'
 import { wrapCommandMemo } from 'utils/memo'
 import { RecordMetadata } from 'utils/types/recordMetadata'
 
@@ -175,11 +175,11 @@ export function renderCommand(
               ...annotation,
               photos: await Promise.all(
                 _.map(annotation.photos, async photo => {
-                  const webpUri = await convertToWebP(photo.uri)
-                  addPhotoToManifest(webpUri)
+                  const imageUri = await tryConvertToWebP(photo.uri)
+                  addPhotoToManifest(imageUri)
                   return {
                     'date-taken': photo['date-taken'],
-                    sha256: sha256(unDataURI(webpUri), true),
+                    sha256: sha256(unDataURI(imageUri), true),
                   }
                 })
               ),
@@ -703,13 +703,13 @@ export function renderCommand(
           isDisabled={command.disable}
           photos={command.photos}
           addPhoto={async ({ uri, 'date-taken': dateTaken }) => {
-            const webpUri = await convertToWebP(uri)
-            addPhotoToManifest(webpUri)
+            const imageUri = await tryConvertToWebP(uri)
+            addPhotoToManifest(imageUri)
             setPath(command.valuePath, {
               ...command.recordValue,
               type: 'photo',
               value: _.concat(recordPhotos, {
-                sha256: sha256(unDataURI(webpUri), true),
+                sha256: sha256(unDataURI(imageUri), true),
                 'date-taken': dateTaken,
               }),
             })
@@ -759,14 +759,14 @@ export function renderCommand(
           }}
           setSignature={async (signatureUri: string | undefined) => {
             if (signatureUri) {
-              const webpUri: string = await convertToWebP(signatureUri)
-              addPhotoToManifest(webpUri)
+              const imageUri: string = await tryConvertToWebP(signatureUri)
+              addPhotoToManifest(imageUri)
               setPath(command.valuePath, {
                 ...command.recordValue,
                 type: 'signature',
                 value: {
                   'date-signed': new Date(),
-                  sha256: sha256(unDataURI(webpUri), true),
+                  sha256: sha256(unDataURI(imageUri), true),
                 },
               })
             } else if (command.recordValue?.value.sha256) {

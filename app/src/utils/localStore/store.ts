@@ -33,7 +33,11 @@ import {
   recordManifestWithMD5Schema,
   RecordMetadata,
   RecordMetadataByUser,
+  recordMetadataSchema,
 } from 'utils/types/recordMetadata'
+import { schemaVersions } from 'api/utils'
+import { Platform } from 'react-native'
+import RNFetchBlob from 'utils/localStore/rnfetch'
 
 export async function getFormMetadata(formUUID: string, localOnly?: boolean) {
   if (localOnly) throw Error('Form not found offline.')
@@ -120,13 +124,14 @@ export async function updateRecord(
 
   // Upload the parts
   for (const e of updatedRecordManifestWithPostLinks.contents) {
-    let record = new FormData()
-    for (const field in e.link.fields) {
-      record.append(field, e.link.fields[field])
-    }
-    // This is disabled intentionally, it is the blob version of the upload
-    // code. I thought this is the better way, but it fails on android.
-    if (0) {
+    // NB This fails on Android because Blob has bugs in Expo when nested inside
+    // a more complex FormData. Plain Blobs do work though. If you try to debug
+    // this on Android, note that the debugger corrupts payloads.
+    if (Platform.OS === 'web') {
+      let record = new FormData()
+      for (const field in e.link.fields) {
+        record.append(field, e.link.fields[field])
+      }
       const blob =
         e.filename === 'manifest' && e.filetype === 'manifest'
           ? new Blob([recordManifestString], {
@@ -138,25 +143,66 @@ export async function updateRecord(
               type: e.filetype,
             })
       record.append('file', blob)
+      try {
+        await fetch(e.link.url, {
+          method: 'POST',
+          headers: new Headers({
+            AcceptedVersions: JSON.stringify(
+              schemaVersions(recordMetadataSchema)
+            ),
+          }),
+          body: record,
+        })
+      } catch (err) {
+        console.error(
+          'Failed to upload',
+          recordMetadata,
+          recordManifest,
+          e,
+          err
+        )
+        throw Error(`Failed to upload ${e} \n ${err}`)
+      }
     } else {
-      record.append(
-        'file',
+      let record = []
+      for (const field in e.link.fields) {
+        record.push({ name: field, data: e.link.fields[field] })
+      }
+      function b64EncodeUnicode(str) {
+        return btoa(
+          encodeURIComponent(str).replace(
+            /%([0-9A-F]{2})/g,
+            function toSolidBytes(match, p1) {
+              return String.fromCharCode('0x' + p1)
+            }
+          )
+        )
+      }
+      const data =
         e.filename === 'manifest' && e.filetype === 'manifest'
-          ? recordManifestString
+          ? b64EncodeUnicode(recordManifestString)
           : filetypeIsDataURI(e.filetype)
-          ? lookupManifestSHA256(recordManifest, e.sha256)!.data
-          : lookupManifestSHA256(recordManifest, e.sha256)!.data
-      )
-    }
-    try {
-      await fetch(e.link.url, {
-        method: 'POST',
-        headers: new Headers({}),
-        body: record,
+          ? lookupManifestSHA256(recordManifest, e.sha256)!.data.split(',')[1]
+          : b64EncodeUnicode(
+              lookupManifestSHA256(recordManifest, e.sha256)!.data
+            )
+      record.push({
+        filename: e.filename,
+        name: 'file',
+        data: data,
       })
-    } catch (err) {
-      console.error('Failed to upload', recordMetadata, recordManifest, e, err)
-      throw Error(`Failed to upload ${e} \n ${err}`)
+      try {
+        await RNFetchBlob.fetch('POST', e.link.url, {}, record)
+      } catch (err) {
+        console.error(
+          'Failed to upload',
+          // recordMetadata,
+          // recordManifest,
+          e,
+          err
+        )
+        throw Error(`Failed to upload ${e} \n ${err}`)
+      }
     }
   }
 

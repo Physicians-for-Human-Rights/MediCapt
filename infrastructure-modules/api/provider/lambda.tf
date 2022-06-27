@@ -8,6 +8,10 @@ locals {
       path = "form@byId@{formId}/get"
       reserved_concurrent_executions = null
     }
+    providerGetFormByIdAndVersion = {
+      path = "form@byId@{formId}@{formVersion}/get"
+      reserved_concurrent_executions = null
+    }
     providerGetUserById = {
       path = "user@byId@{poolId}@{username}/get"
       reserved_concurrent_executions = null
@@ -43,6 +47,10 @@ locals {
     }
     providerCommitRecordById = {
       path = "record@commitById@{recordId}/post"
+      reserved_concurrent_executions = null
+    }
+    providerPatchRecordById = {
+      path = "record@patchById@{recordId}/post"
       reserved_concurrent_executions = null
     }
     providerSealRecordById = {

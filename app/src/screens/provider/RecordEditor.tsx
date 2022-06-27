@@ -25,7 +25,9 @@ import {
   addFileToManifest,
   addOrReplaceRecordTypeInManifest,
   removeFileFromManifestSHA256,
+  imageExtension,
 } from 'utils/manifests'
+import uuid from 'react-native-uuid'
 
 const FormMemo = React.memo(Form)
 
@@ -47,7 +49,13 @@ export default function RecordEditor({
     undefined as FormManifestWithData | undefined
   )
   const [recordManifest, setRecordManifest] = useState(
-    undefined as RecordManifestWithData | undefined
+    // @ts-ignore TODO metadata
+    {
+      'storage-version': '1.0.0',
+      contents: [],
+      root: '',
+      metadata: {},
+    } as RecordManifestWithData
   )
 
   // Load record and associated form on startup
@@ -109,18 +117,19 @@ export default function RecordEditor({
   const addPhotoToManifest = useCallback((uri: string) => {
     const fileType = uri.split(',')[0].split(':')[1].split(';')[0]
 
-    if (fileType !== 'image/webp') throw Error('Photo must be in webp format.')
+    if (
+      fileType !== 'image/webp' &&
+      fileType !== 'image/jpeg' &&
+      fileType !== 'image/png'
+    )
+      throw Error('BUG: Photo must be a webp, jpeg, or png.')
 
     setRecordManifest(recordManifest =>
       addFileToManifest(
-        recordManifest || {
-          'storage-version': '1.0.0',
-          contents: [],
-          root: '',
-        },
+        recordManifest,
         uri,
-        new Date().toUTCString(),
-        'image/webp',
+        (uuid.v4() as string) + '.' + imageExtension(fileType),
+        fileType,
         true
       )
     )
@@ -128,14 +137,7 @@ export default function RecordEditor({
 
   const removePhotoFromManifest = useCallback((sha256: string) => {
     setRecordManifest(recordManifest =>
-      removeFileFromManifestSHA256(
-        recordManifest || {
-          'storage-version': '1.0.0',
-          contents: [],
-          root: '',
-        },
-        sha256
-      )
+      removeFileFromManifestSHA256(recordManifest, sha256)
     )
   }, [])
 
@@ -145,12 +147,6 @@ export default function RecordEditor({
         try {
           if (!formMetadata) throw Error('Missing form!')
 
-          // Get previous record manifest and metadata; or if none exist, create them
-          const oldRecordManifest = recordManifest || {
-            'storage-version': '1.0.0',
-            contents: [],
-            root: '',
-          }
           const oldRecordMetadata =
             recordMetadata ||
             (await createRecord({
@@ -169,11 +165,12 @@ export default function RecordEditor({
               caseId: '',
               manifestHash: '',
               manifestMD5: '',
+              associatedRecords: [],
             }))
 
           // Update manifest and metadata with the record that we want to save
           const updatedRecordManifest = addOrReplaceRecordTypeInManifest(
-            oldRecordManifest,
+            recordManifest,
             record
           )
           await updateRecord(oldRecordMetadata, updatedRecordManifest)
@@ -198,14 +195,6 @@ export default function RecordEditor({
         try {
           if (!formMetadata) throw Error('Missing form!')
 
-          // Get previous record manifest and metadata; or if none exist, create them
-          const oldRecordManifest =
-            recordManifest ||
-            recordManifestWithDataSchema.parse({
-              'storage-version': '1.0.0',
-              contents: [],
-              root: '',
-            })
           const oldRecordMetadata =
             recordMetadata ||
             (await createRecord({
@@ -224,11 +213,12 @@ export default function RecordEditor({
               caseId: '',
               manifestHash: '',
               manifestMD5: '',
+              associatedRecords: [],
             }))
 
           // Update manifest and metadata with the record that we want to save
           const updatedRecordManifest = addOrReplaceRecordTypeInManifest(
-            oldRecordManifest,
+            recordManifest,
             record
           )
           const updatedRecordMetadata = await updateRecord(

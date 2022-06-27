@@ -24,7 +24,7 @@ import { readImage, stripFileExtension } from 'utils/forms'
 import _ from 'lodash'
 import NecessaryItem from 'components/NecessaryItem'
 // @ts-ignore TODO TS doesn't understand .native.js and .web.js files
-import { convertToWebP } from 'utils/imageConverter'
+import { tryConvertToWebP } from 'utils/imageConverter'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
 import {
@@ -87,7 +87,7 @@ export default function FormEditorFiles({
         setManifest(
           addFileToManifest(
             manifest,
-            await convertToWebP(uploaded.uri),
+            await tryConvertToWebP(uploaded.uri),
             'image' + nr + '.webp',
             'image/webp',
             true

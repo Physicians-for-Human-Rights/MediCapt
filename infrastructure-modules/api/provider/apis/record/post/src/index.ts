@@ -28,8 +28,6 @@ import {
   RecordMetadata,
   recordSchemaDynamoLatest,
   RecordDynamoLatestType,
-  recordSchemaDynamoVersion,
-  RecordDynamoVersionType,
 } from 'utils/types/recordMetadata'
 
 export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
@@ -73,6 +71,7 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       manifestMD5: '',
       version: '1',
       sealed: false,
+      patches: [],
     }
     const recordDynamoLatest: RecordDynamoLatestType = {
       ...record,
@@ -89,23 +88,11 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       GPK5: 'UPDATEDBY#' + record.lastChangedByUUID,
       GSK5: 'DATE#' + record.lastChangedDate.toISOString(),
     }
-    const recordDynamoV1: RecordDynamoVersionType = {
-      ...record,
-      PK: 'RECORD#' + record.recordUUID,
-      SK: 'VERSION#1',
-    }
     try {
       recordSchemaDynamoLatest.parse(recordDynamoLatest)
-      recordSchemaDynamoVersion.parse(recordDynamoV1)
     } catch (e) {
       return bad(e, 'Bad output record')
     }
-    await ddb
-      .putItem({
-        TableName: process.env.record_table,
-        Item: DynamoDB.marshall(recordDynamoV1),
-      })
-      .promise()
     await ddb
       .putItem({
         TableName: process.env.record_table,

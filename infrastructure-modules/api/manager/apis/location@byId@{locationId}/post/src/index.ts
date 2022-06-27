@@ -77,10 +77,12 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
           },
           ReturnValues: 'ALL_NEW',
           UpdateExpression: zodDynamoUpdateExpression(
-            locationSchemaDynamoLatestToUpdate
+            locationSchemaDynamoLatestToUpdate,
+            updateLatest
           ),
           ExpressionAttributeNames: zodDynamoAttributeNames(
-            locationSchemaDynamoLatestToUpdate
+            locationSchemaDynamoLatestToUpdate,
+            updateLatest
           ),
           ExpressionAttributeValues: {
             ...zodDynamoAttributeValues(
@@ -101,13 +103,12 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       )
 
       // Insert the versioned location for logging purposes
-      const locationDynamoNextVersion: LocationDynamoVersionType = locationSchemaDynamoVersion.parse(
-        {
+      const locationDynamoNextVersion: LocationDynamoVersionType =
+        locationSchemaDynamoVersion.parse({
           ...newLocation,
           PK: 'LOCATION#' + newLocation.locationUUID,
           SK: 'VERSION#' + newLocation.version,
-        }
-      )
+        })
       await ddb
         .putItem({
           TableName: process.env.location_table,
@@ -120,13 +121,6 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       return bad(e, 'Generic errorX')
     }
   } catch (e) {
-    return bad(
-      [
-        e,
-        zodDynamoUpdateExpression(locationSchemaDynamoLatestToUpdate),
-        zodDynamoAttributeNames(locationSchemaDynamoLatestToUpdate),
-      ],
-      'Generic error'
-    )
+    return bad(e, 'Generic error')
   }
 }

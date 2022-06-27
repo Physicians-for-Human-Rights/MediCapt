@@ -21,10 +21,36 @@ export const recordMetadataSchemaByUser = z
     incidentDate: dateSchema,
     // This is a link to some external case id, if it exists
     caseId: z.string(),
-    manifestHash: z.string(),
     manifestMD5: z.string(),
+    manifestHash: z.string(),
+    // This is never used by any part of the system. It eists only to avoid race
+    // conditions in record creation.
+    userScopedLocalUUID: z.string().optional(),
+    associatedRecords: z.array(
+      z.object({
+        recordUUID: z.string().nonempty(),
+        recordID: z.string().nonempty(),
+        pathInRecord: z.string().optional(),
+        tags: z.string().optional(),
+        title: z.string().nonempty(),
+        comment: z.string().nonempty(),
+      })
+    ),
   })
   .strict()
+
+export const recordPatchSchema = z.discriminatedUnion('patchType', [
+  z.object({
+    patchType: z.literal('text-diff'),
+    fileSHA256: z.string(),
+    diff: z.string(),
+  }),
+  z.object({
+    patchType: z.literal('josn-patch'),
+    fileSHA256: z.string(),
+    jsonPatch: z.string(),
+  }),
+])
 
 export const recordMetadataSchema = recordMetadataSchemaByUser
   .extend({
@@ -39,6 +65,8 @@ export const recordMetadataSchema = recordMetadataSchemaByUser
     lastChangedByUUID: z.string().nonempty(),
     version: z.string().nonempty(),
     sealed: z.boolean(),
+    previousManifestHash: z.string().optional(),
+    patches: z.array(recordPatchSchema),
   })
   .strict()
 
@@ -78,8 +106,8 @@ export const recordManifestFileWithPostLinkSchema =
 export const recordManifestWithPostLinksSchema = z
   .object({
     'storage-version': z.literal('1.0.0'),
-    root: z.string(),
     contents: z.array(recordManifestFileWithPostLinkSchema),
+    root: z.string(),
   })
   .strict()
 
@@ -92,8 +120,8 @@ export const recordManifestFileWithLinkSchema = recordManifestFileSchema.extend(
 export const recordManifestWithLinksSchema = z
   .object({
     'storage-version': z.literal('1.0.0'),
-    root: z.string(),
     contents: z.array(recordManifestFileWithLinkSchema),
+    root: z.string(),
   })
   .strict()
 
@@ -186,31 +214,12 @@ export const recordSchemaDynamoDeletedPart = z.object({
   GPKV: z.literal('VERSION#deleted'),
 })
 
-export const recordSchemaDynamoVersionPart = z.object({
-  PK: z
-    .string()
-    .nonempty()
-    .refine(v => _.startsWith(v, 'RECORD#'), {
-      message: 'Primary key must start with RECORD#',
-    }),
-  SK: z
-    .string()
-    .nonempty()
-    .refine(v => _.startsWith(v, 'VERSION#'), {
-      message: 'Secondary key must start with VERSION#',
-    }),
-})
-
 export const recordSchemaDynamoLatest = recordMetadataSchema.merge(
   recordSchemaDynamoLatestPart
 )
 
 export const recordSchemaDynamoDeleted = recordSchemaDynamoLatest.merge(
   recordSchemaDynamoDeletedPart
-)
-
-export const recordSchemaDynamoVersion = recordMetadataSchema.merge(
-  recordSchemaDynamoVersionPart
 )
 
 // Entries we must update when we change a record, but that do not come from
@@ -279,7 +288,6 @@ export type RecordGetServer = {
 }
 
 export type RecordDynamoLatestType = z.infer<typeof recordSchemaDynamoLatest>
-export type RecordDynamoVersionType = z.infer<typeof recordSchemaDynamoVersion>
 export type RecordDynamoDeletedType = z.infer<typeof recordSchemaDynamoDeleted>
 
 export type RecordDynamoUpdateType = z.infer<typeof recordSchemaDynamoUpdate>

@@ -86,8 +86,9 @@ export const useUserLocationIDs = () => {
     state.user &&
     state.user.attributes &&
     state.user.attributes['custom:allowed_locations']
-  )
+  ) {
     return splitLocations(state.user.attributes['custom:allowed_locations'])
+  }
   return []
 }
 

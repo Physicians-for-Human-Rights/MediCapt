@@ -286,7 +286,7 @@ function formatList(data: any, options: any) {
   var list = { L: [] }
   for (var i = 0; i < data.length; i++) {
     // @ts-ignore
-    list['L'].push(dynamoDBinput(data[i], options))
+    list['L'].push(DynamoDB.input(data[i], options))
   }
   return list
 }
@@ -396,7 +396,10 @@ function sanitizeKey(key: string) {
   return _.replace(_.replace(key, '-', 'DASH'), '_', 'UNDERSCORE')
 }
 
-export function zodDynamoUpdateExpression(schema: z.SomeZodObject) {
+export function zodDynamoUpdateExpression<T extends z.AnyZodObject>(
+  schema: T,
+  o: z.infer<T>
+) {
   // NB This would be a SQL injection, except that we only rely on the keys of a
   // schema (not of a runtime object) and all Zod schemas are statically
   // defined at compile time.
@@ -404,7 +407,7 @@ export function zodDynamoUpdateExpression(schema: z.SomeZodObject) {
     'SET ' +
     _.join(
       _.map(
-        _.keys(schema.shape),
+        _.intersection(_.keys(schema.shape), _.keys(o)),
         k => '#' + sanitizeKey(k) + ' = :' + sanitizeKey(k)
       ),
       ', '
@@ -413,7 +416,10 @@ export function zodDynamoUpdateExpression(schema: z.SomeZodObject) {
 }
 
 // TODO Upgrade this type so that the object and schema must agree on their types
-export function zodDynamoAttributeValues(schema: z.SomeZodObject, o: any) {
+export function zodDynamoAttributeValues<T extends z.AnyZodObject>(
+  schema: T,
+  o: z.infer<T>
+) {
   return DynamoDB.marshall(
     _.mapKeys(
       _.mapValues(schema.shape, (v, k) => o[k]),
@@ -423,9 +429,15 @@ export function zodDynamoAttributeValues(schema: z.SomeZodObject, o: any) {
 }
 
 // TODO Upgrade this type so that the object and schema must agree on their types
-export function zodDynamoAttributeNames(schema: z.SomeZodObject) {
+export function zodDynamoAttributeNames<T extends z.AnyZodObject>(
+  schema: T,
+  o: z.infer<T>
+) {
   return _.mapKeys(
-    _.mapValues(schema.shape, (v, k) => k),
+    _.pick(
+      _.mapValues(schema.shape, (v, k) => k),
+      _.keys(o)
+    ),
     (v, k) => '#' + sanitizeKey(k)
   )
 }
@@ -569,8 +581,14 @@ export function filetypeToExtension(filetype: string) {
   switch (filetype) {
     case 'manifest':
       return 'manifest'
+    case 'metadata':
+      return 'metadata'
     case 'image/webp':
       return 'webp'
+    case 'image/jpeg':
+      return 'jpeg'
+    case 'image/png':
+      return 'png'
     case 'text/yaml':
       return 'yaml'
     case 'text/json':

@@ -42,14 +42,14 @@ security:
 schemes:
   - https
 paths:
-  /provider/record/sealById/{recordId}:
+  /provider/record/patchById/{recordId}:
     post:
       security:
         - CognitoUserProvider: []
       tags:
         - Record
-      summary: Seal a record record
-      operationId: providerSealRecordById
+      summary: Patch a record
+      operationId: providerPatchRecordById
       consumes:
         - application/x-www-form-urlencoded
       produces:
@@ -62,17 +62,17 @@ paths:
           type: string
         - in: body
           name: body
-          description: Updated record
+          description: Record patch
           required: true
           schema:
-            $ref: '#/definitions/Record'
+            $ref: '#/definitions/RecordPatch'
       responses:
         404:
           description: Record not found
         405:
           description: Validation exception
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_providerSealRecordById}
+        uri: ${lambda_uri_providerPatchRecordById}
         responses:
           default:
             statusCode: '200'

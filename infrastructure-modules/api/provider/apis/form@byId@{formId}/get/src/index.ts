@@ -20,9 +20,9 @@ import { good, bad, DynamoDB, hashFilename } from 'common-utils'
 import {
   formMetadataSchemaStrip,
   formManifestSchema,
-  FormFileWithLink,
+  FormManifestFileWithLink,
   FormManifestWithLinks,
-  FormFile,
+  FormManifestFile,
 } from 'utils/types/formMetadata'
 
 export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
@@ -46,7 +46,7 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       .promise()
     try {
       const form = formMetadataSchemaStrip.parse(DynamoDB.unmarshall(item.Item))
-      function createLink(v: FormFile): FormFileWithLink {
+      function createLink(v: FormManifestFile): FormManifestFileWithLink {
         return {
           sha256: v.sha256,
           filetype: v.filetype,

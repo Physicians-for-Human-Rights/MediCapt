@@ -178,10 +178,12 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
           },
           ReturnValues: 'ALL_NEW',
           UpdateExpression: zodDynamoUpdateExpression(
-            formSchemaDynamoLatestToUpdate
+            formSchemaDynamoLatestToUpdate,
+            updateLatest
           ),
           ExpressionAttributeNames: zodDynamoAttributeNames(
-            formSchemaDynamoLatestToUpdate
+            formSchemaDynamoLatestToUpdate,
+            updateLatest
           ),
           ExpressionAttributeValues: {
             ...zodDynamoAttributeValues(
@@ -202,13 +204,12 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       )
 
       // Insert the versioned form for logging purposes
-      const formDynamoNextVersion: FormDynamoVersionType = formSchemaDynamoVersion.parse(
-        {
+      const formDynamoNextVersion: FormDynamoVersionType =
+        formSchemaDynamoVersion.parse({
           ...newForm,
           PK: 'FORM#' + newForm.formUUID,
           SK: 'VERSION#' + newForm.version,
-        }
-      )
+        })
       await ddb
         .putItem({
           TableName: process.env.form_table,
@@ -221,13 +222,6 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       return bad(e, 'Unknown error')
     }
   } catch (e) {
-    return bad(
-      [
-        e,
-        zodDynamoUpdateExpression(formSchemaDynamoLatestToUpdate),
-        zodDynamoAttributeNames(formSchemaDynamoLatestToUpdate),
-      ],
-      'Generic error'
-    )
+    return bad(e, 'Generic error')
   }
 }

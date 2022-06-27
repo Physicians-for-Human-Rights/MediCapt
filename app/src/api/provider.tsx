@@ -22,6 +22,7 @@ import {
 } from 'utils/types/recordMetadata'
 import { QueryFilterForType } from 'utils/types/url'
 import { z } from 'zod'
+import { schemaVersions } from 'api/utils'
 
 // User
 
@@ -32,7 +33,11 @@ export async function getUserByUsername(
   const data = await API.get(
     'provider',
     '/provider/user/byId/' + poolId + '/' + username,
-    {}
+    {
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(userSchema)),
+      },
+    }
   )
   return userSchema.partial().parse(data)
 }
@@ -44,7 +49,11 @@ export async function getUserByUUID(
   const data = await API.get(
     'provider',
     '/provider/user/byUUID/' + poolId + '/' + uuid,
-    {}
+    {
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(userSchema)),
+      },
+    }
   )
   return userSchema.partial().parse(data)
 }
@@ -55,7 +64,11 @@ export async function getLocation(locationUUID: string): Promise<LocationType> {
   const data = await API.get(
     'provider',
     '/provider/location/byId/' + locationUUID,
-    {}
+    {
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(locationSchema)),
+      },
+    }
   )
   return locationSchema.parse(data)
 }
@@ -66,13 +79,24 @@ export async function getFormMetadata(formUUID: string): Promise<FormMetadata> {
   const data = await API.get(
     'provider',
     '/provider/form/metadataById/' + formUUID,
-    {}
+    {
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(formMetadataSchema)),
+      },
+    }
   )
   return formMetadataSchema.parse(data.metadata)
 }
 
 export async function getForm(formUUID: string): Promise<FormGetServer> {
-  const data = await API.get('provider', '/provider/form/byId/' + formUUID, {})
+  const data = await API.get('provider', '/provider/form/byId/' + formUUID, {
+    headers: {
+      AcceptedVersions: JSON.stringify({
+        metadata: schemaVersions(formMetadataSchema),
+        manifest: schemaVersions(formManifestWithLinksSchema),
+      }),
+    },
+  })
   return {
     metadata: formMetadataSchema.parse(data.metadata),
     manifest: formManifestWithLinksSchema.parse(data.manifest),
@@ -104,6 +128,9 @@ export async function getForms(
     queryStringParameters: {
       filter: JSON.stringify(queryFilters),
     },
+    headers: {
+      AcceptedVersions: JSON.stringify(schemaVersions(formMetadataSchema)),
+    },
   })
 
   return [
@@ -119,6 +146,9 @@ export async function createRecord(
 ): Promise<RecordMetadata> {
   const data = await API.post('provider', '/provider/record', {
     body: recordMetadataSchemaByUser.strip().parse(record),
+    headers: {
+      AcceptedVersions: JSON.stringify(schemaVersions(recordMetadataSchema)),
+    },
   })
   return recordMetadataSchema.parse(data)
 }
@@ -134,6 +164,12 @@ export async function updateRecord(
       body: {
         metadata: recordMetadataSchema.parse(metadata),
         manifest: recordManifestWithMD5Schema.parse(manifest),
+      },
+      headers: {
+        AcceptedVersions: JSON.stringify({
+          metadata: schemaVersions(recordMetadataSchema),
+          manifest: schemaVersions(recordManifestWithPostLinksSchema),
+        }),
       },
     }
   )
@@ -152,6 +188,9 @@ export async function commitRecord(
     '/provider/record/commitById/' + recordUUID,
     {
       body: recordMetadataSchema.parse(metadata),
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(recordMetadataSchema)),
+      },
     }
   )
   return recordMetadataSchema.parse(data.record)
@@ -163,7 +202,11 @@ export async function getRecordMetadata(
   const data = await API.get(
     'provider',
     '/provider/record/metadataById/' + recordUUID,
-    {}
+    {
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(recordMetadataSchema)),
+      },
+    }
   )
   return recordMetadataSchema.parse(data.metadata)
 }
@@ -172,7 +215,14 @@ export async function getRecord(recordUUID: string): Promise<RecordGetServer> {
   const data = await API.get(
     'provider',
     '/provider/record/byId/' + recordUUID,
-    {}
+    {
+      headers: {
+        AcceptedVersions: JSON.stringify({
+          metadata: schemaVersions(recordMetadataSchema),
+          manifest: schemaVersions(recordManifestWithLinksSchema),
+        }),
+      },
+    }
   )
   return {
     metadata: recordMetadataSchema.parse(data.metadata),
@@ -204,6 +254,9 @@ export async function getRecords(
     queryStringParameters: {
       filter: JSON.stringify(queryFilters),
     },
+    headers: {
+      AcceptedVersions: JSON.stringify(schemaVersions(recordMetadataSchema)),
+    },
   })
 
   return [
@@ -217,7 +270,13 @@ export async function sealRecord(recordUUID: string): Promise<RecordMetadata> {
     'provider',
     '/provider/record/sealById/' + recordUUID,
     {
-      body: {},
+      body: {
+        headers: {
+          AcceptedVersions: JSON.stringify(
+            schemaVersions(recordMetadataSchema)
+          ),
+        },
+      },
     }
   )
   return recordMetadataSchema.parse(data.record)

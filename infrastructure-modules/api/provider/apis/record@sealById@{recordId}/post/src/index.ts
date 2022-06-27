@@ -23,22 +23,14 @@ import {
   zodDynamoUpdateExpression,
   zodDynamoAttributeValues,
   zodDynamoAttributeNames,
-  s3ObjectExists,
-  s3ReadObjectJSON,
   hashFilename,
 } from 'common-utils'
 import {
-  RecordDynamoLatestToUpdateType,
-  RecordDynamoVersionType,
-  RecordDynamoUpdateType,
   RecordMetadata,
   recordMetadataSchema,
-  recordMetadataSchemaByUser,
-  recordSchemaDynamoVersion,
-  recordMetadataSchemaStrip,
   recordSchemaDynamoLatestToUpdate,
-  recordManifestSchema,
   recordSchemaUpdateSeal,
+  recordMetadataSchemaStrip,
   RecordDynamoUpdateSeal,
 } from 'utils/types/recordMetadata'
 
@@ -103,9 +95,13 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
             SK: { S: 'VERSION#latest' },
           },
           ReturnValues: 'ALL_NEW',
-          UpdateExpression: zodDynamoUpdateExpression(recordSchemaUpdateSeal),
+          UpdateExpression: zodDynamoUpdateExpression(
+            recordSchemaUpdateSeal,
+            updateLatest
+          ),
           ExpressionAttributeNames: zodDynamoAttributeNames(
-            recordSchemaUpdateSeal
+            recordSchemaUpdateSeal,
+            updateLatest
           ),
           ExpressionAttributeValues: {
             ...zodDynamoAttributeValues(recordSchemaUpdateSeal, updateLatest),
@@ -122,33 +118,21 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
         DynamoDB.unmarshall(_.mapValues(response.Attributes))
       )
 
-      // Insert the versioned record for logging purposes
-      const recordDynamoNextVersion: RecordDynamoVersionType = recordSchemaDynamoVersion.parse(
-        {
-          ...newRecord,
-          PK: 'RECORD#' + newRecord.recordUUID,
-          SK: 'VERSION#' + newRecord.version,
-        }
-      )
-      await ddb
-        .putItem({
-          TableName: process.env.record_table,
-          Item: DynamoDB.marshall(recordDynamoNextVersion),
-        })
-        .promise()
+      await s3.upload({
+        Bucket: process.env.record_bucket,
+        Key: hashFilename(
+          existingRecord.recordUUID,
+          existingRecord.manifestHash,
+          'metadata'
+        ),
+        Body: JSON.stringify(newRecord),
+      })
 
       return good({ record: newRecord })
     } catch (e) {
       return bad(e, 'Unknown error')
     }
   } catch (e) {
-    return bad(
-      [
-        e,
-        zodDynamoUpdateExpression(recordSchemaDynamoLatestToUpdate),
-        zodDynamoAttributeNames(recordSchemaDynamoLatestToUpdate),
-      ],
-      'Generic error'
-    )
+    return bad(e, 'Generic error')
   }
 }

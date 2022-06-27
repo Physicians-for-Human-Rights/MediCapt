@@ -20,8 +20,22 @@ export const formMetadataSchemaByUser = z
     priority: z.string().nonempty(),
     enabled: z.boolean(),
     tags: z.string().nonempty(),
-    manifestHash: z.string(),
     manifestMD5: z.string(),
+    manifestHash: z.string(),
+    // This is never used by any part of the system. It eists only to avoid race
+    // conditions in form creation.
+    userScopedLocalUUID: z.string().optional(),
+    associatedForms: z
+      .array(
+        z.object({
+          formUUID: z.string().nonempty(),
+          formID: z.string().nonempty(),
+          pathInRecord: z.string().optional(),
+          tags: z.string().optional(),
+          title: z.string().nonempty(),
+        })
+      )
+      .optional(),
   })
   .strict()
 
@@ -35,8 +49,13 @@ export const formMetadataSchema = formMetadataSchemaByUser
     lastChangedDate: dateSchema,
     lastChangedByUUID: z.string().nonempty(),
     version: z.string().nonempty(),
+    previousManifestHash: z.string().optional(),
   })
   .strict()
+
+export const formMetadataSchemaWithoutMetadata = formMetadataSchema.omit({
+  manifestHash: true,
+})
 
 // Manifests of various types
 

@@ -33,6 +33,15 @@ i18n.locale = Localization.locale
 i18n.fallbacks = true
 i18n.defaultLocale = 'en'
 
+// This is missing in some environments like Android
+import { decode, encode } from 'base-64'
+if (!global.btoa) {
+  global.btoa = encode
+}
+if (!global.atob) {
+  global.atob = decode
+}
+
 // NB The types here are terrible because we get different types depending on
 // which of .native.js or .web.js is included
 function App({
@@ -73,14 +82,14 @@ function LoginScreen() {
     // TODO Remove SafeAreaProvider after the native base switch
     <React.StrictMode>
       <SafeAreaProvider>
-        <NativeBaseProvider
-          theme={theme}
-          config={{ suppressColorAccessibilityWarning: true }}
-        >
-          <StoreProvider>
+        <StoreProvider>
+          <NativeBaseProvider
+            theme={theme}
+            config={{ suppressColorAccessibilityWarning: true }}
+          >
             <AuthApp />
-          </StoreProvider>
-        </NativeBaseProvider>
+          </NativeBaseProvider>
+        </StoreProvider>
       </SafeAreaProvider>
     </React.StrictMode>
   )

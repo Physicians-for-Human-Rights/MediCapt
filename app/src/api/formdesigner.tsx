@@ -15,6 +15,7 @@ import {
   formManifestWithPostLinksSchema,
 } from 'utils/types/formMetadata'
 import { QueryFilterForType } from 'utils/types/url'
+import { schemaVersions } from 'api/utils'
 
 // User
 
@@ -25,7 +26,11 @@ export async function getUserByUsername(
   const data = await API.get(
     'formdesigner',
     '/formdesigner/user/byId/' + poolId + '/' + username,
-    {}
+    {
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(userSchema)),
+      },
+    }
   )
   return userSchema.partial().parse(data)
 }
@@ -37,7 +42,11 @@ export async function getUserByUUID(
   const data = await API.get(
     'formdesigner',
     '/formdesigner/user/byUUID/' + poolId + '/' + uuid,
-    {}
+    {
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(userSchema)),
+      },
+    }
   )
   return userSchema.partial().parse(data)
 }
@@ -48,7 +57,11 @@ export async function getLocation(locationUUID: string): Promise<LocationType> {
   const data = await API.get(
     'formdesigner',
     '/formdesigner/location/byId/' + locationUUID,
-    {}
+    {
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(locationSchema)),
+      },
+    }
   )
   return locationSchema.parse(data)
 }
@@ -60,6 +73,9 @@ export async function createForm(
 ): Promise<FormMetadata> {
   const data = await API.post('formdesigner', '/formdesigner/form', {
     body: formMetadataSchemaByUser.strip().parse(form),
+    headers: {
+      AcceptedVersions: JSON.stringify(schemaVersions(formMetadataSchema)),
+    },
   })
   return formMetadataSchema.parse(data)
 }
@@ -75,6 +91,12 @@ export async function updateForm(
       body: {
         metadata: formMetadataSchema.parse(metadata),
         manifest: formManifestWithMD5Schema.parse(manifest),
+      },
+      headers: {
+        AcceptedVersions: JSON.stringify({
+          metadata: schemaVersions(formMetadataSchema),
+          manifest: schemaVersions(formManifestWithPostLinksSchema),
+        }),
       },
     }
   )
@@ -93,6 +115,9 @@ export async function commitForm(
     '/formdesigner/form/commitById/' + formUUID,
     {
       body: formMetadataSchema.parse(metadata),
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(formMetadataSchema)),
+      },
     }
   )
   return formMetadataSchema.parse(data.form)
@@ -102,7 +127,11 @@ export async function getFormMetadata(formUUID: string): Promise<FormMetadata> {
   const data = await API.get(
     'formdesigner',
     '/formdesigner/form/metadataById/' + formUUID,
-    {}
+    {
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(formMetadataSchema)),
+      },
+    }
   )
   return formMetadataSchema.parse(data.metadata)
 }
@@ -111,7 +140,14 @@ export async function getForm(formUUID: string): Promise<FormGetServer> {
   const data = await API.get(
     'formdesigner',
     '/formdesigner/form/byId/' + formUUID,
-    {}
+    {
+      headers: {
+        AcceptedVersions: JSON.stringify({
+          metadata: schemaVersions(formMetadataSchema),
+          manifest: schemaVersions(formManifestWithLinksSchema),
+        }),
+      },
+    }
   )
   return {
     metadata: formMetadataSchema.parse(data.metadata),
@@ -143,6 +179,9 @@ export async function findForms(
     const data = await API.get('formdesigner', '/formdesigner/form', {
       queryStringParameters: {
         filter: JSON.stringify(filters),
+      },
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(formMetadataSchema)),
       },
     })
     // @ts-ignore TODO

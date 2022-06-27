@@ -1,5 +1,4 @@
-export async function convertToWebP(dataURI, quality) {
-  console.error('convertToWebp NOT IMPLEMENTED TODO')
+export async function tryConvertToWebP(dataURI, quality) {
   return dataURI
 }
-export default convertToWebP
+export default tryConvertToWebP

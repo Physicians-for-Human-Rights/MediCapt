@@ -22,6 +22,7 @@ import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
 import FormEditorComponent from 'components/FormEditor'
 import FormEditorFiles from 'components/FormEditorFiles'
+import FormEditorAssociations from 'components/FormEditorAssociations'
 import FormEditorPrinted from 'components/FormEditorPrinted'
 import FormEditorOverview from 'components/FormEditorOverview'
 import _ from 'lodash'
@@ -66,6 +67,7 @@ function Tabs({
           >
             <Select.Item label="Overview" value="Overview" />
             <Select.Item label="Files" value="Files" />
+            <Select.Item label="Associations" value="Associations" />
             <Select.Item label="Editor" value="Editor" />
             <Select.Item label="Print preview" value="Print preview" />
           </Select>
@@ -102,7 +104,7 @@ function Tabs({
           </Pressable>
           <Pressable
             px="5"
-            maxW="25%"
+            maxW="20%"
             onPress={() => {
               setTabName('Files')
             }}
@@ -128,7 +130,34 @@ function Tabs({
             </Box>
           </Pressable>
           <Pressable
-            maxW="25%"
+            px="5"
+            maxW="30%"
+            onPress={() => {
+              setTabName('Associations')
+            }}
+          >
+            <Text
+              fontSize="md"
+              fontWeight="medium"
+              color={tabName === 'Associations' ? 'black' : 'coolGray.400'}
+              selectable={false}
+            >
+              Associations
+            </Text>
+            <Box mt="2">
+              <Divider
+                py="0.5"
+                _light={{
+                  bg: {
+                    base: tabName === 'Associations' ? 'white' : 'primary.900',
+                    md: tabName === 'Associations' ? 'primary.900' : 'white',
+                  },
+                }}
+              />
+            </Box>
+          </Pressable>
+          <Pressable
+            maxW="20%"
             onPress={() => {
               setTabName('Editor')
             }}
@@ -155,7 +184,7 @@ function Tabs({
             </Box>
           </Pressable>
           <Pressable
-            maxW="25%"
+            maxW="20%"
             onPress={() => {
               setTabName('Printed')
             }}
@@ -201,6 +230,8 @@ const defaultFormMetadata: Partial<FormMetadata> = {
   tags: 'sexual-assault',
   manifestHash: '',
   manifestMD5: '',
+  userScopedLocalUUID: '',
+  associatedForms: [],
   formUUID: undefined,
   formID: undefined,
   createdDate: undefined,
@@ -310,6 +341,16 @@ export default function FormEditor({
     case 'Files':
       page = (
         <FormEditorFiles
+          formMetadata={formMetadata}
+          setFormMetadata={setFormMetadata}
+          manifest={manifest}
+          setManifest={setManifest}
+        />
+      )
+      break
+    case 'Associations':
+      page = (
+        <FormEditorAssociations
           formMetadata={formMetadata}
           setFormMetadata={setFormMetadata}
           manifest={manifest}

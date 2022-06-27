@@ -1,7 +1,6 @@
 import _ from 'lodash'
 import CryptoJS from 'crypto-js'
-import { unDataURI } from 'utils/data'
-import { blobToBase64 } from 'utils/data'
+import { blobToBase64, unDataURI, isBinary } from 'utils/data'
 import {
   FormManifest,
   FormManifestFile,
@@ -60,7 +59,7 @@ export function lookupContentsByNameAndType(
 ) {
   const r = _.find(
     contents,
-    e => e.filename === filename && e.filetype === filetype
+    e => e.filename === filename && _.startsWith(e.filetype, filetype)
   )
   if (r) return r.data
   return null
@@ -100,12 +99,13 @@ export function makeManifestEntry(
   filetype: string,
   isDataURI: boolean
 ): ManifestFileWithData {
+  const rawData = isDataURI ? unDataURI(data) : data
   return {
     data,
     filename,
     filetype,
-    sha256: sha256(isDataURI ? unDataURI(data) : data, isBinary(filetype)),
-    md5: md5(isDataURI ? unDataURI(data) : data, isBinary(filetype)),
+    sha256: sha256(rawData, isBinary(filetype)),
+    md5: md5(rawData, isBinary(filetype)),
   }
 }
 
@@ -219,13 +219,11 @@ export function isImage(f: ManifestFileWithData) {
   )
 }
 
-export function isBinary(filetype: string) {
-  return (
-    filetype === 'image/webp' ||
-    filetype === 'image/png' ||
-    filetype === 'image/jpeg' ||
-    filetype === 'application/pdf'
-  )
+export function imageExtension(filetype: string) {
+  if (filetype === 'image/webp') return 'webp'
+  if (filetype === 'image/png') return 'png'
+  if (filetype === 'image/jpeg') return 'jpg'
+  throw Error('Unknown image extension for filetype ' + filetype)
 }
 
 export function filetypeToMimetype(filetype: string) {

@@ -1,4 +1,4 @@
-export async function convertToWebP(dataURI, quality) {
+export async function tryConvertToWebP(dataURI, quality) {
   // This check is important, the canvas conversion code fails on some browsers
   // if fed a webp image.
   if (dataURI.startsWith('data:image/webp;'))
@@ -19,4 +19,4 @@ export async function convertToWebP(dataURI, quality) {
   }
   return await convert()
 }
-export default convertToWebP
+export default tryConvertToWebP

@@ -409,6 +409,80 @@ paths:
               type: 'string'
             Access-Control-Allow-Origin:
               type: 'string'
+  /provider/record/patchById/{recordId}:
+    post:
+      security:
+        - CognitoUserProvider: []
+      tags:
+        - Record
+      summary: Patch a record
+      operationId: providerPatchRecordById
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+      parameters:
+        - name: recordId
+          in: path
+          description: ID of the record
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Record patch
+          required: true
+          schema:
+            $ref: '#/definitions/RecordPatch'
+      responses:
+        404:
+          description: Record not found
+        405:
+          description: Validation exception
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerPatchRecordById}
+        responses:
+          default:
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          'default':
+            statusCode: '200'
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: 'string'
+            Access-Control-Allow-Methods:
+              type: 'string'
+            Access-Control-Allow-Origin:
+              type: 'string'
   /provider/record/sealById/{recordId}:
     post:
       security:
@@ -595,6 +669,83 @@ paths:
           description: Form not found
       x-amazon-apigateway-integration:
         uri: ${lambda_uri_providerGetFormById}
+        responses:
+          default:
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          'default':
+            statusCode: '200'
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: 'string'
+            Access-Control-Allow-Methods:
+              type: 'string'
+            Access-Control-Allow-Origin:
+              type: 'string'
+  /provider/form/byId/{formId}/{formVersion}:
+    get:
+      security:
+        - CognitoUserProvider: []
+      tags:
+        - Form
+      summary: Get a form by ID and version
+      operationId: providerGetFormByIdAndVersion
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: formId
+          in: path
+          description: ID of the form to return
+          required: true
+          type: string
+          format: uuid
+        - name: formVersion
+          in: path
+          description: Version of the form to return
+          required: true
+          type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Form'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Form not found
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_providerGetFormByIdAndVersion}
         responses:
           default:
             statusCode: '200'
@@ -1367,6 +1518,13 @@ definitions:
         enum:
           - 1.0.0
   Record:
+    type: object
+    properties:
+      storage-version:
+        type: string
+        enum:
+          - 1.0.0
+  RecordPatch:
     type: object
     properties:
       storage-version:
