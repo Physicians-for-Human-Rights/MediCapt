@@ -11,7 +11,7 @@ import {
   CheckIcon,
 } from 'native-base'
 import { FormType } from 'utils/types/form'
-import { md5 } from 'utils/manifests'
+import { lookupManifestByNameAndType } from 'utils/manifests'
 import {
   FormMetadata,
   FormManifest,
@@ -37,6 +37,7 @@ import {
   makeManifestEntry,
   fetchManifestContents,
 } from 'utils/manifests'
+import useLeave from 'utils/useLeave'
 
 function Tabs({
   tabName,
@@ -307,19 +308,22 @@ export default function FormEditor({
 
   const setForm = useCallback(
     (form: FormType) => {
-      setChanged(true)
       const formData = JSON.stringify(form)
       const entry = makeManifestEntry(formData, 'form.yaml', 'text/yaml', false)
-      setManifest({
-        ...addOrReplaceFileToManifestByFilename(
-          manifest,
-          formData,
-          'form.yaml',
-          'text/yaml',
-          false
-        ),
-        root: entry.sha256,
-      })
+      const e = lookupManifestByNameAndType(manifest, 'form.yaml', 'text/yaml')
+      if (entry.sha256 !== (e && e.sha256)) {
+        setChanged(true)
+        setManifest({
+          ...addOrReplaceFileToManifestByFilename(
+            manifest,
+            formData,
+            'form.yaml',
+            'text/yaml',
+            false
+          ),
+          root: entry.sha256,
+        })
+      }
     },
     [manifest]
   )
@@ -374,6 +378,14 @@ export default function FormEditor({
       break
   }
 
+  useLeave(
+    navigation,
+    changed,
+    'Unsaved data',
+    'Are you sure you want to leave, unsaved data will be lost. Go to the overview page and click update.',
+    () => {}
+  )
+
   return (
     <DashboardLayout
       title={'Form Editor'}
@@ -396,7 +408,6 @@ export default function FormEditor({
         )
       }
       fullWidth={tabName === 'Editor'}
-      alertOnBack={changed}
     >
       <>
         <VStack

@@ -14,6 +14,10 @@ import {
   addOrReplaceFileToManifestByFilename,
 } from 'utils/manifests'
 import { useInfo } from 'utils/errors'
+import {
+  getFormTypeFromManifest,
+  getRecordTypeFormManifest,
+} from 'utils/manifests'
 
 const FormMemo = React.memo(Form)
 
@@ -116,9 +120,9 @@ export default function FormEditor({
       // and do a final commit from rawContents to contents and to the form.
       return () => {
         const form = (yaml.load(rawContentsRef.current) || {}) as FormType
-        form['storage-version'] = '1.0.0'
-        form.common = form.common ? form.common : {}
-        form.sections = form.sections ? form.sections : []
+        form['storage-version'] = form['storage-version'] || '1.0.0'
+        form.common = form.common || {}
+        form.sections = form.sections || []
         setLocalForm(form)
         setForm(form)
       }
@@ -139,16 +143,18 @@ export default function FormEditor({
 
   // Push contents changes to the manifest
   useEffect(() => {
-    try {
-      const form = (yaml.load(contents) || {}) as FormType
-      form['storage-version'] = '1.0.0'
-      form.common = form.common ? form.common : {}
-      form.sections = form.sections ? form.sections : []
-      setLocalForm(form)
-      setForm(form)
-    } catch (e) {
-      // TODO Error handling
-      console.error(e)
+    if (contents) {
+      try {
+        const form = (yaml.load(contents) || {}) as FormType
+        form['storage-version'] = form['storage-version'] || '1.0.0'
+        form.common = form.common || {}
+        form.sections = form.sections || []
+        setLocalForm(form)
+        setForm(form)
+      } catch (e) {
+        // TODO Error handling
+        console.error(e)
+      }
     }
   }, [contents])
 
@@ -156,35 +162,38 @@ export default function FormEditor({
   const padding = Platform.OS === 'web' ? 0.03 : 0
   const ratio = Platform.OS === 'web' ? (window.width > 1000 ? 0.6 : 0.45) : 0
 
+  const form = getFormTypeFromManifest(localManifest)
   // TODO files below should be converted to metadata
   return (
-    <VStack>
-      {Platform.OS !== 'web' ? (
-        <Center py={2}>
-          <Text>Preview: Editing is web-only</Text>
-        </Center>
-      ) : null}
-      <HStack pt="0" space={3} justifyContent="center">
-        <CodeEditor
-          ratio={ratio}
-          contents={contents}
-          window={window}
-          setRawContents={setRawContents}
-        />
-        <Box
-          h={Math.round(window.height * 0.85) + 'px'}
-          w={Math.round(window.width * (1 - ratio - padding)) + 'px'}
-        >
-          <FormMemo
-            // @ts-ignore TODO partial forms should be ok
-            formMetadata={formMetadata}
-            formManifest={localManifest}
-            noRenderCache={true}
-            onCancel={onCancel}
-            disableMenu={true}
+    form && (
+      <VStack>
+        {Platform.OS !== 'web' ? (
+          <Center py={2}>
+            <Text>Preview: Editing is web-only</Text>
+          </Center>
+        ) : null}
+        <HStack pt="0" space={3} justifyContent="center">
+          <CodeEditor
+            ratio={ratio}
+            contents={contents}
+            window={window}
+            setRawContents={setRawContents}
           />
-        </Box>
-      </HStack>
-    </VStack>
+          <Box
+            h={Math.round(window.height * 0.85) + 'px'}
+            w={Math.round(window.width * (1 - ratio - padding)) + 'px'}
+          >
+            <FormMemo
+              // @ts-ignore TODO partial forms should be ok
+              formMetadata={formMetadata}
+              formManifest={localManifest}
+              noRenderCache={true}
+              onCancel={onCancel}
+              disableMenu={true}
+            />
+          </Box>
+        </HStack>
+      </VStack>
+    )
   )
 }

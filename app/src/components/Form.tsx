@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import useMap from 'react-use/lib/useMap'
 import usePrevious from 'react-use/lib/usePrevious'
 import useSet from 'react-use/lib/useSet'
@@ -71,6 +71,7 @@ export default function Form({
   onSaveAndExit,
   onComplete,
   disableMenu = false,
+  onChange = () => null,
 }: {
   formMetadata: FormMetadata
   formManifest: FormManifestWithData
@@ -84,12 +85,14 @@ export default function Form({
   onSaveAndExit: (record: RecordType) => any
   onComplete: (record: RecordType) => any
   disableMenu?: boolean
+  onChange?: () => any
 }) {
   const [flatRecord, { set: setFlatRecordValue }] = useMap(
     getRecordFromManifest(recordManifest)
   )
 
   const form = getFormTypeFromManifest(formManifest)
+
   const formSections = nameFormSections(form.sections)
   const [keepAlive, { add: addKeepAlive, remove: removeKeepAlive }] = useSet(
     new Set([] as string[])
@@ -197,6 +200,11 @@ export default function Form({
     },
     []
   )
+
+  useEffect(() => {
+    if (!_.isEmpty(changedPaths)) onChange()
+  }, [changedPaths])
+
   if (!_.isEmpty(changedPaths)) {
     const record = flatRecordToRecordType(flatRecord)
     // TODO Remove after testing
