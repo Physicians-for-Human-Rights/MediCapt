@@ -5,6 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons'
 import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
 import { useUser } from 'utils/store'
+import { Platform } from 'react-native'
 
 const options = [
   {
@@ -43,7 +44,13 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
   const shape = useBreakpointValue({
     base: { columns: 2, w: '160px', h: '160px', size: 8, fontSize: 'md' },
     sm: { columns: 2, w: '190px', h: '190px', size: 16, fontSize: 'lg' },
-    md: { columns: 3, w: '200px', h: '200px', size: 16, fontSize: 'lg' },
+    md: {
+      columns: Platform.OS === 'web' ? 3 : 2,
+      w: '200px',
+      h: '200px',
+      size: 16,
+      fontSize: 'lg',
+    },
   })
   const [user] = useUser()
   return (

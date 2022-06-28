@@ -35,5 +35,13 @@ export default function DebouncedTextInput(
     [rawContents]
   )
 
-  return <Input {...props} onChangeText={setRawContents} value={rawContents} />
+  return (
+    <Input
+      // TODO Why is this needed on tablets?
+      minW="30%"
+      {...props}
+      onChangeText={setRawContents}
+      value={rawContents}
+    />
+  )
 }
