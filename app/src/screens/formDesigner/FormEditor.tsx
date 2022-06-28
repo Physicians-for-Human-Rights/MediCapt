@@ -416,10 +416,14 @@ export default function FormEditor({
           borderRadius={{ md: '8' }}
           borderColor="coolGray.200"
           bg={tabName !== 'Editor' ? 'white' : null}
-          px={{
-            base: 4,
-            md: 32,
-          }}
+          px={
+            tabName === 'Editor'
+              ? 0
+              : {
+                  base: 4,
+                  md: 32,
+                }
+          }
         >
           {page}
         </VStack>

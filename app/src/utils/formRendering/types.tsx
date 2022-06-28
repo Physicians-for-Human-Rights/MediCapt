@@ -73,7 +73,7 @@ export type RenderCommand =
     | {
         type: 'body-image'
         recordValue?: RecordValueByType['body-image']
-        image: string
+        image: string | null
         imageAnnotations: ImageAnnotation[]
       }
     | {

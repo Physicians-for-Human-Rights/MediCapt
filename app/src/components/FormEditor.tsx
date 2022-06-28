@@ -14,10 +14,7 @@ import {
   addOrReplaceFileToManifestByFilename,
 } from 'utils/manifests'
 import { useInfo } from 'utils/errors'
-import {
-  getFormTypeFromManifest,
-  getRecordTypeFormManifest,
-} from 'utils/manifests'
+import { getFormTypeFromManifest } from 'utils/manifests'
 
 const FormMemo = React.memo(Form)
 
@@ -190,6 +187,7 @@ export default function FormEditor({
               noRenderCache={true}
               onCancel={onCancel}
               disableMenu={true}
+              overrideTransformation={'compact'}
             />
           </Box>
         </HStack>

@@ -62,7 +62,7 @@ function getRecordFromManifest(
 export default function Form({
   formMetadata,
   formManifest,
-  recordMetadata = undefined,
+  recordMetadataRef = { current: undefined },
   setRecordMetadata = () => null,
   recordManifest,
   addPhotoToManifest = () => null,
@@ -72,10 +72,11 @@ export default function Form({
   onComplete,
   disableMenu = false,
   onChange = () => null,
+  overrideTransformation = undefined,
 }: {
   formMetadata: FormMetadata
   formManifest: FormManifestWithData
-  recordMetadata?: RecordMetadata
+  recordMetadataRef?: React.MutableRefObject<RecordMetadata | undefined>
   setRecordMetadata?: (r: RecordMetadata) => void
   recordManifest?: RecordManifestWithData
   addPhotoToManifest?: (uri: string) => any
@@ -86,6 +87,7 @@ export default function Form({
   onComplete: (record: RecordType) => any
   disableMenu?: boolean
   onChange?: () => any
+  overrideTransformation?: 'phone' | 'compact' | 'large'
 }) {
   const [flatRecord, { set: setFlatRecordValue }] = useMap(
     getRecordFromManifest(recordManifest)
@@ -133,11 +135,13 @@ export default function Form({
     [onComplete, flatRecord]
   )
 
-  const layoutType = useBreakpointValue({
-    base: 'phone',
-    md: 'compact',
-    lg: 'large',
-  }) as 'phone' | 'compact' | 'large'
+  const layoutType =
+    overrideTransformation ||
+    (useBreakpointValue({
+      base: 'phone',
+      md: 'compact',
+      lg: 'large',
+    }) as 'phone' | 'compact' | 'large')
 
   const renderCommands =
     !_.isEmpty(formSections) && form && 'common' in form
@@ -166,7 +170,7 @@ export default function Form({
       renderCommand(
         item,
         setRecordPath,
-        recordMetadata,
+        recordMetadataRef,
         setRecordMetadata,
         addPhotoToManifest,
         removePhotoFromManifest,
@@ -179,7 +183,7 @@ export default function Form({
       removePhotoFromManifest,
       addKeepAlive,
       removeKeepAlive,
-      recordMetadata,
+      recordMetadataRef,
       setRecordMetadata,
     ]
   )

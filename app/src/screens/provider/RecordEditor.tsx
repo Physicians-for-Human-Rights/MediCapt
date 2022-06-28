@@ -9,7 +9,6 @@ import Loading from 'components/Loading'
 import {
   RecordMetadata,
   RecordManifestWithData,
-  recordManifestWithDataSchema,
 } from 'utils/types/recordMetadata'
 import { useInfo, handleStandardErrors } from 'utils/errors'
 import {
@@ -32,10 +31,6 @@ import uuid from 'react-native-uuid'
 import useLeave from 'utils/useLeave'
 
 const FormMemo = React.memo(Form)
-
-type ReplaceReturnType<T extends (...a: any) => any, TNewReturn> = (
-  ...a: Parameters<T>
-) => TNewReturn
 
 export default function RecordEditor({
   route,
@@ -67,9 +62,7 @@ export default function RecordEditor({
 
   // This is how we keep track of whether the form has been changed.
   const setRecordMetadata = useCallback(
-    (
-      x: RecordMetadata | ((f: RecordMetadata | undefined) => RecordMetadata)
-    ) => {
+    (x: RecordMetadata) => {
       setChanged(true)
       setRecordMetadataRaw(x)
     },
@@ -276,6 +269,9 @@ export default function RecordEditor({
     [formMetadata, recordMetadata, recordManifest]
   )
 
+  const recordMetadataRef = useRef(recordMetadata)
+  recordMetadataRef.current = recordMetadata
+
   return (
     <DashboardLayout
       navigation={navigation}
@@ -301,7 +297,7 @@ export default function RecordEditor({
             <FormMemo
               formMetadata={formMetadata}
               formManifest={formManifest}
-              recordMetadata={recordMetadata}
+              recordMetadataRef={recordMetadataRef}
               setRecordMetadata={setRecordMetadata}
               recordManifest={recordManifest}
               addPhotoToManifest={addPhotoToManifest}

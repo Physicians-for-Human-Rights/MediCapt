@@ -30,15 +30,7 @@ import SkipButton from 'components/form-parts/SkipButton'
 import { RenderCommand } from 'utils/formRendering/types'
 import { disabled, disabledBackground } from 'utils/formRendering/utils'
 import { FormPartMap } from 'utils/types/form'
-import {
-  RecordManifestWithData,
-  recordManifestWithDataSchema,
-} from 'utils/types/recordMetadata'
-import {
-  addFileToManifest,
-  removeFileFromManifestSHA256,
-  sha256,
-} from 'utils/manifests'
+import { sha256 } from 'utils/manifests'
 import { unDataURI } from 'utils/data'
 // @ts-ignore TODO TS doesn't understand .native.js and .web.js files
 import { tryConvertToWebP } from 'utils/imageConverter'
@@ -60,7 +52,7 @@ const CSkipButton = wrapCommandMemo(SkipButton)
 export function renderCommand(
   command: RenderCommand,
   setPath: (path: RecordValuePath, value: RecordValue) => void,
-  recordMetadata: RecordMetadata | undefined,
+  recordMetadataRef: React.MutableRefObject<RecordMetadata | undefined>,
   setRecordMetadata: (r: RecordMetadata) => void,
   addPhotoToManifest: (uri: string) => any,
   removePhotoFromManifest: (sha256: string) => any,
@@ -135,11 +127,11 @@ export function renderCommand(
                 value: text,
               })
               if (
-                recordMetadata &&
+                recordMetadataRef.current &&
                 command.recordSummary === 'patient-address'
               ) {
                 setRecordMetadata({
-                  ...recordMetadata,
+                  ...recordMetadataRef.current,
                   patientAddress: text,
                 })
               }
@@ -161,6 +153,13 @@ export function renderCommand(
         </Center>
       )
     case 'body-image': {
+      if (!command.image) {
+        return (
+          <Text pb={2}>
+            You must select a gender or sex before this body image will appear
+          </Text>
+        )
+      }
       return (
         <CBodyImage
           command={command}
@@ -263,18 +262,21 @@ export function renderCommand(
               type: 'date',
               value: date,
             })
-            if (recordMetadata && command.recordSummary === 'incident-date') {
+            if (
+              recordMetadataRef.current &&
+              command.recordSummary === 'incident-date'
+            ) {
               setRecordMetadata({
-                ...recordMetadata,
+                ...recordMetadataRef.current,
                 incidentDate: date,
               })
             }
             if (
-              recordMetadata &&
+              recordMetadataRef.current &&
               command.recordSummary === 'patient-date-of-birth'
             ) {
               setRecordMetadata({
-                ...recordMetadata,
+                ...recordMetadataRef.current,
                 patientDateOfBirth: date,
               })
             }
@@ -313,9 +315,12 @@ export function renderCommand(
                 type: 'email',
                 value: text,
               })
-              if (recordMetadata && command.recordSummary === 'patient-email') {
+              if (
+                recordMetadataRef.current &&
+                command.recordSummary === 'patient-email'
+              ) {
                 setRecordMetadata({
-                  ...recordMetadata,
+                  ...recordMetadataRef.current,
                   patientEmail: text,
                 })
               }
@@ -348,9 +353,12 @@ export function renderCommand(
               type: 'gender',
               value: v as string,
             })
-            if (recordMetadata && command.recordSummary === 'patient-gender') {
+            if (
+              recordMetadataRef.current &&
+              command.recordSummary === 'patient-gender'
+            ) {
               setRecordMetadata({
-                ...recordMetadata,
+                ...recordMetadataRef.current,
                 patientGender: v as string,
               })
             }
@@ -793,9 +801,12 @@ export function renderCommand(
                 type: 'text',
                 value: text,
               })
-              if (recordMetadata && command.recordSummary === 'patient-name') {
+              if (
+                recordMetadataRef.current &&
+                command.recordSummary === 'patient-name'
+              ) {
                 setRecordMetadata({
-                  ...recordMetadata,
+                  ...recordMetadataRef.current,
                   patientName: text,
                 })
               }
@@ -871,7 +882,7 @@ export function renderCommand(
           {renderCommand(
             command.contents,
             setPath,
-            recordMetadata,
+            recordMetadataRef,
             setRecordMetadata,
             addPhotoToManifest,
             removePhotoFromManifest,
@@ -889,7 +900,7 @@ export function renderCommand(
           {renderCommand(
             command.left,
             setPath,
-            recordMetadata,
+            recordMetadataRef,
             setRecordMetadata,
             addPhotoToManifest,
             removePhotoFromManifest,
@@ -899,7 +910,7 @@ export function renderCommand(
           {renderCommand(
             command.right,
             setPath,
-            recordMetadata,
+            recordMetadataRef,
             setRecordMetadata,
             addPhotoToManifest,
             removePhotoFromManifest,
@@ -918,7 +929,7 @@ export function renderCommand(
             {renderCommand(
               command.left,
               setPath,
-              recordMetadata,
+              recordMetadataRef,
               setRecordMetadata,
               addPhotoToManifest,
               removePhotoFromManifest,
@@ -928,7 +939,7 @@ export function renderCommand(
             {renderCommand(
               command.right,
               setPath,
-              recordMetadata,
+              recordMetadataRef,
               setRecordMetadata,
               addPhotoToManifest,
               removePhotoFromManifest,
@@ -939,7 +950,7 @@ export function renderCommand(
           {renderCommand(
             command.description,
             setPath,
-            recordMetadata,
+            recordMetadataRef,
             setRecordMetadata,
             addPhotoToManifest,
             removePhotoFromManifest,

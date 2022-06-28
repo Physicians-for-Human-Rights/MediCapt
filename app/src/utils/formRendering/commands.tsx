@@ -166,15 +166,6 @@ export function allFormRenderCommands(
           lookupContentsByNameAndType(contents, part['filename'], 'image/')) ||
         null
 
-      if (image === null) {
-        // TODO: Should we do anything else?
-        image =
-          'https://www.publicdomainpictures.net/pictures/280000/velka/not-found-image-15383864787lu.jpg'
-        console.log(
-          'NO IMAGE, What do we do here? Prevent this from being filled out? Show a message?'
-        )
-      }
-
       const recordPhotosToPhotos = (recordPhotos: RecordPhoto[]) =>
         _.map(recordPhotos, recordPhoto => ({
           'date-taken': recordPhoto['date-taken'],
