@@ -224,6 +224,13 @@ module "s3_bucket" {
     "s3:PutObjectTagging"
   ]
   name                         = "${var.stage}-${var.namespace}-cognito-image-${var.user_type}"
+  cors_rule_inputs = [{
+    allowed_headers = ["*"]
+    allowed_methods = ["GET", "PUT", "POST"]
+    allowed_origins = ["*"]
+    expose_headers  = []
+    max_age_seconds = 3000
+  }]
 }
 
 ###############################################################################

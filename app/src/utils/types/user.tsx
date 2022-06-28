@@ -44,6 +44,7 @@ export const userSchemaByUser = z.object({
   allowed_locations: z.string(),
   userType: userTypeSchema,
   enabled: z.boolean(),
+  status: z.string().optional(),
 })
 
 export const userSchema = userSchemaByUser
@@ -54,7 +55,6 @@ export const userSchema = userSchemaByUser
     created_by: z.string().nonempty(),
     created_time: dateSchema,
     last_updated_time: dateSchema,
-    status: z.string().optional(),
   })
   .strip()
 

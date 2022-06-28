@@ -106,7 +106,8 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       })
       .promise()
 
-    const userAttributes: AWS.CognitoIdentityServiceProvider.AttributeListType = []
+    const userAttributes: AWS.CognitoIdentityServiceProvider.AttributeListType =
+      []
     if (!existingUser.UserAttributes)
       return bad(existingUser, 'No user attributes')
 
@@ -262,8 +263,7 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
     )
 
     // Update user status & enable/disable
-
-    if (existingUser.UserStatus !== user.status) {
+    if (user.status && existingUser.UserStatus !== user.status) {
       if (
         user.status === 'RESET_REQUIRED' ||
         user.status === 'FORCE_CHANGE_PASSWORD'
@@ -309,8 +309,8 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
         key: imageId,
       },
       Conditions: [
-        // Images should not be larger than 1MB
-        ['content-length-range', 0, 1000000],
+        // Images should not be larger than 2MB
+        ['content-length-range', 0, 2000000],
         ['eq', '$x-amz-server-side-encryption', 'aws:kms'],
       ],
     })
@@ -328,7 +328,10 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       s3
     )
 
-    return good({ user: updatedUser, imageLink, image_bucket_id })
+    return good({
+      user: updatedUser,
+      imageLink,
+    })
   } catch (e) {
     return bad(e, 'Generic error')
   }

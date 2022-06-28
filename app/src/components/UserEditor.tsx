@@ -37,6 +37,24 @@ import { dataURItoBlob } from 'utils/data'
 
 const dummyDate = new Date()
 
+async function sendImageLink(user: Partial<UserType>, imageLink: any) {
+  if (
+    user.official_id_image &&
+    !_.startsWith(user.official_id_image, 'https://')
+  ) {
+    let form = new FormData()
+    for (const field in imageLink.fields) {
+      form.append(field, imageLink.fields[field])
+    }
+    form.append('file', dataURItoBlob(user.official_id_image))
+    await fetch(imageLink.url, {
+      method: 'POST',
+      headers: {},
+      body: form,
+    })
+  }
+}
+
 export default function UserEditor({
   files,
   user,
@@ -64,40 +82,26 @@ export default function UserEditor({
           //@ts-ignore We validate this before the call
           user
         )
-        let form = new FormData()
-        for (const field in r.imageLink.fields) {
-          form.append(field, r.imageLink.fields[field])
-        }
-        form.append('file', dataURItoBlob(user.official_id_image))
-        await fetch(r.imageLink.url, {
-          method: 'POST',
-          headers: {},
-          body: form,
-        })
+        sendImageLink(user, r.imageLink)
         setUser(r.user)
       }
     )
 
-  const submitUser = (updatedUser: Partial<UserType>) =>
+  const submitUser = (
+    updatedUser: Partial<UserType>,
+    inProgressMessage?: string,
+    message?: string
+  ) =>
     standardHandler(
       standardReporters,
-      'Updating user',
-      'User updated',
+      inProgressMessage || t('user.submitting-user'),
+      message || t('user.submitted-user'),
       async () => {
         const r = await updateUser(
           //@ts-ignore We validate this before the call
           updatedUser
         )
-        let form = new FormData()
-        for (const field in r.imageLink.fields) {
-          form.append(field, r.imageLink.fields[field])
-        }
-        form.append('file', dataURItoBlob(user.official_id_image))
-        await fetch(r.imageLink.url, {
-          method: 'POST',
-          headers: {},
-          body: form,
-        })
+        sendImageLink(updatedUser, r.imageLink)
         setUser(r.user)
       }
     )
@@ -108,6 +112,12 @@ export default function UserEditor({
     const newUser = { ...user, enabled: !user.enabled }
     setUser(newUser)
     submitUser(newUser)
+  }
+
+  const resetPassword = () => {
+    const newUser = { ...user, status: 'FORCE_CHANGE_PASSWORD' }
+    setUser(newUser)
+    submitUser(newUser, t('user.password-resetting'), t('user.password-reset'))
   }
 
   return (
@@ -386,6 +396,13 @@ export default function UserEditor({
               onPress={handleSubmitUser}
             >
               {t('user.submit-user')}
+            </Button>
+            <Button
+              leftIcon={<Icon as={MaterialIcons} name="lock" size="sm" />}
+              colorScheme="orange"
+              onPress={resetPassword}
+            >
+              {t('user.reset-password')}
             </Button>
             <Tooltip openDelay={0} label="Submit first" isDisabled={!changed}>
               <Button
