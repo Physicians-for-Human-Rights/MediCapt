@@ -5,24 +5,15 @@ import useSet from 'react-use/lib/useSet'
 import useToggle from 'react-use/lib/useToggle'
 import {
   Keyboard,
-  KeyboardAvoidingView,
-  // Don't use the native-base FlatList. It's buggy!
-  FlatList,
+  // NB Don't use the native-base FlatList. It's buggy!
 } from 'react-native'
 import _ from 'lodash'
-import { useInfo } from 'utils/errors'
 import { ZodError } from 'zod'
-import {
-  KeyboardAwareFlatList,
-  KeyboardAwareScrollView,
-} from 'react-native-keyboard-aware-scroll-view'
-import { Platform } from 'react-native'
-
+import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view'
+import { t } from 'i18n-js'
 import { View, useBreakpointValue } from 'native-base'
-
 import FormMenu from 'components/FormMenu'
 import FromTop from 'components/FormTop'
-
 import {
   RecordValue,
   RecordValuePath,
@@ -44,6 +35,12 @@ import {
   getFormTypeFromManifest,
   getRecordTypeFormManifest,
 } from 'utils/manifests'
+import { RenderCommand } from 'utils/formRendering/types'
+import formatDate from 'utils/date.ts'
+import { getUserByUUIDCached } from 'api/common'
+import { userFullName } from 'utils/userTypes'
+import { UserType } from 'utils/types/user'
+import FormButtons from 'components/FormButtons'
 
 // FIXME Temproary hack before rewriting Form to invert control back to
 // RecordEditor and show error messages
@@ -57,6 +54,100 @@ function getRecordFromManifest(
     return {}
   }
   return recordTypeToFlatRecord(r)
+}
+
+function mkTitle(title: string, key: string) {
+  return [
+    {
+      type: 'title',
+      title,
+      size: 'md',
+      valuePath: [],
+      key: key + 1,
+      disable: false,
+      recordValue: { type: 'text', value: '' },
+      recordSummary: undefined,
+    },
+  ]
+}
+
+function mkText(title: string, text: string, key: string) {
+  return [
+    {
+      type: 'title',
+      title,
+      size: 'sm',
+      valuePath: [],
+      key: key + 1,
+      disable: false,
+      recordValue: { type: 'text', value: '' },
+      recordSummary: undefined,
+    },
+    {
+      type: 'text',
+      valuePath: [],
+      key: key + 2,
+      disable: true,
+      recordValue: { type: 'text', value: text },
+      recordSummary: undefined,
+    },
+    {
+      type: 'divider',
+      thickness: 1,
+      valuePath: [],
+      key: key + 3,
+      disable: false,
+    },
+  ]
+}
+
+function mkLongText(
+  title: string,
+  text: string,
+  key: string,
+  longLines: number
+) {
+  return [
+    {
+      type: 'row-with-description',
+      left: {
+        type: 'title',
+        title,
+        size: 'sm',
+        valuePath: [],
+        key: key + 1,
+        disable: false,
+        recordValue: { type: 'text', value: '' },
+        recordSummary: undefined,
+      },
+      right: {
+        type: 'title',
+        title: '',
+        size: 'sm',
+        valuePath: [],
+        key: key + 2,
+        disable: false,
+        recordValue: { type: 'text', value: '' },
+        recordSummary: undefined,
+      },
+      description: {
+        type: 'long-text',
+        valuePath: [],
+        key: key + 3,
+        disable: true,
+        recordValue: { type: 'text', value: text },
+        recordSummary: undefined,
+        numberOfLines: longLines,
+      },
+    },
+    {
+      type: 'divider',
+      thickness: 1,
+      valuePath: [],
+      key: key + 4,
+      disable: false,
+    },
+  ]
 }
 
 export default function Form({
@@ -73,6 +164,7 @@ export default function Form({
   disableMenu = false,
   onChange = () => null,
   overrideTransformation = undefined,
+  overviewSection = false,
 }: {
   formMetadata: FormMetadata
   formManifest: FormManifestWithData
@@ -88,6 +180,7 @@ export default function Form({
   disableMenu?: boolean
   onChange?: () => any
   overrideTransformation?: 'phone' | 'compact' | 'large'
+  overviewSection?: boolean
 }) {
   const [flatRecord, { set: setFlatRecordValue }] = useMap(
     getRecordFromManifest(recordManifest)
@@ -95,7 +188,19 @@ export default function Form({
 
   const form = getFormTypeFromManifest(formManifest)
 
-  const formSections = nameFormSections(form.sections)
+  const formSections = _.concat(
+    overviewSection
+      ? [
+          {
+            name: 'Record Overview',
+            title: t('record.overview.section-title'),
+            parts: [],
+          },
+        ]
+      : [],
+    nameFormSections(form.sections)
+  )
+
   const [keepAlive, { add: addKeepAlive, remove: removeKeepAlive }] = useSet(
     new Set([] as string[])
   )
@@ -143,18 +248,210 @@ export default function Form({
       lg: 'large',
     }) as 'phone' | 'compact' | 'large')
 
+  const [users, setUsers] = useState({} as Record<string, Partial<UserType>>)
+
+  useEffect(() => {
+    async function usersFn() {
+      if (!recordMetadataRef.current) return
+      const loadedUsers = {} as Record<string, Partial<UserType>>
+      await Promise.all(
+        _.map(
+          [
+            recordMetadataRef.current.createdByUUID,
+            recordMetadataRef.current.lastChangedByUUID,
+          ],
+          async userUUID => {
+            if (!userUUID) return
+            const result = await getUserByUUIDCached(
+              'Provider',
+              userUUID,
+              () => null
+            )
+            if (result) loadedUsers[userUUID] = result
+            return result
+          }
+        )
+      )
+      setUsers(loadedUsers)
+    }
+    usersFn()
+  }, [recordMetadataRef])
+
   const renderCommands =
     !_.isEmpty(formSections) && form && 'common' in form
       ? transformToLayout(
-          allFormRenderCommands(
-            formSections[currentSection],
-            form.common,
-            _.concat(
-              formManifest.contents || [],
-              recordManifest?.contents || []
-            ),
-            flatRecord
-          ),
+          // @ts-ignore
+          overviewSection && currentSection === 0
+            ? // @ts-ignore
+              _.concat(
+                // @ts-ignore
+                mkTitle(t('record.overview.titles.patient'), 'ptitle'),
+                // @ts-ignore
+                [
+                  {
+                    type: 'description',
+                    // @ts-ignore TODO
+                    description: t('record.overview.automatically-filled'),
+                    key: 'D',
+                    valuePath: [],
+                    disable: false,
+                  },
+                ],
+                mkText(
+                  t('heading.name'),
+                  recordMetadataRef.current &&
+                    recordMetadataRef.current.patientName
+                    ? recordMetadataRef.current.patientName
+                    : 'N/A',
+                  'pname'
+                ),
+                mkText(
+                  t('user.gender'),
+                  recordMetadataRef.current &&
+                    recordMetadataRef.current.patientGender
+                    ? t('gender.' + recordMetadataRef.current.patientGender)
+                    : 'N/A',
+                  'pgender'
+                ),
+                mkLongText(
+                  t('user.address'),
+                  recordMetadataRef.current &&
+                    recordMetadataRef.current.patientAddress
+                    ? recordMetadataRef.current.patientAddress
+                    : 'N/A',
+                  'paddress',
+                  2
+                ),
+                mkText(
+                  t('user.date-of-birth'),
+                  recordMetadataRef.current &&
+                    recordMetadataRef.current.patientDateOfBirth >
+                      new Date('January 01 1500')
+                    ? formatDate(
+                        recordMetadataRef.current.patientDateOfBirth,
+                        'PPP'
+                      )
+                    : 'N/A',
+                  'pdob'
+                ),
+                mkText(
+                  t('user.phone-number'),
+                  recordMetadataRef.current &&
+                    recordMetadataRef.current.patientPhoneNumber
+                    ? recordMetadataRef.current.patientPhoneNumber
+                    : 'N/A',
+                  'pnumber'
+                ),
+                mkText(
+                  t('user.email'),
+                  recordMetadataRef.current &&
+                    recordMetadataRef.current.patientEmail
+                    ? recordMetadataRef.current.patientEmail
+                    : 'N/A',
+                  'pemail'
+                ),
+                mkText(
+                  t('record.incident-date'),
+                  recordMetadataRef.current &&
+                    recordMetadataRef.current.incidentDate >
+                      new Date('January 01 1500')
+                    ? formatDate(recordMetadataRef.current.incidentDate, 'PPP')
+                    : 'N/A',
+                  'pincidentdate'
+                ),
+                mkTitle(t('record.overview.titles.administrative'), 'atitle'),
+                mkText(
+                  t('record.overview.record-id'),
+                  recordMetadataRef.current
+                    ? recordMetadataRef.current.recordID
+                    : 'Automatic',
+                  'recordID'
+                ),
+                mkText(
+                  t('record.overview.case-id'),
+                  recordMetadataRef.current && recordMetadataRef.current.caseId
+                    ? recordMetadataRef.current.caseId
+                    : 'N/A',
+                  'caseID'
+                ),
+                mkText(
+                  t('record.overview.form-title'),
+                  formMetadata.title,
+                  'formTitle'
+                ),
+                mkText(
+                  t('record.overview.form-id'),
+                  formMetadata.formID,
+                  'formID'
+                ),
+                mkText(
+                  t('record.overview.form-name-and-code'),
+                  formMetadata['official-name'] +
+                    '-' +
+                    formMetadata['official-code'],
+                  'formCode'
+                ),
+                mkTitle(t('record.overview.titles.timeline'), 'ttitle'),
+                mkText(
+                  t('record.overview.record-version'),
+                  recordMetadataRef.current
+                    ? recordMetadataRef.current.version
+                    : 'Automatic',
+                  'recordVersion'
+                ),
+                mkText(
+                  t('record.overview.created-date'),
+                  recordMetadataRef.current &&
+                    recordMetadataRef.current.createdDate >
+                      new Date('January 01 1500')
+                    ? formatDate(recordMetadataRef.current.createdDate, 'PPP')
+                    : 'N/A',
+                  'cdate'
+                ),
+                mkText(
+                  t('record.overview.created-by'),
+                  recordMetadataRef.current &&
+                    recordMetadataRef.current.createdByUUID
+                    ? userFullName(
+                        users[recordMetadataRef.current.createdByUUID],
+                        recordMetadataRef.current.createdByUUID
+                      )
+                    : 'N/A',
+                  'cby'
+                ),
+                mkText(
+                  t('record.overview.last-changed-date'),
+                  recordMetadataRef.current &&
+                    recordMetadataRef.current.lastChangedDate >
+                      new Date('January 01 1500')
+                    ? formatDate(
+                        recordMetadataRef.current.lastChangedDate,
+                        'PPP'
+                      )
+                    : 'N/A',
+                  'ldate'
+                ),
+                mkText(
+                  t('record.overview.last-changed-by'),
+                  recordMetadataRef.current &&
+                    recordMetadataRef.current.lastChangedByUUID
+                    ? userFullName(
+                        users[recordMetadataRef.current.lastChangedByUUID],
+                        recordMetadataRef.current.lastChangedByUUID
+                      )
+                    : 'N/A',
+                  'lby'
+                )
+              )
+            : allFormRenderCommands(
+                formSections[currentSection],
+                form.common,
+                _.concat(
+                  formManifest.contents || [],
+                  recordManifest?.contents || []
+                ),
+                flatRecord
+              ),
           layoutType
         )
       : []
@@ -247,7 +544,7 @@ export default function Form({
           isSectionCompleteList={isSectionCompleteList}
           onCancel={onCancel}
           onSaveAndExit={onSaveAndExitRecord}
-          onCompleteRecord={onCompleteRecord}
+          onCompleteRecord={onCancel}
           onPrint={onCancel}
         />
       ) : (
@@ -259,6 +556,19 @@ export default function Form({
           windowSize={25}
           keyboardDismissMode="none"
           removeClippedSubviews={false}
+          ListHeaderComponent={
+            currentSection === 0 && overviewSection ? (
+              <FormButtons
+                isSectionCompleteList={isSectionCompleteList}
+                onCancel={onCancel}
+                onSaveAndExit={onSaveAndExitRecord}
+                onCompleteRecord={onCancel}
+                onPrint={onCancel}
+              />
+            ) : (
+              <></>
+            )
+          }
         />
       )}
     </View>

@@ -13,7 +13,7 @@ export default {
     male: 'Male',
     female: 'Female',
     intersex: 'Intersex',
-    transgender: 'Trans',
+    transgender: 'Transgender',
   },
   tag: { 'sexual-assault': 'sexual assault' },
   heading: {
@@ -80,6 +80,7 @@ export default {
     'created-on': 'Created on',
     'allowed-locations': 'Allowed locations',
     birthday: 'Birthday',
+    'date-of-birth': 'Birthday',
     gender: 'Gender',
     'expiry-date': 'User expiration date',
     search: {
@@ -159,6 +160,30 @@ export default {
       'patient-name': 'Patient name',
     },
     'missing-patient-name': 'No patient name recorded',
+    'incident-date': 'Incident date',
+    overview: {
+      'section-title': 'Record Overview',
+      'automatically-filled':
+        'This information will be automatically filled in as the record is completed.',
+      name: 'Name',
+      titles: {
+        patient: 'Patient details',
+        administrative: 'Adminstrative details',
+        timeline: 'Timeline',
+      },
+      'created-date': 'Created date',
+      'created-by': 'Created by',
+      'last-changed-date': 'Last changed date',
+      'last-changed-by': 'Last changed by',
+      'record-version': 'Record version',
+      'form-id': 'Form ID',
+      'form-version': 'Form version',
+      'form-title': 'Form title',
+      'form-name-and-code': 'Form official name and code',
+      'form-tile': 'Form title',
+      'case-id': 'Remote case ID',
+      'record-id': 'Remote case ID',
+    },
   },
   form: {
     filter: {

@@ -309,6 +309,7 @@ export default function RecordEditor({
               onSaveAndExit={onSaveAndExit}
               onComplete={onComplete}
               onChange={() => setChanged(true)}
+              overviewSection={true}
             />
           )}
         </VStack>
