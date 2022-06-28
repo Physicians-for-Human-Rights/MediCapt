@@ -107,7 +107,6 @@ export const recordValueByTypeSchema = {
   list: skippableValueSchema({
     type: z.literal('list'),
     value: z.object({
-      options: multipleFormValueTypesSchema.nullable(),
       selection: z.string().nullable(),
       otherValue: z.string().nullable(),
     }),
@@ -115,7 +114,6 @@ export const recordValueByTypeSchema = {
   'list-with-labels': skippableValueSchema({
     type: z.literal('list-with-labels'),
     value: z.object({
-      options: formKVRawTypeSchema.array().nullable(),
       selection: z.string().nullable(),
       otherValue: z.string().nullable(),
     }),
@@ -123,7 +121,6 @@ export const recordValueByTypeSchema = {
   'list-multiple': skippableValueSchema({
     type: z.literal('list-multiple'),
     value: z.object({
-      options: multipleFormValueTypesSchema,
       selections: z.boolean().array(),
       otherChecked: z.boolean().optional(),
       otherValue: z.string().optional(),
@@ -132,7 +129,6 @@ export const recordValueByTypeSchema = {
   'list-with-labels-multiple': skippableValueSchema({
     type: z.literal('list-with-labels-multiple'),
     value: z.object({
-      options: formKVRawTypeSchema.array(),
       selections: z.boolean().array(),
       otherChecked: z.boolean().optional(),
       otherValue: z.string().optional(),
@@ -141,7 +137,6 @@ export const recordValueByTypeSchema = {
   'list-with-parts': skippableValueSchema({
     type: z.literal('list-with-parts'),
     value: z.object({
-      options: z.string().array(),
       selections: z.boolean().array(),
       otherChecked: z.boolean().optional(),
       otherValue: z.string().optional(),

@@ -382,7 +382,6 @@ export function renderCommand(
               ...command.recordValue,
               type: 'list',
               value: {
-                options: command.options,
                 selection,
                 otherValue: null,
               },
@@ -395,7 +394,6 @@ export function renderCommand(
               ...command.recordValue,
               type: 'list',
               value: {
-                options: command.options,
                 selection: null,
                 otherValue,
               },
@@ -420,7 +418,6 @@ export function renderCommand(
               ...command.recordValue,
               type: 'list-with-labels',
               value: {
-                options: command.options,
                 selection,
                 otherValue: null,
               },
@@ -433,7 +430,6 @@ export function renderCommand(
               ...command.recordValue,
               type: 'list-with-labels',
               value: {
-                options: command.options,
                 selection: null,
                 otherValue,
               },
@@ -444,7 +440,7 @@ export function renderCommand(
     }
     case 'list-multiple': {
       const previousRecordValue = command.recordValue?.value
-      const options = previousRecordValue?.options || command.options
+      const options = command.options
       const selections =
         previousRecordValue?.selections || _.times(options.length, () => false)
 
@@ -463,7 +459,6 @@ export function renderCommand(
               type: 'list-multiple',
               value: {
                 ...previousRecordValue,
-                options,
                 selections: _.concat(
                   _.slice(selections, 0, idx),
                   !selections[idx],
@@ -478,7 +473,6 @@ export function renderCommand(
               type: 'list-multiple',
               value: {
                 ...previousRecordValue,
-                options,
                 selections,
                 otherChecked: !previousRecordValue?.otherChecked,
               },
@@ -491,7 +485,6 @@ export function renderCommand(
                 type: 'list-multiple',
                 value: {
                   ...previousRecordValue,
-                  options,
                   selections,
                   otherValue,
                 },
@@ -503,7 +496,7 @@ export function renderCommand(
     }
     case 'list-with-labels-multiple': {
       const previousRecordValue = command.recordValue?.value
-      const options = previousRecordValue?.options || command.options
+      const options = command.options
       const selections =
         previousRecordValue?.selections || _.times(options.length, () => false)
 
@@ -522,7 +515,6 @@ export function renderCommand(
               type: 'list-with-labels-multiple',
               value: {
                 ...previousRecordValue,
-                options,
                 selections: _.concat(
                   _.slice(selections, 0, idx),
                   !selections[idx],
@@ -537,7 +529,6 @@ export function renderCommand(
               type: 'list-with-labels-multiple',
               value: {
                 ...previousRecordValue,
-                options,
                 selections,
                 otherChecked: !previousRecordValue?.otherChecked,
               },
@@ -550,7 +541,6 @@ export function renderCommand(
                 type: 'list-with-labels-multiple',
                 value: {
                   ...previousRecordValue,
-                  options,
                   selections,
                   otherValue,
                 },
@@ -562,15 +552,13 @@ export function renderCommand(
     }
     case 'list-with-parts': {
       const previousRecordValue = command.recordValue?.value
-      const options =
-        previousRecordValue?.options ||
-        _.filter(
-          _.map(command.options, (formPartMap: FormPartMap) => {
-            const formPart = formPartMap[Object.keys(formPartMap)[0]]
-            return 'title' in formPart ? formPart.title : ''
-          }),
-          optionId => optionId !== ''
-        )
+      const options = _.filter(
+        _.map(command.options, (formPartMap: FormPartMap) => {
+          const formPart = formPartMap[Object.keys(formPartMap)[0]]
+          return 'title' in formPart ? formPart.title : ''
+        }),
+        optionId => optionId !== ''
+      )
       const selections =
         previousRecordValue?.selections || _.times(options.length, () => false)
       return (
@@ -585,7 +573,6 @@ export function renderCommand(
               type: 'list-with-parts',
               value: {
                 ...previousRecordValue,
-                options,
                 selections: _.concat(
                   _.slice(selections, 0, idx),
                   !selections[idx],
@@ -600,7 +587,6 @@ export function renderCommand(
               type: 'list-with-parts',
               value: {
                 ...previousRecordValue,
-                options,
                 selections,
                 otherChecked: !previousRecordValue?.otherChecked,
               },
@@ -613,7 +599,6 @@ export function renderCommand(
                 type: 'list-with-parts',
                 value: {
                   ...previousRecordValue,
-                  options,
                   selections,
                   otherValue,
                 },
