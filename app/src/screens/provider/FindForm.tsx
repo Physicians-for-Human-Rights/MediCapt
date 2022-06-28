@@ -76,6 +76,7 @@ export default function FindForm({
           setFilterText={setFilterText}
           doSearch={doSearch}
           selectItem={formMetadata => {
+            navigation.pop()
             navigation.navigate('RecordEditor', {
               ...route.params,
               formMetadata,
