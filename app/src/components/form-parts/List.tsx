@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { Input, Center, Select, Checkbox, VStack } from 'native-base'
 import useDebounce from 'react-use/lib/useDebounce'
 import _ from 'lodash'
@@ -36,9 +36,13 @@ export function ListSelectMultiple({
   isDisabled: boolean
 }) {
   const [rawContents, setRawContents] = React.useState(otherText)
+  // NB useDebouce fires on start. We don't want that here, it modifies records
+  const firstDebounce = useRef(true)
   useDebounce(
     () => {
-      setOtherText(rawContents)
+      if (!firstDebounce.current) {
+        other && setOtherText(rawContents)
+      } else firstDebounce.current = false
     },
     300,
     [rawContents]
@@ -136,9 +140,13 @@ export function List({
       ? ''
       : otherValue) as string
   )
+  // NB useDebouce fires on start. We don't want that here, it modifies records
+  const firstDebounce = useRef(true)
   useDebounce(
     () => {
-      other && onOtherValue(rawContents)
+      if (!firstDebounce.current) {
+        other && onOtherValue(rawContents)
+      } else firstDebounce.current = false
     },
     debounceMs,
     [rawContents]
