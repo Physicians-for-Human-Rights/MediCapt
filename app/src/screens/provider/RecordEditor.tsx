@@ -320,10 +320,9 @@ export default function RecordEditor({
     [formMetadata, recordMetadata, recordManifest]
   )
 
-  const onAddRecord = useCallback(
-    () => onSaveAndExit(flatRecordToRecordType(flatRecord)),
-    []
-  )
+  const onAddRecord = useCallback(() => {
+    false
+  }, [])
 
   const recordMetadataRef = useRef(recordMetadata)
   recordMetadataRef.current = recordMetadata
