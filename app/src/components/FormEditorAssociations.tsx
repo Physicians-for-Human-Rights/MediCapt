@@ -26,6 +26,7 @@ import _ from 'lodash'
 import NecessaryItem from 'components/NecessaryItem'
 import { t } from 'i18n-js'
 import { getFormCached, getUserByUUIDCached } from 'api/common'
+import { Feather, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore TODO TS doesn't understand .native.js and .web.js files
 import { tryConvertToWebP } from 'utils/imageConverter'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
@@ -118,17 +119,19 @@ export default function FormEditorAssociations({
     <>
       <VStack my="2" space={3}>
         <VStack my="2">
-          <HStack space={3}>
+          <Center>
             <Button
               fontWeight="bold"
               color="coolGray.800"
               bg="info.500"
-              fontSize="md"
+              fontSize="lg"
               onPress={pickForm}
+              my={4}
+              leftIcon={<Icon as={Feather} name="plus-square" size="sm" />}
             >
-              Add associated Form
+              Add associated form
             </Button>
-          </HStack>
+          </Center>
           <Box
             p={{ md: '3' }}
             justifyContent="center"
@@ -143,52 +146,55 @@ export default function FormEditorAssociations({
               data={formMetadata.associatedForms}
               renderItem={({ item }) => {
                 return (
-                  <VStack m={1} borderRadius="md" key={item.title}>
-                    {showForm(
-                      _.find(forms || [], f => f.formUUID === item.formUUID)
-                    )}
-                    <HStack w="300px" maxWidth="300px" my={3}>
-                      <DebouncedTextInput
-                        w={{ md: '100%', lg: '100%', base: '100%' }}
-                        bg="white"
-                        size="lg"
-                        color="black"
-                        debounceMs={1000}
-                        value={stripFileExtension(item.title)}
-                        onChangeText={t =>
-                          setFormMetadata({
-                            ...formMetadata,
-                            associatedForms: _.map(
-                              formMetadata.associatedForms || [],
-                              r => {
-                                if (r.formUUID === item.formUUID) {
-                                  return { ...r, title: t }
-                                } else return r
-                              }
-                            ),
-                          })
-                        }
-                      />
-                      <IconButton
-                        icon={
-                          <Icon
-                            as={MaterialCommunityIcons}
-                            name="delete-forever"
-                          />
-                        }
-                        borderRadius="full"
-                        onPress={() =>
-                          setFormMetadata({
-                            ...formMetadata,
-                            associatedForms: _.filter(
-                              formMetadata.associatedForms || [],
-                              r => r.formUUID !== item.formUUID
-                            ),
-                          })
-                        }
-                      />
-                    </HStack>
-                  </VStack>
+                  <Box bg={'muted.50'} rounded="8" my={2} p={2}>
+                    <VStack m={1} borderRadius="md" key={item.title}>
+                      {showForm(
+                        _.find(forms || [], f => f.formUUID === item.formUUID)
+                      )}
+                      <HStack w="300px" maxWidth="300px" my={3}>
+                        <DebouncedTextInput
+                          w={{ md: '100%', lg: '100%', base: '100%' }}
+                          bg="white"
+                          size="lg"
+                          color="black"
+                          debounceMs={1000}
+                          value={stripFileExtension(item.title)}
+                          onChangeText={t =>
+                            setFormMetadata({
+                              ...formMetadata,
+                              associatedForms: _.map(
+                                formMetadata.associatedForms || [],
+                                r => {
+                                  if (r.formUUID === item.formUUID) {
+                                    return { ...r, title: t }
+                                  } else return r
+                                }
+                              ),
+                            })
+                          }
+                        />
+                        <IconButton
+                          icon={
+                            <Icon
+                              as={MaterialCommunityIcons}
+                              name="delete-forever"
+                              color="blue"
+                            />
+                          }
+                          borderRadius="full"
+                          onPress={() =>
+                            setFormMetadata({
+                              ...formMetadata,
+                              associatedForms: _.filter(
+                                formMetadata.associatedForms || [],
+                                r => r.formUUID !== item.formUUID
+                              ),
+                            })
+                          }
+                        />
+                      </HStack>
+                    </VStack>
+                  </Box>
                 )
               }}
               keyExtractor={(item, index) => 'key' + index}
