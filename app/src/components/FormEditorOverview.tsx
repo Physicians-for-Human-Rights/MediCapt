@@ -317,12 +317,6 @@ export default function FormEditorOverview({
           help="Click the editor tab and fill in the form body"
         />
         <NecessaryItem
-          isDone={false}
-          todoText="Using images that aren't uploaded"
-          doneText="All referenced images exist"
-          size={4}
-        />
-        <NecessaryItem
           isDone={_.isEmpty(pathsWithPeriods)}
           todoText="Form has paths with periods in it"
           doneText="From paths have no periods"
