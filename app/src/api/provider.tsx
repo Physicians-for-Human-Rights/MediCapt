@@ -103,6 +103,28 @@ export async function getForm(formUUID: string): Promise<FormGetServer> {
   }
 }
 
+export async function getFormVersion(
+  formUUID: string,
+  version: string
+): Promise<FormGetServer> {
+  const data = await API.get(
+    'provider',
+    '/provider/form/byId/' + formUUID + '/' + version,
+    {
+      headers: {
+        AcceptedVersions: JSON.stringify({
+          metadata: schemaVersions(formMetadataSchema),
+          manifest: schemaVersions(formManifestWithLinksSchema),
+        }),
+      },
+    }
+  )
+  return {
+    metadata: formMetadataSchema.parse(data.metadata),
+    manifest: formManifestWithLinksSchema.parse(data.manifest),
+  }
+}
+
 export type GetFormsFilters = {
   country?: string
   language?: string
@@ -231,24 +253,26 @@ export async function getRecord(recordUUID: string): Promise<RecordGetServer> {
 }
 
 export type GetRecordsFilters = {
-  country?: string
-  language?: string
   locationId?: string
-  enabled?: string
+  createdByUUID?: string
+  lastChangedByUUID?: string
+  sealed?: string
   searchType?: string
   text?: string
 }
 export async function getRecords(
   filters: GetRecordsFilters
 ): Promise<[RecordMetadata[], string | undefined]> {
-  let queryFilters: QueryFilterForType<LocationType> = []
-  if (filters.country) queryFilters.push({ country: { eq: filters.country } })
-  if (filters.language)
-    queryFilters.push({ language: { eq: filters.language } })
+  let queryFilters: QueryFilterForType<RecordMetadata> = []
   if (filters.locationId)
     queryFilters.push({ locationID: { eq: filters.locationId } })
-  if (filters.enabled) queryFilters.push({ enabled: { eq: filters.enabled } })
-  if (filters.text) queryFilters.push({ locationID: { eq: filters.text } })
+  if (filters.sealed) queryFilters.push({ sealed: { eq: filters.sealed } })
+  if (filters.createdByUUID)
+    queryFilters.push({ createdByUUID: { eq: filters.createdByUUID } })
+  if (filters.lastChangedByUUID)
+    queryFilters.push({ lastChangedByUUID: { eq: filters.lastChangedByUUID } })
+  // TODO Implement text filters here (not hanlded by the backend)
+  // if (filters.text) queryFilters.push({ text: { eq: filters.text } })
 
   const data = await API.get('provider', '/provider/record', {
     queryStringParameters: {

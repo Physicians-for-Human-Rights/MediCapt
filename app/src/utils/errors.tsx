@@ -19,7 +19,6 @@ export const useInfo = () => {
       })
     },
     (warning: string, description?: string | undefined, otherData?: any) => {
-      console.trace(warning, otherData)
       toast.show({
         title: warning,
         status: 'warning',
@@ -30,7 +29,6 @@ export const useInfo = () => {
       })
     },
     (success: string, description?: string | undefined, otherData?: any) => {
-      console.trace(success, otherData)
       toast.show({
         title: success,
         status: 'success',

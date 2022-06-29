@@ -80,6 +80,7 @@ export default function FindForm({
             navigation.navigate('RecordEditor', {
               ...route.params,
               formMetadata,
+              displayPageAfterOverview: true,
             })
           }}
         />

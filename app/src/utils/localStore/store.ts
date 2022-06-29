@@ -1,6 +1,7 @@
 import {
   GetFormsFilters,
   getForm as getFormRequest,
+  getFormVersion as getFormVersionRequest,
   getFormMetadata as getFormMetadataRequest,
   getForms as getFormsRequest,
   GetRecordsFilters,
@@ -47,6 +48,15 @@ export async function getFormMetadata(formUUID: string, localOnly?: boolean) {
 export async function getForm(formUUID: string, localOnly?: boolean) {
   if (localOnly) throw Error('Form not found offline.')
   return getFormRequest(formUUID)
+}
+
+export async function getFormVersion(
+  formUUID: string,
+  version: string,
+  localOnly?: boolean
+) {
+  if (localOnly) throw Error('Form not found offline.')
+  return getFormVersionRequest(formUUID, version)
 }
 
 export async function getForms(

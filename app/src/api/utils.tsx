@@ -10,18 +10,15 @@ import {
 } from '@expo/vector-icons'
 import { handleStandardErrors } from 'utils/errors'
 
+export type StandardReporters = {
+  setWaiting: (s: string | null) => any
+  error: any
+  warning: any
+  success: any
+}
+
 export async function standardHandler<T>(
-  {
-    setWaiting,
-    error,
-    warning,
-    success,
-  }: {
-    setWaiting: (s: string | null) => any
-    error: any
-    warning: any
-    success: any
-  },
+  { setWaiting, error, warning, success }: StandardReporters,
   preMsg: string,
   postMsg: string,
   apiCallFn: () => T

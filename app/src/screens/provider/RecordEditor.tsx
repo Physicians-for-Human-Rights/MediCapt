@@ -14,6 +14,7 @@ import { useInfo, handleStandardErrors } from 'utils/errors'
 import {
   createRecord,
   getForm,
+  getFormVersion,
   getFormManifestContents,
   getRecord,
   getRecordManifestContents,
@@ -111,8 +112,13 @@ export default function RecordEditor({
         // The input record overrides any form information that may have been provided.
         const formUUID =
           recordResponse?.metadata.formUUID || formMetadata?.formUUID
-        // Load Form
-        const formResponse = formUUID && (await getForm(formUUID))
+        const formVersion =
+          recordResponse?.metadata.formVersion || formMetadata?.version
+        const formResponse =
+          formUUID &&
+          (formVersion
+            ? await getFormVersion(formUUID, formVersion)
+            : await getForm(formUUID))
         if (formResponse) {
           const contentsWithData = await getFormManifestContents(
             formResponse.manifest.contents
@@ -310,6 +316,10 @@ export default function RecordEditor({
               onComplete={onComplete}
               onChange={() => setChanged(true)}
               overviewSection={true}
+              displayPageAfterOverview={
+                'displayPageAfterOverview' in route.params &&
+                route.params.displayPageAfterOverview
+              }
             />
           )}
         </VStack>

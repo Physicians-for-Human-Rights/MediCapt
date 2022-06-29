@@ -165,6 +165,7 @@ export default function Form({
   onChange = () => null,
   overrideTransformation = undefined,
   overviewSection = false,
+  displayPageAfterOverview = false,
 }: {
   formMetadata: FormMetadata
   formManifest: FormManifestWithData
@@ -181,6 +182,7 @@ export default function Form({
   onChange?: () => any
   overrideTransformation?: 'phone' | 'compact' | 'large'
   overviewSection?: boolean
+  displayPageAfterOverview?: boolean
 }) {
   const [flatRecord, { set: setFlatRecordValue }] = useMap(
     getRecordFromManifest(recordManifest)
@@ -205,7 +207,9 @@ export default function Form({
     new Set([] as string[])
   )
 
-  const [currentSection, setCurrentSection] = useState(0)
+  const [currentSection, setCurrentSection] = useState(
+    overviewSection && displayPageAfterOverview ? 1 : 0
+  )
   const setSection = useCallback(
     (i: number) => setCurrentSection(i),
     [setCurrentSection]
@@ -383,6 +387,11 @@ export default function Form({
                   t('record.overview.form-id'),
                   formMetadata.formID,
                   'formID'
+                ),
+                mkText(
+                  t('record.overview.form-version'),
+                  formMetadata.version,
+                  'formVersion'
                 ),
                 mkText(
                   t('record.overview.form-name-and-code'),

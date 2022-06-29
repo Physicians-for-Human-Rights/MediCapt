@@ -4,12 +4,15 @@ import { RecordMetadata } from 'utils/types/recordMetadata'
 
 export type RootStackParamList = {
   Home: {}
-  FindRecord: {}
+  FindRecord: {
+    onlyUserRecords?: boolean
+  }
   FindForm: {}
-  IncompleteRecords: {}
+  YourRecords: {}
   RecordEditor:
     | {
         formMetadata: FormMetadata
+        displayPageAfterOverview?: boolean
       }
     | {
         recordMetadata: RecordMetadata

@@ -7,6 +7,7 @@ import { useInfo, handleStandardErrors } from 'utils/errors'
 import Loading from 'components/Loading'
 import { RootStackScreenProps } from 'utils/provider/navigation'
 import { getRecords } from '../../utils/localStore/store'
+import { useUser } from 'utils/store'
 
 export default function RecordList({
   route,
@@ -22,12 +23,18 @@ export default function RecordList({
   const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
 
+  const [user] = useUser()
+
   const doSearch = async () => {
     setWaiting('Searching')
     try {
       const [records, nextKey] = await getRecords({
         locationId: filterLocationID,
         searchType: filterSearchType,
+        createdByUUID:
+          route.params && route.params.onlyUserRecords
+            ? user.attributes.sub
+            : undefined,
         text: filterText,
       })
       setRecords(records)

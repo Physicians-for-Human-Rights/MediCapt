@@ -16,6 +16,25 @@ import {
 } from 'utils/types/formMetadata'
 import { QueryFilterForType } from 'utils/types/url'
 import { schemaVersions } from 'api/utils'
+import {
+  formManifestSchema,
+  FormManifestWithData,
+} from 'utils/types/formMetadata'
+import {
+  AntDesign,
+  FontAwesome,
+  Ionicons,
+  Feather,
+  MaterialIcons,
+} from '@expo/vector-icons'
+import { standardHandler, StandardReporters } from 'api/utils'
+import {
+  sha256,
+  md5,
+  lookupManifestSHA256,
+  filetypeIsDataURI,
+} from 'utils/manifests'
+import { dataURItoBlob } from 'utils/data'
 
 // User
 
@@ -155,6 +174,28 @@ export async function getForm(formUUID: string): Promise<FormGetServer> {
   }
 }
 
+export async function getFormVersion(
+  formUUID: string,
+  version: string
+): Promise<FormGetServer> {
+  const data = await API.get(
+    'formdesigner',
+    '/formdesigner/form/byId/' + formUUID + '/' + version,
+    {
+      headers: {
+        AcceptedVersions: JSON.stringify({
+          metadata: schemaVersions(formMetadataSchema),
+          manifest: schemaVersions(formManifestWithLinksSchema),
+        }),
+      },
+    }
+  )
+  return {
+    metadata: formMetadataSchema.parse(data.metadata),
+    manifest: formManifestWithLinksSchema.parse(data.manifest),
+  }
+}
+
 export async function findForms(
   pre: () => any,
   post: () => any,
@@ -192,4 +233,79 @@ export async function findForms(
   } finally {
     post()
   }
+}
+
+export async function submitForm(
+  updatedMetadata: Partial<FormMetadata>,
+  updatedManifest: FormManifestWithData,
+  standardReporters: StandardReporters,
+  setFormMetadata: React.Dispatch<React.SetStateAction<Partial<FormMetadata>>>,
+  setChanged: React.Dispatch<React.SetStateAction<Partial<boolean>>>,
+  postFn?: () => any
+) {
+  await standardHandler(
+    standardReporters,
+    'Updating form',
+    'Form updated',
+    async () => {
+      // Make sure we don't upload anything other than
+      // the minimal manifest by stripping our
+      // manifest.
+      let manifestData = JSON.stringify(
+        formManifestSchema.strip().parse(updatedManifest)
+      )
+      const remoteMetadata = {
+        ...updatedMetadata,
+        manifestHash: sha256(manifestData, false),
+        manifestMD5: md5(manifestData, false),
+      }
+      const { metadata: newMetadata, manifest: newManifest } = await updateForm(
+        //@ts-ignore We validate this before the call
+        remoteMetadata,
+        updatedManifest
+      )
+      // Upload the parts
+      for (const e of newManifest.contents) {
+        let form = new FormData()
+        for (const field in e.link.fields) {
+          form.append(field, e.link.fields[field])
+        }
+        const blob =
+          e.filename === 'manifest' && e.filetype === 'manifest'
+            ? new Blob([manifestData], {
+                type: 'text/plain',
+              })
+            : filetypeIsDataURI(e.filetype)
+            ? dataURItoBlob(
+                lookupManifestSHA256(updatedManifest, e.sha256)!.data
+              )
+            : new Blob(
+                [lookupManifestSHA256(updatedManifest, e.sha256)!.data],
+                {
+                  type: e.filetype,
+                }
+              )
+        form.append('file', blob)
+        try {
+          await fetch(e.link.url, {
+            method: 'POST',
+            headers: {},
+            body: form,
+          })
+        } catch (err) {
+          console.error('Failed to upload', e, err)
+        }
+      }
+      // Upload is finished, commit
+      setFormMetadata(
+        await commitForm(
+          updatedMetadata.formUUID!,
+          // @ts-ignore our partial type is verified in the call
+          remoteMetadata
+        )
+      )
+      setChanged(false)
+      postFn && postFn()
+    }
+  )
 }

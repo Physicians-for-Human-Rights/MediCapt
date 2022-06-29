@@ -42,9 +42,10 @@ export default function App({}: {}) {
           options={{ headerShown: false }}
         />
         <RootStack.Screen
-          name="IncompleteRecords"
+          name="YourRecords"
           component={FindRecord}
           options={{ headerShown: false }}
+          initialParams={{ onlyUserRecords: true }}
         />
         <RootStack.Screen
           name="Sharing"

@@ -30,7 +30,7 @@ import {
 import { useInfo } from 'utils/errors'
 import Loading from 'components/Loading'
 import { standardHandler } from 'api/utils'
-import { createForm, updateForm, commitForm } from 'api/formdesigner'
+import { createForm, submitForm } from 'api/formdesigner'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import AnyCountry from 'components/AnyCountry'
@@ -110,6 +110,7 @@ export default function FormEditorOverview({
   changed,
   setChanged,
   setWaiting,
+  latestVersion,
 }: {
   formMetadata: Partial<FormMetadata>
   setFormMetadata: React.Dispatch<React.SetStateAction<Partial<FormMetadata>>>
@@ -117,6 +118,7 @@ export default function FormEditorOverview({
   changed: boolean
   setChanged: React.Dispatch<React.SetStateAction<Partial<boolean>>>
   setWaiting: React.Dispatch<React.SetStateAction<Partial<string | null>>>
+  latestVersion: React.MutableRefObject<string | undefined>
 }) {
   const [error, warning, success] = useInfo()
   const standardReporters = { setWaiting, error, warning, success }
@@ -146,85 +148,31 @@ export default function FormEditorOverview({
           )
         )
         setChanged(false)
+        latestVersion.current = '1'
       }
     )
 
-  const submitForm = (
+  const submitFormWrapper = (
     updatedMetadata: Partial<FormMetadata>,
     updatedManifest: FormManifestWithData
   ) =>
-    standardHandler(
+    submitForm(
+      updatedMetadata,
+      updatedManifest,
       standardReporters,
-      'Updating form',
-      'Form updated',
-      async () => {
-        // Make sure we don't upload anything other than
-        // the minimal manifest by stripping our
-        // manifest.
-        let manifestData = JSON.stringify(
-          formManifestSchema.strip().parse(updatedManifest)
-        )
-        const remoteMetadata = {
-          ...updatedMetadata,
-          manifestHash: sha256(manifestData, false),
-          manifestMD5: md5(manifestData, false),
-        }
-        const { metadata: newMetadata, manifest: newManifest } =
-          await updateForm(
-            //@ts-ignore We validate this before the call
-            remoteMetadata,
-            updatedManifest
-          )
-        // Upload the parts
-        for (const e of newManifest.contents) {
-          let form = new FormData()
-          for (const field in e.link.fields) {
-            form.append(field, e.link.fields[field])
-          }
-          const blob =
-            e.filename === 'manifest' && e.filetype === 'manifest'
-              ? new Blob([manifestData], {
-                  type: 'text/plain',
-                })
-              : filetypeIsDataURI(e.filetype)
-              ? dataURItoBlob(
-                  lookupManifestSHA256(updatedManifest, e.sha256)!.data
-                )
-              : new Blob(
-                  [lookupManifestSHA256(updatedManifest, e.sha256)!.data],
-                  {
-                    type: e.filetype,
-                  }
-                )
-          form.append('file', blob)
-          try {
-            await fetch(e.link.url, {
-              method: 'POST',
-              headers: {},
-              body: form,
-            })
-          } catch (err) {
-            console.error('Failed to upload', e, err)
-          }
-        }
-        // Upload is finished, commit
-        setFormMetadata(
-          await commitForm(
-            updatedMetadata.formUUID!,
-            // @ts-ignore our partial type is verified in the call
-            remoteMetadata
-          )
-        )
-        setChanged(false)
+      setFormMetadata,
+      setChanged,
+      () => {
+        latestVersion.current = '' + (parseInt(latestVersion.current!) + 1)
       }
     )
 
-  const handleSubmitForm = () => submitForm(formMetadata, manifest)
+  const handleSubmitForm = () => submitFormWrapper(formMetadata, manifest)
 
   const toggleForm = () => {
     const newForm = { ...formMetadata, enabled: !formMetadata.enabled }
     setFormMetadata(newForm)
-    submitForm(newForm, manifest)
+    submitFormWrapper(newForm, manifest)
   }
 
   return (

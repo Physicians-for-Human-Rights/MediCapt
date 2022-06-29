@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useRef } from 'react'
 import {
   Box,
   HStack,
@@ -24,6 +24,7 @@ import FormEditorComponent from 'components/FormEditor'
 import FormEditorFiles from 'components/FormEditorFiles'
 import FormEditorAssociations from 'components/FormEditorAssociations'
 import FormEditorPrinted from 'components/FormEditorPrinted'
+import FormEditorVersions from 'components/FormEditorVersions'
 import FormEditorOverview from 'components/FormEditorOverview'
 import _ from 'lodash'
 import { readFile } from 'utils/forms'
@@ -51,168 +52,28 @@ function Tabs({
       width={{ md: '50%', base: '50%' }}
       _light={{ bg: { base: 'primary.900', md: 'white' } }}
     >
-      <Hidden from="lg">
-        <Box pl="10" w="2/4" maxW="300">
-          <Select
-            selectedValue={tabName}
-            minWidth="100"
-            accessibilityLabel="Select page"
-            placeholder="Select page"
-            bg="white"
-            _selectedItem={{
-              bg: 'teal.600',
-              endIcon: <CheckIcon size="5" />,
-            }}
-            mt={1}
-            onValueChange={itemValue => setTabName(itemValue)}
-          >
-            <Select.Item label="Overview" value="Overview" />
-            <Select.Item label="Files" value="Files" />
-            <Select.Item label="Associations" value="Associations" />
-            <Select.Item label="Editor" value="Editor" />
-            <Select.Item label="Print preview" value="Print preview" />
-          </Select>
-        </Box>
-      </Hidden>
-      <Hidden till="lg">
-        <HStack px={{ base: 4, md: 4 }} mt="2" justifyContent="flex-start">
-          <Pressable
-            px="5"
-            onPress={() => {
-              setTabName('Overview')
-            }}
-            maxW="40%"
-          >
-            <Text
-              fontSize="md"
-              fontWeight="medium"
-              color={tabName === 'Overview' ? 'black' : 'coolGray.400'}
-              selectable={false}
-            >
-              Overview
-            </Text>
-            <Box mt="2">
-              <Divider
-                py="0.5"
-                _light={{
-                  bg: {
-                    base: tabName === 'Overview' ? 'white' : 'primary.900',
-                    md: tabName === 'Overview' ? 'primary.900' : 'white',
-                  },
-                }}
-              />
-            </Box>
-          </Pressable>
-          <Pressable
-            px="5"
-            maxW="20%"
-            onPress={() => {
-              setTabName('Files')
-            }}
-          >
-            <Text
-              fontSize="md"
-              fontWeight="medium"
-              color={tabName === 'Files' ? 'black' : 'coolGray.400'}
-              selectable={false}
-            >
-              Files
-            </Text>
-            <Box mt="2">
-              <Divider
-                py="0.5"
-                _light={{
-                  bg: {
-                    base: tabName === 'Files' ? 'white' : 'primary.900',
-                    md: tabName === 'Files' ? 'primary.900' : 'white',
-                  },
-                }}
-              />
-            </Box>
-          </Pressable>
-          <Pressable
-            px="5"
-            maxW="30%"
-            onPress={() => {
-              setTabName('Associations')
-            }}
-          >
-            <Text
-              fontSize="md"
-              fontWeight="medium"
-              color={tabName === 'Associations' ? 'black' : 'coolGray.400'}
-              selectable={false}
-            >
-              Associations
-            </Text>
-            <Box mt="2">
-              <Divider
-                py="0.5"
-                _light={{
-                  bg: {
-                    base: tabName === 'Associations' ? 'white' : 'primary.900',
-                    md: tabName === 'Associations' ? 'primary.900' : 'white',
-                  },
-                }}
-              />
-            </Box>
-          </Pressable>
-          <Pressable
-            maxW="20%"
-            onPress={() => {
-              setTabName('Editor')
-            }}
-            px="5"
-          >
-            <Text
-              fontSize="md"
-              fontWeight="medium"
-              color={tabName === 'Editor' ? 'black' : 'coolGray.400'}
-              selectable={false}
-            >
-              Editor
-            </Text>
-            <Box mt="2">
-              <Divider
-                py="0.5"
-                _light={{
-                  bg: {
-                    base: tabName === 'Editor' ? 'white' : 'primary.900',
-                    md: tabName === 'Editor' ? 'primary.900' : 'white',
-                  },
-                }}
-              />
-            </Box>
-          </Pressable>
-          <Pressable
-            maxW="20%"
-            onPress={() => {
-              setTabName('Printed')
-            }}
-            px="5"
-          >
-            <Text
-              fontSize="md"
-              fontWeight="medium"
-              color={tabName === 'Printed' ? 'black' : 'coolGray.400'}
-              selectable={false}
-            >
-              Printed
-            </Text>
-            <Box mt="2">
-              <Divider
-                py="0.5"
-                _light={{
-                  bg: {
-                    base: tabName === 'Printed' ? 'white' : 'primary.900',
-                    md: tabName === 'Printed' ? 'primary.900' : 'white',
-                  },
-                }}
-              />
-            </Box>
-          </Pressable>
-        </HStack>
-      </Hidden>
+      <Box pl="10" w="2/4" maxW="300">
+        <Select
+          selectedValue={tabName}
+          minWidth="100"
+          accessibilityLabel="Select page"
+          placeholder="Select page"
+          bg="white"
+          _selectedItem={{
+            bg: 'teal.600',
+            endIcon: <CheckIcon size="5" />,
+          }}
+          mt={1}
+          onValueChange={itemValue => setTabName(itemValue)}
+        >
+          <Select.Item label="Overview" value="Overview" />
+          <Select.Item label="Files" value="Files" />
+          <Select.Item label="Associations" value="Associations" />
+          <Select.Item label="Editor" value="Editor" />
+          <Select.Item label="Print preview" value="Print preview" />
+          <Select.Item label="Versions" value="Versions" />
+        </Select>
+      </Box>
     </Box>
   )
 }
@@ -259,6 +120,7 @@ export default function FormEditor({
   route,
   navigation,
 }: RootStackScreenProps<'FormEditor'>) {
+  const [historyMode, setHistoryMode] = useState(false)
   const [changed, setChanged] = useState(false)
   const [waiting, setWaiting] = useState(null as null | string)
   const [formMetadata, setFormMetadataRaw] = useState(
@@ -266,6 +128,7 @@ export default function FormEditor({
       defaultFormMetadata) as Partial<FormMetadata>
   )
   const [manifest, setManifestRaw] = React.useState(defaultManifest)
+  const latestVersion = useRef(formMetadata.version)
 
   // This is how we keep track of whether the form has been changed.
   const setFormMetadata = useCallback(
@@ -290,6 +153,7 @@ export default function FormEditor({
         setWaiting('Loading form')
         const r = await getForm(route.params.formMetadata.formUUID)
         setFormMetadata(r.metadata)
+        latestVersion.current = r.metadata.version
         const contents = await fetchManifestContents(r.manifest.contents)
         setManifest({
           'storage-version': '1.0.0',
@@ -339,6 +203,7 @@ export default function FormEditor({
           changed={changed}
           setChanged={setChanged}
           setWaiting={setWaiting}
+          latestVersion={latestVersion}
         />
       )
       break
@@ -376,11 +241,27 @@ export default function FormEditor({
         <FormEditorPrinted formMetadata={formMetadata} manifest={manifest} />
       )
       break
+    case 'Versions':
+      page = (
+        <FormEditorVersions
+          formMetadata={formMetadata}
+          manifest={manifest}
+          changed={changed}
+          historyMode={historyMode}
+          setHistoryMode={setHistoryMode}
+          setFormMetadata={setFormMetadata}
+          setManifest={setManifest}
+          latestVersion={latestVersion}
+          navigation={navigation}
+          setChanged={setChanged}
+        />
+      )
+      break
   }
 
   useLeave(
     navigation,
-    changed,
+    changed && !historyMode,
     'Unsaved data',
     'Are you sure you want to leave, unsaved data will be lost. Go to the overview page and click update.',
     () => {}

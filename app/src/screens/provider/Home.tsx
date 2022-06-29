@@ -6,6 +6,7 @@ import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
 import { useUser } from 'utils/store'
 import { Platform } from 'react-native'
+import * as Sentry from 'sentry-expo'
 
 const options = [
   {
@@ -21,7 +22,7 @@ const options = [
   {
     icon: <MaterialIcons name="history" />,
     label: 'Your records',
-    to: 'IncompleteRecords',
+    to: 'YourRecords',
   },
   {
     icon: <MaterialIcons name="share" />,

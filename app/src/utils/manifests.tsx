@@ -226,6 +226,18 @@ export function imageExtension(filetype: string) {
   throw Error('Unknown image extension for filetype ' + filetype)
 }
 
+export function fileExtension(filetype: string) {
+  if (filetype === 'image/webp') return 'webp'
+  if (filetype === 'image/png') return 'png'
+  if (filetype === 'image/jpeg') return 'jpg'
+  if (filetype === 'text/yaml') return 'yaml'
+  if (filetype === 'text/json') return 'json'
+  if (filetype === 'application/pdf') return 'pdf'
+  if (filetype === 'manifest') return 'json'
+  if (filetype === 'metadata') return 'json'
+  throw Error('Unknown file extension for filetype ' + filetype)
+}
+
 export function filetypeToMimetype(filetype: string) {
   if (filetype == 'manifest') return 'application/json'
   return filetype

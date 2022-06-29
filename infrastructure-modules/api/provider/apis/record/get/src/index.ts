@@ -85,6 +85,48 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       rawItems = results.Items ? results.Items : []
       lastKey = results.LastEvaluatedKey
     } else if (
+      'createdByUUID' in combinedFilters &&
+      'eq' in combinedFilters.createdByUUID
+    ) {
+      try {
+        const results = await simpleDynamoQuery(
+          ddb,
+          startKey,
+          process.env.record_table,
+          process.env.record_gsi_createdby,
+          'GPK4',
+          'CREATEDBY#' + combinedFilters.createdByUUID.eq
+        )
+        rawItems = results.Items ? results.Items : []
+        lastKey = results.LastEvaluatedKey
+      } catch (e) {
+        return bad(
+          [e, process.env.record_gsi_createdby],
+          'Generic error createdby'
+        )
+      }
+    } else if (
+      'updatedBy' in combinedFilters &&
+      'eq' in combinedFilters.updatedBy
+    ) {
+      try {
+        const results = await simpleDynamoQuery(
+          ddb,
+          startKey,
+          process.env.record_table,
+          process.env.record_gsi_updatedby,
+          'GPK5',
+          'UPDATEDBY#' + combinedFilters.updatedBy.eq
+        )
+        rawItems = results.Items ? results.Items : []
+        lastKey = results.LastEvaluatedKey
+      } catch (e) {
+        return bad(
+          [e, process.env.record_gsi_updatedby],
+          'Generic error updatedby'
+        )
+      }
+    } else if (
       'locationID' in combinedFilters &&
       'eq' in combinedFilters.locationID
     ) {
@@ -129,6 +171,10 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
             : true) &&
           ('locationID' in combinedFilters && 'eq' in combinedFilters.locationID
             ? e.locationID === combinedFilters.locationID.eq
+            : true) &&
+          ('createdByUUID' in combinedFilters &&
+          'eq' in combinedFilters.createdByUUID
+            ? e.createdByUUID === combinedFilters.createdByUUID.eq
             : true)
       )
     } catch (e) {
