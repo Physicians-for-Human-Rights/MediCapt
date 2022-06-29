@@ -359,7 +359,7 @@ export default function Form({
   const setRecordPath = useCallback(
     (path: RecordValuePath, value: RecordValue) => {
       const r = recordValueSchema.safeParse(value)
-      console.trace('Failed parse', r, value)
+      if (!r.success) console.error('Failed parse field', r, value)
       setFlatRecordValue(
         _.join(path, '.'),
         // @ts-ignore TODO What is a good default here?
