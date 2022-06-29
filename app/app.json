@@ -31,12 +31,25 @@
       "assetExts": ["json", "yaml", "svg", "png", "jpg"]
     },
     "plugins": [
+      "sentry-expo",
       [
         "expo-image-picker",
         {
           "photosPermission": "Medicapt uses your camera to allow you to add photographic records to your forms."
         }
       ]
-    ]
+    ],
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "andrei-92",
+            "project": "react-native",
+            "authToken": "f2d6766322c14bd4b385b29bb074db509ed7af7aa8d848e9ab3b7111ccef0ca1"
+          }
+        }
+      ]
+    }
   }
 }
