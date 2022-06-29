@@ -189,6 +189,13 @@ export function ListItemDesktop({
           <Text>
             {forms[item.formUUID] ? forms[item.formUUID].title : 'Unknown form'}
           </Text>
+          <Text>
+            {forms[item.formUUID]
+              ? forms[item.formUUID]['official-name'] +
+                ' ' +
+                forms[item.formUUID]['official-code']
+              : 'Unknown form'}
+          </Text>
           <Text>{item.formID}</Text>
           <Text>{item.caseId ? item.caseId : ''}</Text>
         </VStack>
