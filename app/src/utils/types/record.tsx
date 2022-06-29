@@ -58,19 +58,19 @@ export const recordValueByTypeSchema = {
   }),
   email: skippableValueSchema({
     type: z.literal('email'),
-    value: z.string().email().nonempty(),
+    value: z.string().email(),
   }),
   address: skippableValueSchema({
     type: z.literal('address'),
-    value: z.string().nonempty(),
+    value: z.string(),
   }),
   'phone-number': skippableValueSchema({
     type: z.literal('phone-number'),
-    value: z.string().nonempty(),
+    value: z.string(),
   }),
   gender: skippableValueSchema({
     type: z.literal('gender'),
-    value: z.string().nonempty(),
+    value: z.string(),
   }),
   sex: skippableValueSchema({
     type: z.literal('sex'),
