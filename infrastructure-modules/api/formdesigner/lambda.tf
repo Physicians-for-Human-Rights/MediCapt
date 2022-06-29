@@ -12,6 +12,10 @@ locals {
       path = "form@byId@{formId}/get"
       reserved_concurrent_executions = null
     }
+    formdesignerGetFormByIdAndVersion = {
+      path = "form@byId@{formId}@{formVersion}/get"
+      reserved_concurrent_executions = null
+    }
     formdesignerUpdateFormById = {
       path = "form@byId@{formId}/post"
       reserved_concurrent_executions = null

@@ -27,6 +27,7 @@ resource "aws_api_gateway_rest_api" "formdesigner" {
       lambda_uri_formdesignerCreateForm          = aws_lambda_function.lambdas["formdesignerCreateForm"].invoke_arn
       lambda_uri_formdesignerGetForms            = aws_lambda_function.lambdas["formdesignerGetForms"].invoke_arn
       lambda_uri_formdesignerGetFormById         = aws_lambda_function.lambdas["formdesignerGetFormById"].invoke_arn
+      lambda_uri_formdesignerGetFormByIdAndVersion = aws_lambda_function.lambdas["formdesignerGetFormByIdAndVersion"].invoke_arn
       lambda_uri_formdesignerUpdateFormById      = aws_lambda_function.lambdas["formdesignerUpdateFormById"].invoke_arn
       lambda_uri_formdesignerGetFormMetadataById = aws_lambda_function.lambdas["formdesignerGetFormMetadataById"].invoke_arn
       lambda_uri_formdesignerCommitFormById      = aws_lambda_function.lambdas["formdesignerCommitFormById"].invoke_arn
@@ -46,6 +47,7 @@ resource "aws_api_gateway_deployment" "api" {
     aws_lambda_function.lambdas["formdesignerCreateForm"],
     aws_lambda_function.lambdas["formdesignerGetForms"],
     aws_lambda_function.lambdas["formdesignerGetFormById"],
+    aws_lambda_function.lambdas["formdesignerGetFormByIdAndVersion"],
     aws_lambda_function.lambdas["formdesignerUpdateFormById"],
     aws_lambda_function.lambdas["formdesignerGetFormMetadataById"],
     aws_lambda_function.lambdas["formdesignerCommitFormById"],
@@ -73,6 +75,7 @@ resource "aws_api_gateway_stage" "api" {
     aws_lambda_function.lambdas["formdesignerCreateForm"],
     aws_lambda_function.lambdas["formdesignerGetForms"],
     aws_lambda_function.lambdas["formdesignerGetFormById"],
+    aws_lambda_function.lambdas["formdesignerGetFormByIdAndVersion"],
     aws_lambda_function.lambdas["formdesignerUpdateFormById"],
     aws_lambda_function.lambdas["formdesignerGetFormMetadataById"],
     aws_lambda_function.lambdas["formdesignerCommitFormById"],
