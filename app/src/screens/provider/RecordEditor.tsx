@@ -30,6 +30,7 @@ import {
 } from 'utils/manifests'
 import uuid from 'react-native-uuid'
 import useLeave from 'utils/useLeave'
+import confirmationDialog from 'utils/confirmationDialog'
 
 const FormMemo = React.memo(Form)
 
@@ -221,6 +222,50 @@ export default function RecordEditor({
     [onSave, changed]
   )
 
+  const onUpgrade = useCallback(() => {
+    if (!recordMetadata) return
+    if (changed)
+      error(
+        'You cannot upgrade records that have changes. Save the record first.'
+      )
+    confirmationDialog(
+      "Upgrading the record's form",
+      'Records keep the form version they were created at. Sometimes, forms can have important changes or fixes you want to use. You can upgrade the record in that case. This should be done rarely and only for a clear reason. If the form is incorrectly changed, this can lead to data loss! After upgrading you must reopen the record.',
+      async () => {
+        try {
+          setWaiting('Upgrading')
+          const formResponse = await getForm(recordMetadata.formUUID)
+          if (!formResponse) {
+            error('Could not upgrade the form')
+            setWaiting(null)
+            return
+          }
+          if (formResponse.metadata.version === recordMetadata.formVersion) {
+            error('Record is already at latest form version')
+            setWaiting(null)
+            return
+          }
+          if (formResponse.metadata.version < recordMetadata.formVersion) {
+            error('You cannot downgrade form versions')
+            setWaiting(null)
+            return
+          }
+          const newMetadata = {
+            ...recordMetadata,
+            formVersion: formResponse.metadata.version,
+          }
+          await updateRecord(newMetadata, recordManifest)
+          navigation.goBack()
+        } catch (e) {
+          error('Failed to upgrade the form version')
+        } finally {
+          setWaiting(null)
+        }
+      },
+      () => 0
+    )
+  }, [recordManifest, recordMetadata, changed])
+
   const onComplete = useCallback(
     (record: RecordType) => {
       const handleComplete = async () => {
@@ -275,6 +320,11 @@ export default function RecordEditor({
     [formMetadata, recordMetadata, recordManifest]
   )
 
+  const onAddRecord = useCallback(
+    () => onSaveAndExit(flatRecordToRecordType(flatRecord)),
+    []
+  )
+
   const recordMetadataRef = useRef(recordMetadata)
   recordMetadataRef.current = recordMetadata
 
@@ -308,8 +358,7 @@ export default function RecordEditor({
               recordManifest={recordManifest}
               addPhotoToManifest={addPhotoToManifest}
               removePhotoFromManifest={removePhotoFromManifest}
-              onCancel={() => {
-                setChanged(false)
+              onExit={() => {
                 navigation.goBack()
               }}
               onSaveAndExit={onSaveAndExit}
@@ -320,6 +369,9 @@ export default function RecordEditor({
                 'displayPageAfterOverview' in route.params &&
                 route.params.displayPageAfterOverview
               }
+              onUpgrade={onUpgrade}
+              onAddRecord={onAddRecord}
+              changed={changed}
             />
           )}
         </VStack>

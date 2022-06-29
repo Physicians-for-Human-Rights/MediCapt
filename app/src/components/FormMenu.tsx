@@ -85,19 +85,21 @@ function FormMenu({
   changeSection,
   isSectionCompleteList,
   toggleMenu,
-  onCancel,
+  onExit,
   onSaveAndExit,
   onCompleteRecord,
   onPrint,
+  changed,
 }: {
   formSections: NamedFormSection[]
   changeSection: (i: number) => any
   isSectionCompleteList: boolean[]
   toggleMenu: () => any
-  onCancel: () => any
+  onExit: () => any
   onSaveAndExit: () => any
   onCompleteRecord: () => any
   onPrint: () => any
+  changed: boolean
 }) {
   const stackDirection = useBreakpointValue({
     base: 'column',
@@ -117,10 +119,11 @@ function FormMenu({
       ListHeaderComponent={
         <FormButtons
           isSectionCompleteList={isSectionCompleteList}
-          onCancel={onCancel}
+          onExit={onExit}
           onSaveAndExit={onSaveAndExit}
           onCompleteRecord={onCompleteRecord}
           onPrint={onPrint}
+          changed={changed}
         />
       }
       data={data}
