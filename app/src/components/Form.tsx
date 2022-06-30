@@ -365,6 +365,7 @@ export default function Form({
           [
             recordMetadataRef.current.createdByUUID,
             recordMetadataRef.current.lastChangedByUUID,
+            recordMetadataRef.current.sealedByUUID,
           ],
           async userUUID => {
             if (!userUUID) return
