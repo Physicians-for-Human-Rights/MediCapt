@@ -1,10 +1,19 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { VStack } from 'native-base'
+import {
+  VStack,
+  Modal,
+  Text,
+  Button,
+  Box,
+  HStack,
+  Pressable,
+  Center,
+} from 'native-base'
 import _ from 'lodash'
 import Form from 'components/Form'
 import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/provider/navigation'
-import { FormManifestWithData } from 'utils/types/formMetadata'
+import { FormManifestWithData, FormMetadata } from 'utils/types/formMetadata'
 import Loading from 'components/Loading'
 import {
   RecordMetadata,
@@ -31,8 +40,32 @@ import {
 import uuid from 'react-native-uuid'
 import useLeave from 'utils/useLeave'
 import confirmationDialog from 'utils/confirmationDialog'
+import { t } from 'i18n-js'
 
 const FormMemo = React.memo(Form)
+
+const showForm = (f: FormMetadata | null | undefined) => {
+  if (f) {
+    return (
+      <Pressable
+        bg={'muted.200'}
+        _hover={{ bg: 'muted.300' }}
+        rounded="8"
+        my={2}
+        p={2}
+        key={f.formUUID}
+      >
+        <Center>
+          <VStack m={1} borderRadius="md" my="2" space={0}>
+            <Text fontWeight="bold">{f.title}</Text>
+            <Text>{f.subtitle}</Text>
+          </VStack>
+        </Center>
+      </Pressable>
+    )
+  } else {
+  }
+}
 
 export default function RecordEditor({
   route,
@@ -41,6 +74,7 @@ export default function RecordEditor({
   const [changed, setChanged] = useState(false)
   const [waiting, setWaiting] = useState('Loading' as null | string)
   const [error, warning, success] = useInfo()
+  const [isAssociatedModalOpen, setIsAssociatedModalOpen] = useState(false)
 
   // Either formMetadata or recordMetadata passed to the RecordEditor as route params
   const [formMetadata, setFormMetadata] = useState(
@@ -301,7 +335,7 @@ export default function RecordEditor({
   )
 
   const onAddRecord = useCallback(() => {
-    false
+    setIsAssociatedModalOpen(true)
   }, [])
 
   const onPrintRecord = useCallback(() => {
@@ -360,6 +394,37 @@ export default function RecordEditor({
             />
           )}
         </VStack>
+        <Modal
+          isOpen={isAssociatedModalOpen}
+          onClose={() => setIsAssociatedModalOpen(false)}
+          size="lg"
+        >
+          <Modal.Content>
+            <Modal.CloseButton />
+            <Modal.Header>
+              {t('record.overview.select-associated-record-to-add')}
+            </Modal.Header>
+            <Modal.Body>
+              <VStack space={5}>
+                {_.map(
+                  (formMetadata && formMetadata.associatedForms) || [],
+                  showForm
+                )}
+              </VStack>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button.Group space={2}>
+                <Button
+                  variant="ghost"
+                  colorScheme="blueGray"
+                  onPress={() => setIsAssociatedModalOpen(false)}
+                >
+                  Cancel
+                </Button>
+              </Button.Group>
+            </Modal.Footer>
+          </Modal.Content>
+        </Modal>
         <Loading loading={waiting} />
       </>
     </DashboardLayout>

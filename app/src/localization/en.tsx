@@ -192,6 +192,7 @@ export default {
         'This record is complete and ready to be sealed. Once you seal it, you cannot change its contents. But you can add associated records to it. Are you sure you want to seal the record?',
       'seal-incomplete-warning':
         'This record is not complete! Check which sections are highlighted in red and fill them out or skip their parts if possible. You can still seal the record if you are sure. Once you seal it, you cannot change its contents. But you can add associated records to it. Should we seal the record anyway?',
+      'select-associated-record-to-add': 'Select associated record to add',
     },
     buttons: {
       'complete-record': 'Complete record',
