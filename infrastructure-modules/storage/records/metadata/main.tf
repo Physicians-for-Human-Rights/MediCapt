@@ -45,7 +45,7 @@ module "kms_key" {
 }
 
 module "dynamodb_table" {
-  source = "cloudposse/dynamodb/aws" 
+  source = "cloudposse/dynamodb/aws"
   version     = "0.29.4"
   name                               = "${var.namespace}-${var.stage}-record-metadata"
   enable_encryption                  = true
@@ -107,6 +107,14 @@ module "dynamodb_table" {
     {
       name = "GSK5"
       type = "S"
+    },
+    {
+      name = "GPK6"
+      type = "S"
+    },
+    {
+      name = "GSK6"
+      type = "S"
     }
   ]
   global_secondary_index_map = [
@@ -154,6 +162,16 @@ module "dynamodb_table" {
       name               = "LatestByUpdatedBy"
       hash_key           = "GPK5"
       range_key          = "GSK5"
+      projection_type    = "ALL"
+      non_key_attributes = null
+      #
+      read_capacity      = null
+      write_capacity     = null
+    },
+    {
+      name               = "ByUserScopedUUID"
+      hash_key           = "GPK6"
+      range_key          = "GSK6"
       projection_type    = "ALL"
       non_key_attributes = null
       #

@@ -23,19 +23,22 @@ export const recordMetadataSchemaByUser = z
     caseId: z.string(),
     manifestMD5: z.string(),
     manifestHash: z.string(),
-    // This is never used by any part of the system. It eists only to avoid race
-    // conditions in record creation.
-    userScopedLocalUUID: z.string().optional(),
     associatedRecords: z.array(
       z.object({
         recordUUID: z.string().nonempty(),
         recordID: z.string().nonempty(),
         pathInRecord: z.string().optional(),
         tags: z.string().optional(),
-        title: z.string().nonempty(),
-        comment: z.string().nonempty(),
+        title: z.string().optional(),
+        comment: z.string().optional(),
       })
     ),
+    // This is controlled by the user only on initialization. After that, it is
+    // ignored.
+    isAssociatedRecord: z.string().optional(),
+    // This is never used by any part of the system. It eists only to avoid race
+    // conditions in record creation.
+    userScopedLocalUUID: z.string().optional(),
   })
   .strict()
 
@@ -46,7 +49,7 @@ export const recordPatchSchema = z.discriminatedUnion('patchType', [
     diff: z.string(),
   }),
   z.object({
-    patchType: z.literal('josn-patch'),
+    patchType: z.literal('json-patch'),
     fileSHA256: z.string(),
     jsonPatch: z.string(),
   }),
@@ -65,6 +68,8 @@ export const recordMetadataSchema = recordMetadataSchemaByUser
     lastChangedByUUID: z.string().nonempty(),
     version: z.string().nonempty(),
     sealed: z.boolean(),
+    sealedByUUID: z.string().optional(),
+    sealedDate: dateSchema.optional(),
     previousManifestHash: z.string().optional(),
     patches: z.array(recordPatchSchema),
   })
@@ -191,6 +196,12 @@ export const recordSchemaDynamoLatestToUpdatePart = z.object({
     .refine(v => _.startsWith(v, 'DATE#'), {
       message: 'GSK5 must start with DATE#',
     }),
+  GPK6: z.string().refine(v => _.startsWith(v, 'USER#'), {
+    message: 'GPK5 must start with USER#',
+  }),
+  GSK6: z.string().refine(v => _.startsWith(v, 'LUUID#'), {
+    message: 'GSK5 must start with LUUID#',
+  }),
 })
 
 export const recordSchemaDynamoLatestPart =

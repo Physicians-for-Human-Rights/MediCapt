@@ -17,11 +17,18 @@ declare global {
       humanid_lambda: string
       record_table: string
       record_table_kms: string
+      record_gsi_userscopedUUID: string
     }
   }
 }
 
-import { good, bad, machineIdToHumanId, DynamoDB } from 'common-utils'
+import {
+  good,
+  bad,
+  machineIdToHumanId,
+  DynamoDB,
+  simpleDynamoQuery,
+} from 'common-utils'
 import {
   recordMetadataSchemaByUser,
   RecordMetadataByUser,
@@ -41,6 +48,34 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       ) as RecordMetadataByUser
     } catch (e) {
       return bad(e, 'Bad input record')
+    }
+
+    // NB This query is done to avoid duplicate record creation with unreliable
+    // connections. You make a record, but the returning packet fails. Then you
+    // retry. Now you have two records, one of which is basically
+    // abandoned. With this, you provide a client-side-generated UUID, scoped to
+    // that user (this is not used for anything else, and the scoping ensures
+    // that users can't attack others). We look up the user + local-UUID pair,
+    // so that we can return that record.
+    //
+    // Note that this does make it so that record creators cannot have their
+    // permissions revoked to their own records in a meaningful way.
+
+    if (recordCreation.userScopedLocalUUID) {
+      const results = await simpleDynamoQuery(
+        ddb,
+        undefined,
+        process.env.record_table,
+        process.env.record_gsi_userscopedUUID,
+        'GPK6',
+        'USER#' + event.requestContext.authorizer.claims.sub,
+        'GSK6',
+        'LUUID#' + recordCreation.userScopedLocalUUID
+      )
+      const rawItems: AWS.DynamoDB.ItemList = results.Items ? results.Items : []
+      if (rawItems && rawItems.length > 0) {
+        return rawItems[0]
+      }
     }
 
     const recordUUID = uuidv4()
@@ -87,6 +122,8 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       GSK4: 'DATE#' + record.lastChangedDate.toISOString(),
       GPK5: 'UPDATEDBY#' + record.lastChangedByUUID,
       GSK5: 'DATE#' + record.lastChangedDate.toISOString(),
+      GPK6: 'USER#' + record.createdByUUID,
+      GSK6: 'LUUID#' + record.userScopedLocalUUID,
     }
     try {
       recordSchemaDynamoLatest.parse(recordDynamoLatest)

@@ -32,7 +32,7 @@ export const formMetadataSchemaByUser = z
           formID: z.string().nonempty(),
           pathInRecord: z.string().optional(),
           tags: z.string().optional(),
-          title: z.string().nonempty(),
+          title: z.string().optional(),
         })
       )
       .optional(),

@@ -165,6 +165,8 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       GSK4: 'DATE#' + now.toISOString(),
       GPK5: 'UPDATEDBY#' + existingRecord.lastChangedByUUID,
       GSK5: 'DATE#' + now.toISOString(),
+      GPK6: 'USER#' + existingRecord.createdByUUID,
+      GSK6: 'LUUID#' + existingRecord.userScopedLocalUUID,
     }
 
     // Update latest, verifying that the version hasn't changed.

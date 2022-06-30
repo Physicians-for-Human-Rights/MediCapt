@@ -148,6 +148,7 @@ resource "aws_lambda_function" "lambdas" {
       record_gsi_location = var.record_dynamodb.global_secondary_index_names[2]
       record_gsi_createdby = var.record_dynamodb.global_secondary_index_names[3]
       record_gsi_updatedby = var.record_dynamodb.global_secondary_index_names[4]
+      record_gsi_userscopedUUID = var.record_dynamodb.global_secondary_index_names[5]
       #
       sharing_table = var.sharing_table
       sharing_table_arn = var.sharing_table

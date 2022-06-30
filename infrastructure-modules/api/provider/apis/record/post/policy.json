@@ -2,6 +2,11 @@
   "Version": "2012-10-17",
   "Statement": [
     {
+      "Action": ["dynamodb:Query"],
+      "Effect": "Allow",
+      "Resource": ["${record_table_arn}", "${record_table_arn}/*"]
+    },
+    {
       "Action": "lambda:InvokeFunction",
       "Effect": "Allow",
       "Resource": "${humanid_lambda_arn}"
