@@ -92,7 +92,7 @@ export default function FormButtons({
               onPress={onSaveAndExit}
               _text={{ selectable: false }}
             >
-              {t('record.buttons.cancel')}
+              {t('record.buttons.save-and-exit')}
             </Button>
             <Button
               bg="info.500"
@@ -100,7 +100,7 @@ export default function FormButtons({
               onPress={onSave}
               _text={{ selectable: false }}
             >
-              {t('record.buttons.cancel')}
+              {t('record.buttons.save')}
             </Button>
             <Button
               leftIcon={<Icon as={AntDesign} name="close" size="sm" />}
