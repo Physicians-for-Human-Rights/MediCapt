@@ -225,7 +225,10 @@ export async function updateRecord(
   return commitedRecordMetadata
 }
 
-export async function sealRecord(recordUUID: string, localOnly?: boolean) {
+export async function sealRecord(
+  recordMetadata: RecordMetadata,
+  localOnly?: boolean
+) {
   if (localOnly) throw Error('Cannot seal record while offline.')
-  return sealRecordRequest(recordUUID)
+  return sealRecordRequest(recordMetadata)
 }

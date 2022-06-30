@@ -258,8 +258,29 @@ export const recordSchemaUpdateSeal = z
     lastChangedDate: dateSchema,
     version: z.string().nonempty(),
     sealed: z.boolean(),
+    sealedByUUID: z.string().nonempty(),
+    sealedDate: dateSchema,
   })
   .strict()
+
+// Entries we must update when we change a record, but that do not come from
+// users
+export const sealedRecordSchemaDynamoUpdate = recordMetadataSchemaByUser
+  .pick({ associatedRecords: true })
+  .extend({
+    lastChangedByUUID: z.string().nonempty().uuid(),
+    lastChangedDate: dateSchema,
+    version: z.string().nonempty(),
+  })
+  .strict()
+
+export const sealedRecordSchemaDynamoLatestUpdate =
+  sealedRecordSchemaDynamoUpdate.merge(recordSchemaDynamoLatestPart)
+
+export const sealedRecordSchemaDynamoLatestToUpdate =
+  recordSchemaDynamoLatestToUpdatePart
+    .merge(sealedRecordSchemaDynamoUpdate)
+    .strict()
 
 //
 
@@ -304,13 +325,21 @@ export type RecordDynamoLatestType = z.infer<typeof recordSchemaDynamoLatest>
 export type RecordDynamoDeletedType = z.infer<typeof recordSchemaDynamoDeleted>
 
 export type RecordDynamoUpdateType = z.infer<typeof recordSchemaDynamoUpdate>
-
 export type RecordDynamoLatestUpdateType = z.infer<
   typeof recordSchemaDynamoLatestUpdate
 >
-
 export type RecordDynamoLatestToUpdateType = z.infer<
   typeof recordSchemaDynamoLatestToUpdate
 >
 
 export type RecordDynamoUpdateSeal = z.infer<typeof recordSchemaUpdateSeal>
+
+export type SealedRecordDynamoUpdateType = z.infer<
+  typeof sealedRecordSchemaDynamoUpdate
+>
+export type SealedRecordDynamoLatestUpdateType = z.infer<
+  typeof sealedRecordSchemaDynamoLatestUpdate
+>
+export type SealedRecordDynamoLatestToUpdateType = z.infer<
+  typeof sealedRecordSchemaDynamoLatestToUpdate
+>

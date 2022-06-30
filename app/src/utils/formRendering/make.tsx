@@ -7,7 +7,7 @@ import {
   FlatRecord,
 } from 'utils/types/record'
 
-export function mkTitle(title: string, key: string) {
+export function mkTitle(title: string, key: string, color?: string) {
   return [
     {
       type: 'title',
@@ -18,11 +18,17 @@ export function mkTitle(title: string, key: string) {
       disable: false,
       recordValue: { type: 'text', value: '' },
       recordSummary: undefined,
+      color,
     },
   ]
 }
 
-export function mkText(title: string, text: string, key: string) {
+export function mkText(
+  title: string,
+  text: string,
+  key: string,
+  color?: string
+) {
   return [
     {
       type: 'title',
@@ -33,6 +39,7 @@ export function mkText(title: string, text: string, key: string) {
       disable: false,
       recordValue: { type: 'text', value: '' },
       recordSummary: undefined,
+      color,
     },
     {
       type: 'text',
@@ -41,6 +48,7 @@ export function mkText(title: string, text: string, key: string) {
       disable: true,
       recordValue: { type: 'text', value: text },
       recordSummary: undefined,
+      color,
     },
     {
       type: 'divider',

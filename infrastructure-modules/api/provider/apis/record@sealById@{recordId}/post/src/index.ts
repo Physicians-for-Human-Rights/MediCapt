@@ -83,6 +83,8 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       lastChangedDate: now,
       version: _.toString(_.toNumber(record.version) + 1),
       sealed: true,
+      sealedByUUID: event.requestContext.authorizer.claims.sub,
+      sealedDate: now,
     }
 
     // Update latest, verifying that the version hasn't changed.
@@ -118,15 +120,20 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
         DynamoDB.unmarshall(_.mapValues(response.Attributes))
       )
 
-      await s3.upload({
-        Bucket: process.env.record_bucket,
-        Key: hashFilename(
-          existingRecord.recordUUID,
-          existingRecord.manifestHash,
-          'metadata'
-        ),
-        Body: JSON.stringify(newRecord),
-      })
+      await s3
+        .upload({
+          Bucket: process.env.record_bucket,
+          Key:
+            '/' +
+            existingRecord.recordUUID +
+            '/' +
+            'version-' +
+            newRecord.version +
+            '.manifest',
+          Body: JSON.stringify(newRecord),
+          ServerSideEncryption: 'aws:kms',
+        })
+        .promise()
 
       return good({ record: newRecord })
     } catch (e) {

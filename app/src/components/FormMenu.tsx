@@ -87,9 +87,11 @@ function FormMenu({
   toggleMenu,
   onExit,
   onSaveAndExit,
+  onSave,
   onCompleteRecord,
   onPrint,
   changed,
+  isSealed,
 }: {
   formSections: NamedFormSection[]
   changeSection: (i: number) => any
@@ -97,9 +99,11 @@ function FormMenu({
   toggleMenu: () => any
   onExit: () => any
   onSaveAndExit: () => any
+  onSave: () => any
   onCompleteRecord: () => any
   onPrint: () => any
   changed: boolean
+  isSealed: boolean
 }) {
   const stackDirection = useBreakpointValue({
     base: 'column',
@@ -121,9 +125,11 @@ function FormMenu({
           isSectionCompleteList={isSectionCompleteList}
           onExit={onExit}
           onSaveAndExit={onSaveAndExit}
+          onSave={onSave}
           onCompleteRecord={onCompleteRecord}
           onPrint={onPrint}
           changed={changed}
+          isSealed={isSealed}
         />
       }
       data={data}

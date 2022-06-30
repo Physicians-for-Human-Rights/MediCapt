@@ -14,25 +14,30 @@ import {
 } from 'native-base'
 import { AntDesign, Feather } from '@expo/vector-icons'
 import _ from 'lodash'
+import { t } from 'i18n-js'
 
 export default function FormButtons({
   isSectionCompleteList,
   onExit,
   onSaveAndExit,
+  onSave,
   onCompleteRecord,
   onPrint,
   onAddRecord,
   onUpgrade,
   changed,
+  isSealed,
 }: {
   isSectionCompleteList: boolean[]
   onExit: () => any
   onSaveAndExit: () => any
+  onSave: () => any
   onCompleteRecord: () => any
   onPrint: () => any
   onAddRecord?: () => any
   onUpgrade?: () => any
   changed: boolean
+  isSealed: boolean
 }) {
   const stackDirection = useBreakpointValue({
     base: 'column',
@@ -40,7 +45,7 @@ export default function FormButtons({
   })
   return (
     <VStack>
-      {onAddRecord && onUpgrade ? (
+      {!changed && onAddRecord && onUpgrade ? (
         <Stack
           pt="3"
           direction={stackDirection}
@@ -55,16 +60,18 @@ export default function FormButtons({
             onPress={onAddRecord}
             _text={{ selectable: false }}
           >
-            Add associated record
+            {t('record.buttons.add-associated-record')}
           </Button>
-          <Button
-            leftIcon={<Icon as={Feather} name="alert-triangle" size="sm" />}
-            bg="error.500"
-            onPress={onUpgrade}
-            _text={{ selectable: false }}
-          >
-            Upgrade form version
-          </Button>
+          {!isSealed && (
+            <Button
+              leftIcon={<Icon as={Feather} name="alert-triangle" size="sm" />}
+              bg="error.500"
+              onPress={onUpgrade}
+              _text={{ selectable: false }}
+            >
+              {t('record.buttons.upgrade-form')}
+            </Button>
+          )}
         </Stack>
       ) : (
         <></>
@@ -85,7 +92,15 @@ export default function FormButtons({
               onPress={onSaveAndExit}
               _text={{ selectable: false }}
             >
-              Save and Exit
+              {t('record.buttons.cancel')}
+            </Button>
+            <Button
+              bg="info.500"
+              leftIcon={<Icon as={AntDesign} name="save" size="sm" />}
+              onPress={onSave}
+              _text={{ selectable: false }}
+            >
+              {t('record.buttons.cancel')}
             </Button>
             <Button
               leftIcon={<Icon as={AntDesign} name="close" size="sm" />}
@@ -93,7 +108,7 @@ export default function FormButtons({
               onPress={onExit}
               _text={{ selectable: false }}
             >
-              Cancel
+              {t('record.buttons.cancel')}
             </Button>
           </HStack>
         ) : (
@@ -103,31 +118,35 @@ export default function FormButtons({
             onPress={onExit}
             _text={{ selectable: false }}
           >
-            Exit
+            {t('record.buttons.exit')}
           </Button>
         )}
-        <HStack space="2" justifyContent="center">
-          <Button
-            bg="info.500"
-            leftIcon={<Icon as={AntDesign} name="printer" size="sm" />}
-            onPress={onPrint}
-            _text={{ selectable: false }}
-          >
-            Print
-          </Button>
-          <Button
-            bg={
-              _.every(isSectionCompleteList, (a: boolean) => a)
-                ? 'success.600'
-                : 'primary.800'
-            }
-            leftIcon={<Icon as={AntDesign} name="staro" size="sm" />}
-            onPress={onCompleteRecord}
-            _text={{ selectable: false }}
-          >
-            Complete record
-          </Button>
-        </HStack>
+        {!changed && (
+          <HStack space="2" justifyContent="center">
+            <Button
+              bg="info.500"
+              leftIcon={<Icon as={AntDesign} name="printer" size="sm" />}
+              onPress={onPrint}
+              _text={{ selectable: false }}
+            >
+              {t('record.buttons.print')}
+            </Button>
+            {!isSealed && (
+              <Button
+                bg={
+                  _.every(isSectionCompleteList, (a: boolean) => a)
+                    ? 'success.600'
+                    : 'primary.800'
+                }
+                leftIcon={<Icon as={AntDesign} name="staro" size="sm" />}
+                onPress={onCompleteRecord}
+                _text={{ selectable: false }}
+              >
+                {t('record.buttons.complete-record')}
+              </Button>
+            )}
+          </HStack>
+        )}
       </Stack>
     </VStack>
   )

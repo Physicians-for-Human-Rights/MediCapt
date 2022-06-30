@@ -18,6 +18,7 @@ export type RenderCommand =
         size: string
         fontWeight: string
         italic: boolean
+        color?: string
         maxW?: string
       }
     | {
@@ -176,6 +177,7 @@ export type RenderCommand =
         recordValue?: RecordValueByType['text']
         placeholder?: string
         maxW?: string
+        color?: string
         recordSummary: 'patient-name' | undefined
       }
   ) & { valuePath: RecordValuePath; key: string; disable: boolean }

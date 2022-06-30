@@ -183,6 +183,25 @@ export default {
       'form-tile': 'Form title',
       'case-id': 'Remote case ID',
       'record-id': 'Remote case ID',
+      'sealed-date': 'Sealed on date',
+      'sealed-by': 'Sealed by',
+      'record-is-sealed': 'Record is sealed',
+      'record-overview': 'Record overview',
+      'sealing-records': 'Sealing records',
+      'seal-complete-warning':
+        'This record is complete and ready to be sealed. Once you seal it, you cannot change its contents. But you can add associated records to it. Are you sure you want to seal the record?',
+      'seal-incomplete-warning':
+        'This record is not complete! Check which sections are highlighted in red and fill them out or skip their parts if possible. You can still seal the record if you are sure. Once you seal it, you cannot change its contents. But you can add associated records to it. Should we seal the record anyway?',
+    },
+    buttons: {
+      'complete-record': 'Complete record',
+      print: 'Print',
+      exit: 'Exit',
+      cancel: 'Cancel',
+      save: 'Save',
+      'save-and-exit': 'Save and exit',
+      'upgrade-form': 'Upgrade form version',
+      'add-associated-record': 'Add associated record',
     },
   },
   form: {

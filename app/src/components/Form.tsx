@@ -42,6 +42,7 @@ import { UserType } from 'utils/types/user'
 import FormButtons from 'components/FormButtons'
 import { mkTitle, mkText, mkLongText } from 'utils/formRendering/make'
 import { RenderCommand } from 'utils/formRendering/types'
+import confirmationDialog from 'utils/confirmationDialog'
 
 // FIXME Temproary hack before rewriting Form to invert control back to
 // RecordEditor and show error messages
@@ -60,9 +61,34 @@ function getRecordFromManifest(
 function recordOverviewPage(
   recordMetadataRef: React.MutableRefObject<RecordMetadata | undefined>,
   formMetadata: FormMetadata,
-  users: Record<string, Partial<UserType>>
+  users: Record<string, Partial<UserType>>,
+  isSealed: boolean
 ): RenderCommand[] {
   return _.concat(
+    isSealed
+      ? _.concat(
+          mkTitle(t('record.overview.record-is-sealed'), 'stitle', '#d5001c'),
+          mkText(
+            t('record.overview.sealed-by'),
+            recordMetadataRef.current && recordMetadataRef.current.sealedByUUID
+              ? userFullName(
+                  users[recordMetadataRef.current.sealedByUUID],
+                  recordMetadataRef.current.sealedByUUID
+                )
+              : 'N/A',
+            'scby'
+          ),
+          mkText(
+            t('record.overview.sealed-date'),
+            recordMetadataRef.current &&
+              recordMetadataRef.current.sealedDate &&
+              recordMetadataRef.current.sealedDate > new Date('January 01 1500')
+              ? formatDate(recordMetadataRef.current.sealedDate, 'PPP')
+              : 'N/A',
+            'sldate'
+          )
+        )
+      : [],
     mkTitle(t('record.overview.titles.patient'), 'ptitle'),
     [
       {
@@ -211,6 +237,7 @@ export default function Form({
   removePhotoFromManifest = () => null,
   onExit,
   onSaveAndExit,
+  onSave,
   onComplete,
   disableMenu = false,
   onChange = () => null,
@@ -219,6 +246,7 @@ export default function Form({
   displayPageAfterOverview = false,
   onUpgrade,
   onAddRecord,
+  onPrint,
   changed,
 }: {
   formMetadata: FormMetadata
@@ -231,6 +259,7 @@ export default function Form({
   noRenderCache?: boolean
   onExit: () => any
   onSaveAndExit: (record: RecordType) => any
+  onSave: (record: RecordType) => any
   onComplete: (record: RecordType) => any
   disableMenu?: boolean
   onChange?: () => any
@@ -239,8 +268,11 @@ export default function Form({
   displayPageAfterOverview?: boolean
   onUpgrade?: () => any
   onAddRecord?: () => any
+  onPrint?: () => any
   changed: boolean
 }) {
+  const isSealed =
+    (recordMetadataRef.current && recordMetadataRef.current.sealed) || false
   const [flatRecord, { set: setFlatRecordValue }] = useMap(() =>
     getRecordFromManifest(recordManifest)
   )
@@ -251,7 +283,7 @@ export default function Form({
     overviewSection
       ? [
           {
-            name: 'Record Overview',
+            name: t('record.overview.record-overview'),
             title: t('record.overview.section-title'),
             parts: [],
           },
@@ -296,10 +328,23 @@ export default function Form({
     [onSaveAndExit, flatRecord]
   )
 
-  const onCompleteRecord = useCallback(
-    () => onComplete(flatRecordToRecordType(flatRecord)),
-    [onComplete, flatRecord]
+  const onSaveRecord = useCallback(
+    () => onSave(flatRecordToRecordType(flatRecord)),
+    [onSaveAndExit, flatRecord]
   )
+
+  const onCompleteRecord = useCallback(() => {
+    confirmationDialog(
+      'Sealing records',
+      _.every(isSectionCompleteList)
+        ? t('record.overview.seal-complete-warning')
+        : t('record.overview.seal-incomplete-warning'),
+      async () => {
+        onComplete(flatRecordToRecordType(flatRecord))
+      },
+      () => 0
+    )
+  }, [onComplete, flatRecord])
 
   const layoutType =
     overrideTransformation ||
@@ -338,11 +383,35 @@ export default function Form({
     usersFn()
   }, [recordMetadataRef])
 
-  const renderCommands =
+  function sealRecordcommands(isSealed: boolean, commands: RenderCommand[]) {
+    if (!isSealed) return commands
+    return _.map(commands, c => {
+      c.disable = true
+      if (c.type === 'padding') c.contents.disable = true
+      if (c.type === 'row') {
+        c.left.disable = true
+        c.right.disable = true
+      }
+      if (c.type === 'row-with-description') {
+        c.left.disable = true
+        c.right.disable = true
+        c.description.disable = true
+      }
+      return c
+    })
+  }
+
+  const renderCommands = sealRecordcommands(
+    isSealed && !(overviewSection && currentSection === 0),
     !_.isEmpty(formSections) && form && 'common' in form
       ? transformToLayout(
           overviewSection && currentSection === 0
-            ? recordOverviewPage(recordMetadataRef, formMetadata, users)
+            ? recordOverviewPage(
+                recordMetadataRef,
+                formMetadata,
+                users,
+                isSealed
+              )
             : allFormRenderCommands(
                 formSections[currentSection],
                 form.common,
@@ -355,6 +424,7 @@ export default function Form({
           layoutType
         )
       : []
+  )
 
   const setRecordPath = useCallback(
     (path: RecordValuePath, value: RecordValue) => {
@@ -452,9 +522,11 @@ export default function Form({
           isSectionCompleteList={isSectionCompleteList}
           onExit={onExit}
           onSaveAndExit={onSaveAndExitRecord}
-          onCompleteRecord={onExit}
+          onSave={onSaveRecord}
+          onCompleteRecord={onCompleteRecord}
           onPrint={onExit}
           changed={changed}
+          isSealed={isSealed}
         />
       ) : (
         <KeyboardAwareFlatList
@@ -471,11 +543,13 @@ export default function Form({
                 isSectionCompleteList={isSectionCompleteList}
                 onExit={onExit}
                 onSaveAndExit={onSaveAndExitRecord}
-                onCompleteRecord={onExit}
+                onCompleteRecord={onCompleteRecord}
                 onPrint={onExit}
                 onAddRecord={onAddRecord}
                 onUpgrade={onUpgrade}
                 changed={changed}
+                onSave={onSaveRecord}
+                isSealed={isSealed}
               />
             ) : (
               <></>

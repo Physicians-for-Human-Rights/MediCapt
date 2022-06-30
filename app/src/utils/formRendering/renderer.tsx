@@ -74,7 +74,7 @@ export function renderCommand(
             fontWeight={command.fontWeight}
             maxW={command.maxW}
             px={2}
-            color={disabled(command, 'coolGray.400')}
+            color={disabled(command, 'coolGray.600') || command.color}
           >
             {command.title}
           </Heading>

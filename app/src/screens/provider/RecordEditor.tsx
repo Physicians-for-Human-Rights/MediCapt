@@ -46,8 +46,28 @@ export default function RecordEditor({
   const [formMetadata, setFormMetadata] = useState(
     'formMetadata' in route.params ? route.params.formMetadata : undefined
   )
-  const [recordMetadata, setRecordMetadataRaw] = useState(
-    'recordMetadata' in route.params ? route.params.recordMetadata : undefined
+  const [recordMetadata, setRecordMetadataRaw] = useState(() =>
+    'recordMetadata' in route.params
+      ? route.params.recordMetadata
+      : {
+          'storage-version': '1.0.0',
+          formUUID: undefined,
+          formID: undefined,
+          formVersion: undefined,
+          locationID: undefined,
+          patientName: '',
+          patientGender: '',
+          patientAddress: '',
+          patientDateOfBirth: new Date('January 01 1001'), // TODO Do better
+          patientPhoneNumber: '',
+          patientEmail: '',
+          incidentDate: new Date('January 01 1001'), // TODO Do better
+          caseId: '',
+          manifestHash: '',
+          manifestMD5: '',
+          associatedRecords: [],
+          userScopedLocalUUID: uuid.v4() as string,
+        }
   )
   const [formManifest, setFormManifest] = useState(
     undefined as FormManifestWithData | undefined
@@ -97,7 +117,9 @@ export default function RecordEditor({
       try {
         // Load Record
         const recordResponse =
-          recordMetadata && (await getRecord(recordMetadata.recordUUID))
+          'recordUUID' in recordMetadata
+            ? await getRecord(recordMetadata.recordUUID)
+            : undefined
         if (recordResponse) {
           const contentsWithData = await getRecordManifestContents(
             recordResponse.manifest.contents
@@ -175,31 +197,24 @@ export default function RecordEditor({
         try {
           if (!formMetadata) throw Error('Missing form!')
           const oldRecordMetadata =
-            recordMetadata ||
-            (await createRecord({
-              'storage-version': '1.0.0',
-              formUUID: formMetadata.formUUID,
-              formID: formMetadata.formID,
-              formVersion: formMetadata.version,
-              locationID: formMetadata.locationID,
-              patientName: '',
-              patientGender: '',
-              patientAddress: '',
-              patientDateOfBirth: new Date('January 01 1001'), // TODO Do better
-              patientPhoneNumber: '',
-              patientEmail: '',
-              incidentDate: new Date('January 01 1001'), // TODO Do better
-              caseId: '',
-              manifestHash: '',
-              manifestMD5: '',
-              associatedRecords: [],
-            }))
+            'recordUUID' in recordMetadata
+              ? recordMetadata
+              : await createRecord({
+                  ...recordMetadata,
+                  'storage-version': '1.0.0',
+                  formUUID: formMetadata.formUUID,
+                  formID: formMetadata.formID,
+                  formVersion: formMetadata.version,
+                  locationID: formMetadata.locationID,
+                })
           // Update manifest and metadata with the record that we want to save
           const updatedRecordManifest = addOrReplaceRecordTypeInManifest(
             recordManifest,
             record
           )
-          await updateRecord(oldRecordMetadata, updatedRecordManifest)
+          setRecordMetadata(
+            await updateRecord(oldRecordMetadata, updatedRecordManifest)
+          )
           setChanged(false)
           if (after) after()
         } catch (e) {
@@ -223,7 +238,7 @@ export default function RecordEditor({
   )
 
   const onUpgrade = useCallback(() => {
-    if (!recordMetadata) return
+    if (!recordMetadata || !recordMetadata.formUUID) return
     if (changed)
       error(
         'You cannot upgrade records that have changes. Save the record first.'
@@ -270,43 +285,8 @@ export default function RecordEditor({
     (record: RecordType) => {
       const handleComplete = async () => {
         try {
-          if (!formMetadata) throw Error('Missing form!')
-
-          const oldRecordMetadata =
-            recordMetadata ||
-            (await createRecord({
-              'storage-version': '1.0.0',
-              formUUID: formMetadata.formUUID,
-              formID: formMetadata.formID,
-              formVersion: formMetadata.version,
-              locationID: formMetadata.locationID,
-              patientName: '',
-              patientGender: '',
-              patientAddress: '',
-              patientDateOfBirth: new Date('January 01 1001'), // TODO Do better
-              patientPhoneNumber: '',
-              patientEmail: '',
-              incidentDate: new Date('January 01 1001'), // TODO Do better
-              caseId: '',
-              manifestHash: '',
-              manifestMD5: '',
-              associatedRecords: [],
-            }))
-
-          // Update manifest and metadata with the record that we want to save
-          const updatedRecordManifest = addOrReplaceRecordTypeInManifest(
-            recordManifest,
-            record
-          )
-          const updatedRecordMetadata = await updateRecord(
-            oldRecordMetadata,
-            updatedRecordManifest
-          )
-
           // Seal updated record
-          await sealRecord(updatedRecordMetadata.recordUUID)
-
-          navigation.goBack()
+          setRecordMetadata(await sealRecord(recordMetadata))
         } catch (e) {
           handleStandardErrors(error, warning, success, e)
         } finally {
@@ -321,6 +301,10 @@ export default function RecordEditor({
   )
 
   const onAddRecord = useCallback(() => {
+    false
+  }, [])
+
+  const onPrintRecord = useCallback(() => {
     false
   }, [])
 
@@ -360,6 +344,7 @@ export default function RecordEditor({
               onExit={() => {
                 navigation.goBack()
               }}
+              onSave={onSave}
               onSaveAndExit={onSaveAndExit}
               onComplete={onComplete}
               onChange={() => setChanged(true)}
@@ -370,6 +355,7 @@ export default function RecordEditor({
               }
               onUpgrade={onUpgrade}
               onAddRecord={onAddRecord}
+              onPrint={onPrintRecord}
               changed={changed}
             />
           )}

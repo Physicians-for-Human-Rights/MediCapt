@@ -289,17 +289,16 @@ export async function getRecords(
   ]
 }
 
-export async function sealRecord(recordUUID: string): Promise<RecordMetadata> {
+export async function sealRecord(
+  metadata: RecordMetadata
+): Promise<RecordMetadata> {
   const data = await API.post(
     'provider',
-    '/provider/record/sealById/' + recordUUID,
+    '/provider/record/sealById/' + metadata.recordUUID,
     {
-      body: {
-        headers: {
-          AcceptedVersions: JSON.stringify(
-            schemaVersions(recordMetadataSchema)
-          ),
-        },
+      body: recordMetadataSchema.parse(metadata),
+      headers: {
+        AcceptedVersions: schemaVersions(recordMetadataSchema),
       },
     }
   )

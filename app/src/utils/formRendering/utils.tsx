@@ -9,4 +9,4 @@ export function disabled(
   return whenEnabled
 }
 
-export const disabledBackground = 'coolGray.100'
+export const disabledBackground = 'coolGray.50'
