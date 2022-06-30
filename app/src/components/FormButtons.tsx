@@ -11,6 +11,7 @@ import {
   FlatList,
   Stack,
   VStack,
+  Tooltip,
 } from 'native-base'
 import { AntDesign, Feather } from '@expo/vector-icons'
 import _ from 'lodash'
@@ -27,6 +28,7 @@ export default function FormButtons({
   onUpgrade,
   changed,
   isSealed,
+  hasAssociatedForms,
 }: {
   isSectionCompleteList: boolean[]
   onExit: () => any
@@ -38,6 +40,7 @@ export default function FormButtons({
   onUpgrade?: () => any
   changed: boolean
   isSealed: boolean
+  hasAssociatedForms: boolean
 }) {
   const stackDirection = useBreakpointValue({
     base: 'column',
@@ -54,14 +57,19 @@ export default function FormButtons({
           bg="white"
           key="header1"
         >
-          <Button
-            bg="info.500"
-            leftIcon={<Icon as={Feather} name="plus-square" size="sm" />}
-            onPress={onAddRecord}
-            _text={{ selectable: false }}
-          >
-            {t('record.buttons.add-associated-record')}
-          </Button>
+          <Tooltip label={t('record.buttons.tooltip-associated-form')}>
+            <Button
+              bg={hasAssociatedForms ? 'info.500' : 'muted.200'}
+              leftIcon={<Icon as={Feather} name="plus-square" size="sm" />}
+              onPress={onAddRecord}
+              _text={{ selectable: false }}
+              disabled={!hasAssociatedForms}
+            >
+              {hasAssociatedForms
+                ? t('record.buttons.fill-associated-form')
+                : t('record.buttons.no-associated-form')}
+            </Button>
+          </Tooltip>
           {!isSealed && (
             <Button
               leftIcon={<Icon as={Feather} name="alert-triangle" size="sm" />}

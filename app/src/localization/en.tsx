@@ -202,7 +202,10 @@ export default {
       save: 'Save',
       'save-and-exit': 'Save and exit',
       'upgrade-form': 'Upgrade form version',
-      'add-associated-record': 'Add associated record',
+      'fill-associated-form': 'Fill associated form',
+      'no-associated-form': 'No forms associated',
+      'tooltip-associated-form':
+        'Form designers can associate forms with this one, allowing you to append lab reports, etc.',
     },
   },
   form: {

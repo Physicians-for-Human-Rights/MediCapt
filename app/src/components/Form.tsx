@@ -551,6 +551,11 @@ export default function Form({
                 changed={changed}
                 onSave={onSaveRecord}
                 isSealed={isSealed}
+                hasAssociatedForms={
+                  formMetadata.associatedForms
+                    ? formMetadata.associatedForms.length > 0
+                    : false
+                }
               />
             ) : (
               <></>
