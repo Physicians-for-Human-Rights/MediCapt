@@ -74,7 +74,7 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       )
       const rawItems: AWS.DynamoDB.ItemList = results.Items ? results.Items : []
       if (rawItems && rawItems.length > 0) {
-        return rawItems[0]
+        return good(rawItems[0])
       }
     }
 
