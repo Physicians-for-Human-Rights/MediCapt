@@ -9,6 +9,8 @@ import { RootStackScreenProps } from 'utils/provider/navigation'
 import { getRecords } from '../../utils/localStore/store'
 import { useUser } from 'utils/store'
 
+const filterAssociatedOut = (r: RecordMetadata) => !r.isAssociatedRecord
+
 export default function RecordList({
   route,
   navigation,
@@ -74,6 +76,7 @@ export default function RecordList({
               recordMetadata,
             })
           }}
+          filter={filterAssociatedOut}
         />
         <Loading loading={waiting} />
       </>

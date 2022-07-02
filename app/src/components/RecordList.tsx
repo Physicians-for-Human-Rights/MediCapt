@@ -214,18 +214,13 @@ export function ListItemDesktop({
           </Text>
         </VStack>
 
-        <HStack w="5%">
+        <VStack w="5%">
           {item.sealed ? (
-            <Icon
-              color="success.400"
-              size="6"
-              name="check-circle"
-              as={MaterialIcons}
-            />
+            <Icon color="success.400" size="6" name="star" as={AntDesign} />
           ) : (
-            <Icon color="error.700" size="6" name="cancel" as={MaterialIcons} />
+            <Icon color="error.700" size="6" name="staro" as={AntDesign} />
           )}
-        </HStack>
+        </VStack>
       </HStack>
     </Pressable>
   )
@@ -243,6 +238,7 @@ export default function RecordList({
   setFilterText,
   doSearch,
   selectItem,
+  filter,
 }: {
   records: RecordMetadata[]
   hasMore: boolean
@@ -257,7 +253,8 @@ export default function RecordList({
   filterText: string | undefined
   setFilterText: React.Dispatch<React.SetStateAction<string | undefined>>
   doSearch: () => any
-  selectItem: (f: RecordMetadata) => any
+  selectItem: (r: RecordMetadata) => any
+  filter: (r: RecordMetadata) => boolean
 }) {
   const [forms, setForms] = useState({} as Record<string, FormMetadata>)
   const [users, setUsers] = useState({} as Record<string, Partial<UserType>>)
@@ -443,17 +440,19 @@ export default function RecordList({
         <Box>
           <ScrollView>
             <Box position="relative" display={{ md: 'none', base: 'flex' }}>
-              {records.map((item: RecordMetadata, index: number) => {
-                return (
-                  <ListItemMobile
-                    item={item}
-                    key={index}
-                    selectItem={selectItem}
-                    forms={forms}
-                    users={users}
-                  />
-                )
-              })}
+              {_.filter(records, filter).map(
+                (item: RecordMetadata, index: number) => {
+                  return (
+                    <ListItemMobile
+                      item={item}
+                      key={index}
+                      selectItem={selectItem}
+                      forms={forms}
+                      users={users}
+                    />
+                  )
+                }
+              )}
             </Box>
             <Box display={{ md: 'flex', base: 'none' }}>
               <HStack
@@ -501,17 +500,19 @@ export default function RecordList({
                 </Text>
               </HStack>
               <VStack mt={3} space={3}>
-                {records.map((item: RecordMetadata, index: number) => {
-                  return (
-                    <ListItemDesktop
-                      item={item}
-                      key={index}
-                      selectItem={selectItem}
-                      forms={forms}
-                      users={users}
-                    />
-                  )
-                })}
+                {_.filter(records, filter).map(
+                  (item: RecordMetadata, index: number) => {
+                    return (
+                      <ListItemDesktop
+                        item={item}
+                        key={index}
+                        selectItem={selectItem}
+                        forms={forms}
+                        users={users}
+                      />
+                    )
+                  }
+                )}
               </VStack>
             </Box>
           </ScrollView>
