@@ -352,7 +352,6 @@ export default function UserEditor({
         <Center>
           <DateTimePicker
             isDisabled={false}
-            // @ts-ignore TODO Why not?
             title={t('user.expiry-date')}
             fancyLabel={t('user.expiry-date')}
             date={user.expiry_date}

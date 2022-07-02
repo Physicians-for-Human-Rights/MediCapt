@@ -1,7 +1,8 @@
+import React, { Component, useCallback, useEffect } from 'react'
 import useDebounce from 'react-use/lib/useDebounce'
-import React, { Component, useState } from 'react'
 import { Platform, Animated } from 'react-native'
 import { Input, Box } from 'native-base'
+import _ from 'lodash'
 
 export class RawFloatingLabelInput extends Component<any, any> {
   private _animatedIsFocused: any
@@ -16,8 +17,18 @@ export class RawFloatingLabelInput extends Component<any, any> {
     )
   }
 
-  handleFocus = () => this.setState({ isFocused: true })
-  handleBlur = () => this.setState({ isFocused: false })
+  handleFocus = () => {
+    this.setState({ isFocused: true })
+    this.props &&
+      'toggleFocusHandler' in this.props &&
+      this.props.toggleFocusHandler()
+  }
+  handleBlur = () => {
+    this.setState({ isFocused: false })
+    this.props &&
+      'toggleFocusHandler' in this.props &&
+      this.props.toggleFocusHandler()
+  }
 
   componentDidUpdate() {
     Animated.timing(this._animatedIsFocused, {
@@ -126,6 +137,10 @@ export default function FloatingLabelInput({
     [rawValue]
   )
 
+  const toggleFocusHandler = useCallback(() => {
+    if (!_.isEqual(value, rawValue)) setRawValue(value || '')
+  }, [value, rawValue])
+
   return (
     <RawFloatingLabelInput
       p="3"
@@ -145,6 +160,7 @@ export default function FloatingLabelInput({
       isReadOnly={isReadOnly}
       placeholder={placeholder}
       mt={mt}
+      toggleFocusHandler={toggleFocusHandler}
     />
   )
 }
