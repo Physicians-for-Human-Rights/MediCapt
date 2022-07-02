@@ -20,6 +20,14 @@ locals {
       path = "user@byId@{poolId}@{username}@signout/post"
       reserved_concurrent_executions = null
     }
+    managerResetPasswordUserById = {
+      path = "user@byId@{poolId}@{username}@resetPassword/post"
+      reserved_concurrent_executions = null
+    }
+    managerConfirmEmailUserById = {
+      path = "user@byId@{poolId}@{username}@confirmEmail/post"
+      reserved_concurrent_executions = null
+    }
     managerCreateLocation = {
       path = "location/post"
       reserved_concurrent_executions = null

@@ -233,25 +233,29 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
 
     // Update location groups
 
-    await Promise.all(
-      _.map(
-        toAddLocations,
-        async l =>
-          // NB this would be faster if we checked if the user is already in that group.
-          await cognito
-            .adminAddUserToGroup({
-              UserPoolId: user_pool_id,
-              Username: username,
-              GroupName: l,
-            })
-            .promise()
+    try {
+      await Promise.all(
+        _.map(
+          toAddLocations,
+          async l =>
+            // NB this would be faster if we checked if the user is already in that group.
+            await cognito
+              .adminAddUserToGroup({
+                UserPoolId: user_pool_id,
+                Username: username,
+                GroupName: l,
+              })
+              .promise()
+        )
       )
-    )
+    } catch (e) {
+      return bad(toAddLocations, 'Failed to add user to group')
+    }
+
     await Promise.all(
-      _.map(
-        toRemoveLocations,
-        async l =>
-          // NB this would be faster if we checked if the user is already in that group.
+      _.map(toRemoveLocations, async l => {
+        // NB this would be faster if we checked if the user is already in that group.
+        try {
           await cognito
             .adminRemoveUserFromGroup({
               UserPoolId: user_pool_id,
@@ -259,35 +263,14 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
               GroupName: l,
             })
             .promise()
-      )
+        } catch (e) {
+          // TODO Do we want this? Some locations may be removed, if we do this
+          // we'll be stuck.
+          //
+          // return bad(toRemoveLocations, 'Failed to remove user from group')
+        }
+      })
     )
-
-    // Update user status & enable/disable
-    if (user.status && existingUser.UserStatus !== user.status) {
-      if (
-        user.status === 'RESET_REQUIRED' ||
-        user.status === 'FORCE_CHANGE_PASSWORD'
-      ) {
-        await cognito
-          .adminResetUserPassword({
-            UserPoolId: user_pool_id,
-            Username: username,
-          })
-          .promise()
-      } else if (
-        existingUser.UserStatus === 'UNCONFIRMED' &&
-        user.status === 'CONFIRMED'
-      ) {
-        await cognito
-          .adminConfirmSignUp({ UserPoolId: user_pool_id, Username: username })
-          .promise()
-      } else {
-        return bad(
-          { from: existingUser.UserStatus, to: user.status },
-          'User status change invalid'
-        )
-      }
-    }
 
     if (existingUser.Enabled !== user.enabled) {
       if (user.enabled) {

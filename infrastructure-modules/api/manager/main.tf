@@ -28,6 +28,8 @@ resource "aws_api_gateway_rest_api" "manager" {
       lambda_uri_managerUpdateUserById        = aws_lambda_function.lambdas["managerUpdateUserById"].invoke_arn
       lambda_uri_managerGetUsers              = aws_lambda_function.lambdas["managerGetUsers"].invoke_arn
       lambda_uri_managerSignoutUserById       = aws_lambda_function.lambdas["managerSignoutUserById"].invoke_arn
+      lambda_uri_managerResetPasswordUserById = aws_lambda_function.lambdas["managerResetPasswordUserById"].invoke_arn
+      lambda_uri_managerConfirmEmailUserById  = aws_lambda_function.lambdas["managerConfirmEmailUserById"].invoke_arn
       lambda_uri_managerCreateLocation        = aws_lambda_function.lambdas["managerCreateLocation"].invoke_arn
       lambda_uri_managerGetLocationById       = aws_lambda_function.lambdas["managerGetLocationById"].invoke_arn
       lambda_uri_managerUpdateLocationById    = aws_lambda_function.lambdas["managerUpdateLocationById"].invoke_arn
@@ -48,6 +50,8 @@ resource "aws_api_gateway_deployment" "api" {
     aws_lambda_function.lambdas["managerUpdateUserById"],
     aws_lambda_function.lambdas["managerGetUsers"],
     aws_lambda_function.lambdas["managerSignoutUserById"],
+    aws_lambda_function.lambdas["managerResetPasswordUserById"],
+    aws_lambda_function.lambdas["managerConfirmEmailUserById"],
     aws_lambda_function.lambdas["managerCreateLocation"],
     aws_lambda_function.lambdas["managerGetLocationById"],
     aws_lambda_function.lambdas["managerUpdateLocationById"],
@@ -78,6 +82,8 @@ resource "aws_api_gateway_stage" "api" {
     aws_lambda_function.lambdas["managerGetUsers"],
     aws_lambda_function.lambdas["managerCreateLocation"],
     aws_lambda_function.lambdas["managerSignoutUserById"],
+    aws_lambda_function.lambdas["managerResetPasswordUserById"],
+    aws_lambda_function.lambdas["managerConfirmEmailUserById"],
     aws_lambda_function.lambdas["managerGetLocationById"],
     aws_lambda_function.lambdas["managerUpdateLocationById"],
     aws_lambda_function.lambdas["managerDeleteLocationById"],

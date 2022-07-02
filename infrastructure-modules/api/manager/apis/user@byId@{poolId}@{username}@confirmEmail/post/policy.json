@@ -1,0 +1,17 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Cognito",
+      "Effect": "Allow",
+      "Action": ["cognito-idp:AdminConfirmSignUp"],
+      "Resource": [
+        "${user_pool_provider_arn}",
+        "${user_pool_associate_arn}",
+        "${user_pool_manager_arn}",
+        "${user_pool_formdesigner_arn}",
+        "${user_pool_researcher_arn}"
+      ]
+    }
+  ]
+}

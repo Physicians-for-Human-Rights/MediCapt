@@ -42,102 +42,36 @@ security:
 schemes:
   - https
 paths:
-  /manager/location/byId/{locationId}:
-    get:
-      security:
-        - CognitoUserProvider: []
-      tags:
-        - Location
-      summary: Get a location by ID
-      operationId: managerGetLocationById
-      produces:
-        - application/json
-        - application/xml
-      parameters:
-        - name: locationId
-          in: path
-          description: ID of the location to return
-          required: true
-          type: string
-          format: uuid
-      responses:
-        200:
-          description: successful operation
-          schema:
-            $ref: '#/definitions/Location'
-        400:
-          description: Invalid ID supplied
-        404:
-          description: Location not found
-      x-amazon-apigateway-integration:
-        uri: ${lambda_uri_managerGetLocationById}
-        responses:
-          default:
-            statusCode: '200'
-        passthroughBehavior: 'NEVER'
-        httpMethod: 'POST'
-        type: 'aws_proxy'
+  /manager/user/byId/{poolId}/{username}/resetPassword:
     post:
       security:
         - CognitoUserProvider: []
       tags:
-        - Location
-      summary: Update an existing location
-      operationId: managerUpdateLocationById
+        - User
+      summary: Reset a user's password
+      operationId: managerResetPasswordUserById
       consumes:
         - application/x-www-form-urlencoded
       produces:
         - application/json
       parameters:
-        - name: locationId
+        - name: poolId
           in: path
-          description: ID of the location to return
+          description: The pool ID of this user
           required: true
           type: string
-          format: uuid
-        - in: body
-          name: body
-          description: Updated location
+        - name: username
+          in: path
+          description: ID of the user to return
           required: true
-          schema:
-            $ref: '#/definitions/Location'
+          type: string
       responses:
         404:
-          description: Location not found
+          description: User not found
         405:
           description: Validation exception
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_managerUpdateLocationById}
-        responses:
-          default:
-            statusCode: '200'
-        passthroughBehavior: 'NEVER'
-        httpMethod: 'POST'
-        type: 'aws_proxy'
-    delete:
-      security:
-        - CognitoUserProvider: []
-      tags:
-        - Location
-      summary: Deletes a location
-      operationId: managerDeleteLocationById
-      produces:
-        - application/json
-        - application/xml
-      parameters:
-        - name: locationId
-          in: path
-          description: ID of location to delete
-          required: true
-          type: string
-          format: uuid
-      responses:
-        404:
-          description: Record not found
-        405:
-          description: Record already sealed
-      x-amazon-apigateway-integration:
-        uri: ${lambda_uri_managerDeleteLocationById}
+        uri: ${lambda_uri_managerResetPasswordUserById}
         responses:
           default:
             statusCode: '200'
