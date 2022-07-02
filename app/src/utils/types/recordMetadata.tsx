@@ -35,7 +35,7 @@ export const recordMetadataSchemaByUser = z
     ),
     // This is controlled by the user only on initialization. After that, it is
     // ignored.
-    isAssociatedRecord: z.string().optional(),
+    isAssociatedRecord: z.boolean().optional(),
     // This is never used by any part of the system. It eists only to avoid race
     // conditions in record creation.
     userScopedLocalUUID: z.string().optional(),
