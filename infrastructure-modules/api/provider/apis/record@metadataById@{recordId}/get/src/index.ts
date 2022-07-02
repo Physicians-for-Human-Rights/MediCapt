@@ -38,7 +38,9 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       .promise()
     try {
       return good({
-        item: recordMetadataSchemaStrip.parse(DynamoDB.unmarshall(item.Item)),
+        metadata: recordMetadataSchemaStrip.parse(
+          DynamoDB.unmarshall(item.Item)
+        ),
       })
     } catch (e) {
       return bad([item, e], 'Got bad item')

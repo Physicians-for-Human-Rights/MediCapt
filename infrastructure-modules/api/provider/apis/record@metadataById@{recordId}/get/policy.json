@@ -5,6 +5,17 @@
       "Action": ["dynamodb:GetItem"],
       "Effect": "Allow",
       "Resource": "${record_table_arn}"
+    },
+    {
+      "Action": ["dynamodb:GetItem"],
+      "Effect": "Allow",
+      "Resource": "${record_table_arn}/*"
+    },
+    {
+      "Sid": "DKMS",
+      "Effect": "Allow",
+      "Action": ["kms:Decrypt"],
+      "Resource": ["${record_table_kms}"]
     }
   ]
 }

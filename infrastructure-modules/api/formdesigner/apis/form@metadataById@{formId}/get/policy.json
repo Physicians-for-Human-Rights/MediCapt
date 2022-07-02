@@ -5,6 +5,17 @@
       "Action": ["dynamodb:GetItem"],
       "Effect": "Allow",
       "Resource": "${form_table_arn}"
+    },
+    {
+      "Action": ["dynamodb:GetItem"],
+      "Effect": "Allow",
+      "Resource": "${form_table_arn}/*"
+    },
+    {
+      "Sid": "DynamoKMS",
+      "Effect": "Allow",
+      "Action": ["kms:Decrypt"],
+      "Resource": "${form_kms_key_bucket_arn}"
     }
   ]
 }
