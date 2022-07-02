@@ -6,8 +6,14 @@ import {
   RecordType,
   FlatRecord,
 } from 'utils/types/record'
+import { RecordMetadata } from 'utils/types/recordMetadata'
+import { RenderCommand } from 'utils/formRendering/types'
 
-export function mkTitle(title: string, key: string, color?: string) {
+export function mkTitle(
+  title: string,
+  key: string,
+  color?: string
+): RenderCommand[] {
   return [
     {
       type: 'title',
@@ -23,12 +29,47 @@ export function mkTitle(title: string, key: string, color?: string) {
   ]
 }
 
+export function mkRecordList(
+  title: string,
+  key: string,
+  recordList: RecordMetadata[],
+  selectRecord: (r: RecordMetadata) => any
+): RenderCommand[] {
+  return [
+    {
+      type: 'title',
+      title,
+      size: 'md',
+      valuePath: [],
+      key: key + 1,
+      disable: false,
+      recordValue: { type: 'text', value: '' },
+      recordSummary: undefined,
+    },
+    {
+      type: 'record-list',
+      valuePath: [],
+      key: key + 2,
+      disable: true,
+      list: recordList,
+      select: selectRecord,
+    },
+    {
+      type: 'divider',
+      thickness: 1,
+      valuePath: [],
+      key: key + 3,
+      disable: false,
+    },
+  ]
+}
+
 export function mkText(
   title: string,
   text: string,
   key: string,
   color?: string
-) {
+): RenderCommand[] {
   return [
     {
       type: 'title',
@@ -65,7 +106,7 @@ export function mkLongText(
   text: string,
   key: string,
   longLines: number
-) {
+): RenderCommand[] {
   return [
     {
       type: 'row-with-description',

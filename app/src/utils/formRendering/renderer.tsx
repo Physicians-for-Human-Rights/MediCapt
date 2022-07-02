@@ -36,6 +36,7 @@ import { unDataURI } from 'utils/data'
 import { tryConvertToWebP } from 'utils/imageConverter'
 import { wrapCommandMemo } from 'utils/memo'
 import { RecordMetadata } from 'utils/types/recordMetadata'
+import RecordListStaticComponent from 'components/RecordListStaticComponent'
 
 const CDebouncedTextInput = wrapCommandMemo(DebouncedTextInput)
 const CButtonGroup = wrapCommandMemo(ButtonGroup)
@@ -943,6 +944,13 @@ export function renderCommand(
             removeKeepAlive
           )}
         </VStack>
+      )
+    case 'record-list':
+      return (
+        <RecordListStaticComponent
+          records={command.list}
+          selectItem={command.select}
+        />
       )
     default:
       console.error('Unknown render command', command)

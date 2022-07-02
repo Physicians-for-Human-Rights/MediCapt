@@ -8,6 +8,7 @@ import {
   RecordValueByType,
   RecordValue,
 } from 'utils/types/record'
+import { RecordMetadata } from 'utils/types/recordMetadata'
 
 export type RenderCommand =
   // Commands that correspond to structural UI components
@@ -179,5 +180,10 @@ export type RenderCommand =
         maxW?: string
         color?: string
         recordSummary: 'patient-name' | undefined
+      }
+    | {
+        type: 'record-list'
+        list: RecordMetadata[]
+        select: (r: RecordMetadata) => any
       }
   ) & { valuePath: RecordValuePath; key: string; disable: boolean }
