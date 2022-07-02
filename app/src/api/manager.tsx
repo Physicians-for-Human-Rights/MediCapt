@@ -93,6 +93,46 @@ export async function updateUser(user: UserType) {
   }
 }
 
+export async function resetUserPassword(user: UserType) {
+  userSchemaByUser.parse(user)
+  await API.post(
+    'manager',
+    '/manager/user/byId/' +
+      user.userType +
+      '/' +
+      user.username +
+      '/resetPassword',
+    {
+      body: user,
+      headers: {
+        AcceptedVersions: JSON.stringify({
+          user: schemaVersions(userSchema),
+        }),
+      },
+    }
+  )
+}
+
+export async function confirmUserEmail(user: UserType) {
+  userSchemaByUser.parse(user)
+  await API.post(
+    'manager',
+    '/manager/user/byId/' +
+      user.userType +
+      '/' +
+      user.username +
+      '/confirmEmail',
+    {
+      body: user,
+      headers: {
+        AcceptedVersions: JSON.stringify({
+          user: schemaVersions(userSchema),
+        }),
+      },
+    }
+  )
+}
+
 export async function findUsers(
   pre: () => any,
   post: () => any,
