@@ -6,12 +6,14 @@ export type RootStackParamList = {
   Home: {}
   EditUser: {
     user?: UserType
+    setRefresh?: (d: Date) => any
   }
   FindUser: {
     setRefresh?: (d: Date) => any
   }
   EditLocation: {
     location?: LocationType
+    setRefresh?: (d: Date) => any
   }
   FindLocation: {
     onSelect?: (l: LocationType) => any
