@@ -58,9 +58,11 @@ export default function FormList({
     )
   }
 
+  const [refresh, setRefresh] = useState(new Date())
+
   useEffect(() => {
     doSearch()
-  }, [filterCountry, filterLanguage, filterEntityType, filterText])
+  }, [filterCountry, filterLanguage, filterEntityType, filterText, refresh])
 
   return (
     <DashboardLayout
@@ -86,7 +88,11 @@ export default function FormList({
             if (route.params && route.params.onSelect) {
               route.params.onSelect(location)
             } else
-              navigation.navigate('EditLocation', { ...route.params, location })
+              navigation.navigate('EditLocation', {
+                ...route.params,
+                setRefresh,
+                location,
+              })
           }}
         />
         <Loading loading={waiting} />

@@ -29,6 +29,7 @@ import { useInfo, handleStandardErrors } from 'utils/errors'
 import Loading from 'components/Loading'
 import { UserType, userSchema } from 'utils/types/user'
 import { findUsers } from 'api/manager'
+import { useFocusEffect } from '@react-navigation/native'
 
 export default function FormList({ route, navigation }: any) {
   const [users, setUsers] = useState([] as UserType[])
@@ -56,9 +57,17 @@ export default function FormList({ route, navigation }: any) {
     )
   }
 
+  const [refresh, setRefresh] = useState(new Date())
+
   useEffect(() => {
     doSearch()
-  }, [filterUserType, filterEnabledOrDisabled, filterLocation, filterText])
+  }, [
+    filterUserType,
+    filterEnabledOrDisabled,
+    filterLocation,
+    filterText,
+    refresh,
+  ])
 
   return (
     <DashboardLayout
@@ -86,6 +95,7 @@ export default function FormList({ route, navigation }: any) {
             navigation.navigate('EditUser', {
               ...route.params,
               user,
+              setRefresh,
             })
           }}
         />

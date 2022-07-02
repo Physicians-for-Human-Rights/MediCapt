@@ -36,11 +36,13 @@ export default function LocationEditor({
   location,
   setLocation,
   changed,
+  reloadPrevious,
 }: {
   files: Record<string, any>
   location: Partial<LocationType>
   setLocation: React.Dispatch<React.SetStateAction<Partial<LocationType>>>
   changed: boolean
+  reloadPrevious: React.MutableRefObject<boolean>
 }) {
   const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
@@ -53,13 +55,15 @@ export default function LocationEditor({
       standardReporters,
       'Creating location',
       'Location created',
-      async () =>
+      async () => {
         setLocation(
           await createLocation(
             //@ts-ignore We validate this before the call
             location
           )
         )
+        reloadPrevious.current = true
+      }
     )
 
   const submitLocation = (updatedLocation: Partial<LocationType>) =>
@@ -67,13 +71,15 @@ export default function LocationEditor({
       standardReporters,
       'Updating location',
       'Location updated',
-      async () =>
+      async () => {
         setLocation(
           await updateLocation(
             //@ts-ignore We validate this before the call
             updatedLocation
           )
         )
+        reloadPrevious.current = true
+      }
     )
 
   const handleDeleteLocation = () =>
@@ -86,6 +92,7 @@ export default function LocationEditor({
           //@ts-ignore We validate this before the call
           location
         )
+        reloadPrevious.current = true
       }
     )
 
@@ -95,6 +102,7 @@ export default function LocationEditor({
     const newLocation = { ...location, enabled: !location.enabled }
     setLocation(newLocation)
     submitLocation(newLocation)
+    reloadPrevious.current = true
   }
 
   return (

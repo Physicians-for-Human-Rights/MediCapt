@@ -80,12 +80,14 @@ export default function UserEditor({
   setUser,
   changed,
   navigation,
+  reloadPrevious,
 }: {
   files: Record<string, any>
   user: Partial<UserType>
   setUser: React.Dispatch<React.SetStateAction<Partial<UserType>>>
   changed: boolean
   navigation: StackNavigationProp<RootStackParamList, 'EditUser'>
+  reloadPrevious: React.MutableRefObject<boolean>
 }) {
   const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
@@ -105,6 +107,7 @@ export default function UserEditor({
         )
         sendImageLink(user, r.imageLink)
         setUser(r.user)
+        reloadPrevious.current = true
       }
     )
 
@@ -124,6 +127,7 @@ export default function UserEditor({
         )
         sendImageLink(updatedUser, r.imageLink)
         setUser(r.user)
+        reloadPrevious.current = true
       }
     )
 
@@ -155,29 +159,25 @@ export default function UserEditor({
     submitUser(newUser)
   }
 
-  const resetPassword = async () => {
-    setWaiting(t('user.password-resetting'))
-    try {
-      await resetUserPassword(user)
-      success('User password reset')
-    } catch (e) {
-      error('Failed to reset user password')
-    } finally {
-      setWaiting(null)
-    }
-  }
+  const resetPassword = async () =>
+    standardHandler(
+      standardReporters,
+      t('user.password-resetting'),
+      t('user.password-reset'),
+      async () => {
+        await resetUserPassword(user)
+      }
+    )
 
-  const confirmEmail = async () => {
-    setWaiting(t('Confirming user email'))
-    try {
-      await confirmUserEmail(user)
-      success('User email confirmed')
-    } catch (e) {
-      error('Failed to confirm user email')
-    } finally {
-      setWaiting(null)
-    }
-  }
+  const confirmEmail = async () =>
+    standardHandler(
+      standardReporters,
+      t('user.confirming-email'),
+      t('user.email-confirmed'),
+      async () => {
+        await confirmUserEmail(user)
+      }
+    )
 
   const editorAllowedLocationIDs = useUserLocationIDs()
 

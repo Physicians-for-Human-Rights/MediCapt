@@ -168,7 +168,35 @@ export function Sidebar(signOut: any) {
   )
 }
 
-export function Header(props: any) {
+export function Header({
+  title,
+  backButton,
+  navigation,
+  route,
+  signOut,
+  mobileMiddlebar,
+  showLogos,
+  reloadPrevious,
+  menuButton,
+  toggleSidebar,
+  displayHeaderTitle,
+  middlebar,
+  searchbar,
+}: {
+  title: string
+  backButton: boolean
+  navigation: any
+  route: any
+  signOut: () => any
+  mobileMiddlebar: JSX.Element | null
+  showLogos: boolean
+  reloadPrevious: React.RefObject<boolean> | undefined
+  menuButton: boolean
+  toggleSidebar: () => any
+  displayHeaderTitle: boolean
+  middlebar: JSX.Element | null
+  searchbar: boolean
+}) {
   return (
     <Box
       px="6"
@@ -183,15 +211,15 @@ export function Header(props: any) {
       <VStack
         alignSelf="center"
         width="100%"
-        maxW={props.menuButton ? null : '1016px'}
+        maxW={menuButton ? null : '1016px'}
       >
         <HStack alignItems="center" justifyContent="space-between">
           <HStack space="4" alignItems="center">
-            {props.menuButton && (
+            {menuButton && (
               <IconButton
                 variant="ghost"
                 colorScheme="light"
-                onPress={props.toggleSidebar}
+                onPress={toggleSidebar}
                 icon={
                   <Icon
                     size="6"
@@ -202,10 +230,18 @@ export function Header(props: any) {
                 }
               />
             )}
-            {props.backButton ? (
+            {backButton ? (
               <IconButton
                 onPress={() => {
-                  props.navigation.goBack()
+                  if (
+                    route &&
+                    'params' in route &&
+                    'setRefresh' in route.params &&
+                    (reloadPrevious === undefined || reloadPrevious.current)
+                  ) {
+                    route.params.setRefresh(new Date())
+                  }
+                  navigation.goBack()
                 }}
                 icon={
                   <Icon
@@ -229,14 +265,14 @@ export function Header(props: any) {
                 source={medicapt_logo}
               />
             </Pressable>
-            {props.displayHeaderTitle && (
+            {displayHeaderTitle && (
               <Text fontSize="3xl" color="coolGray.500" fontWeight={300}>
-                {props.title}
+                {title}
               </Text>
             )}
           </HStack>
 
-          {props.searchbar && (
+          {searchbar && (
             <Input
               px="4"
               w="30%"
@@ -256,7 +292,7 @@ export function Header(props: any) {
             />
           )}
 
-          {props.middlebar}
+          {middlebar}
 
           <HStack space="2" alignItems="center">
             <IconButton
@@ -295,7 +331,7 @@ export function Header(props: any) {
               <Divider mt="3" w="100%" />
               <Menu.Group title="Shortcuts">
                 <Menu.Item>Lock</Menu.Item>
-                <Menu.Item onPress={props.signOut}>Log out</Menu.Item>
+                <Menu.Item onPress={signOut}>Log out</Menu.Item>
               </Menu.Group>
             </Menu>
           </HStack>
@@ -345,16 +381,20 @@ export function MobileHeader({
   title,
   backButton,
   navigation,
+  route,
   signOut,
   mobileMiddlebar,
   showLogos,
+  reloadPrevious,
 }: {
   title: string
   backButton: boolean
   navigation: any
+  route: any
   signOut: () => any
   mobileMiddlebar: JSX.Element | null
   showLogos: boolean
+  reloadPrevious: React.RefObject<boolean> | undefined
 }) {
   return (
     <Box
@@ -379,7 +419,17 @@ export function MobileHeader({
                 <IconButton
                   variant="ghost"
                   colorScheme="light"
-                  onPress={() => navigation.goBack()}
+                  onPress={() => {
+                    if (
+                      route &&
+                      'params' in route &&
+                      'setRefresh' in route.params &&
+                      (reloadPrevious === undefined || reloadPrevious.current)
+                    ) {
+                      route.params.setRefresh(new Date())
+                    }
+                    navigation.goBack()
+                  }}
                   icon={
                     <Icon
                       size="6"
@@ -469,6 +519,7 @@ export function MobileHeader({
 
 export default function DashboardLayout({
   navigation,
+  route,
   children,
   title,
   scrollable = true,
@@ -482,8 +533,10 @@ export default function DashboardLayout({
   mobileMiddlebar = null,
   fullWidth = false,
   showLogos = false,
+  reloadPrevious,
 }: {
   navigation: any
+  route?: any
   children: JSX.Element
   title: string
   scrollable?: boolean
@@ -497,6 +550,7 @@ export default function DashboardLayout({
   mobileMiddlebar?: JSX.Element | null
   fullWidth?: boolean
   showLogos?: boolean
+  reloadPrevious?: React.RefObject<boolean>
 }) {
   const [signOut] = useSignOut()
   const [isSidebarVisible, setIsSidebarVisible] = React.useState(true)
@@ -521,6 +575,8 @@ export default function DashboardLayout({
               mobileMiddlebar={mobileMiddlebar}
               signOut={signOut}
               showLogos={showLogos}
+              route={route}
+              reloadPrevious={reloadPrevious}
             />
           </Hidden>
         )}
@@ -536,6 +592,10 @@ export default function DashboardLayout({
               backButton={backButton}
               navigation={navigation}
               signOut={signOut}
+              route={route}
+              reloadPrevious={reloadPrevious}
+              mobileMiddlebar={mobileMiddlebar}
+              showLogos={showLogos}
             />
           </Hidden>
         )}

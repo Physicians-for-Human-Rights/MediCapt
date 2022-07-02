@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import {
   Box,
   HStack,
@@ -65,6 +65,7 @@ export default function EditUser({
       reset: resetFiles,
     },
   ] = useMap({} as Record<string, string>)
+  const reloadPrevious = useRef(false)
 
   return (
     <DashboardLayout
@@ -76,6 +77,8 @@ export default function EditUser({
       middlebar={<></>}
       mobileMiddlebar={<></>}
       fullWidth={false}
+      route={route}
+      reloadPrevious={reloadPrevious}
     >
       <VStack
         safeAreaBottom
@@ -94,6 +97,7 @@ export default function EditUser({
           setUser={setUser}
           changed={_.isEqual(lastSubmitted, location)}
           navigation={navigation}
+          reloadPrevious={reloadPrevious}
         />
       </VStack>
     </DashboardLayout>

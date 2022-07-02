@@ -73,6 +73,8 @@ export default {
     'reset-password': 'Reset password',
     'password-reset': 'User password reset',
     'password-resetting': 'Resetting password',
+    'email-confirmed': 'User email confirmed',
+    'confirming-email': 'User email confirming',
     official_id_type: 'Official ID type',
     official_id_code: 'Official ID code',
     official_id_expires: 'ID expiration date',
