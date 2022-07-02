@@ -13,6 +13,8 @@ export type RootStackParamList = {
     | {
         formMetadata: FormMetadata
         displayPageAfterOverview?: boolean
+        isAssociatedRecord?: boolean
+        addAssociatedRecord?: (r: RecordMetadata) => any
       }
     | {
         recordMetadata: RecordMetadata

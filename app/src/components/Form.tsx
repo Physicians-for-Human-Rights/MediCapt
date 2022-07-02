@@ -40,7 +40,12 @@ import { getUserByUUIDCached } from 'api/common'
 import { userFullName } from 'utils/userTypes'
 import { UserType } from 'utils/types/user'
 import FormButtons from 'components/FormButtons'
-import { mkTitle, mkText, mkLongText } from 'utils/formRendering/make'
+import {
+  mkTitle,
+  mkText,
+  mkLongText,
+  mkRecordList,
+} from 'utils/formRendering/make'
 import { RenderCommand } from 'utils/formRendering/types'
 import confirmationDialog from 'utils/confirmationDialog'
 
@@ -62,7 +67,9 @@ function recordOverviewPage(
   recordMetadataRef: React.MutableRefObject<RecordMetadata | undefined>,
   formMetadata: FormMetadata,
   users: Record<string, Partial<UserType>>,
-  isSealed: boolean
+  isSealed: boolean,
+  associatedRecords: RecordMetadata[],
+  selectAssociatedRecord: (r: RecordMetadata) => any
 ): RenderCommand[] {
   return _.concat(
     isSealed
@@ -87,6 +94,14 @@ function recordOverviewPage(
               : 'N/A',
             'sldate'
           )
+        )
+      : [],
+    _.isArray(associatedRecords) && associatedRecords.length > 0
+      ? mkRecordList(
+          'Associated records',
+          'artitle',
+          associatedRecords,
+          selectAssociatedRecord
         )
       : [],
     mkTitle(t('record.overview.titles.patient'), 'ptitle'),
@@ -248,6 +263,8 @@ export default function Form({
   onAddRecord,
   onPrint,
   changed,
+  associatedRecords = [],
+  selectAssociatedRecord = () => null,
 }: {
   formMetadata: FormMetadata
   formManifest: FormManifestWithData
@@ -270,6 +287,8 @@ export default function Form({
   onAddRecord?: () => any
   onPrint?: () => any
   changed: boolean
+  associatedRecords?: RecordMetadata[]
+  selectAssociatedRecord?: (r: RecordMetadata) => any
 }) {
   const isSealed =
     (recordMetadataRef.current && recordMetadataRef.current.sealed) || false
@@ -411,7 +430,9 @@ export default function Form({
                 recordMetadataRef,
                 formMetadata,
                 users,
-                isSealed
+                isSealed,
+                associatedRecords,
+                selectAssociatedRecord
               )
             : allFormRenderCommands(
                 formSections[currentSection],
@@ -556,6 +577,7 @@ export default function Form({
                     ? formMetadata.associatedForms.length > 0
                     : false
                 }
+                topSpace="0.5"
               />
             ) : (
               <></>

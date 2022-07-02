@@ -29,6 +29,7 @@ export default function FormButtons({
   changed,
   isSealed,
   hasAssociatedForms,
+  topSpace = '3',
 }: {
   isSectionCompleteList: boolean[]
   onExit: () => any
@@ -41,6 +42,7 @@ export default function FormButtons({
   changed: boolean
   isSealed: boolean
   hasAssociatedForms: boolean
+  topSpace?: string
 }) {
   const stackDirection = useBreakpointValue({
     base: 'column',
@@ -48,44 +50,9 @@ export default function FormButtons({
   })
   return (
     <VStack>
-      {!changed && onAddRecord && onUpgrade ? (
-        <Stack
-          pt="3"
-          direction={stackDirection}
-          space="2"
-          justifyContent="center"
-          bg="white"
-          key="header1"
-        >
-          <Tooltip label={t('record.buttons.tooltip-associated-form')}>
-            <Button
-              bg={hasAssociatedForms ? 'info.500' : 'muted.200'}
-              leftIcon={<Icon as={Feather} name="plus-square" size="sm" />}
-              onPress={onAddRecord}
-              _text={{ selectable: false }}
-              disabled={!hasAssociatedForms}
-            >
-              {hasAssociatedForms
-                ? t('record.buttons.fill-associated-form')
-                : t('record.buttons.no-associated-form')}
-            </Button>
-          </Tooltip>
-          {!isSealed && (
-            <Button
-              leftIcon={<Icon as={Feather} name="alert-triangle" size="sm" />}
-              bg="error.500"
-              onPress={onUpgrade}
-              _text={{ selectable: false }}
-            >
-              {t('record.buttons.upgrade-form')}
-            </Button>
-          )}
-        </Stack>
-      ) : (
-        <></>
-      )}
       <Stack
-        py="3"
+        pt={topSpace}
+        pb="3"
         direction={stackDirection}
         space="2"
         justifyContent="center"
@@ -156,6 +123,40 @@ export default function FormButtons({
           </HStack>
         )}
       </Stack>
+      {!changed && onAddRecord && onUpgrade ? (
+        <Stack
+          pb="3"
+          direction={stackDirection}
+          space="2"
+          justifyContent="center"
+          bg="white"
+          key="header1"
+        >
+          <Button
+            bg={hasAssociatedForms ? 'info.500' : 'muted.200'}
+            leftIcon={<Icon as={Feather} name="plus-square" size="sm" />}
+            onPress={onAddRecord}
+            _text={{ selectable: false }}
+            disabled={!hasAssociatedForms}
+          >
+            {hasAssociatedForms
+              ? t('record.buttons.fill-associated-form')
+              : t('record.buttons.no-associated-form')}
+          </Button>
+          {!isSealed && (
+            <Button
+              leftIcon={<Icon as={Feather} name="alert-triangle" size="sm" />}
+              bg="error.500"
+              onPress={onUpgrade}
+              _text={{ selectable: false }}
+            >
+              {t('record.buttons.upgrade-form')}
+            </Button>
+          )}
+        </Stack>
+      ) : (
+        <></>
+      )}
     </VStack>
   )
 }

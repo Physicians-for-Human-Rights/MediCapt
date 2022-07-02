@@ -29,6 +29,7 @@ import {
   getRecordManifestContents,
   updateRecord,
   sealRecord,
+  getRecordMetadata,
 } from '../../utils/localStore/store'
 import { RecordType } from 'utils/types/record'
 import {
@@ -41,31 +42,10 @@ import uuid from 'react-native-uuid'
 import useLeave from 'utils/useLeave'
 import confirmationDialog from 'utils/confirmationDialog'
 import { t } from 'i18n-js'
+import FormListStaticCompact from 'components/FormListStaticCompact'
+import RecordListStaticComponent from 'components/RecordListStaticComponent'
 
 const FormMemo = React.memo(Form)
-
-const showForm = (f: FormMetadata | null | undefined) => {
-  if (f) {
-    return (
-      <Pressable
-        bg={'muted.200'}
-        _hover={{ bg: 'muted.300' }}
-        rounded="8"
-        my={2}
-        p={2}
-        key={f.formUUID}
-      >
-        <Center>
-          <VStack m={1} borderRadius="md" my="2" space={0}>
-            <Text fontWeight="bold">{f.title}</Text>
-            <Text>{f.subtitle}</Text>
-          </VStack>
-        </Center>
-      </Pressable>
-    )
-  } else {
-  }
-}
 
 export default function RecordEditor({
   route,
@@ -101,6 +81,7 @@ export default function RecordEditor({
           manifestMD5: '',
           associatedRecords: [],
           userScopedLocalUUID: uuid.v4() as string,
+          isAssociatedRecord: route.params.isAssociatedRecord,
         }
   )
   const [formManifest, setFormManifest] = useState(
@@ -114,6 +95,10 @@ export default function RecordEditor({
       root: '',
       metadata: {},
     } as RecordManifestWithData
+  )
+  const [associatedForms, setAssociatedForms] = useState([] as FormMetadata[])
+  const [associatedRecords, setAssociatedrecords] = useState(
+    [] as RecordMetadata[]
   )
 
   // This is how we keep track of whether the form has been changed.
@@ -144,7 +129,7 @@ export default function RecordEditor({
     () => {}
   )
 
-  // Load record and associated form on startup
+  // Load the form and record on startup
   useEffect(() => {
     const fetchData = async () => {
       setWaiting('Loading')
@@ -158,13 +143,25 @@ export default function RecordEditor({
           const contentsWithData = await getRecordManifestContents(
             recordResponse.manifest.contents
           )
+          const newRecordMetadata = recordResponse.metadata
           if (!_.isEqual(recordMetadata, recordResponse.metadata))
-            setRecordMetadata(recordResponse.metadata)
+            setRecordMetadata(newRecordMetadata)
           setRecordManifest({
             'storage-version': '1.0.0',
             root: recordResponse.manifest.root,
             contents: contentsWithData,
           })
+          // Load up associated records
+          const l = [] as RecordMetadata[]
+          if (newRecordMetadata && newRecordMetadata.associatedRecords) {
+            for (const r of newRecordMetadata.associatedRecords || []) {
+              const recordResponse = await getRecordMetadata(r.recordUUID)
+              if (recordResponse) {
+                l.push(recordResponse)
+              }
+            }
+          }
+          setAssociatedrecords(l)
         }
         // The input record overrides any form information that may have been provided.
         const formUUID =
@@ -187,8 +184,19 @@ export default function RecordEditor({
             root: formResponse.manifest.root,
             contents: contentsWithData,
           })
+          // Load the associated form metadata
+          const l = [] as FormMetadata[]
+          if (formResponse.metadata) {
+            for (const f of formResponse.metadata.associatedForms || []) {
+              const formResponse = await getForm(f.formUUID)
+              if (formResponse) {
+                l.push(formResponse.metadata)
+              }
+            }
+          }
+          setAssociatedForms(l)
         } else {
-          throw Error('TODO Missing form!')
+          throw Error('Missing form')
         }
       } catch (e) {
         handleStandardErrors(error, warning, success, e)
@@ -246,9 +254,17 @@ export default function RecordEditor({
             recordManifest,
             record
           )
-          setRecordMetadata(
-            await updateRecord(oldRecordMetadata, updatedRecordManifest)
+          const newMetadata = await updateRecord(
+            oldRecordMetadata,
+            updatedRecordManifest
           )
+          setRecordMetadata(newMetadata)
+          // Add yourself to your parent record, if one exists
+          if (
+            'addAssociatedRecord' in route.params &&
+            route.params.addAssociatedRecord
+          )
+            route.params.addAssociatedRecord(newMetadata)
           setChanged(false)
           if (after) after()
         } catch (e) {
@@ -391,6 +407,14 @@ export default function RecordEditor({
               onAddRecord={onAddRecord}
               onPrint={onPrintRecord}
               changed={changed}
+              associatedRecords={associatedRecords}
+              selectAssociatedRecord={r => {
+                const { formMetadata, ...newParams } = route.params
+                navigation.push('RecordEditor', {
+                  ...newParams,
+                  recordMetadata: r,
+                })
+              }}
             />
           )}
         </VStack>
@@ -405,12 +429,37 @@ export default function RecordEditor({
               {t('record.overview.select-associated-record-to-add')}
             </Modal.Header>
             <Modal.Body>
-              <VStack space={5}>
-                {_.map(
-                  (formMetadata && formMetadata.associatedForms) || [],
-                  showForm
-                )}
-              </VStack>
+              <FormListStaticCompact
+                forms={associatedForms}
+                selectItem={e => {
+                  setIsAssociatedModalOpen(false)
+                  const { recordMetadata, ...newParams } = route.params
+                  navigation.push('RecordEditor', {
+                    ...newParams,
+                    formMetadata: e,
+                    displayPageAfterOverview: true,
+                    isAssociatedRecord: true,
+                    addAssociatedRecord: async r => {
+                      const newMetadata: RecordMetadata = {
+                        ...recordMetadataRef.current,
+                        associatedRecords: _.concat(
+                          recordMetadataRef.current.associatedRecords,
+                          [
+                            {
+                              recordUUID: r.recordUUID,
+                              recordID: r.recordID,
+                            },
+                          ]
+                        ),
+                      }
+                      setRecordMetadata(
+                        await updateRecord(newMetadata, recordManifest)
+                      )
+                      setAssociatedrecords(l => _.concat(l, [r]))
+                    },
+                  })
+                }}
+              />
             </Modal.Body>
             <Modal.Footer>
               <Button.Group space={2}>
