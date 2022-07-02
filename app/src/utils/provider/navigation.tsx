@@ -6,6 +6,7 @@ export type RootStackParamList = {
   Home: {}
   FindRecord: {
     onlyUserRecords?: boolean
+    setRefresh?: (d: Date) => any
   }
   FindForm: {}
   YourRecords: {}
@@ -18,6 +19,7 @@ export type RootStackParamList = {
       }
     | {
         recordMetadata: RecordMetadata
+        setRefresh?: (d: Date) => any
       }
   Sharing: {}
   Settings: {}

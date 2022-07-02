@@ -265,6 +265,7 @@ export default function Form({
   changed,
   associatedRecords = [],
   selectAssociatedRecord = () => null,
+  reloadPrevious,
 }: {
   formMetadata: FormMetadata
   formManifest: FormManifestWithData
@@ -289,6 +290,7 @@ export default function Form({
   changed: boolean
   associatedRecords?: RecordMetadata[]
   selectAssociatedRecord?: (r: RecordMetadata) => any
+  reloadPrevious: React.MutableRefObject<boolean>
 }) {
   const isSealed =
     (recordMetadataRef.current && recordMetadataRef.current.sealed) || false
@@ -342,15 +344,15 @@ export default function Form({
       )
     : []
 
-  const onSaveAndExitRecord = useCallback(
-    () => onSaveAndExit(flatRecordToRecordType(flatRecord)),
-    [onSaveAndExit, flatRecord]
-  )
+  const onSaveAndExitRecord = useCallback(() => {
+    onSaveAndExit(flatRecordToRecordType(flatRecord))
+    reloadPrevious.current = true
+  }, [onSaveAndExit, flatRecord])
 
-  const onSaveRecord = useCallback(
-    () => onSave(flatRecordToRecordType(flatRecord)),
-    [onSaveAndExit, flatRecord]
-  )
+  const onSaveRecord = useCallback(() => {
+    onSave(flatRecordToRecordType(flatRecord))
+    reloadPrevious.current = true
+  }, [onSaveAndExit, flatRecord])
 
   const onCompleteRecord = useCallback(() => {
     confirmationDialog(
@@ -360,6 +362,7 @@ export default function Form({
         : t('record.overview.seal-incomplete-warning'),
       async () => {
         onComplete(flatRecordToRecordType(flatRecord))
+        reloadPrevious.current = true
       },
       () => 0
     )

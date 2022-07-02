@@ -47,9 +47,11 @@ export default function RecordList({
     setWaiting(null)
   }
 
+  const [refresh, setRefresh] = useState(new Date())
+
   useEffect(() => {
     doSearch()
-  }, [filterLocationID, filterSearchType, filterText])
+  }, [filterLocationID, filterSearchType, filterText, refresh])
 
   return (
     <DashboardLayout
@@ -74,6 +76,7 @@ export default function RecordList({
             navigation.navigate('RecordEditor', {
               ...route.params,
               recordMetadata,
+              setRefresh,
             })
           }}
           filter={filterAssociatedOut}

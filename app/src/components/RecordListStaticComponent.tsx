@@ -245,8 +245,6 @@ export default function RecordListStaticComponent({
     usersFn()
   }, [records])
 
-  console.log('RLSC', records)
-
   return (
     <VStack
       px={{ base: 4, md: 8 }}

@@ -29,6 +29,7 @@ import _ from 'lodash'
 
 import medicapt_logo from '../../assets/medicapt.png'
 import phr_logo from '../../assets/phr_small.png'
+import { goBackMaybeRefreshing } from 'utils/navigation'
 
 export function Sidebar(signOut: any) {
   const list = [
@@ -232,17 +233,9 @@ export function Header({
             )}
             {backButton ? (
               <IconButton
-                onPress={() => {
-                  if (
-                    route &&
-                    'params' in route &&
-                    'setRefresh' in route.params &&
-                    (reloadPrevious === undefined || reloadPrevious.current)
-                  ) {
-                    route.params.setRefresh(new Date())
-                  }
-                  navigation.goBack()
-                }}
+                onPress={() =>
+                  goBackMaybeRefreshing(route, navigation, reloadPrevious)
+                }
                 icon={
                   <Icon
                     size="6"
@@ -419,17 +412,9 @@ export function MobileHeader({
                 <IconButton
                   variant="ghost"
                   colorScheme="light"
-                  onPress={() => {
-                    if (
-                      route &&
-                      'params' in route &&
-                      'setRefresh' in route.params &&
-                      (reloadPrevious === undefined || reloadPrevious.current)
-                    ) {
-                      route.params.setRefresh(new Date())
-                    }
-                    navigation.goBack()
-                  }}
+                  onPress={() =>
+                    goBackMaybeRefreshing(route, navigation, reloadPrevious)
+                  }
                   icon={
                     <Icon
                       size="6"

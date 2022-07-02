@@ -44,6 +44,7 @@ import confirmationDialog from 'utils/confirmationDialog'
 import { t } from 'i18n-js'
 import FormListStaticCompact from 'components/FormListStaticCompact'
 import RecordListStaticComponent from 'components/RecordListStaticComponent'
+import { goBackMaybeRefreshing } from 'utils/navigation'
 
 const FormMemo = React.memo(Form)
 
@@ -55,6 +56,8 @@ export default function RecordEditor({
   const [waiting, setWaiting] = useState('Loading' as null | string)
   const [error, warning, success] = useInfo()
   const [isAssociatedModalOpen, setIsAssociatedModalOpen] = useState(false)
+
+  const reloadPrevious = useRef(false)
 
   // Either formMetadata or recordMetadata passed to the RecordEditor as route params
   const [formMetadata, setFormMetadata] = useState(
@@ -274,6 +277,7 @@ export default function RecordEditor({
         }
       }
       setWaiting('Loading')
+      reloadPrevious.current = true
       handleSave()
     },
     [formMetadata, recordMetadata, recordManifest]
@@ -281,8 +285,12 @@ export default function RecordEditor({
 
   const onSaveAndExit = useCallback(
     (record: RecordType) => {
-      if (changed) onSave(record, () => navigation.goBack())
-      else navigation.goBack()
+      reloadPrevious.current = true
+      if (changed)
+        onSave(record, () => {
+          goBackMaybeRefreshing(route, navigation, reloadPrevious)
+        })
+      else goBackMaybeRefreshing(route, navigation, reloadPrevious)
     },
     [onSave, changed]
   )
@@ -298,6 +306,7 @@ export default function RecordEditor({
       'Records keep the form version they were created at. Sometimes, forms can have important changes or fixes you want to use. You can upgrade the record in that case. This should be done rarely and only for a clear reason. If the form is incorrectly changed, this can lead to data loss! After upgrading you must reopen the record.',
       async () => {
         try {
+          reloadPrevious.current = true
           setWaiting('Upgrading')
           const formResponse = await getForm(recordMetadata.formUUID)
           if (!formResponse) {
@@ -320,7 +329,7 @@ export default function RecordEditor({
             formVersion: formResponse.metadata.version,
           }
           await updateRecord(newMetadata, recordManifest)
-          navigation.goBack()
+          goBackMaybeRefreshing(route, navigation, reloadPrevious)
         } catch (e) {
           error('Failed to upgrade the form version')
         } finally {
@@ -336,6 +345,7 @@ export default function RecordEditor({
       const handleComplete = async () => {
         try {
           // Seal updated record
+          reloadPrevious.current = true
           setRecordMetadata(await sealRecord(recordMetadata))
         } catch (e) {
           handleStandardErrors(error, warning, success, e)
@@ -369,6 +379,8 @@ export default function RecordEditor({
       title="Fill out a record"
       displayHeader={false}
       fullWidth={true}
+      route={route}
+      reloadPrevious={reloadPrevious}
     >
       <>
         <VStack
@@ -392,7 +404,7 @@ export default function RecordEditor({
               addPhotoToManifest={addPhotoToManifest}
               removePhotoFromManifest={removePhotoFromManifest}
               onExit={() => {
-                navigation.goBack()
+                goBackMaybeRefreshing(route, navigation, reloadPrevious)
               }}
               onSave={onSave}
               onSaveAndExit={onSaveAndExit}
@@ -415,6 +427,7 @@ export default function RecordEditor({
                   recordMetadata: r,
                 })
               }}
+              reloadPrevious={reloadPrevious}
             />
           )}
         </VStack>
@@ -452,6 +465,7 @@ export default function RecordEditor({
                           ]
                         ),
                       }
+                      reloadPrevious.current = true
                       setRecordMetadata(
                         await updateRecord(newMetadata, recordManifest)
                       )
