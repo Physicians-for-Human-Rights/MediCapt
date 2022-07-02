@@ -222,7 +222,7 @@ export default function LocationEditor({
           />
           <View w="45%">
             <NecessaryItem
-              isDone={false}
+              isDone={location.enabled || false}
               todoText="Location is disabled"
               doneText="Location is enabled"
               size={4}
@@ -297,12 +297,15 @@ export default function LocationEditor({
             >
               {t('location.submit-location')}
             </Button>
-            <Button
-              leftIcon={<Icon as={MaterialIcons} name="delete" size="sm" />}
-              onPress={handleDeleteLocation}
-            >
-              {t('location.delete-location')}
-            </Button>
+            {false && (
+              // TODO We don't allow location deletion anymore
+              <Button
+                leftIcon={<Icon as={MaterialIcons} name="delete" size="sm" />}
+                onPress={handleDeleteLocation}
+              >
+                {t('location.delete-location')}
+              </Button>
+            )}
             <Tooltip openDelay={0} label="Submit first" isDisabled={!changed}>
               <Button
                 leftIcon={

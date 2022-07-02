@@ -11,7 +11,9 @@ export type RootStackParamList = {
   EditLocation: {
     location?: LocationType
   }
-  FindLocation: {}
+  FindLocation: {
+    onSelect?: (l: LocationType) => any
+  }
   Settings: {}
   Training: {}
 }

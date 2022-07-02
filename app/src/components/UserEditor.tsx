@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import {
+  Badge,
   HStack,
   VStack,
   Button,
@@ -12,6 +13,8 @@ import {
   Popover,
   Center,
   Heading,
+  Text,
+  Modal,
 } from 'native-base'
 import { userTypes, UserType } from 'utils/types/user'
 import FloatingLabelInput from 'components/FloatingLabelInput'
@@ -29,11 +32,27 @@ import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import Loading from 'components/Loading'
 import { useInfo } from 'utils/errors'
-import { createUser, updateUser } from 'api/manager'
+import {
+  createUser,
+  updateUser,
+  resetUserPassword,
+  confirmUserEmail,
+} from 'api/manager'
 import { standardHandler } from 'api/utils'
 import Photo from 'components/form-parts/Photo'
 import DateTimePicker from 'components/DateTimePicker'
 import { dataURItoBlob } from 'utils/data'
+import { splitLocations } from 'utils/types/user'
+import { useUserLocationIDs } from 'utils/store'
+import { useDeepCompareEffect } from 'react-use'
+import { getLocationCached } from 'api/common'
+import { LocationType } from 'utils/types/location'
+import LocationListStatic from 'components/LocationListStatic'
+import {
+  RootStackScreenProps,
+  RootStackParamList,
+} from 'utils/manager/navigation'
+import { StackNavigationProp } from '@react-navigation/stack'
 
 const dummyDate = new Date()
 
@@ -60,11 +79,13 @@ export default function UserEditor({
   user,
   setUser,
   changed,
+  navigation,
 }: {
   files: Record<string, any>
   user: Partial<UserType>
   setUser: React.Dispatch<React.SetStateAction<Partial<UserType>>>
   changed: boolean
+  navigation: StackNavigationProp<RootStackParamList, 'EditUser'>
 }) {
   const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
@@ -106,6 +127,26 @@ export default function UserEditor({
       }
     )
 
+  const [locations, setLocations] = useState({} as Record<string, LocationType>)
+  useDeepCompareEffect(() => {
+    async function fn() {
+      try {
+        const l = {} as Record<string, LocationType>
+        for (const lID of splitLocations(user.allowed_locations)) {
+          if (lID === 'admin') continue
+          const r = await getLocationCached(lID, () => null)
+          if (r) l[lID] = r
+        }
+        setLocations(l)
+      } catch (e) {
+        error('Failed to locations')
+      } finally {
+        setWaiting(null)
+      }
+    }
+    fn()
+  }, [splitLocations(user.allowed_locations)])
+
   const handleSubmitUser = () => submitUser(user)
 
   const toggleUser = () => {
@@ -114,11 +155,31 @@ export default function UserEditor({
     submitUser(newUser)
   }
 
-  const resetPassword = () => {
-    const newUser = { ...user, status: 'FORCE_CHANGE_PASSWORD' }
-    setUser(newUser)
-    submitUser(newUser, t('user.password-resetting'), t('user.password-reset'))
+  const resetPassword = async () => {
+    setWaiting(t('user.password-resetting'))
+    try {
+      await resetUserPassword(user)
+      success('User password reset')
+    } catch (e) {
+      error('Failed to reset user password')
+    } finally {
+      setWaiting(null)
+    }
   }
+
+  const confirmEmail = async () => {
+    setWaiting(t('Confirming user email'))
+    try {
+      await confirmUserEmail(user)
+      success('User email confirmed')
+    } catch (e) {
+      error('Failed to confirm user email')
+    } finally {
+      setWaiting(null)
+    }
+  }
+
+  const editorAllowedLocationIDs = useUserLocationIDs()
 
   return (
     <>
@@ -174,16 +235,120 @@ export default function UserEditor({
             />
           )}
         </HStack>
-        <FloatingLabelInput
-          label={
-            t('user.allowed-locations') +
-            ' (' +
-            t('common.space-separated-location-ids') +
-            ')'
-          }
-          value={user.allowed_locations}
-          setValue={v => setUser({ ...user, allowed_locations: v })}
-        />
+        {user.userType === 'Manager' && (
+          <Center>
+            <HStack py={2} space={5}>
+              {_.includes(user.allowed_locations, 'admin') && (
+                <Badge
+                  colorScheme="red"
+                  _text={{
+                    fontSize: 16,
+                  }}
+                  alignSelf="center"
+                  variant="subtle"
+                  mt={-1}
+                >
+                  User is an administrator
+                </Badge>
+              )}
+              {_.includes(editorAllowedLocationIDs, 'admin') &&
+                (_.includes(user.allowed_locations, 'admin') ? (
+                  <Button
+                    leftIcon={
+                      <Icon as={Feather} name="alert-triangle" size="sm" />
+                    }
+                    bg="warning.500"
+                    onPress={() =>
+                      setUser(u => {
+                        return { ...u, allowed_locations: '' }
+                      })
+                    }
+                    _text={{ selectable: false }}
+                    mb={2}
+                  >
+                    Revoke admin permissions
+                  </Button>
+                ) : (
+                  <Button
+                    leftIcon={
+                      <Icon as={Feather} name="alert-triangle" size="sm" />
+                    }
+                    bg="error.500"
+                    onPress={() =>
+                      setUser(u => {
+                        return { ...u, allowed_locations: '' }
+                      })
+                    }
+                    _text={{ selectable: false }}
+                    mb={2}
+                  >
+                    Make user an admin
+                  </Button>
+                ))}
+            </HStack>
+          </Center>
+        )}
+        {!_.includes(user.allowed_locations, 'admin') && (
+          <VStack py={2}>
+            <Center pb={2}>
+              <Button
+                bg={'info.500'}
+                leftIcon={<Icon as={Feather} name="plus-square" size="sm" />}
+                onPress={() => {
+                  navigation.push('FindLocation', {
+                    onSelect: async l => {
+                      setUser(u => {
+                        return {
+                          ...u,
+                          allowed_locations: _.join(
+                            _.uniq(
+                              _.concat(splitLocations(user.allowed_locations), [
+                                l.locationUUID,
+                              ])
+                            ),
+                            ' '
+                          ),
+                        }
+                      })
+                      navigation.goBack()
+                    },
+                  })
+                }}
+                _text={{ selectable: false }}
+              >
+                Add allowed location
+              </Button>
+            </Center>
+            {splitLocations(user.allowed_locations) !== ['admin'] &&
+            !_.isEmpty(splitLocations(user.allowed_locations)) ? (
+              <LocationListStatic
+                locations={_.map(splitLocations(user.allowed_locations), l =>
+                  l in locations ? locations[l] : l
+                )}
+                selectItem={l => {
+                  setUser(u => {
+                    return {
+                      ...u,
+                      allowed_locations: _.join(
+                        _.without(
+                          splitLocations(user.allowed_locations),
+                          l.locationUUID
+                        ),
+                        ' '
+                      ),
+                    }
+                  })
+                }}
+              />
+            ) : (
+              <Center>
+                <Heading size="md" color="red.600">
+                  Add permissions for at least one location
+                </Heading>
+              </Center>
+            )}
+          </VStack>
+        )}
         <Center>
           <DateTimePicker
             isDisabled={false}
@@ -207,7 +372,7 @@ export default function UserEditor({
           </Center>
         )}
         <Center pt={4} pb={2}>
-          <Heading size={'md'} fontWeight={'normal'} px={2}>
+          <Heading size="md" fontWeight="normal" px={2}>
             {t('user.heading.bio')}
           </Heading>
         </Center>
@@ -236,7 +401,7 @@ export default function UserEditor({
             setValue={v => setUser({ ...user, email: v })}
           />
           <FloatingLabelInput
-            label={t('user.phone-number')}
+            label={t('user.phone-number-with-help')}
             w="100%"
             containerW="45%"
             value={user.phone_number}
@@ -403,6 +568,9 @@ export default function UserEditor({
               onPress={resetPassword}
             >
               {t('user.reset-password')}
+            </Button>
+            <Button colorScheme="info" onPress={confirmEmail}>
+              Confirm Email
             </Button>
             <Tooltip openDelay={0} label="Submit first" isDisabled={!changed}>
               <Button

@@ -29,8 +29,12 @@ import { LocationType } from 'utils/types/location'
 import { useInfo, handleStandardErrors } from 'utils/errors'
 import Loading from 'components/Loading'
 import { findLocations } from 'api/manager'
+import { RootStackScreenProps } from 'utils/manager/navigation'
 
-export default function FormList({ route, navigation }: any) {
+export default function FormList({
+  route,
+  navigation,
+}: RootStackScreenProps<'FindLocation'>) {
   const [locations, setLocations] = useState([] as LocationType[])
   const [nextKey, setNextKey] = useState(undefined as any)
   const [filterCountry, setFilterCountry] = useState('')
@@ -79,7 +83,10 @@ export default function FormList({ route, navigation }: any) {
           setFilterText={setFilterText}
           doSearch={doSearch}
           selectItem={location => {
-            navigation.navigate('EditLocation', { ...route.params, location })
+            if (route.params && route.params.onSelect) {
+              route.params.onSelect(location)
+            } else
+              navigation.navigate('EditLocation', { ...route.params, location })
           }}
         />
         <Loading loading={waiting} />

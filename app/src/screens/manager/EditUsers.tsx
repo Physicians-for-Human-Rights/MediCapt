@@ -93,6 +93,7 @@ export default function EditUser({
           user={user}
           setUser={setUser}
           changed={_.isEqual(lastSubmitted, location)}
+          navigation={navigation}
         />
       </VStack>
     </DashboardLayout>

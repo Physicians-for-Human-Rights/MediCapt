@@ -55,6 +55,7 @@ export default {
     nickname: 'Nickname',
     email: 'Email address',
     'phone-number': 'Phone number',
+    'phone-number-with-help': 'Phone number like (+12223334444)',
     username: 'Username',
     address: 'Address',
     'user-type': 'User type',
