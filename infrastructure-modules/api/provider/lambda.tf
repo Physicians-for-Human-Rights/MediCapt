@@ -109,6 +109,7 @@ resource "aws_lambda_function" "lambdas" {
   # }
   environment {
     variables = {
+      AWS_NODEJS_CONNECTION_REUSE_ENABLED = 1
       humanid_lambda = var.humanid_lambda
       location_table = var.location_dynamodb.table_name
       location_gsi_id  = var.location_dynamodb.global_secondary_index_names[0]
@@ -177,7 +178,7 @@ resource "aws_lambda_function" "lambdas" {
   ]
   # TODO Determine what memory size works best per endpoint
   # https://github.com/alexcasalboni/aws-lambda-power-tuning
-  memory_size = 128
+  memory_size = 512
   # NB The very long timeout (10s) is to account for spinning up resources when
   # a lambda is invoked from a cold state. You are not meant to use these for
   # extended computations.
