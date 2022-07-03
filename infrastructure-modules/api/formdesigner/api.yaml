@@ -143,6 +143,7 @@ paths:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
               method.response.header.Access-Control-Allow-Methods: "'*'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Max-Age: "'86400'"
             responseTemplates:
               application/json: |
                 {}
@@ -155,6 +156,8 @@ paths:
             Access-Control-Allow-Methods:
               type: 'string'
             Access-Control-Allow-Origin:
+              type: 'string'
+            Access-Control-Max-Age:
               type: 'string'
   /formdesigner/form/byId/{formId}:
     get:
@@ -252,6 +255,7 @@ paths:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
               method.response.header.Access-Control-Allow-Methods: "'*'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Max-Age: "'86400'"
             responseTemplates:
               application/json: |
                 {}
@@ -264,6 +268,8 @@ paths:
             Access-Control-Allow-Methods:
               type: 'string'
             Access-Control-Allow-Origin:
+              type: 'string'
+            Access-Control-Max-Age:
               type: 'string'
   /formdesigner/form/byId/{formId}/{formVersion}:
     get:
@@ -329,6 +335,7 @@ paths:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
               method.response.header.Access-Control-Allow-Methods: "'*'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Max-Age: "'86400'"
             responseTemplates:
               application/json: |
                 {}
@@ -341,6 +348,8 @@ paths:
             Access-Control-Allow-Methods:
               type: 'string'
             Access-Control-Allow-Origin:
+              type: 'string'
+            Access-Control-Max-Age:
               type: 'string'
   /formdesigner/form/metadataById/{formId}:
     get:
@@ -401,6 +410,7 @@ paths:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
               method.response.header.Access-Control-Allow-Methods: "'*'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Max-Age: "'86400'"
             responseTemplates:
               application/json: |
                 {}
@@ -413,6 +423,8 @@ paths:
             Access-Control-Allow-Methods:
               type: 'string'
             Access-Control-Allow-Origin:
+              type: 'string'
+            Access-Control-Max-Age:
               type: 'string'
   /formdesigner/form/commitById/{formId}:
     post:
@@ -476,6 +488,7 @@ paths:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
               method.response.header.Access-Control-Allow-Methods: "'*'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Max-Age: "'86400'"
             responseTemplates:
               application/json: |
                 {}
@@ -488,6 +501,8 @@ paths:
             Access-Control-Allow-Methods:
               type: 'string'
             Access-Control-Allow-Origin:
+              type: 'string'
+            Access-Control-Max-Age:
               type: 'string'
   /formdesigner/user/byId/{poolId}/{username}:
     get:
@@ -552,6 +567,7 @@ paths:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
               method.response.header.Access-Control-Allow-Methods: "'*'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Max-Age: "'86400'"
             responseTemplates:
               application/json: |
                 {}
@@ -564,6 +580,8 @@ paths:
             Access-Control-Allow-Methods:
               type: 'string'
             Access-Control-Allow-Origin:
+              type: 'string'
+            Access-Control-Max-Age:
               type: 'string'
   /formdesigner/location/byId/{locationId}:
     get:
@@ -624,6 +642,7 @@ paths:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
               method.response.header.Access-Control-Allow-Methods: "'*'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Max-Age: "'86400'"
             responseTemplates:
               application/json: |
                 {}
@@ -636,6 +655,8 @@ paths:
             Access-Control-Allow-Methods:
               type: 'string'
             Access-Control-Allow-Origin:
+              type: 'string'
+            Access-Control-Max-Age:
               type: 'string'
 definitions:
   Empty: {}
