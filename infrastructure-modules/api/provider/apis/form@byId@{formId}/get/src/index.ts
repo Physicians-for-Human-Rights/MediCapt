@@ -54,6 +54,7 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
           link: s3.getSignedUrl('getObject', {
             Bucket: process.env.form_bucket,
             Key: hashFilename(form.formUUID, v.sha256, v.filetype),
+            ResponseCacheControl: `private, max-age=31536000, immutable`,
             // 10 minutes is a long time, but it might be needed for slow
             // connections.
             Expires: 600,
