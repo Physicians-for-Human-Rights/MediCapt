@@ -1,0 +1,5 @@
+site_name: MediCapt Docs
+theme:
+  name: readthedocs
+plugins:
+  - swagger-ui-tag
