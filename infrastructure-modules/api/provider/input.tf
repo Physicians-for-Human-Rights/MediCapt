@@ -203,6 +203,10 @@ variable "record_bucket_kms" {
   type        = any
 }
 
+variable "sharing_dynamodb" {
+  description = "The sharing dynamodb"
+  type        = any
+}
 variable "sharing_table" {
   description = "The sharing dynamodb table name"
   type        = string

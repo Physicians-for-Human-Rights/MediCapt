@@ -48,7 +48,7 @@ paths:
         - CognitoUserProvider: []
       tags:
         - Share
-      summary: Get a record by share ID
+      summary: Get a share metadata and the record by share ID
       operationId: providerGetRecordByShareId
       produces:
         - application/json
@@ -169,6 +169,7 @@ paths:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
               method.response.header.Access-Control-Allow-Methods: "'*'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Max-Age: "'86400'"
             responseTemplates:
               application/json: |
                 {}
@@ -181,6 +182,8 @@ paths:
             Access-Control-Allow-Methods:
               type: 'string'
             Access-Control-Allow-Origin:
+              type: 'string'
+            Access-Control-Max-Age:
               type: 'string'
 definitions:
   Empty: {}

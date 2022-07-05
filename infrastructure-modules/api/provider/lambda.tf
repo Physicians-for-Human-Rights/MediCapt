@@ -12,12 +12,20 @@ locals {
       path = "form@byId@{formId}@{formVersion}/get"
       reserved_concurrent_executions = null
     }
+    providerGetUsers = {
+      path = "user/get"
+      reserved_concurrent_executions = null
+    }
     providerGetUserById = {
       path = "user@byId@{poolId}@{username}/get"
       reserved_concurrent_executions = null
     }
     providerGetUserByUUID = {
       path = "user@byUUID@{poolId}@{uuid}/get"
+      reserved_concurrent_executions = null
+    }
+    providerGetUserByUUIDAnyPool = {
+      path = "user@byUUIDAnyPool@{uuid}/get"
       reserved_concurrent_executions = null
     }
     providerGetLocationById = {
@@ -64,6 +72,10 @@ locals {
     }
     providerCreateShareByRecordId = {
       path = "share@record@byRecordId@{recordId}/post"
+      reserved_concurrent_executions = null
+    }
+    providerGetSharesByRecordId = {
+      path = "share@record@byRecordId@{recordId}/get"
       reserved_concurrent_executions = null
     }
     providerUpdateShareByShareId = {
@@ -154,6 +166,10 @@ resource "aws_lambda_function" "lambdas" {
       sharing_table = var.sharing_table
       sharing_table_arn = var.sharing_table
       sharing_table_kms = var.sharing_table
+      sharing_gsi_by_date  = var.sharing_dynamodb.global_secondary_index_names[0]
+      sharing_gsi_with_id  = var.sharing_dynamodb.global_secondary_index_names[1]
+      sharing_gsi_with_date = var.sharing_dynamodb.global_secondary_index_names[2]
+      sharing_gsi_by_record = var.sharing_dynamodb.global_secondary_index_names[3]
       # NB In a better world we would do:
       # depends_on = [
       #   aws_iam_role_policy_attachment.dead_letter[each.key],
@@ -237,6 +253,7 @@ resource "aws_iam_role_policy" "per_lambda_json_policy" {
       record_bucket         = var.record_bucket
       record_bucket_arn     = var.record_bucket_arn
       record_bucket_kms     = var.record_bucket_kms.key_arn
+      sharing_table         = var.sharing_table
       sharing_table_arn     = var.sharing_table_arn
       sharing_table_kms     = var.sharing_table_kms.key_arn
     }

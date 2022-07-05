@@ -2,10 +2,36 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "Placeholder",
-      "Effect": "Deny",
-      "Action": ["ec2:*"],
-      "Resource": "*"
+      "Action": ["dynamodb:GetItem"],
+      "Effect": "Allow",
+      "Resource": "${record_table_arn}"
+    },
+    {
+      "Action": ["dynamodb:GetItem"],
+      "Effect": "Allow",
+      "Resource": "${record_table_arn}/*"
+    },
+    {
+      "Action": "lambda:InvokeFunction",
+      "Effect": "Allow",
+      "Resource": "${humanid_lambda_arn}"
+    },
+    {
+      "Action": "dynamodb:PutItem",
+      "Effect": "Allow",
+      "Resource": "${sharing_table_arn}"
+    },
+    {
+      "Sid": "DynamoKMS",
+      "Effect": "Allow",
+      "Action": ["kms:Decrypt"],
+      "Resource": "${sharing_table_kms}"
+    },
+    {
+      "Sid": "S3KMS",
+      "Effect": "Allow",
+      "Action": ["kms:Decrypt"],
+      "Resource": "${record_table_kms}"
     }
   ]
 }

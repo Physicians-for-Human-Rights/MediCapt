@@ -26,8 +26,10 @@ resource "aws_api_gateway_rest_api" "provider" {
       lambda_uri_providerGetForms              = aws_lambda_function.lambdas["providerGetForms"].invoke_arn
       lambda_uri_providerGetFormById           = aws_lambda_function.lambdas["providerGetFormById"].invoke_arn
       lambda_uri_providerGetFormByIdAndVersion = aws_lambda_function.lambdas["providerGetFormByIdAndVersion"].invoke_arn
+      lambda_uri_providerGetUsers              = aws_lambda_function.lambdas["providerGetUsers"].invoke_arn
       lambda_uri_providerGetUserById           = aws_lambda_function.lambdas["providerGetUserById"].invoke_arn
       lambda_uri_providerGetUserByUUID         = aws_lambda_function.lambdas["providerGetUserByUUID"].invoke_arn
+      lambda_uri_providerGetUserByUUIDAnyPool  = aws_lambda_function.lambdas["providerGetUserByUUIDAnyPool"].invoke_arn
       lambda_uri_providerGetLocationById       = aws_lambda_function.lambdas["providerGetLocationById"].invoke_arn
       lambda_uri_providerCreateRecord          = aws_lambda_function.lambdas["providerCreateRecord"].invoke_arn
       lambda_uri_providerGetRecords            = aws_lambda_function.lambdas["providerGetRecords"].invoke_arn
@@ -35,10 +37,11 @@ resource "aws_api_gateway_rest_api" "provider" {
       lambda_uri_providerUpdateRecordById      = aws_lambda_function.lambdas["providerUpdateRecordById"].invoke_arn
       lambda_uri_providerGetRecordMetadataById = aws_lambda_function.lambdas["providerGetRecordMetadataById"].invoke_arn
       lambda_uri_providerCommitRecordById      = aws_lambda_function.lambdas["providerCommitRecordById"].invoke_arn
-      lambda_uri_providerPatchRecordById      = aws_lambda_function.lambdas["providerPatchRecordById"].invoke_arn
+      lambda_uri_providerPatchRecordById       = aws_lambda_function.lambdas["providerPatchRecordById"].invoke_arn
       lambda_uri_providerSealRecordById        = aws_lambda_function.lambdas["providerSealRecordById"].invoke_arn
       lambda_uri_providerGetRecordShares       = aws_lambda_function.lambdas["providerGetRecordShares"].invoke_arn
       lambda_uri_providerCreateShareByRecordId = aws_lambda_function.lambdas["providerCreateShareByRecordId"].invoke_arn
+      lambda_uri_providerGetSharesByRecordId   = aws_lambda_function.lambdas["providerGetSharesByRecordId"].invoke_arn
       lambda_uri_providerUpdateShareByShareId  = aws_lambda_function.lambdas["providerUpdateShareByShareId"].invoke_arn
       lambda_uri_providerGetRecordByShareId    = aws_lambda_function.lambdas["providerGetRecordByShareId"].invoke_arn
       lambda_uri_providerDeleteShareByShareId  = aws_lambda_function.lambdas["providerDeleteShareByShareId"].invoke_arn
@@ -55,8 +58,10 @@ resource "aws_api_gateway_deployment" "api" {
     aws_lambda_function.lambdas["providerGetForms"],
     aws_lambda_function.lambdas["providerGetFormById"],
     aws_lambda_function.lambdas["providerGetFormByIdAndVersion"],
+    aws_lambda_function.lambdas["providerGetUsers"],
     aws_lambda_function.lambdas["providerGetUserById"],
     aws_lambda_function.lambdas["providerGetUserByUUID"],
+    aws_lambda_function.lambdas["providerGetUserByUUIDAnyPool"],
     aws_lambda_function.lambdas["providerGetLocationById"],
     aws_lambda_function.lambdas["providerCreateRecord"],
     aws_lambda_function.lambdas["providerGetRecords"],
@@ -68,6 +73,7 @@ resource "aws_api_gateway_deployment" "api" {
     aws_lambda_function.lambdas["providerSealRecordById"],
     aws_lambda_function.lambdas["providerGetRecordShares"],
     aws_lambda_function.lambdas["providerCreateShareByRecordId"],
+    aws_lambda_function.lambdas["providerGetSharesByRecordId"],
     aws_lambda_function.lambdas["providerUpdateShareByShareId"],
     aws_lambda_function.lambdas["providerGetRecordByShareId"],
     aws_lambda_function.lambdas["providerDeleteShareByShareId"]
@@ -93,8 +99,10 @@ resource "aws_api_gateway_stage" "api" {
     aws_lambda_function.lambdas["providerGetForms"],
     aws_lambda_function.lambdas["providerGetFormById"],
     aws_lambda_function.lambdas["providerGetFormByIdAndVersion"],
+    aws_lambda_function.lambdas["providerGetUsers"],
     aws_lambda_function.lambdas["providerGetUserById"],
     aws_lambda_function.lambdas["providerGetUserByUUID"],
+    aws_lambda_function.lambdas["providerGetUserByUUIDAnyPool"],
     aws_lambda_function.lambdas["providerGetLocationById"],
     aws_lambda_function.lambdas["providerCreateRecord"],
     aws_lambda_function.lambdas["providerGetRecords"],
@@ -106,6 +114,7 @@ resource "aws_api_gateway_stage" "api" {
     aws_lambda_function.lambdas["providerSealRecordById"],
     aws_lambda_function.lambdas["providerGetRecordShares"],
     aws_lambda_function.lambdas["providerCreateShareByRecordId"],
+    aws_lambda_function.lambdas["providerGetSharesByRecordId"],
     aws_lambda_function.lambdas["providerUpdateShareByShareId"],
     aws_lambda_function.lambdas["providerGetRecordByShareId"],
     aws_lambda_function.lambdas["providerDeleteShareByShareId"]

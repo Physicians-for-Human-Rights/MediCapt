@@ -99,7 +99,7 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       return bad(e, 'Could not get user from cognito')
     }
 
-    if (!cognitoUser) return bad(null, 'Could not look up cogito user')
+    if (!cognitoUser) return bad(null, 'Could not look up cognito user')
     const user = convertCognitoUser(cognitoUser, image_bucket_id, poolId, s3)
 
     return good(user)
