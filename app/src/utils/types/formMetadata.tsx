@@ -207,7 +207,7 @@ export const formSchemaDynamoLatestPart =
       .string()
       .nonempty()
       .refine(v => _.startsWith(v, 'FORM#'), {
-        message: 'GSK1 must start with FORM#',
+        message: 'GPK1 must start with FORM#',
       }),
     GSK1: z.literal('VERSION#latest'),
     GPK2: z.literal('VERSION#latest'),
