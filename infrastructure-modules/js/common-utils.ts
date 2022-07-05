@@ -541,6 +541,7 @@ export function convertCognitoUser(
     userType,
     enabled: verifyValue<boolean>(u.Enabled, 'Missing enabled/disabled'),
     status: u.UserStatus,
+    email_verified: findUserAttribute(u, 'email_verified'),
   }
   return userSchema.partial().parse(oneUser)
 }

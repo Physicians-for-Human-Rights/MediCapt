@@ -4,10 +4,7 @@
     {
       "Sid": "Cognito",
       "Effect": "Allow",
-      "Action": [
-        "cognito-idp:AdminGetUser",
-        "cognito-idp:AdminUpdateUserAttributes"
-      ],
+      "Action": ["cognito-idp:AdminGetUser", "cognito-idp:AdminCreateUser"],
       "Resource": [
         "${user_pool_provider_arn}",
         "${user_pool_associate_arn}",

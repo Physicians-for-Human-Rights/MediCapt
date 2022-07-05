@@ -76,6 +76,17 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
       return bad(event.pathParameters, 'Missing event parameters')
     }
 
+    try {
+      let u = await cognito
+        .adminGetUser({
+          UserPoolId: user_pool_id,
+          Username: username,
+        })
+        .promise()
+    } catch (e) {
+      return bad([e], 'User does not exist')
+    }
+
     await cognito
       .adminResetUserPassword({
         UserPoolId: user_pool_id,

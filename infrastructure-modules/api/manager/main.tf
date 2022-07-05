@@ -35,6 +35,7 @@ resource "aws_api_gateway_rest_api" "manager" {
       lambda_uri_managerUpdateLocationById    = aws_lambda_function.lambdas["managerUpdateLocationById"].invoke_arn
       lambda_uri_managerDeleteLocationById    = aws_lambda_function.lambdas["managerDeleteLocationById"].invoke_arn
       lambda_uri_managerGetLocations          = aws_lambda_function.lambdas["managerGetLocations"].invoke_arn
+      lambda_uri_managerResendConfirmationEmailUserById          = aws_lambda_function.lambdas["managerResendConfirmationEmailUserById"].invoke_arn
     })
   endpoint_configuration {
     types = [var.endpoint_configuration]
@@ -56,7 +57,8 @@ resource "aws_api_gateway_deployment" "api" {
     aws_lambda_function.lambdas["managerGetLocationById"],
     aws_lambda_function.lambdas["managerUpdateLocationById"],
     aws_lambda_function.lambdas["managerDeleteLocationById"],
-    aws_lambda_function.lambdas["managerGetLocations"]
+    aws_lambda_function.lambdas["managerGetLocations"],
+    aws_lambda_function.lambdas["managerResendConfirmationEmailUserById"]
   ]
   rest_api_id = aws_api_gateway_rest_api.manager.id
   # should be var.stage but see this issue, required for cloudwatch support
@@ -87,7 +89,8 @@ resource "aws_api_gateway_stage" "api" {
     aws_lambda_function.lambdas["managerGetLocationById"],
     aws_lambda_function.lambdas["managerUpdateLocationById"],
     aws_lambda_function.lambdas["managerDeleteLocationById"],
-    aws_lambda_function.lambdas["managerGetLocations"]
+    aws_lambda_function.lambdas["managerGetLocations"],
+    aws_lambda_function.lambdas["managerResendConfirmationEmailUserById"]
   ]
   rest_api_id    = aws_api_gateway_rest_api.manager.id
   stage_name     = var.stage

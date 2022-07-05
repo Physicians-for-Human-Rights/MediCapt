@@ -89,14 +89,18 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
 
     try {
       await cognito
-        .adminUpdateUserAttributes({
+        .adminCreateUser({
           UserPoolId: user_pool_id,
           Username: username,
-          UserAttributes: [{ Name: 'email_verified', Value: 'true' }],
+          MessageAction: 'RESEND',
+          DesiredDeliveryMediums: ['EMAIL'],
         })
         .promise()
     } catch (e) {
-      return bad([e], 'Failed to verify user email')
+      return bad(
+        [e, event.requestContext.authorizer],
+        'Failed to resend confirmation email'
+      )
     }
 
     return good({})

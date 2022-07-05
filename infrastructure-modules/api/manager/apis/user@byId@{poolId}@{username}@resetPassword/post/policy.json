@@ -4,7 +4,10 @@
     {
       "Sid": "Cognito",
       "Effect": "Allow",
-      "Action": ["cognito-idp:AdminResetUserPassword"],
+      "Action": [
+        "cognito-idp:AdminGetUser",
+        "cognito-idp:AdminResetUserPassword"
+      ],
       "Resource": [
         "${user_pool_provider_arn}",
         "${user_pool_associate_arn}",

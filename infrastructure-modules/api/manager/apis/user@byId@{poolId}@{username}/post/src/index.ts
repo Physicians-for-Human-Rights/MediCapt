@@ -299,17 +299,13 @@ export const handler: APIGatewayProxyWithCognitoAuthorizerHandler = async (
     })
     imageLink.fields['x-amz-server-side-encryption'] = 'aws:kms'
 
-    const updatedUser = convertCognitoUser(
-      await cognito
-        .adminGetUser({
-          UserPoolId: user_pool_id,
-          Username: username,
-        })
-        .promise(),
-      image_bucket_id,
-      poolId,
-      s3
-    )
+    const u = await cognito
+      .adminGetUser({
+        UserPoolId: user_pool_id,
+        Username: username,
+      })
+      .promise()
+    const updatedUser = convertCognitoUser(u, image_bucket_id, poolId, s3)
 
     return good({
       user: updatedUser,

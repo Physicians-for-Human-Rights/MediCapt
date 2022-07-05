@@ -55,6 +55,7 @@ export const userSchema = userSchemaByUser
     created_by: z.string().nonempty(),
     created_time: dateSchema,
     last_updated_time: dateSchema,
+    email_verified: z.string().optional(),
   })
   .strip()
 

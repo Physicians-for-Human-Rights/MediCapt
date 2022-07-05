@@ -37,6 +37,7 @@ import {
   updateUser,
   resetUserPassword,
   confirmUserEmail,
+  resendUserConfirmationEmail,
 } from 'api/manager'
 import { standardHandler } from 'api/utils'
 import Photo from 'components/form-parts/Photo'
@@ -176,6 +177,17 @@ export default function UserEditor({
       t('user.email-confirmed'),
       async () => {
         await confirmUserEmail(user)
+        user.email_verified = 'true'
+      }
+    )
+
+  const resendConfirmationEmail = async () =>
+    standardHandler(
+      standardReporters,
+      t('user.resending-confirmation-email'),
+      t('user.resent-confirmation-email'),
+      async () => {
+        await resendUserConfirmationEmail(user)
       }
     )
 
@@ -553,40 +565,67 @@ export default function UserEditor({
             </Button>
           </HStack>
         ) : (
-          <HStack my={5} justifyContent="space-between">
-            <Button
-              leftIcon={<Icon as={MaterialIcons} name="save" size="sm" />}
-              colorScheme="green"
-              onPress={handleSubmitUser}
-            >
-              {t('user.submit-user')}
-            </Button>
-            <Button
-              leftIcon={<Icon as={MaterialIcons} name="lock" size="sm" />}
-              colorScheme="orange"
-              onPress={resetPassword}
-            >
-              {t('user.reset-password')}
-            </Button>
-            <Button colorScheme="info" onPress={confirmEmail}>
-              Confirm Email
-            </Button>
-            <Tooltip openDelay={0} label="Submit first" isDisabled={!changed}>
+          <VStack>
+            <Center>
+              <HStack my={5} justifyContent="space-between">
+                {user.status === 'FORCE_CHANGE_PASSWORD' &&
+                  user.email_verified !== 'true' && (
+                    <Button
+                      colorScheme="info"
+                      onPress={resendConfirmationEmail}
+                    >
+                      {t('user.resend-confirmation-email')}
+                    </Button>
+                  )}
+                {user.status === 'CONFIRMED' && user.email_verified !== 'true' && (
+                  <Button
+                    leftIcon={
+                      <Icon as={MaterialIcons} name="check" size="sm" />
+                    }
+                    colorScheme="orange"
+                    onPress={confirmEmail}
+                  >
+                    {t('user.confirm-email')}
+                  </Button>
+                )}
+              </HStack>
+            </Center>
+            <HStack my={5} justifyContent="space-between">
               <Button
-                leftIcon={
-                  user.enabled ? (
-                    <CloseIcon size={'5'} mx={2} />
-                  ) : (
-                    <CheckIcon size={'5'} mx={2} />
-                  )
-                }
-                colorScheme={user.enabled ? 'red' : 'green'}
-                onPress={toggleUser}
+                leftIcon={<Icon as={MaterialIcons} name="save" size="sm" />}
+                colorScheme="green"
+                onPress={handleSubmitUser}
               >
-                {user.enabled ? t('user.disable-user') : t('user.enable-user')}
+                {t('user.submit-user')}
               </Button>
-            </Tooltip>
-          </HStack>
+              {user.email_verified === 'true' && (
+                <Button
+                  leftIcon={<Icon as={MaterialIcons} name="lock" size="sm" />}
+                  colorScheme="orange"
+                  onPress={resetPassword}
+                >
+                  {t('user.reset-password')}
+                </Button>
+              )}
+              <Tooltip openDelay={0} label="Submit first" isDisabled={!changed}>
+                <Button
+                  leftIcon={
+                    user.enabled ? (
+                      <CloseIcon size={'5'} mx={2} />
+                    ) : (
+                      <CheckIcon size={'5'} mx={2} />
+                    )
+                  }
+                  colorScheme={user.enabled ? 'red' : 'green'}
+                  onPress={toggleUser}
+                >
+                  {user.enabled
+                    ? t('user.disable-user')
+                    : t('user.enable-user')}
+                </Button>
+              </Tooltip>
+            </HStack>
+          </VStack>
         )}
       </VStack>
       <Loading loading={waiting} />

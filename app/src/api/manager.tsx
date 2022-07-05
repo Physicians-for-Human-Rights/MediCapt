@@ -133,6 +133,26 @@ export async function confirmUserEmail(user: UserType) {
   )
 }
 
+export async function resendUserConfirmationEmail(user: UserType) {
+  userSchemaByUser.parse(user)
+  await API.post(
+    'manager',
+    '/manager/user/byId/' +
+      user.userType +
+      '/' +
+      user.username +
+      '/resendConfirmationEmail',
+    {
+      body: user,
+      headers: {
+        AcceptedVersions: JSON.stringify({
+          user: schemaVersions(userSchema),
+        }),
+      },
+    }
+  )
+}
+
 export async function findUsers(
   pre: () => any,
   post: () => any,

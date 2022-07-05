@@ -48,6 +48,10 @@ locals {
       path = "location/get"
       reserved_concurrent_executions = null
     }
+    managerResendConfirmationEmailUserById = {
+      path = "user@byId@{poolId}@{username}@resendConfirmationEmail/post"
+      reserved_concurrent_executions = null
+    }
   }
 }
 

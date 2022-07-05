@@ -75,6 +75,7 @@ export default {
     'password-resetting': 'Resetting password',
     'email-confirmed': 'User email confirmed',
     'confirming-email': 'User email confirming',
+    'confirm-email': 'Confirm email address',
     official_id_type: 'Official ID type',
     official_id_code: 'Official ID code',
     official_id_expires: 'ID expiration date',
@@ -89,6 +90,9 @@ export default {
     search: {
       'form-names-and-tags': 'Search form names and tags',
     },
+    'resend-confirmation-email': 'Resend confirmation email',
+    'resending-confirmation-email': 'Resending confirmation email',
+    'resent-confirmation-email': 'Resent confirmation email',
   },
   common: {
     'read-only': 'read only',
