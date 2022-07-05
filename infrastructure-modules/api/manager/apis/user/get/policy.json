@@ -4,7 +4,7 @@
     {
       "Sid": "Cognito",
       "Effect": "Allow",
-      "Action": ["cognito-idp:ListUsers"],
+      "Action": ["cognito-idp:ListUsers", "cognito-idp:ListUsersInGroup"],
       "Resource": [
         "${user_pool_provider_arn}",
         "${user_pool_associate_arn}",
