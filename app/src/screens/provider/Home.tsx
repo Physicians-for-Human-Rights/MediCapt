@@ -54,6 +54,7 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
     },
   })
   const [user] = useUser()
+  if (!user || !user.attributes) return <></>
   return (
     <DashboardLayout
       title={'Welcome ' + (user ? user.attributes.nickname : '')}
