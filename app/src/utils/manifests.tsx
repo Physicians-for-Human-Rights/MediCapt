@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import CryptoJS from 'crypto-js'
-import { blobToBase64, unDataURI, isBinary } from 'utils/data'
+import { blobToBase64 } from 'utils/data'
 import {
   FormManifest,
   FormManifestFile,
@@ -12,6 +12,7 @@ import {
   FormManifestWithLinks,
   FormManifestWithMD5,
   FormManifestWithPostLinks,
+  FormMetadata,
 } from './types/formMetadata'
 import {
   RecordManifest,
@@ -29,6 +30,8 @@ import { RecordType, recordTypeSchema } from './types/record'
 import yaml from 'js-yaml'
 import { FormType } from './types/form'
 import { ZodError } from 'zod'
+import JSZip from 'jszip'
+import { dataURItoBlob, isBinary, unDataURI } from 'utils/data'
 
 export type Manifest = FormManifest | RecordManifest
 export type ManifestWithMD5 = FormManifestWithMD5 | RecordManifestWithMD5
@@ -334,4 +337,40 @@ export async function fetchManifestContents(
       }
     })
   )
+}
+
+export function generateZip(
+  formMetadata: Partial<FormMetadata>,
+  manifest: FormManifestWithData
+) {
+  const zip = new JSZip()
+  zip.file('metadata.json', JSON.stringify(formMetadata))
+  const m: FormManifest = {
+    'storage-version': manifest['storage-version'],
+    contents: _.map(manifest.contents, f =>
+      _.pick(f, ['sha256', 'filetype', 'filename'])
+    ),
+    root: manifest.root,
+  }
+  zip.file('manifest.json', JSON.stringify(manifest))
+  for (const f of manifest.contents) {
+    zip.file(
+      _.includes(f.filename, '.')
+        ? f.filename
+        : f.filename + '.' + fileExtension(f.filetype),
+      isBinary(f.filetype) ? dataURItoBlob(f.data) : f.data
+    )
+  }
+  zip.generateAsync({ type: 'blob' }).then(function (content) {
+    var url = window.URL.createObjectURL(content)
+    const tempLink = document.createElement('a')
+    tempLink.href = url
+    tempLink.setAttribute(
+      'download',
+      (formMetadata.formID && formMetadata.version
+        ? formMetadata.formID + '_' + formMetadata.version
+        : 'form') + '.zip'
+    )
+    tempLink.click()
+  })
 }

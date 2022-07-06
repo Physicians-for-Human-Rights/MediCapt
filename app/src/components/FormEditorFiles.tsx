@@ -23,6 +23,7 @@ import * as DocumentPicker from 'expo-document-picker'
 import { readImage, stripFileExtension } from 'utils/forms'
 import _ from 'lodash'
 import NecessaryItem from 'components/NecessaryItem'
+import { Feather } from '@expo/vector-icons'
 // @ts-ignore TODO TS doesn't understand .native.js and .web.js files
 import { tryConvertToWebP } from 'utils/imageConverter'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
@@ -35,6 +36,7 @@ import {
   addFileToManifest,
   makeManifestEntry,
   changeFilenameInManifest,
+  generateZip,
 } from 'utils/manifests'
 
 export default function FormEditorFiles({
@@ -106,6 +108,18 @@ export default function FormEditorFiles({
 
   return (
     <VStack my="2" space={3}>
+      <Center py={3}>
+        <Button
+          fontWeight="bold"
+          color="coolGray.800"
+          bg="info.500"
+          fontSize="md"
+          onPress={() => generateZip(formMetadata, manifest)}
+          leftIcon={<Icon as={Feather} name="download-cloud" size="sm" />}
+        >
+          Download all files
+        </Button>
+      </Center>
       <HStack alignItems="center" justifyContent="space-between">
         <VStack space="4" justifyContent="flex-start" py={4} w="200" maxW="200">
           <Center>
@@ -119,7 +133,7 @@ export default function FormEditorFiles({
                 fontSize: 'xs',
               }}
             >
-              MAIN FORM PDF
+              FORM PDF
             </Badge>
           </Center>
           {isInManifest(manifest, e => e.filename == 'form.pdf') ? (
@@ -129,6 +143,7 @@ export default function FormEditorFiles({
               bg="red.500"
               fontSize="md"
               onPress={removePdf}
+              leftIcon={<Icon as={Feather} name="x-circle" size="sm" />}
             >
               Remove pdf
             </Button>
@@ -139,6 +154,7 @@ export default function FormEditorFiles({
               bg="info.500"
               fontSize="md"
               onPress={pickPdf}
+              leftIcon={<Icon as={Feather} name="upload-cloud" size="sm" />}
             >
               Upload an annotated pdf
             </Button>
@@ -212,6 +228,7 @@ export default function FormEditorFiles({
             bg="info.500"
             fontSize="md"
             onPress={pickImage}
+            leftIcon={<Icon as={Feather} name="upload-cloud" size="sm" />}
           >
             Upload an image
           </Button>

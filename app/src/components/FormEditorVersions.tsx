@@ -32,58 +32,17 @@ import {
   lookupManifestByNameAndType,
   fileExtension,
   fetchManifestContents,
+  generateZip,
 } from 'utils/manifests'
-import JSZip from 'jszip'
 import _ from 'lodash'
-import { dataURItoBlob, isBinary, unDataURI } from 'utils/data'
 import { getFormVersion } from 'api/formdesigner'
 import { useInfo } from 'utils/errors'
 import Loading from 'components/Loading'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { submitForm } from 'api/formdesigner'
-import { standardHandler, StandardReporters } from 'api/utils'
-import {
-  RootStackScreenProps,
-  RootStackParamList,
-} from 'utils/formDesigner/navigation'
+import { RootStackParamList } from 'utils/formDesigner/navigation'
 import { StackNavigationProp } from '@react-navigation/stack'
-
-function generateZip(
-  formMetadata: Partial<FormMetadata>,
-  manifest: FormManifestWithData
-) {
-  const zip = new JSZip()
-  zip.file('metadata.json', JSON.stringify(formMetadata))
-  const m: FormManifest = {
-    'storage-version': manifest['storage-version'],
-    contents: _.map(manifest.contents, f =>
-      _.pick(f, ['sha256', 'filetype', 'filename'])
-    ),
-    root: manifest.root,
-  }
-  zip.file('manifest.json', JSON.stringify(manifest))
-  for (const f of manifest.contents) {
-    zip.file(
-      _.includes(f.filename, '.')
-        ? f.filename
-        : f.filename + '.' + fileExtension(f.filetype),
-      isBinary(f.filetype) ? dataURItoBlob(f.data) : f.data
-    )
-  }
-  zip.generateAsync({ type: 'blob' }).then(function (content) {
-    var url = window.URL.createObjectURL(content)
-    const tempLink = document.createElement('a')
-    tempLink.href = url
-    tempLink.setAttribute(
-      'download',
-      (formMetadata.formID && formMetadata.version
-        ? formMetadata.formID + '_' + formMetadata.version
-        : 'form') + '.zip'
-    )
-    tempLink.click()
-  })
-}
 
 export default function FormEditorVersions({
   formMetadata,
@@ -281,18 +240,6 @@ export default function FormEditorVersions({
               </Select>
             </HStack>
           </Box>
-        </Center>
-        <Center py={10}>
-          <Button
-            fontWeight="bold"
-            color="coolGray.800"
-            bg="info.500"
-            fontSize="md"
-            onPress={() => generateZip(formMetadata, manifest)}
-            leftIcon={<Icon as={Feather} name="download-cloud" size="sm" />}
-          >
-            Download current version
-          </Button>
         </Center>
       </VStack>
       <Loading loading={waiting} />
