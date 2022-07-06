@@ -70,7 +70,7 @@ function Tabs({
           <Select.Item label="Files" value="Files" />
           <Select.Item label="Associations" value="Associations" />
           <Select.Item label="Editor" value="Editor" />
-          <Select.Item label="Print preview" value="Print preview" />
+          <Select.Item label="Print preview" value="Printed" />
           <Select.Item label="Versions" value="Versions" />
         </Select>
       </Box>
