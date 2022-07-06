@@ -21,13 +21,13 @@ export class RawFloatingLabelInput extends Component<any, any> {
     this.setState({ isFocused: true })
     this.props &&
       'toggleFocusHandler' in this.props &&
-      this.props.toggleFocusHandler()
+      this.props.toggleFocusHandler(true)
   }
   handleBlur = () => {
     this.setState({ isFocused: false })
     this.props &&
       'toggleFocusHandler' in this.props &&
-      this.props.toggleFocusHandler()
+      this.props.toggleFocusHandler(false)
   }
 
   componentDidUpdate() {
@@ -137,9 +137,19 @@ export default function FloatingLabelInput({
     [rawValue]
   )
 
+  // Propagate pending changes up when we unfocus
   const toggleFocusHandler = useCallback(() => {
-    if (!_.isEqual(value, rawValue)) setRawValue(value || '')
-  }, [value, rawValue])
+    if (!_.isEqual(value, rawValue)) {
+      if (setValue) setValue(rawValue)
+    }
+  }, [value, rawValue, setValue])
+
+  // Propagate any changes down
+  useEffect(() => {
+    if (!_.isEqual(value, rawValue)) {
+      setRawValue(value || '')
+    }
+  }, [value])
 
   return (
     <RawFloatingLabelInput
