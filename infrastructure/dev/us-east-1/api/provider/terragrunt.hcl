@@ -66,7 +66,7 @@ dependency "records_metadata" {
   config_path = "../../storage/records/metadata"
 }
 
-dependency "records_sharing" {
+dependency "sharing" {
   config_path = "../../storage/records/sharing"
 }
 
@@ -123,8 +123,9 @@ inputs = {
   record_bucket = dependency.records_full.outputs.records_s3_bucket.bucket_id
   record_bucket_arn = dependency.records_full.outputs.records_s3_bucket.bucket_arn
   record_bucket_kms = dependency.records_full.outputs.records_s3_bucket_kms
-  # TODO These are placeholders
-  sharing_table = dependency.records_metadata.outputs.records_dynamodb.table_name
-  sharing_table_arn = dependency.records_metadata.outputs.records_dynamodb.table_arn
-  sharing_table_kms = dependency.records_metadata.outputs.records_dynamodb_kms
+  #
+  sharing_dynamodb = dependency.sharing.outputs.sharing_dynamodb
+  sharing_table = dependency.sharing.outputs.sharing_dynamodb.table_name
+  sharing_table_arn = dependency.sharing.outputs.sharing_dynamodb.table_arn
+  sharing_table_kms = dependency.sharing.outputs.sharing_dynamodb_kms
 }
