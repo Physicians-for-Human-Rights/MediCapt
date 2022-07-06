@@ -5,6 +5,7 @@ import Home from 'screens/provider/Home'
 import RecordEditor from 'screens/provider/RecordEditor'
 import FindRecord from 'screens/provider/FindRecord'
 import FindForm from 'screens/provider/FindForm'
+import FindUser from 'screens/provider/FindUser'
 import { RootStackParamList } from 'utils/provider/navigation'
 import { useUserLocations } from 'utils/store'
 
@@ -60,6 +61,11 @@ export default function App({}: {}) {
         <RootStack.Screen
           name="Training"
           component={FindRecord}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name="FindUser"
+          component={FindUser}
           options={{ headerShown: false }}
         />
       </RootStack.Navigator>

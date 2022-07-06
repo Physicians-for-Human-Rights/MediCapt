@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Platform } from 'react-native'
 import {
   Box,
   HStack,
@@ -24,6 +25,7 @@ import { UserKindList } from 'utils/userTypes'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
+import SelectLocation from 'components/SelectLocation'
 
 export function ListItem({ item }: { item: UserType }) {
   return (
@@ -156,6 +158,9 @@ export default function UserList({
   setFilterText,
   doSearch,
   selectItem,
+  defaultUserType,
+  allowedUserTypes,
+  onlyEnabledUsers = false,
 }: {
   users: UserType[]
   hasMore: boolean
@@ -172,6 +177,9 @@ export default function UserList({
   setFilterText: React.Dispatch<React.SetStateAction<string | undefined>>
   doSearch: () => any
   selectItem: (user: UserType) => any
+  defaultUserType: string
+  allowedUserTypes?: string[]
+  onlyEnabledUsers?: boolean
 }) {
   return (
     <>
@@ -188,43 +196,42 @@ export default function UserList({
             onValueChange={setFilterUserType}
             placeholder={t('user.select-user-type')}
           >
-            {UserKindList.map(e => (
+            {(allowedUserTypes ? allowedUserTypes : UserKindList).map(e => (
               <Select.Item key={e} label={t('user.' + e)} value={e} />
             ))}
           </Select>
         </Center>
+        {onlyEnabledUsers && (
+          <Center>
+            <Select
+              size="md"
+              bg="white"
+              selectedValue={filterEnabledOrDisabled}
+              onValueChange={setFilterEnabledOrDisabled}
+              placeholder={t('user.filter.select-user-enabled')}
+              ml={{ base: 0, md: 2 }}
+            >
+              <Select.Item
+                key={'__any__'}
+                label={t('user.filter.any-is-user-enabled')}
+                value={''}
+              />
+              {['enabled', 'disabled'].map(e => (
+                <Select.Item key={e} label={t('user.filter.' + e)} value={e} />
+              ))}
+            </Select>
+          </Center>
+        )}
         <Center>
-          <Select
-            size="md"
+          <SelectLocation
             bg="white"
-            selectedValue={filterEnabledOrDisabled}
-            onValueChange={setFilterEnabledOrDisabled}
-            placeholder={t('user.filter.select-user-enabled')}
-            ml={{ base: 0, md: 2 }}
-          >
-            <Select.Item
-              key={'__any__'}
-              label={t('user.filter.any-is-user-enabled')}
-              value={''}
-            />
-            {['enabled', 'disabled'].map(e => (
-              <Select.Item key={e} label={t('user.filter.' + e)} value={e} />
-            ))}
-          </Select>
-        </Center>
-        <Center>
-          <DebouncedTextInput
-            flex={{ md: undefined, lg: undefined, base: 1 }}
-            w={{ md: '90%', lg: '90%', base: '90%' }}
-            py={3}
-            ml={{ base: 0, md: 2 }}
-            bg="white"
-            size="lg"
-            color="black"
             placeholder={t('user.enter-location')}
-            debounceMs={1000}
+            any={'user.any-location'}
             value={filterLocation}
-            onChangeText={setFilterLocation}
+            setValue={(_id, uuid) => setFilterLocation(uuid)}
+            mx={Platform.OS === 'android' ? 0 : { md: 2, base: 0 }}
+            my={Platform.OS === 'android' ? 2 : { md: 0, base: 2 }}
+            w={Platform.OS === 'android' ? '80%' : undefined}
           />
         </Center>
         <HStack
@@ -234,7 +241,7 @@ export default function UserList({
         >
           <Button
             onPress={() => {
-              setFilterUserType('Manager')
+              setFilterUserType(defaultUserType)
               setFilterEnabledOrDisabled('')
               setFilterLocation('')
               setFilterSearchType('')
