@@ -804,6 +804,7 @@ export function renderCommand(
             bg="coolGray.100"
             variant="filled"
             w="100%"
+            minW="300px"
             textAlign="center"
             value={command.recordValue?.value || ''}
             maxW={command.maxW}
