@@ -12,6 +12,7 @@ export const formMetadataSchemaByUser = z
     'storage-version': z.literal('1.0.0'),
     country: z.string().nonempty(),
     locationID: z.string().nonempty(),
+    locationUUID: z.string().optional(), // TOOD Make me not optional
     language: z.string().nonempty(),
     'official-name': z.string().nonempty(),
     'official-code': z.string(),

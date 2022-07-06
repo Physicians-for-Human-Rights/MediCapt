@@ -11,6 +11,7 @@ export const recordMetadataSchemaByUser = z
     formID: z.string().nonempty(),
     formVersion: z.string().nonempty(),
     locationID: z.string().nonempty(),
+    locationUUID: z.string().optional(), // TODO make me not optional
     // We may not know this information
     patientName: z.string(),
     patientGender: z.string(),
