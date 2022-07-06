@@ -34,14 +34,6 @@ export type StandardFormFn<Return, RestrictPart = {}> = (
   entry: FormPartMap
 ) => Return
 
-// export type SelectMultipleFormFn<Return> = (
-//   recordValuePath: RecordValuePath,
-//   part: FormPart,
-//   recordPath: RecordValuePath,
-//   index: number,
-//   formPartMap: FormPartMap
-// ) => Return
-
 export type FieldType = {
   signature: string // data URI
   'body-image': any // TODO
@@ -157,7 +149,6 @@ export type FormFns<Return> = {
   list: StandardFormFn<Return, { type: 'list' }>
   'list-with-labels': StandardFormFn<Return, { type: 'list-with-labels' }>
   'list-multiple': StandardFormFn<Return, { type: 'list-multiple' }>
-  // 'list-multiple': SelectMultipleFormFn<Return>
   'list-with-labels-multiple': StandardFormFn<
     Return,
     { type: 'list-with-labels-multiple' }

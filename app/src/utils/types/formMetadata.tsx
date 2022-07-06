@@ -54,6 +54,8 @@ export const formMetadataSchema = formMetadataSchemaByUser
   })
   .strict()
 
+export const formMetadataSchemaStrip = formMetadataSchema.strip()
+
 export const formMetadataSchemaWithoutMetadata = formMetadataSchema.omit({
   manifestHash: true,
 })
@@ -208,7 +210,7 @@ export const formSchemaDynamoLatestPart =
       .string()
       .nonempty()
       .refine(v => _.startsWith(v, 'FORM#'), {
-        message: 'GPK1 must start with FORM#',
+        message: 'GSK1 must start with FORM#',
       }),
     GSK1: z.literal('VERSION#latest'),
     GPK2: z.literal('VERSION#latest'),

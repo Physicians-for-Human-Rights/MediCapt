@@ -76,6 +76,8 @@ export const recordMetadataSchema = recordMetadataSchemaByUser
   })
   .strict()
 
+export const recordMetadataSchemaStrip = recordMetadataSchema.strip()
+
 // Manifests of various types
 
 export const recordManifestFileSchema = z.object({
@@ -163,38 +165,44 @@ export const recordSchemaDynamoLatestToUpdatePart = z.object({
     .string()
     .nonempty()
     .refine(v => _.startsWith(v, 'LO#'), {
-      message: 'GPK2 must start with LA#',
+      message: 'GPK3 must start with LA#',
     }),
   GSK3: z
     .string()
     .nonempty()
     .refine(v => _.startsWith(v, 'DATE#'), {
-      message: 'GSK2 must start with DATE#',
+      message: 'GSK3 must start with DATE#',
     }),
   GPK4: z
     .string()
     .nonempty()
     .refine(v => _.startsWith(v, 'CREATEDBY#'), {
-      message: 'GPK3 must start with CA#',
+      message: 'GPK4 must start with CA#',
     }),
   GSK4: z
     .string()
     .nonempty()
     .refine(v => _.startsWith(v, 'DATE#'), {
-      message: 'GSK3 must start with DATE#',
+      message: 'GSK4 must start with DATE#',
     }),
   GPK5: z
     .string()
     .nonempty()
     .refine(v => _.startsWith(v, 'UPDATEDBY#'), {
-      message: 'GPK4 must start with LO#',
+      message: 'GPK5 must start with LO#',
     }),
   GSK5: z
     .string()
     .nonempty()
     .refine(v => _.startsWith(v, 'DATE#'), {
-      message: 'GSK4 must start with DATE#',
+      message: 'GSK5 must start with DATE#',
     }),
+  GPK6: z.string().refine(v => _.startsWith(v, 'USER#'), {
+    message: 'GPK5 must start with USER#',
+  }),
+  GSK6: z.string().refine(v => _.startsWith(v, 'LUUID#'), {
+    message: 'GSK5 must start with LUUID#',
+  }),
 })
 
 export const recordSchemaDynamoLatestPart =
@@ -210,7 +218,7 @@ export const recordSchemaDynamoLatestPart =
       .string()
       .nonempty()
       .refine(v => _.startsWith(v, 'RECORD#'), {
-        message: 'GSK1 must start with RECORD#',
+        message: 'GPK1 must start with RECORD#',
       }),
     GSK1: z.literal('VERSION#latest'),
   })
@@ -251,8 +259,29 @@ export const recordSchemaUpdateSeal = z
     lastChangedDate: dateSchema,
     version: z.string().nonempty(),
     sealed: z.boolean(),
+    sealedByUUID: z.string().nonempty(),
+    sealedDate: dateSchema,
   })
   .strict()
+
+// Entries we must update when we change a record, but that do not come from
+// users
+export const sealedRecordSchemaDynamoUpdate = recordMetadataSchemaByUser
+  .pick({ associatedRecords: true })
+  .extend({
+    lastChangedByUUID: z.string().nonempty().uuid(),
+    lastChangedDate: dateSchema,
+    version: z.string().nonempty(),
+  })
+  .strict()
+
+export const sealedRecordSchemaDynamoLatestUpdate =
+  sealedRecordSchemaDynamoUpdate.merge(recordSchemaDynamoLatestPart)
+
+export const sealedRecordSchemaDynamoLatestToUpdate =
+  recordSchemaDynamoLatestToUpdatePart
+    .merge(sealedRecordSchemaDynamoUpdate)
+    .strict()
 
 //
 
@@ -297,13 +326,21 @@ export type RecordDynamoLatestType = z.infer<typeof recordSchemaDynamoLatest>
 export type RecordDynamoDeletedType = z.infer<typeof recordSchemaDynamoDeleted>
 
 export type RecordDynamoUpdateType = z.infer<typeof recordSchemaDynamoUpdate>
-
 export type RecordDynamoLatestUpdateType = z.infer<
   typeof recordSchemaDynamoLatestUpdate
 >
-
 export type RecordDynamoLatestToUpdateType = z.infer<
   typeof recordSchemaDynamoLatestToUpdate
 >
 
 export type RecordDynamoUpdateSeal = z.infer<typeof recordSchemaUpdateSeal>
+
+export type SealedRecordDynamoUpdateType = z.infer<
+  typeof sealedRecordSchemaDynamoUpdate
+>
+export type SealedRecordDynamoLatestUpdateType = z.infer<
+  typeof sealedRecordSchemaDynamoLatestUpdate
+>
+export type SealedRecordDynamoLatestToUpdateType = z.infer<
+  typeof sealedRecordSchemaDynamoLatestToUpdate
+>
