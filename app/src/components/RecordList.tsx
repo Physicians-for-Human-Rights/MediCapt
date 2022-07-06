@@ -311,7 +311,7 @@ export default function RecordList({
             placeholder={t('user.enter-location')}
             any={'user.any-location'}
             value={filterLocationID}
-            setValue={setFilterLocationID}
+            setValue={(id, _uuid) => setFilterLocationID(id)}
             mx={Platform.OS === 'android' ? 0 : { md: 2, base: 0 }}
             my={Platform.OS === 'android' ? 2 : { md: 0, base: 2 }}
             w={Platform.OS === 'android' ? '80%' : undefined}

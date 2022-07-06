@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Select, ISelectProps, ISelectItemProps } from 'native-base'
 import { t } from 'i18n-js'
 import _ from 'lodash'
@@ -17,21 +17,29 @@ export default function SelectLocation({
 }: {
   placeholder: string
   value: string | undefined
-  setValue: (locationID: string, locationUUID?: string) => any
+  setValue: (locationID: string, locationUUID: string) => any
   bg?: string
   any?: string
   size?: string
   itemProps?: ISelectItemProps
 } & ISelectProps) {
   const locations = useUserLocations()
-  if (locations) {
+  const [selected, setSelected] = useState(value)
+  if (locations && !_.includes(locations, 'admin')) {
     return (
       <Select
         bg={bg}
         size={size}
-        selectedValue={value}
+        selectedValue={selected}
         placeholder={placeholder}
-        onValueChange={setValue}
+        onValueChange={id => {
+          setSelected(id)
+          const l = _.find(
+            locations,
+            l => (_.isString(l) ? l : l.locationID) === id
+          )!
+          setValue(id, _.isString(l) ? l : l.locationUUID)
+        }}
         {...props}
       >
         {_.concat(

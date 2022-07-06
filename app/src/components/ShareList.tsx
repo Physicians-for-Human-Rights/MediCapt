@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Box,
   HStack,
@@ -13,23 +13,25 @@ import {
   Select,
 } from 'native-base'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
+import { UserType } from 'utils/types/user'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
 import _ from 'lodash'
-import { FormMetadata } from 'utils/types/formMetadata'
+import { Share } from 'utils/types/share'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import SelectLocation from 'components/SelectLocation'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import { Platform } from 'react-native'
+import { getUserByUUIDCachedAnyPool } from 'api/common'
 
 export function ListItem({
   item,
   selectItem,
 }: {
-  item: FormMetadata
-  selectItem: (i: FormMetadata) => any
+  item: Share
+  selectItem: (i: Share) => any
 }) {
   return (
     <Pressable p={2} onPress={() => selectItem(item)}>
@@ -71,8 +73,8 @@ export function ListItemDesktop({
   item,
   selectItem,
 }: {
-  item: FormMetadata
-  selectItem: (i: FormMetadata) => any
+  item: Share
+  selectItem: (i: Share) => any
 }) {
   return (
     <Pressable
@@ -84,51 +86,49 @@ export function ListItemDesktop({
       <HStack alignItems="center" flex={1} justifyContent="space-between">
         <VStack w="45%">
           <Text bold isTruncated>
-            {item.title}
+            {item.patientName || t('record.missing-patient-name')}
           </Text>
           <Text isTruncated ml={2}>
-            {item.subtitle}
+            {item.patientGender ? t('gender.' + item.patientGender) : ''}
           </Text>
+          <Text isTruncated ml={2}>
+            {item.patientAddress ? item.patientAddress : ''}
+          </Text>
+          <Text isTruncated ml={2}>
+            {formatDate(item.patientDateOfBirth, 'PPP')}
+          </Text>
+          <Text>{item.recordID}</Text>
         </VStack>
-
-        <VStack w="20%">
-          {_.split(item.tags, ',').map((s: string, n: number) => (
+        <VStack w="30%">
+          <Text>{item.formUUID ? item.formTitle : 'Unknown form'}</Text>
+          <Text>{item.formOfficialName + ' ' + item.formOfficialCode}</Text>
+          <Text>{item.formID}</Text>
+          <Text>{item.caseId ? item.caseId : ''}</Text>
+          {_.split(item.formTags, ',').map((s: string, n: number) => (
             <Text isTruncated key={n}>
               {t('tag.' + s)}
             </Text>
           ))}
-          <Text>{item.formID}</Text>
         </VStack>
-
         <VStack w="20%">
-          <Text isTruncated>{formatDate(item.lastChangedDate, 'PPP')}</Text>
+          <Text isTruncated>Creation</Text>
+          <Text isTruncated ml={2}>
+            {formatDate(item.lastChangedDate, 'PPP')}
+          </Text>
+          <Text isTruncated>Expiration</Text>
+          <Text isTruncated ml={2}>
+            {formatDate(item.shareExpiresOn, 'PPP')}
+          </Text>
         </VStack>
-
-        <HStack w="5%">
-          {item.enabled ? (
-            <Icon
-              color="success.400"
-              size="6"
-              name="check-circle"
-              as={MaterialIcons}
-            />
-          ) : (
-            <Icon color="error.700" size="6" name="cancel" as={MaterialIcons} />
-          )}
-        </HStack>
       </HStack>
     </Pressable>
   )
 }
 
-export default function FormList({
-  forms,
+export default function ShareList({
+  shares,
   hasMore = false,
   loadMore,
-  filterCountry,
-  setFilterCountry,
-  filterLanguage,
-  setFilterLanguage,
   filterLocationID,
   setFilterLocationID,
   filterEnabled,
@@ -140,14 +140,9 @@ export default function FormList({
   doSearch,
   selectItem,
 }: {
-  forms: FormMetadata[]
+  shares: Share[]
   hasMore: boolean
   loadMore?: () => any
-  itemsPerPage?: number
-  filterCountry: string
-  setFilterCountry: React.Dispatch<React.SetStateAction<string>>
-  filterLanguage: string
-  setFilterLanguage: React.Dispatch<React.SetStateAction<string>>
   filterLocationID: string
   setFilterLocationID: React.Dispatch<React.SetStateAction<string>>
   filterSearchType: string
@@ -157,8 +152,37 @@ export default function FormList({
   filterText: string | undefined
   setFilterText: React.Dispatch<React.SetStateAction<string | undefined>>
   doSearch: () => any
-  selectItem: (f: FormMetadata) => any
+  selectItem: (f: Share) => any
 }) {
+  const [users, setUsers] = useState({} as Record<string, Partial<UserType>>)
+
+  useEffect(() => {
+    async function usersFn() {
+      const loadedUsers = {} as Record<string, Partial<UserType>>
+      await Promise.all(
+        _.map(
+          _.uniq(
+            _.concat(
+              _.map(shares, r => r.createdByUUID),
+              _.map(shares, r => r.lastChangedByUUID),
+              _.map(shares, r => r.sharedWithUUID)
+            )
+          ),
+          async userUUID => {
+            const result = await getUserByUUIDCachedAnyPool(
+              userUUID,
+              () => null
+            )
+            if (result) loadedUsers[userUUID] = result
+            return result
+          }
+        )
+      )
+      setUsers(loadedUsers)
+    }
+    usersFn()
+  }, [shares])
+
   return (
     <>
       <Stack
@@ -173,30 +197,6 @@ export default function FormList({
             any={'user.any-location'}
             value={filterLocationID}
             setValue={(id, _uuid) => setFilterLocationID(id)}
-            mx={Platform.OS === 'android' ? 0 : { md: 2, base: 0 }}
-            my={Platform.OS === 'android' ? 1 : { md: 0, base: 2 }}
-            w={Platform.OS === 'android' ? '80%' : undefined}
-          />
-        </Center>
-        <Center>
-          <AnyCountry
-            bg="white"
-            placeholder={t('location.select-country')}
-            value={filterCountry}
-            setValue={setFilterCountry}
-            any={'location.any-country'}
-            mt={Platform.OS === 'android' ? 0 : { md: 0, base: 2 }}
-            ml={Platform.OS === 'android' ? 0 : 3}
-            w={Platform.OS === 'android' ? '80%' : undefined}
-          />
-        </Center>
-        <Center>
-          <Language
-            bg="white"
-            placeholder={t('location.select-language')}
-            value={filterLanguage}
-            setValue={setFilterLanguage}
-            any={'location.any-language'}
             mx={Platform.OS === 'android' ? 0 : { md: 2, base: 0 }}
             my={Platform.OS === 'android' ? 1 : { md: 0, base: 2 }}
             w={Platform.OS === 'android' ? '80%' : undefined}
@@ -284,7 +284,7 @@ export default function FormList({
         <Box>
           <ScrollView>
             <Box position="relative" display={{ md: 'none', base: 'flex' }}>
-              {forms.map((item: FormMetadata, index: number) => {
+              {shares.map((item: Share, index: number) => {
                 return (
                   <ListItem item={item} key={index} selectItem={selectItem} />
                 )
@@ -300,20 +300,20 @@ export default function FormList({
                 <Text
                   fontWeight="bold"
                   textAlign="left"
-                  w="50%"
+                  w="45%"
                   mb={3}
                   _light={{ color: 'coolGray.800' }}
                 >
-                  Title
+                  Record
                 </Text>
                 <Text
                   fontWeight="bold"
                   textAlign="left"
-                  w="25%"
+                  w="30%"
                   mb={3}
                   _light={{ color: 'coolGray.900' }}
                 >
-                  Tags / Form ID
+                  Form
                 </Text>
                 <Text
                   fontWeight="bold"
@@ -322,21 +322,11 @@ export default function FormList({
                   mb={3}
                   _light={{ color: 'coolGray.900' }}
                 >
-                  Date changed
-                </Text>
-                <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="10%"
-                  mb={3}
-                  _light={{ color: 'coolGray.900' }}
-                  mr={-1}
-                >
-                  Enabled
+                  Dates
                 </Text>
               </HStack>
               <VStack mt={3} space={3}>
-                {forms.map((item: FormMetadata, index: number) => {
+                {shares.map((item: Share, index: number) => {
                   return (
                     <ListItemDesktop
                       item={item}

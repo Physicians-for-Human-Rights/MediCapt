@@ -92,6 +92,7 @@ function FormMenu({
   onPrint,
   changed,
   isSealed,
+  readOnly,
 }: {
   formSections: NamedFormSection[]
   changeSection: (i: number) => any
@@ -104,6 +105,7 @@ function FormMenu({
   onPrint: () => any
   changed: boolean
   isSealed: boolean
+  readOnly: boolean
 }) {
   const stackDirection = useBreakpointValue({
     base: 'column',
@@ -130,6 +132,7 @@ function FormMenu({
           onPrint={onPrint}
           changed={changed}
           isSealed={isSealed}
+          readOnly={readOnly}
         />
       }
       data={data}

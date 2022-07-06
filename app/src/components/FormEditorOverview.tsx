@@ -238,7 +238,13 @@ export default function FormEditorOverview({
           bg="white"
           placeholder={t('form-editor.select-location')}
           value={formMetadata.locationID}
-          setValue={v => setFormMetadata({ ...formMetadata, locationID: v })}
+          setValue={(id, uuid) =>
+            setFormMetadata({
+              ...formMetadata,
+              locationID: id,
+              locationUUID: uuid,
+            })
+          }
           any={'1'}
           mx={3}
           mt={1}

@@ -200,6 +200,7 @@ export default {
       'seal-incomplete-warning':
         'This record is not complete! Check which sections are highlighted in red and fill them out or skip their parts if possible. You can still seal the record if you are sure. Once you seal it, you cannot change its contents. But you can add associated records to it. Should we seal the record anyway?',
       'select-associated-record-to-add': 'Select associated record to add',
+      'select-user-to-share-with': 'Select user to share with',
     },
     buttons: {
       'complete-record': 'Complete record',
@@ -213,6 +214,7 @@ export default {
       'no-associated-form': 'No forms associated',
       'tooltip-associated-form':
         'Form designers can associate forms with this one, allowing you to append lab reports, etc.',
+      'share-record': 'Share record',
     },
   },
   form: {

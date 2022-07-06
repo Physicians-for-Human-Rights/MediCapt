@@ -1,6 +1,7 @@
 import React from 'react'
 import {
   Box,
+  Center,
   HStack,
   Pressable,
   Icon,
@@ -13,7 +14,7 @@ import {
   VStack,
   Tooltip,
 } from 'native-base'
-import { AntDesign, Feather } from '@expo/vector-icons'
+import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons'
 import _ from 'lodash'
 import { t } from 'i18n-js'
 
@@ -25,11 +26,13 @@ export default function FormButtons({
   onCompleteRecord,
   onPrint,
   onAddRecord,
+  onShareRecord,
   onUpgrade,
   changed,
   isSealed,
   hasAssociatedForms,
   topSpace = '3',
+  readOnly,
 }: {
   isSectionCompleteList: boolean[]
   onExit: () => any
@@ -38,11 +41,13 @@ export default function FormButtons({
   onCompleteRecord: () => any
   onPrint: () => any
   onAddRecord?: () => any
+  onShareRecord?: () => any
   onUpgrade?: () => any
   changed: boolean
   isSealed: boolean
   hasAssociatedForms: boolean
   topSpace?: string
+  readOnly: boolean
 }) {
   const stackDirection = useBreakpointValue({
     base: 'column',
@@ -106,7 +111,7 @@ export default function FormButtons({
             >
               {t('record.buttons.print')}
             </Button>
-            {!isSealed && (
+            {!isSealed && !readOnly && (
               <Button
                 bg={
                   _.every(isSectionCompleteList, (a: boolean) => a)
@@ -123,9 +128,21 @@ export default function FormButtons({
           </HStack>
         )}
       </Stack>
-      {!changed && onAddRecord && onUpgrade ? (
+      {!isSealed && !readOnly && onUpgrade && (
+        <Center>
+          <Button
+            leftIcon={<Icon as={Feather} name="alert-triangle" size="sm" />}
+            bg="error.500"
+            onPress={onUpgrade}
+            _text={{ selectable: false }}
+          >
+            {t('record.buttons.upgrade-form')}
+          </Button>
+        </Center>
+      )}
+      {!changed && onAddRecord && onShareRecord ? (
         <Stack
-          pb="3"
+          py="3"
           direction={stackDirection}
           space="2"
           justifyContent="center"
@@ -143,16 +160,14 @@ export default function FormButtons({
               ? t('record.buttons.fill-associated-form')
               : t('record.buttons.no-associated-form')}
           </Button>
-          {!isSealed && (
-            <Button
-              leftIcon={<Icon as={Feather} name="alert-triangle" size="sm" />}
-              bg="error.500"
-              onPress={onUpgrade}
-              _text={{ selectable: false }}
-            >
-              {t('record.buttons.upgrade-form')}
-            </Button>
-          )}
+          <Button
+            bg={'info.500'}
+            leftIcon={<Icon as={MaterialIcons} name="share" size="sm" />}
+            onPress={onShareRecord}
+            _text={{ selectable: false }}
+          >
+            {t('record.buttons.share-record')}
+          </Button>
         </Stack>
       ) : (
         <></>

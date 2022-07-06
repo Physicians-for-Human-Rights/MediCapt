@@ -43,8 +43,12 @@ import useLeave from 'utils/useLeave'
 import confirmationDialog from 'utils/confirmationDialog'
 import { t } from 'i18n-js'
 import FormListStaticCompact from 'components/FormListStaticCompact'
-import RecordListStaticComponent from 'components/RecordListStaticComponent'
+import ShareListStatic from 'components/ShareListStatic'
 import { goBackMaybeRefreshing } from 'utils/navigation'
+import { createShareForRecord, getSharesForRecord } from 'api/provider'
+import { Share } from 'utils/types/share'
+import UserSearch from 'components/UserSearch'
+import { useUserLocations } from 'utils/store'
 
 const FormMemo = React.memo(Form)
 
@@ -72,6 +76,7 @@ export default function RecordEditor({
           formID: undefined,
           formVersion: undefined,
           locationID: undefined,
+          locationUUID: undefined,
           patientName: '',
           patientGender: '',
           patientAddress: '',
@@ -100,9 +105,10 @@ export default function RecordEditor({
     } as RecordManifestWithData
   )
   const [associatedForms, setAssociatedForms] = useState([] as FormMetadata[])
-  const [associatedRecords, setAssociatedrecords] = useState(
+  const [associatedRecords, setAssociatedRecords] = useState(
     [] as RecordMetadata[]
   )
+  const [shares, setShares] = useState([] as Share[])
 
   // This is how we keep track of whether the form has been changed.
   const setRecordMetadata = useCallback(
@@ -155,16 +161,26 @@ export default function RecordEditor({
             contents: contentsWithData,
           })
           // Load up associated records
-          const l = [] as RecordMetadata[]
-          if (newRecordMetadata && newRecordMetadata.associatedRecords) {
-            for (const r of newRecordMetadata.associatedRecords || []) {
-              const recordResponse = await getRecordMetadata(r.recordUUID)
-              if (recordResponse) {
-                l.push(recordResponse)
+          try {
+            const l = [] as RecordMetadata[]
+            if (newRecordMetadata && newRecordMetadata.associatedRecords) {
+              for (const r of newRecordMetadata.associatedRecords || []) {
+                const recordResponse = await getRecordMetadata(r.recordUUID)
+                if (recordResponse) {
+                  l.push(recordResponse)
+                }
               }
             }
+            setAssociatedRecords(l)
+          } catch (e) {
+            warning('Failed to load associated records')
           }
-          setAssociatedrecords(l)
+          // Look up shares
+          try {
+            setShares(await getSharesForRecord(newRecordMetadata.recordUUID))
+          } catch (e) {
+            warning('Failed to load shares')
+          }
         }
         // The input record overrides any form information that may have been provided.
         const formUUID =
@@ -251,6 +267,7 @@ export default function RecordEditor({
                   formID: formMetadata.formID,
                   formVersion: formMetadata.version,
                   locationID: formMetadata.locationID,
+                  locationUUID: formMetadata.locationUUID,
                 })
           // Update manifest and metadata with the record that we want to save
           const updatedRecordManifest = addOrReplaceRecordTypeInManifest(
@@ -353,7 +370,6 @@ export default function RecordEditor({
           setWaiting(null)
         }
       }
-
       setWaiting('Loading')
       handleComplete()
     },
@@ -363,6 +379,65 @@ export default function RecordEditor({
   const onAddRecord = useCallback(() => {
     setIsAssociatedModalOpen(true)
   }, [])
+
+  // TODO This is a temporary hack until we upgrade everything to include
+  // locationIDs and locationUUIDs
+  const locations = useUserLocations()
+  const onShareRecord = useCallback(() => {
+    recordMetadata &&
+      formMetadata &&
+      'recordUUID' in recordMetadata &&
+      navigation.navigate('FindUser', {
+        ...route.params,
+        selectUser: async u => {
+          try {
+            setWaiting('Creating share')
+            const expirationDate = new Date()
+            expirationDate.setFullYear(expirationDate.getFullYear() + 2)
+            const l = _.find(locations, l =>
+              _.isString(l)
+                ? l === formMetadata.locationID
+                : l.locationID === formMetadata.locationID
+            )
+            await createShareForRecord({
+              'storage-version': '1.0.0',
+              recordUUID: recordMetadata.recordUUID,
+              recordID: recordMetadata.recordID,
+              locationUUID: _.isString(l) ? l : l!.locationUUID,
+              locationID: formMetadata.locationID,
+              //
+              formUUID: recordMetadata.formUUID,
+              formID: recordMetadata.formID,
+              formVersion: recordMetadata.formVersion,
+              formTitle: formMetadata.title,
+              formSubtitle: formMetadata.subtitle,
+              formTags: formMetadata.tags,
+              formOfficialName: formMetadata['official-name'],
+              formOfficialCode: formMetadata['official-code'],
+              //
+              sharedWithUUID: u.userUUID,
+              sharedWithUUIDUserType: u.userType,
+              shareExpiresOn: expirationDate,
+              //
+              patientName: recordMetadata.patientName,
+              patientGender: recordMetadata.patientGender,
+              patientAddress: recordMetadata.patientAddress,
+              patientDateOfBirth: recordMetadata.patientDateOfBirth,
+              patientPhoneNumber: recordMetadata.patientPhoneNumber,
+              patientEmail: recordMetadata.patientEmail,
+              incidentDate: recordMetadata.incidentDate,
+              caseId: recordMetadata.caseId,
+            })
+            setShares(await getSharesForRecord(recordMetadata.recordUUID))
+          } catch (e) {
+            handleStandardErrors(error, warning, success, e)
+          } finally {
+            setWaiting(null)
+          }
+        },
+        defaultLocationUUID: recordMetadata.locationUUID,
+      })
+  }, [recordMetadata, formMetadata])
 
   const onPrintRecord = useCallback(() => {
     false
@@ -417,6 +492,7 @@ export default function RecordEditor({
               }
               onUpgrade={onUpgrade}
               onAddRecord={onAddRecord}
+              onShareRecord={onShareRecord}
               onPrint={onPrintRecord}
               changed={changed}
               associatedRecords={associatedRecords}
@@ -427,6 +503,8 @@ export default function RecordEditor({
                   recordMetadata: r,
                 })
               }}
+              shares={shares}
+              selectShare={console.log}
               reloadPrevious={reloadPrevious}
             />
           )}
@@ -469,7 +547,7 @@ export default function RecordEditor({
                       setRecordMetadata(
                         await updateRecord(newMetadata, recordManifest)
                       )
-                      setAssociatedrecords(l => _.concat(l, [r]))
+                      setAssociatedRecords(l => _.concat(l, [r]))
                     },
                   })
                 }}

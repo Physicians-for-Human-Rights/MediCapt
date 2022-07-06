@@ -45,9 +45,12 @@ import {
   mkText,
   mkLongText,
   mkRecordList,
+  mkShareList,
 } from 'utils/formRendering/make'
 import { RenderCommand } from 'utils/formRendering/types'
 import confirmationDialog from 'utils/confirmationDialog'
+import { Share } from 'utils/types/share'
+import { disableRenderCommands } from 'utils/formRendering/utils'
 
 // FIXME Temproary hack before rewriting Form to invert control back to
 // RecordEditor and show error messages
@@ -69,7 +72,9 @@ function recordOverviewPage(
   users: Record<string, Partial<UserType>>,
   isSealed: boolean,
   associatedRecords: RecordMetadata[],
-  selectAssociatedRecord: (r: RecordMetadata) => any
+  selectAssociatedRecord: (r: RecordMetadata) => any,
+  shares: Share[],
+  selectShare: (r: Share) => any
 ): RenderCommand[] {
   return _.concat(
     isSealed
@@ -103,6 +108,9 @@ function recordOverviewPage(
           associatedRecords,
           selectAssociatedRecord
         )
+      : [],
+    _.isArray(shares) && shares.length > 0
+      ? mkShareList('Record shared with', 'artitle', shares, selectShare)
       : [],
     mkTitle(t('record.overview.titles.patient'), 'ptitle'),
     [
@@ -261,11 +269,15 @@ export default function Form({
   displayPageAfterOverview = false,
   onUpgrade,
   onAddRecord,
+  onShareRecord,
   onPrint,
   changed,
   associatedRecords = [],
   selectAssociatedRecord = () => null,
+  shares = [],
+  selectShare = () => null,
   reloadPrevious,
+  readOnly = false,
 }: {
   formMetadata: FormMetadata
   formManifest: FormManifestWithData
@@ -286,11 +298,15 @@ export default function Form({
   displayPageAfterOverview?: boolean
   onUpgrade?: () => any
   onAddRecord?: () => any
+  onShareRecord?: () => any
   onPrint?: () => any
   changed: boolean
   associatedRecords?: RecordMetadata[]
   selectAssociatedRecord?: (r: RecordMetadata) => any
+  shares?: Share[]
+  selectShare?: (r: Share) => any
   reloadPrevious: React.MutableRefObject<boolean>
+  readOnly?: boolean
 }) {
   const isSealed =
     (recordMetadataRef.current && recordMetadataRef.current.sealed) || false
@@ -406,26 +422,16 @@ export default function Form({
     usersFn()
   }, [recordMetadataRef])
 
-  function sealRecordcommands(isSealed: boolean, commands: RenderCommand[]) {
-    if (!isSealed) return commands
-    return _.map(commands, c => {
-      c.disable = true
-      if (c.type === 'padding') c.contents.disable = true
-      if (c.type === 'row') {
-        c.left.disable = true
-        c.right.disable = true
-      }
-      if (c.type === 'row-with-description') {
-        c.left.disable = true
-        c.right.disable = true
-        c.description.disable = true
-      }
-      return c
-    })
+  function disableRecordCommands(
+    shouldDisable: boolean,
+    commands: RenderCommand[]
+  ) {
+    if (!shouldDisable) return commands
+    return disableRenderCommands(commands)
   }
 
-  const renderCommands = sealRecordcommands(
-    isSealed && !(overviewSection && currentSection === 0),
+  const renderCommands = disableRecordCommands(
+    (isSealed || readOnly) && !(overviewSection && currentSection === 0),
     !_.isEmpty(formSections) && form && 'common' in form
       ? transformToLayout(
           overviewSection && currentSection === 0
@@ -435,7 +441,9 @@ export default function Form({
                 users,
                 isSealed,
                 associatedRecords,
-                selectAssociatedRecord
+                selectAssociatedRecord,
+                shares,
+                selectShare
               )
             : allFormRenderCommands(
                 formSections[currentSection],
@@ -552,6 +560,7 @@ export default function Form({
           onPrint={onExit}
           changed={changed}
           isSealed={isSealed}
+          readOnly={readOnly}
         />
       ) : (
         <KeyboardAwareFlatList
@@ -571,10 +580,12 @@ export default function Form({
                 onCompleteRecord={onCompleteRecord}
                 onPrint={onExit}
                 onAddRecord={onAddRecord}
+                onShareRecord={onShareRecord}
                 onUpgrade={onUpgrade}
                 changed={changed}
                 onSave={onSaveRecord}
                 isSealed={isSealed}
+                readOnly={readOnly}
                 hasAssociatedForms={
                   formMetadata.associatedForms
                     ? formMetadata.associatedForms.length > 0
