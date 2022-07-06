@@ -46,17 +46,19 @@ module "kms_key" {
   deletion_window_in_days  = var.records_dynamodb_kms_deletion_window_in_days
   enable_key_rotation      = true
   key_usage                = "ENCRYPT_DECRYPT"
-  alias                    = "alias/records_dynamodb_key"
+  alias                    = "alias/sharing_dynamodb_key"
 }
 
 module "dynamodb_table" {
-  source = "cloudposse/dynamodb/aws" 
+  source = "cloudposse/dynamodb/aws"
   version     = "0.29.4"
   name                         = "${var.namespace}-${var.stage}-record-sharing"
   enable_encryption	       = true
   server_side_encryption_kms_key_arn = module.kms_key.key_arn
   enable_streams	       = false
-  ttl_enabled	               = false
+  #
+  ttl_enabled	               = true
+  ttl_attribute	               = "TTL"
   # Once Medicapt scales sufficiently, it will be cheaper to configure autoscaling
   enable_autoscaler            = false
   billing_mode                 = "PAY_PER_REQUEST"
@@ -64,28 +66,49 @@ module "dynamodb_table" {
   autoscale_min_write_capacity = null
   enable_point_in_time_recovery = var.dynamodb_point_in_time_recovery
   #
-  hash_key                     = "sharedWithUUID"
+  hash_key                     = "PK"
   hash_key_type	               = "S"
-  range_key                    = "shareUUID"
+  range_key                    = "SK"
   range_key_type               = "S"
   dynamodb_attributes = [
-    #
-    # Terraform only wants the fields which serve as indexes.
-    #
     {
-      name = "sharedOnDate"
+      name = "GPK1"
       type = "S"
     },
     {
-      name = "sharedByUUID"
+      name = "GSK1"
+      type = "S"
+    },
+    {
+      name = "GPK2"
+      type = "S"
+    },
+    {
+      name = "GSK2"
+      type = "S"
+    },
+    {
+      name = "GPK3"
+      type = "S"
+    },
+    {
+      name = "GSK3"
+      type = "S"
+    },
+    {
+      name = "GPK4"
+      type = "S"
+    },
+    {
+      name = "GSK4"
       type = "S"
     }
   ]
   global_secondary_index_map = [
     {
-      name               = "RecordsSharedByDate"
-      hash_key           = "sharedWithUUID"
-      range_key          = "sharedOnDate"
+      name               = "SharedByDate"
+      hash_key           = "GPK1"
+      range_key          = "GSK1"
       projection_type    = "ALL"
       non_key_attributes = null
       #
@@ -93,9 +116,29 @@ module "dynamodb_table" {
       write_capacity     = null
     },
     {
-      name               = "RecordsByOriginAndDate"
-      hash_key           = "sharedByUUID"
-      range_key          = "sharedOnDate"
+      name               = "SharedWithID"
+      hash_key           = "GPK2"
+      range_key          = "GSK2"
+      projection_type    = "ALL"
+      non_key_attributes = null
+      #
+      read_capacity      = null
+      write_capacity     = null
+    },
+    {
+      name               = "SharedWithDate"
+      hash_key           = "GPK3"
+      range_key          = "GSK3"
+      projection_type    = "ALL"
+      non_key_attributes = null
+      #
+      read_capacity      = null
+      write_capacity     = null
+    },
+    {
+      name               = "ByRecord"
+      hash_key           = "GPK4"
+      range_key          = "GSK4"
       projection_type    = "ALL"
       non_key_attributes = null
       #
@@ -103,71 +146,6 @@ module "dynamodb_table" {
       write_capacity     = null
     }
   ]
-}
-
-resource "aws_iam_policy" "associate_policy" {
-  name        = "${var.namespace}-${var.stage}-associate-record-sharing"
-  description = "Access to the record sharing dynamodb for associates"
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "dynamodb:DeleteItem",
-        "dynamodb:GetItem",
-        "dynamodb:Query"
-      ],
-      "Resource": ["${module.dynamodb_table.table_arn}"],
-      "Condition": {
-        "StringEquals": {
-          "cognito-identity.amazonaws.com:aud": "${var.cognito_identity_associate_aud}"
-        },
-        "ForAnyValue:StringLike": {
-          "cognito-identity.amazonaws.com:amr": "authenticated"
-        },
-        "ForAllValues:StringEquals": {
-          "dynamodb:LeadingKeys": ["$${cognito-identity.amazonaws.com:sub}"]
-        }
-      }
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_policy" "provider_policy" {
-  name        = "${var.namespace}-${var.stage}-provider-record-sharing"
-  description = "Access to the record sharing dynamodb for providers"
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "dynamodb:DeleteItem",
-        "dynamodb:GetItem",
-        "dynamodb:PutItem",
-        "dynamodb:Query"
-      ],
-      "Resource": ["${module.dynamodb_table.table_arn}"],
-      "Condition": {
-        "StringEquals": {
-          "cognito-identity.amazonaws.com:aud": "${var.cognito_identity_provider_aud}"
-        },
-        "ForAnyValue:StringLike": {
-          "cognito-identity.amazonaws.com:amr": "authenticated"
-        },
-        "ForAllValues:StringEquals": {
-          "dynamodb:LeadingKeys": ["$${cognito-identity.amazonaws.com:sub}"]
-        }
-      }
-    }
-  ]
-}
-EOF
 }
 
 ###############################################################################
@@ -178,12 +156,4 @@ output "sharing_dynamodb" {
 
 output "sharing_dynamodb_kms" {
   value = module.kms_key
-}
-
-output "associate_policy" {
-  value = resource.aws_iam_policy.associate_policy
-}
-
-output "provider_policy" {
-  value = resource.aws_iam_policy.provider_policy
 }
