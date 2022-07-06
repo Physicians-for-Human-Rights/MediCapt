@@ -2,10 +2,74 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "Placeholder",
-      "Effect": "Deny",
-      "Action": ["ec2:*"],
-      "Resource": "*"
+      "Action": [
+        "dynamodb:BatchGet*",
+        "dynamodb:Get*",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+      ],
+      "Effect": "Allow",
+      "Resource": "${sharing_table_arn}"
+    },
+    {
+      "Action": [
+        "dynamodb:BatchGet*",
+        "dynamodb:Get*",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+      ],
+      "Effect": "Allow",
+      "Resource": "${sharing_table_arn}/*"
+    },
+    {
+      "Sid": "DynamoKMS",
+      "Effect": "Allow",
+      "Action": ["kms:Decrypt"],
+      "Resource": ["${sharing_table_kms}"]
+    },
+    {
+      "Action": ["dynamodb:GetItem"],
+      "Effect": "Allow",
+      "Resource": "${form_table_arn}"
+    },
+    {
+      "Action": ["dynamodb:GetItem"],
+      "Effect": "Allow",
+      "Resource": "${form_table_arn}/*"
+    },
+    {
+      "Sid": "FormS3",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject"],
+      "Resource": ["${form_bucket_arn}/*", "${form_bucket_arn}"]
+    },
+    {
+      "Sid": "FormKMS",
+      "Effect": "Allow",
+      "Action": ["kms:Decrypt"],
+      "Resource": "${form_kms_key_bucket_arn}"
+    },
+    {
+      "Action": ["dynamodb:GetItem"],
+      "Effect": "Allow",
+      "Resource": "${record_table_arn}"
+    },
+    {
+      "Action": ["dynamodb:GetItem"],
+      "Effect": "Allow",
+      "Resource": "${record_table_arn}/*"
+    },
+    {
+      "Sid": "RecordS3",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject"],
+      "Resource": ["${record_bucket_arn}/*", "${record_bucket_arn}"]
+    },
+    {
+      "Sid": "RecordKMS",
+      "Effect": "Allow",
+      "Action": ["kms:Decrypt"],
+      "Resource": ["${record_table_kms}", "${record_bucket_kms}"]
     }
   ]
 }

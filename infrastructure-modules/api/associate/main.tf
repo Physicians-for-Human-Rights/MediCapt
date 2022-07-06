@@ -25,8 +25,11 @@ resource "aws_api_gateway_rest_api" "associate" {
       # NB: Is there a way to pass in a map and do a lookup?
       lambda_uri_associateGetSharedRecordById           = aws_lambda_function.lambdas["associateGetSharedRecordById"].invoke_arn
       lambda_uri_associateDeleteSharedRecordById        = aws_lambda_function.lambdas["associateDeleteSharedRecordById"].invoke_arn
-      lambda_uri_associateGetSharedRecordImageByImageId = aws_lambda_function.lambdas["associateGetSharedRecordImageByImageId"].invoke_arn
-      lambda_uri_associateGetSharedRecordsWithUser      = aws_lambda_function.lambdas["associateGetSharedRecordsWithUser"].invoke_arn
+      lambda_uri_associateGetRecordShares               = aws_lambda_function.lambdas["associateGetRecordShares"].invoke_arn
+      lambda_uri_associateGetUserById                   = aws_lambda_function.lambdas["associateGetUserById"].invoke_arn
+      lambda_uri_associateGetUserByUUID                 = aws_lambda_function.lambdas["associateGetUserByUUID"].invoke_arn
+      lambda_uri_associateGetUserByUUIDAnyPool          = aws_lambda_function.lambdas["associateGetUserByUUIDAnyPool"].invoke_arn
+      lambda_uri_associateGetLocationById               = aws_lambda_function.lambdas["associateGetLocationById"].invoke_arn
     })
   endpoint_configuration {
     types = [var.endpoint_configuration]
@@ -39,8 +42,11 @@ resource "aws_api_gateway_deployment" "api" {
     aws_api_gateway_rest_api.associate,
     aws_lambda_function.lambdas["associateGetSharedRecordById"],
     aws_lambda_function.lambdas["associateDeleteSharedRecordById"],
-    aws_lambda_function.lambdas["associateGetSharedRecordImageByImageId"],
-    aws_lambda_function.lambdas["associateGetSharedRecordsWithUser"]
+    aws_lambda_function.lambdas["associateGetRecordShares"],
+    aws_lambda_function.lambdas["associateGetUserById"],
+    aws_lambda_function.lambdas["associateGetUserByUUID"],
+    aws_lambda_function.lambdas["associateGetUserByUUIDAnyPool"],
+    aws_lambda_function.lambdas["associateGetLocationById"]
   ]
   rest_api_id = aws_api_gateway_rest_api.associate.id
   # should be var.stage but see this issue, required for cloudwatch support
@@ -62,8 +68,11 @@ resource "aws_api_gateway_stage" "api" {
     aws_api_gateway_rest_api.associate,
     aws_lambda_function.lambdas["associateGetSharedRecordById"],
     aws_lambda_function.lambdas["associateDeleteSharedRecordById"],
-    aws_lambda_function.lambdas["associateGetSharedRecordImageByImageId"],
-    aws_lambda_function.lambdas["associateGetSharedRecordsWithUser"]
+    aws_lambda_function.lambdas["associateGetRecordShares"],
+    aws_lambda_function.lambdas["associateGetUserById"],
+    aws_lambda_function.lambdas["associateGetUserByUUID"],
+    aws_lambda_function.lambdas["associateGetUserByUUIDAnyPool"],
+    aws_lambda_function.lambdas["associateGetLocationById"]
   ]
   rest_api_id    = aws_api_gateway_rest_api.associate.id
   stage_name     = var.stage

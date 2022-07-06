@@ -48,7 +48,7 @@ paths:
         - CognitoUserProvider: []
       tags:
         - share
-      summary: Get a shared record by share ID
+      summary: Get a share metadata, the record, and the form by share ID
       operationId: associateGetSharedRecordById
       produces:
         - application/json
@@ -131,6 +131,7 @@ paths:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
               method.response.header.Access-Control-Allow-Methods: "'*'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Max-Age: "'86400'"
             responseTemplates:
               application/json: |
                 {}
@@ -144,91 +145,16 @@ paths:
               type: 'string'
             Access-Control-Allow-Origin:
               type: 'string'
-  /associate/share/record/image/byId/{shareId}/{imageId}:
+            Access-Control-Max-Age:
+              type: 'string'
+  /associate/share/record:
     get:
       security:
         - CognitoUserProvider: []
       tags:
         - share
-      summary: Get an image in a record
-      operationId: associateGetSharedRecordImageByImageId
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: shareId
-          in: path
-          description: The share id
-          required: true
-          type: string
-          format: uuid
-        - name: imageId
-          in: path
-          description: The uuid of the image
-          required: true
-          type: string
-          format: uuid
-      responses:
-        400:
-          description: Record already sealed
-        404:
-          description: Record or image not found
-        405:
-          description: Validation exception
-      x-amazon-apigateway-integration:
-        uri: ${lambda_uri_associateGetSharedRecordImageByImageId}
-        responses:
-          default:
-            statusCode: '200'
-        passthroughBehavior: 'NEVER'
-        httpMethod: 'POST'
-        type: 'aws_proxy'
-    options:
-      summary: CORS support
-      description: |
-        Enable CORS by returning correct headers
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      tags:
-        - CORS
-      x-amazon-apigateway-integration:
-        type: mock
-        requestTemplates:
-          application/json: |
-            {
-              "statusCode" : 200
-            }
-        responses:
-          'default':
-            statusCode: '200'
-            responseParameters:
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
-              method.response.header.Access-Control-Allow-Methods: "'*'"
-              method.response.header.Access-Control-Allow-Origin: "'*'"
-            responseTemplates:
-              application/json: |
-                {}
-      responses:
-        200:
-          description: Default response for CORS method
-          headers:
-            Access-Control-Allow-Headers:
-              type: 'string'
-            Access-Control-Allow-Methods:
-              type: 'string'
-            Access-Control-Allow-Origin:
-              type: 'string'
-  /associate/share/with-user:
-    get:
-      security:
-        - CognitoUserProvider: []
-      tags:
-        - share
-      summary: List your own shared records
-      operationId: associateGetSharedRecordsWithUser
+      summary: Get record shares
+      operationId: associateGetRecordShares
       produces:
         - application/json
       parameters:
@@ -260,7 +186,7 @@ paths:
         400:
           description: Invalid status value
       x-amazon-apigateway-integration:
-        uri: ${lambda_uri_associateGetSharedRecordsWithUser}
+        uri: ${lambda_uri_associateGetRecordShares}
         responses:
           default:
             statusCode: '200'
@@ -291,6 +217,7 @@ paths:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
               method.response.header.Access-Control-Allow-Methods: "'*'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Max-Age: "'86400'"
             responseTemplates:
               application/json: |
                 {}
@@ -303,6 +230,315 @@ paths:
             Access-Control-Allow-Methods:
               type: 'string'
             Access-Control-Allow-Origin:
+              type: 'string'
+            Access-Control-Max-Age:
+              type: 'string'
+  /associate/user/byId/{poolId}/{username}:
+    get:
+      security:
+        - CognitoUserProvider: []
+      tags:
+        - User
+      summary: Get a user by ID
+      operationId: associateGetUserById
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: poolId
+          in: path
+          description: The pool ID of this user
+          required: true
+          type: string
+        - name: username
+          in: path
+          description: ID of the user to return
+          required: true
+          type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: User not found
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_associateGetUserById}
+        responses:
+          default:
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          'default':
+            statusCode: '200'
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Max-Age: "'86400'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: 'string'
+            Access-Control-Allow-Methods:
+              type: 'string'
+            Access-Control-Allow-Origin:
+              type: 'string'
+            Access-Control-Max-Age:
+              type: 'string'
+  /associate/user/byUUID/{poolId}/{uuid}:
+    get:
+      security:
+        - CognitoUserProvider: []
+      tags:
+        - User
+      summary: Get a user by ID
+      operationId: associateGetUserByUUID
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: poolId
+          in: path
+          description: The pool ID of this user
+          required: true
+          type: string
+        - name: uuid
+          in: path
+          description: UUID of the user to return
+          required: true
+          type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: User not found
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_associateGetUserByUUID}
+        responses:
+          default:
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          'default':
+            statusCode: '200'
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Max-Age: "'86400'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: 'string'
+            Access-Control-Allow-Methods:
+              type: 'string'
+            Access-Control-Allow-Origin:
+              type: 'string'
+            Access-Control-Max-Age:
+              type: 'string'
+  /associate/user/byUUIDAnyPool/{uuid}:
+    get:
+      security:
+        - CognitoUserProvider: []
+      tags:
+        - User
+      summary: Get a user by ID from any pool
+      operationId: associateGetUserByUUIDAnyPool
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: uuid
+          in: path
+          description: UUID of the user to return
+          required: true
+          type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: User not found
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_associateGetUserByUUIDAnyPool}
+        responses:
+          default:
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          'default':
+            statusCode: '200'
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Max-Age: "'86400'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: 'string'
+            Access-Control-Allow-Methods:
+              type: 'string'
+            Access-Control-Allow-Origin:
+              type: 'string'
+            Access-Control-Max-Age:
+              type: 'string'
+  /associate/location/byId/{locationId}:
+    get:
+      security:
+        - CognitoUserProvider: []
+      tags:
+        - Location
+      summary: Get a location by ID
+      operationId: associateGetLocationById
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: locationId
+          in: path
+          description: ID of the location to return
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Location'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Location not found
+      x-amazon-apigateway-integration:
+        uri: ${lambda_uri_associateGetLocationById}
+        responses:
+          default:
+            statusCode: '200'
+        passthroughBehavior: 'NEVER'
+        httpMethod: 'POST'
+        type: 'aws_proxy'
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          'default':
+            statusCode: '200'
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,AcceptedVersions'"
+              method.response.header.Access-Control-Allow-Methods: "'*'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Max-Age: "'86400'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: 'string'
+            Access-Control-Allow-Methods:
+              type: 'string'
+            Access-Control-Allow-Origin:
+              type: 'string'
+            Access-Control-Max-Age:
               type: 'string'
 definitions:
   Empty: {}
