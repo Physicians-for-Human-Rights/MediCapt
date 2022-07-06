@@ -7,6 +7,7 @@ import { getFlatRecordValue } from 'utils/records'
 import { t } from 'i18n-js'
 import { resolveRef } from 'utils/forms'
 import { RenderCommand } from 'utils/formRendering/types'
+import { bodyImage } from 'utils/formRendering/utils'
 import {
   ManifestFileWithData,
   lookupContentsByNameAndType,
@@ -134,56 +135,70 @@ export function allFormRenderCommands(
         'body-image'
       )
 
-      let image =
-        (recordValue &&
-          lookupContentsSHA256(contents, recordValue?.value.imageHash)) ||
-        ('filename-female' in part &&
-          part['filename-female'] &&
-          genderOrSex === 'female' &&
-          lookupContentsByNameAndType(
-            contents,
-            part['filename-female'],
-            'image/'
-          )) ||
-        ('filename-inteserx' in part &&
-          part['filename-intersex'] &&
-          genderOrSex === 'intersex' &&
-          lookupContentsByNameAndType(
-            contents,
-            part['filename-intersex'],
-            'image/'
-          )) ||
-        ('filename-male' in part &&
-          part['filename-male'] &&
-          genderOrSex === 'male' &&
-          lookupContentsByNameAndType(
-            contents,
-            part['filename-male'],
-            'image/'
-          )) ||
-        ('filename' in part &&
-          part.filename &&
-          lookupContentsByNameAndType(contents, part['filename'], 'image/')) ||
-        null
-
+      const image = bodyImage(part, recordValue, contents, genderOrSex)
       const recordPhotosToPhotos = (recordPhotos: RecordPhoto[]) =>
         _.map(recordPhotos, recordPhoto => ({
           'date-taken': recordPhoto['date-taken'],
           uri: lookupContentsSHA256(contents, recordPhoto.sha256) || '',
         }))
-
-      renderCommands.push({
-        type: 'body-image',
-        recordValue,
-        image,
-        imageAnnotations: _.map(recordValue?.value.annotations, annotation => ({
-          ...annotation,
-          photos: recordPhotosToPhotos(annotation.photos),
-        })),
-        valuePath: recordValuePath,
-        key: _.join(recordValuePath, '.'),
-        disable: isSkipped(flatRecord, recordValuePath),
-      })
+      if (image) {
+        renderCommands.push({
+          type: 'body-image',
+          recordValue,
+          image,
+          imageAnnotations: _.map(
+            recordValue?.value.annotations,
+            annotation => ({
+              ...annotation,
+              photos: recordPhotosToPhotos(annotation.photos),
+            })
+          ),
+          valuePath: recordValuePath,
+          key: _.join(recordValuePath, '.'),
+          disable: isSkipped(flatRecord, recordValuePath),
+        })
+      } else {
+        const mimage = bodyImage(part, recordValue, contents, 'male')
+        const fimage = bodyImage(part, recordValue, contents, 'female')
+        if (mimage && fimage) {
+          renderCommands.push({
+            type: 'row',
+            valuePath: recordValuePath,
+            key: _.join(recordValuePath, '.') + '.row',
+            disable: false,
+            left: {
+              type: 'body-image',
+              recordValue,
+              image: fimage,
+              imageAnnotations: _.map(
+                recordValue?.value.annotations,
+                annotation => ({
+                  ...annotation,
+                  photos: recordPhotosToPhotos(annotation.photos),
+                })
+              ),
+              valuePath: recordValuePath,
+              key: _.join(recordValuePath, '.') + '.male',
+              disable: isSkipped(flatRecord, recordValuePath),
+            },
+            right: {
+              type: 'body-image',
+              recordValue,
+              image: mimage,
+              imageAnnotations: _.map(
+                recordValue?.value.annotations,
+                annotation => ({
+                  ...annotation,
+                  photos: recordPhotosToPhotos(annotation.photos),
+                })
+              ),
+              valuePath: recordValuePath,
+              key: _.join(recordValuePath, '.') + '.female',
+              disable: isSkipped(flatRecord, recordValuePath),
+            },
+          })
+        }
+      }
     },
     bool: recordValuePath =>
       renderCommands.push({
