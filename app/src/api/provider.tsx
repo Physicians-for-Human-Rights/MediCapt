@@ -22,7 +22,13 @@ import {
 } from 'utils/types/recordMetadata'
 import { QueryFilterForType } from 'utils/types/url'
 import { z } from 'zod'
-import { schemaVersions } from 'api/utils'
+import { schemaVersions, findUsersWrapper } from 'api/utils'
+import {
+  shareSchemaByUser,
+  shareSchema,
+  ShareByUser,
+  Share,
+} from 'utils/types/share'
 
 // User
 
@@ -56,6 +62,47 @@ export async function getUserByUUID(
     }
   )
   return userSchema.partial().parse(data)
+}
+
+export async function getUserByUUIDAnyPool(
+  uuid: string
+): Promise<Partial<UserType>> {
+  const data = await API.get(
+    'provider',
+    '/provider/user/byUUIDAnyPool/' + uuid,
+    {
+      headers: {
+        AcceptedVersions: JSON.stringify(schemaVersions(userSchema)),
+      },
+    }
+  )
+  return userSchema.partial().parse(data)
+}
+
+export async function findUsers(
+  pre: () => any,
+  post: () => any,
+  filterEnabledOrDisabled: string | undefined,
+  filterLocation: string | undefined,
+  filterSearchType: string | undefined,
+  filterText: string | undefined,
+  filterUserType: string | undefined,
+  handleErrors: (err: any) => any,
+  setUsers: (users: UserType[]) => any,
+  setNextKey: (key: string) => any
+) {
+  return await findUsersWrapper('provider')(
+    pre,
+    post,
+    filterEnabledOrDisabled,
+    filterLocation,
+    filterSearchType,
+    filterText,
+    filterUserType,
+    handleErrors,
+    setUsers,
+    setNextKey
+  )
 }
 
 // Location
@@ -303,4 +350,34 @@ export async function sealRecord(
     }
   )
   return recordMetadataSchema.parse(data.record)
+}
+
+// Sharing
+
+export async function getSharesForRecord(recordUUID: string): Promise<Share[]> {
+  const data = await API.get(
+    'provider',
+    '/provider/share/record/byRecordId/' + recordUUID,
+    {
+      body: recordUUID,
+      headers: {
+        AcceptedVersions: '1.0.0',
+      },
+    }
+  )
+  return _.map(data.items, item => shareSchema.parse(item))
+}
+
+export async function createShareForRecord(share: ShareByUser): Promise<Share> {
+  const data = await API.post(
+    'provider',
+    '/provider/share/record/byRecordId/' + share.recordUUID,
+    {
+      body: share,
+      headers: {
+        AcceptedVersions: '1.0.0',
+      },
+    }
+  )
+  return shareSchema.parse(data)
 }

@@ -20,7 +20,7 @@ import {
   userSchemaByUser,
 } from 'utils/types/user'
 import { QueryFilterForType } from 'utils/types/url'
-import { schemaVersions } from 'api/utils'
+import { schemaVersions, findUsersWrapper } from 'api/utils'
 
 // User
 
@@ -165,32 +165,18 @@ export async function findUsers(
   setUsers: (users: UserType[]) => any,
   setNextKey: (key: string) => any
 ) {
-  try {
-    pre()
-    let filters: QueryFilterForType<UserType & Record<string, string>> = []
-    if (filterEnabledOrDisabled)
-      filters.push({ status: { eq: filterEnabledOrDisabled } })
-    if (filterLocation)
-      filters.push({ allowed_locations: { eq: filterLocation } })
-    if (filterSearchType && filterText)
-      filters.push({ [filterSearchType]: { contains: filterText } })
-    const data = await API.get('manager', '/manager/user', {
-      queryStringParameters: {
-        userType: JSON.stringify(filterUserType),
-        filter: JSON.stringify(filters),
-      },
-      headers: {
-        AcceptedVersions: JSON.stringify(schemaVersions(userSchema)),
-      },
-    })
-    // @ts-ignore TODO
-    setUsers(_.map(data.items, userSchema.partial().parse))
-    setNextKey(data.nextKey)
-  } catch (e) {
-    handleErrors(e)
-  } finally {
-    post()
-  }
+  return await findUsersWrapper('manager')(
+    pre,
+    post,
+    filterEnabledOrDisabled,
+    filterLocation,
+    filterSearchType,
+    filterText,
+    filterUserType,
+    handleErrors,
+    setUsers,
+    setNextKey
+  )
 }
 
 // Location
