@@ -12,6 +12,20 @@ import {
   AdminGetUserResponse,
 } from 'aws-sdk/clients/cognitoidentityserviceprovider'
 import { UserType, userSchema, UserTypeList } from 'utils/types/user'
+import {
+  formMetadataSchemaStrip,
+  formManifestSchema,
+  FormManifestFileWithLink,
+  FormManifestWithLinks,
+  FormManifestFile,
+} from 'utils/types/formMetadata'
+import {
+  recordMetadataSchemaStrip,
+  RecordManifestFileWithLink,
+  RecordManifestWithLinks,
+  RecordManifestFile,
+  recordManifestSchema,
+} from 'utils/types/recordMetadata'
 
 export function good(value: any) {
   return {
@@ -33,6 +47,10 @@ export function bad(e: any, reason: string = 'Generic error') {
       'Access-Control-Allow-Origin': '*',
     },
   }
+}
+
+export function isBad(e: any) {
+  return e && 'statusCode' in e && e.statusCode !== 200
 }
 
 export async function machineIdToHumanId(
@@ -490,7 +508,7 @@ export function convertCognitoUser(
   image_bucket_id: string,
   userType: UserTypeList | undefined,
   s3: AWS.S3
-) {
+): Partial<UserType> {
   if (
     findUserAttribute(u, 'custom:storage_version') &&
     findUserAttribute(u, 'custom:storage_version') !== '1.0.0'
@@ -628,4 +646,155 @@ export function acceptedVersions(event: any, def = ['1.0.0']) {
         event.headers['acceptedversions'] || event.headers['AcceptedVersions']
       )
     : def
+}
+
+export async function getForm(
+  ddb: AWS.DynamoDB,
+  s3: AWS.S3,
+  form_table: string,
+  form_bucket: string,
+  formId: string,
+  formVersion: string
+) {
+  const item = await ddb
+    .getItem({
+      TableName: form_table,
+      Key: {
+        PK: { S: 'FORM#' + formId },
+        SK: { S: 'VERSION#' + formVersion },
+      },
+    })
+    .promise()
+  try {
+    const form = formMetadataSchemaStrip.parse(DynamoDB.unmarshall(item.Item))
+    function createLink(v: FormManifestFile): FormManifestFileWithLink {
+      return {
+        sha256: v.sha256,
+        filetype: v.filetype,
+        filename: v.filename,
+        link: s3.getSignedUrl('getObject', {
+          Bucket: form_bucket,
+          Key: hashFilename(form.formUUID, v.sha256, v.filetype),
+          ResponseCacheControl: `private, max-age=31536000, immutable`,
+          // 10 minutes is a long time, but it might be needed for slow
+          // connections.
+          Expires: 600,
+        }),
+      }
+    }
+    if (form.manifestHash) {
+      const manifestObject = await s3
+        .getObject({
+          Bucket: form_bucket,
+          Key: hashFilename(form.formUUID, form.manifestHash, 'manifest'),
+        })
+        .promise()
+      if (!manifestObject.Body) return bad(manifestObject, 'Empty manifest')
+      const body = formManifestSchema.parse(
+        JSON.parse(manifestObject.Body.toString('utf-8'))
+      )
+      const fullManifest: FormManifestWithLinks = {
+        'storage-version': '1.0.0',
+        root: body.root,
+        contents: _.map(body.contents, v => createLink(v)),
+      }
+      return {
+        metadata: form,
+        manifest: fullManifest,
+        manifestLink: createLink({
+          sha256: form.manifestHash,
+          filetype: 'manifest',
+          filename: 'manifest',
+        }),
+      }
+    } else {
+      // The form is empty
+      return {
+        metadata: form,
+        manifest: {
+          'storage-version': '1.0.0',
+          root: '',
+          contents: [],
+        },
+      }
+    }
+  } catch (e) {
+    return bad([item, e], 'Got bad item')
+  }
+}
+
+export async function getRecord(
+  ddb: AWS.DynamoDB,
+  s3: AWS.S3,
+  record_table: string,
+  record_bucket: string,
+  recordId: string
+) {
+  const item = await ddb
+    .getItem({
+      TableName: record_table,
+      Key: {
+        PK: { S: 'RECORD#' + recordId },
+        SK: { S: 'VERSION#latest' },
+      },
+    })
+    .promise()
+  try {
+    const record = recordMetadataSchemaStrip.parse(
+      DynamoDB.unmarshall(item.Item)
+    )
+    function createLink(v: RecordManifestFile): RecordManifestFileWithLink {
+      return {
+        sha256: v.sha256,
+        filetype: v.filetype,
+        filename: v.filename,
+        link: s3.getSignedUrl('getObject', {
+          Bucket: record_bucket,
+          Key: hashFilename(record.recordUUID, v.sha256, v.filetype),
+          ResponseCacheControl: `private, max-age=31536000, immutable`,
+          // 10 minutes is a long time, but it might be needed for slow
+          // connections.
+          Expires: 600,
+        }),
+      }
+    }
+    if (record.manifestHash) {
+      const manifestObject = await s3
+        .getObject({
+          Bucket: record_bucket,
+          Key: hashFilename(record.recordUUID, record.manifestHash, 'manifest'),
+        })
+        .promise()
+      if (!manifestObject.Body) return bad(manifestObject, 'Empty manifest')
+      const body = recordManifestSchema.parse(
+        JSON.parse(manifestObject.Body.toString('utf-8'))
+      )
+      const fullManifest: RecordManifestWithLinks = {
+        'storage-version': '1.0.0',
+        root: body.root,
+        contents: _.map(body.contents, v => createLink(v)),
+      }
+      return {
+        metadata: record,
+        manifest: fullManifest,
+        manifestLink: createLink({
+          sha256: record.manifestHash,
+          filetype: 'manifest',
+          filename: 'manifest',
+        }),
+      }
+    } else {
+      // The record is empty
+      return {
+        metadata: record,
+        manifest: {
+          'storage-version': '1.0.0',
+          root: '',
+          contents: [],
+        },
+      }
+    }
+  } catch (e) {
+    return bad([e], 'Got bad item')
+  }
 }
