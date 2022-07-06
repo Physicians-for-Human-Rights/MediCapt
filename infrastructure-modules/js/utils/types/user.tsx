@@ -13,7 +13,7 @@ export const userStatus = [
   'FORCE_CHANGE_PASSWORD', // The user is confirmed and the user can sign in using a temporary password, but on first sign//in, the user must change their password to a new value before doing anything else.
 ] as const
 
-export const userType = [
+export const userTypes = [
   'Provider',
   'Associate',
   'Manager',
@@ -21,7 +21,7 @@ export const userType = [
   'Researcher',
 ] as const
 
-export const userTypeSchema = z.enum(userType)
+export const userTypeSchema = z.enum(userTypes)
 
 export const userSchemaByUser = z.object({
   'storage-version': z.literal('1.0.0'),

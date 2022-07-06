@@ -123,17 +123,19 @@ export type FormPartField =
     }
   | {
       type: 'date'
-      birthdate?: boolean
+      'record-summary'?: 'patient-date-of-birth' | 'incident-date'
     }
   | {
       type: 'date-time'
     }
   | {
       type: 'gender'
+      'record-summary'?: 'patient-gender'
     }
   | {
       type: 'number'
       placeholder?: string
+      'record-summary'?: 'patient-age'
     }
   | {
       type: 'sex'
@@ -165,6 +167,7 @@ export type FormPartField =
   | {
       type: 'text'
       placeholder?: string
+      'record-summary'?: 'patient-name'
     }
   | {
       type: 'long-text'
@@ -177,14 +180,17 @@ export type FormPartField =
     }
   | {
       type: 'phone-number'
+      'record-summary'?: 'patient-phone-number'
     }
   | {
       type: 'address'
       placeholder?: string
+      'record-summary'?: 'patient-address'
     }
   | {
       type: 'email'
       placeholder?: string
+      'record-summary'?: 'patient-email'
     }
   | {
       type: 'body-image'

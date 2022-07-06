@@ -38,10 +38,7 @@ export const locationSchemaByUser = z
         }
       ),
     phoneNumber: z.string().nonempty(),
-    email: z
-      .string()
-      .email()
-      .nonempty(),
+    email: z.string().email().nonempty(),
     enabled: z.boolean(),
     tags: stringSetSchema,
   })
@@ -52,20 +49,11 @@ export const locationSchemaByUser = z
 export const locationSchema = locationSchemaByUser
   .extend({
     'storage-version': z.literal('1.0.0'),
-    locationUUID: z
-      .string()
-      .nonempty()
-      .uuid(),
+    locationUUID: z.string().nonempty().uuid(),
     locationID: z.string().nonempty(),
     createdDate: dateSchema,
-    createdByUUID: z
-      .string()
-      .nonempty()
-      .uuid(),
-    lastChangedByUUID: z
-      .string()
-      .nonempty()
-      .uuid(),
+    createdByUUID: z.string().nonempty().uuid(),
+    lastChangedByUUID: z.string().nonempty().uuid(),
     lastChangedDate: dateSchema,
     version: z.string().nonempty(),
   })
@@ -123,8 +111,8 @@ export const locationSchemaDynamoLatestToUpdatePart = z.object({
     }),
 })
 
-export const locationSchemaDynamoLatestPart = locationSchemaDynamoLatestToUpdatePart.extend(
-  {
+export const locationSchemaDynamoLatestPart =
+  locationSchemaDynamoLatestToUpdatePart.extend({
     PK: z
       .string()
       .nonempty()
@@ -140,8 +128,7 @@ export const locationSchemaDynamoLatestPart = locationSchemaDynamoLatestToUpdate
       }),
     GSK1: z.literal('VERSION#latest'),
     GPK2: z.literal('VERSION#latest'),
-  }
-)
+  })
 
 export const locationSchemaDynamoDeletedPart = z.object({
   SK: z.literal('VERSION#deleted'),
@@ -179,22 +166,19 @@ export const locationSchemaDynamoVersion = locationSchema.merge(
 // users
 export const locationSchemaDynamoUpdate = locationSchemaByUser
   .extend({
-    lastChangedByUUID: z
-      .string()
-      .nonempty()
-      .uuid(),
+    lastChangedByUUID: z.string().nonempty().uuid(),
     lastChangedDate: dateSchema,
     version: z.string().nonempty(),
   })
   .strict()
 
-export const locationSchemaDynamoLatestUpdate = locationSchemaDynamoUpdate.merge(
-  locationSchemaDynamoLatestPart
-)
+export const locationSchemaDynamoLatestUpdate =
+  locationSchemaDynamoUpdate.merge(locationSchemaDynamoLatestPart)
 
-export const locationSchemaDynamoLatestToUpdate = locationSchemaDynamoLatestToUpdatePart
-  .merge(locationSchemaDynamoUpdate)
-  .strict()
+export const locationSchemaDynamoLatestToUpdate =
+  locationSchemaDynamoLatestToUpdatePart
+    .merge(locationSchemaDynamoUpdate)
+    .strict()
 
 //
 
