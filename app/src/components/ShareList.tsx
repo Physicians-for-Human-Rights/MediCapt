@@ -25,13 +25,16 @@ import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import { Platform } from 'react-native'
 import { getUserByUUIDCachedAnyPool } from 'api/common'
+import { userFullName } from 'utils/userTypes'
 
 export function ListItem({
   item,
   selectItem,
+  users,
 }: {
   item: Share
   selectItem: (i: Share) => any
+  users: Record<string, Partial<UserType>>
 }) {
   return (
     <Pressable p={2} onPress={() => selectItem(item)}>
@@ -72,9 +75,11 @@ export function ListItem({
 export function ListItemDesktop({
   item,
   selectItem,
+  users,
 }: {
   item: Share
   selectItem: (i: Share) => any
+  users: Record<string, Partial<UserType>>
 }) {
   return (
     <Pressable
@@ -109,13 +114,20 @@ export function ListItemDesktop({
               {t('tag.' + s)}
             </Text>
           ))}
+          <Text>
+            {userFullName(users[item.createdByUUID], item.createdByUUID)}
+          </Text>
         </VStack>
         <VStack w="20%">
-          <Text isTruncated>Creation</Text>
+          <Text isTruncated>Record creation</Text>
+          <Text isTruncated ml={2}>
+            {formatDate(item.recordCreatedDate, 'PPP')}
+          </Text>
+          <Text isTruncated>Share creation</Text>
           <Text isTruncated ml={2}>
             {formatDate(item.lastChangedDate, 'PPP')}
           </Text>
-          <Text isTruncated>Expiration</Text>
+          <Text isTruncated>Share expiration</Text>
           <Text isTruncated ml={2}>
             {formatDate(item.shareExpiresOn, 'PPP')}
           </Text>
@@ -286,7 +298,12 @@ export default function ShareList({
             <Box position="relative" display={{ md: 'none', base: 'flex' }}>
               {shares.map((item: Share, index: number) => {
                 return (
-                  <ListItem item={item} key={index} selectItem={selectItem} />
+                  <ListItem
+                    item={item}
+                    key={index}
+                    selectItem={selectItem}
+                    users={users}
+                  />
                 )
               })}
             </Box>
@@ -332,6 +349,7 @@ export default function ShareList({
                       item={item}
                       key={index}
                       selectItem={selectItem}
+                      users={users}
                     />
                   )
                 })}

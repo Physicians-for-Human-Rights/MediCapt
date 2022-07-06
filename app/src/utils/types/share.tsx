@@ -13,6 +13,8 @@ export const shareSchemaByUser = z
     //
     recordUUID: z.string().nonempty(),
     recordID: z.string().nonempty(),
+    recordCreatedDate: dateSchema,
+    recordCreatedByUUID: z.string().nonempty(),
     locationID: z.string().nonempty(),
     locationUUID: z.string().nonempty(),
     //

@@ -403,6 +403,8 @@ export default function RecordEditor({
               'storage-version': '1.0.0',
               recordUUID: recordMetadata.recordUUID,
               recordID: recordMetadata.recordID,
+              recordCreatedDate: recordMetadata.createdDate,
+              recordCreatedByUUID: recordMetadata.createdByUUID,
               locationUUID: _.isString(l) ? l : l!.locationUUID,
               locationID: formMetadata.locationID,
               //
