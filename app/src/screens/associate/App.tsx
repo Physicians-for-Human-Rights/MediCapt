@@ -1,13 +1,47 @@
 import React from 'react'
-import { NativeBaseProvider, Box, Button } from 'native-base'
-import { useSignOut } from 'utils/store'
+import { NavigationContainer } from '@react-navigation/native'
+import { createStackNavigator } from '@react-navigation/stack'
+import Home from 'screens/associate/Home'
+import ShareViewer from 'screens/associate/ShareViewer'
+import FindShare from 'screens/associate/FindShare'
+import { RootStackParamList } from 'utils/associate/navigation'
+import { useUserLocations } from 'utils/store'
+
+const RootStack = createStackNavigator<RootStackParamList>()
 
 export default function App({}: {}) {
-  const [signOut] = useSignOut()
+  useUserLocations()
   return (
-    <NativeBaseProvider>
-      <Box>Associate</Box>
-      <Button onPress={signOut}>Sign out</Button>
-    </NativeBaseProvider>
+    <NavigationContainer>
+      <RootStack.Navigator initialRouteName="Home">
+        <RootStack.Screen
+          name="Home"
+          component={Home}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name="FindShare"
+          component={FindShare}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <RootStack.Screen
+          name="ShareViewer"
+          component={ShareViewer}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name="Settings"
+          component={FindShare}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name="Training"
+          component={FindShare}
+          options={{ headerShown: false }}
+        />
+      </RootStack.Navigator>
+    </NavigationContainer>
   )
 }
