@@ -1,0 +1,31 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "dynamodb:BatchGet*",
+        "dynamodb:Get*",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+      ],
+      "Effect": "Allow",
+      "Resource": "${sharing_table_arn}"
+    },
+    {
+      "Action": [
+        "dynamodb:BatchGet*",
+        "dynamodb:Get*",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+      ],
+      "Effect": "Allow",
+      "Resource": "${sharing_table_arn}/*"
+    },
+    {
+      "Sid": "DynamoKMS",
+      "Effect": "Allow",
+      "Action": ["kms:Decrypt"],
+      "Resource": ["${sharing_table_kms}"]
+    }
+  ]
+}
