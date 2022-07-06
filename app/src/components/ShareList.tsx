@@ -264,8 +264,6 @@ export default function ShareList({
         />
         <Button
           onPress={() => {
-            setFilterCountry('')
-            setFilterLanguage('')
             setFilterLocationID('')
             setFilterSearchType('')
             setFilterText('')
