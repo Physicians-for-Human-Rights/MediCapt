@@ -6,6 +6,7 @@ export function goBackMaybeRefreshing(
   if (
     route &&
     'params' in route &&
+    route.params &&
     'setRefresh' in route.params &&
     (reloadPrevious === undefined || reloadPrevious.current)
   ) {
