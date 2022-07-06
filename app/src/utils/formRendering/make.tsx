@@ -8,6 +8,7 @@ import {
 } from 'utils/types/record'
 import { RecordMetadata } from 'utils/types/recordMetadata'
 import { RenderCommand } from 'utils/formRendering/types'
+import { Share } from 'utils/types/share'
 
 export function mkTitle(
   title: string,
@@ -54,12 +55,33 @@ export function mkRecordList(
       list: recordList,
       select: selectRecord,
     },
+  ]
+}
+
+export function mkShareList(
+  title: string,
+  key: string,
+  shareList: Share[],
+  selectShare: (r: Share) => any
+): RenderCommand[] {
+  return [
     {
-      type: 'divider',
-      thickness: 1,
+      type: 'title',
+      title,
+      size: 'md',
       valuePath: [],
-      key: key + 3,
+      key: key + 1,
       disable: false,
+      recordValue: { type: 'text', value: '' },
+      recordSummary: undefined,
+    },
+    {
+      type: 'share-list',
+      valuePath: [],
+      key: key + 2,
+      disable: true,
+      list: shareList,
+      select: selectShare,
     },
   ]
 }

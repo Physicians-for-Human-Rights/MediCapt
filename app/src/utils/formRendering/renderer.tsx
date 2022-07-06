@@ -37,6 +37,7 @@ import { tryConvertToWebP } from 'utils/imageConverter'
 import { wrapCommandMemo } from 'utils/memo'
 import { RecordMetadata } from 'utils/types/recordMetadata'
 import RecordListStaticComponent from 'components/RecordListStaticComponent'
+import ShareListStatic from 'components/ShareListStatic'
 
 const CDebouncedTextInput = wrapCommandMemo(DebouncedTextInput)
 const CButtonGroup = wrapCommandMemo(ButtonGroup)
@@ -951,6 +952,10 @@ export function renderCommand(
           records={command.list}
           selectItem={command.select}
         />
+      )
+    case 'share-list':
+      return (
+        <ShareListStatic shares={command.list} selectItem={command.select} />
       )
     default:
       console.error('Unknown render command', command)

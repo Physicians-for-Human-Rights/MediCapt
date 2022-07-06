@@ -9,6 +9,7 @@ import {
   RecordValue,
 } from 'utils/types/record'
 import { RecordMetadata } from 'utils/types/recordMetadata'
+import { Share } from 'utils/types/share'
 
 export type RenderCommand =
   // Commands that correspond to structural UI components
@@ -185,5 +186,10 @@ export type RenderCommand =
         type: 'record-list'
         list: RecordMetadata[]
         select: (r: RecordMetadata) => any
+      }
+    | {
+        type: 'share-list'
+        list: Share[]
+        select: (r: Share) => any
       }
   ) & { valuePath: RecordValuePath; key: string; disable: boolean }
