@@ -132,10 +132,15 @@ export function mkLongText(
   return [
     {
       type: 'row-with-description',
+      valuePath: [],
+      key: key + 0,
+      disable: false,
       left: {
         type: 'title',
         title,
         size: 'sm',
+        fontWeight: 'normal',
+        italic: false,
         valuePath: [],
         key: key + 1,
         disable: false,
@@ -146,6 +151,8 @@ export function mkLongText(
         type: 'title',
         title: '',
         size: 'sm',
+        fontWeight: 'normal',
+        italic: false,
         valuePath: [],
         key: key + 2,
         disable: false,
@@ -157,7 +164,7 @@ export function mkLongText(
         valuePath: [],
         key: key + 3,
         disable: true,
-        recordValue: { type: 'text', value: text },
+        recordValue: { type: 'long-text', value: text },
         recordSummary: undefined,
         numberOfLines: longLines,
       },
