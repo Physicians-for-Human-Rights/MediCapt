@@ -110,7 +110,7 @@ function recordOverviewPage(
         )
       : [],
     _.isArray(shares) && shares.length > 0
-      ? mkShareList('Record shared with', 'artitle', shares, selectShare)
+      ? mkShareList('Record shared with', 'shtitle', shares, selectShare)
       : [],
     mkTitle(t('record.overview.titles.patient'), 'ptitle'),
     [
