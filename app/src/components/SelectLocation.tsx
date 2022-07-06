@@ -38,7 +38,7 @@ export default function SelectLocation({
             locations,
             l => (_.isString(l) ? l : l.locationID) === id
           )!
-          setValue(id, _.isString(l) ? l : l.locationUUID)
+          setValue(id, _.isUndefined(l) || _.isString(l) ? l : l.locationUUID)
         }}
         {...props}
       >
