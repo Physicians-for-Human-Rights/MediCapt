@@ -265,7 +265,6 @@ export async function getLocationCached(
   notifyDone: (locationUUID: string, item: LocationType | null) => any
 ): Promise<LocationType | null> {
   const cached = Amplify.Cache.getItem('LOCATION#' + locationUUID)
-  console.log('xxxCA', cached)
   if (cached && 'status' in cached && cached.status === 'loaded') {
     notifyDone(locationUUID, cached.item)
     return cached.item
