@@ -111,18 +111,11 @@ export function mapSectionWithPaths<Return>(
   flatRecord: FlatRecord,
   fns: FormFns<Return>
 ): Return {
-  // -------------------
-  //  Helper Functions
-  // -------------------
-
-  // List of Return from a formPartsArray
   function handleFormPartsArray(
     formPartsArray: Array<FormPartMap>,
     partsRecordPath: RecordValuePath
   ): Return[] {
     if (_.isNil(formPartsArray)) return []
-
-    // Handle each form part
     return formPartsArray.map((formPartMap, index) => {
       if (
         _.isNil(formPartMap) ||
@@ -130,18 +123,12 @@ export function mapSectionWithPaths<Return>(
         Object.keys(formPartMap)[0] === ''
       )
         return identity
-
       const formPart = Object.values(formPartMap)[0]
       const recordPath = _.concat(partsRecordPath, Object.keys(formPartMap)[0])
-
       if (!_.isObject(formPart)) return identity
-
-      // If the part isn't a reference and should be skipped
       if (!('Ref' in formPart) && shouldSkipConditional(formPart, flatRecord)) {
         return identity
       }
-
-      // We handle repeated parts separately
       if ('repeated' in formPart && formPart.repeated) {
         return handleRepeatedFormPart(
           formPart,
@@ -168,12 +155,9 @@ export function mapSectionWithPaths<Return>(
       ...(getFlatRecordValue(flatRecord, repeatListRecordPath, 'repeat-list')
         ?.value || []),
     ])
-
     fns.preRepeat(formPart, repeatListRecordPath)
-
     const resultMaps = _.map(repeatList, repeatId => {
       const recordPath = repeatListRecordPath.concat(['repeat', repeatId])
-
       fns.preEachRepeat(formPart, repeatListRecordPath, repeatId, recordPath)
       const result = fns.eachRepeat(
         handleFormPart(formPart, recordPath, index, formPartMap),
@@ -182,10 +166,8 @@ export function mapSectionWithPaths<Return>(
         repeatId,
         recordPath
       )
-
       return { path: recordPath, result }
     })
-
     return fns.postRepeated(
       _.filter(
         resultMaps,
@@ -203,9 +185,7 @@ export function mapSectionWithPaths<Return>(
     formPartMap: FormPartMap
   ): Return {
     const partOptional = ('optional' in part && part.optional) || false
-
     const pre = fns.pre(part, recordPath, index, formPartMap, partOptional)
-
     let resultFromValue: Return | null = null
     let resultsFromSubparts: Return[] = []
     // References are always to a list of parts.
@@ -268,7 +248,6 @@ export function mapSectionWithPaths<Return>(
       }
       if ('parts' in part && part.parts) {
         const subparts = resolveRef(part.parts, commonRefTable)
-
         if (subparts) {
           resultsFromSubparts = _.concat(
             handleFormPartsArray(subparts, recordPath.concat('parts')),
@@ -287,7 +266,6 @@ export function mapSectionWithPaths<Return>(
           formPartMap
         )
       : null
-
     return fns.post(
       part,
       subpartsResult,
@@ -300,10 +278,6 @@ export function mapSectionWithPaths<Return>(
     )
   }
 
-  // -------------------
-  // mapSectionWithPaths
-  // -------------------
-
   if (
     shouldSkipConditional(section, flatRecord) ||
     _.isNil(section) ||
@@ -311,10 +285,8 @@ export function mapSectionWithPaths<Return>(
     _.isNil(section.name)
   )
     return identity
-
   const partsListPath = ['sections', section.name, 'parts']
   const resultsFromParts = handleFormPartsArray(section.parts, partsListPath)
-
   return fns.combineResultsFromParts(resultsFromParts, partsListPath, 0)
 }
 
