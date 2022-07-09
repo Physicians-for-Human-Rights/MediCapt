@@ -39,6 +39,7 @@ import {
   fetchManifestContents,
 } from 'utils/manifests'
 import useLeave from 'utils/useLeave'
+import { dataURItoBlob } from 'utils/data'
 
 function Tabs({
   tabName,
@@ -238,7 +239,11 @@ export default function FormEditor({
       break
     case 'Printed':
       page = (
-        <FormEditorPrinted formMetadata={formMetadata} manifest={manifest} />
+        <FormEditorPrinted
+          formMetadata={formMetadata}
+          manifest={manifest}
+          setManifest={setManifest}
+        />
       )
       break
     case 'Versions':

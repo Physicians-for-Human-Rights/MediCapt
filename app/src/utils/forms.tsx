@@ -109,7 +109,9 @@ export function mapSectionWithPaths<Return>(
   commonRefTable: Record<string, FormDefinition>,
   identity: Return,
   flatRecord: FlatRecord,
-  fns: FormFns<Return>
+  fns: FormFns<Return>,
+  // This will include paths that are disabled by checks like 'only-when'
+  potentialPaths: boolean = false
 ): Return {
   function handleFormPartsArray(
     formPartsArray: Array<FormPartMap>,
@@ -126,7 +128,11 @@ export function mapSectionWithPaths<Return>(
       const formPart = Object.values(formPartMap)[0]
       const recordPath = _.concat(partsRecordPath, Object.keys(formPartMap)[0])
       if (!_.isObject(formPart)) return identity
-      if (!('Ref' in formPart) && shouldSkipConditional(formPart, flatRecord)) {
+      if (
+        !('Ref' in formPart) &&
+        !potentialPaths &&
+        shouldSkipConditional(formPart, flatRecord)
+      ) {
         return identity
       }
       if ('repeated' in formPart && formPart.repeated) {
@@ -215,7 +221,8 @@ export function mapSectionWithPaths<Return>(
               if (
                 'show-parts-when-true' in part &&
                 part['show-parts-when-true'] &&
-                getFlatRecordValue(flatRecord, recordPath, 'bool')?.value
+                (potentialPaths ||
+                  getFlatRecordValue(flatRecord, recordPath, 'bool')?.value)
               ) {
                 resultsFromSubparts = handleFormPartsArray(
                   part['show-parts-when-true'],
@@ -279,7 +286,7 @@ export function mapSectionWithPaths<Return>(
   }
 
   if (
-    shouldSkipConditional(section, flatRecord) ||
+    (!potentialPaths && shouldSkipConditional(section, flatRecord)) ||
     _.isNil(section) ||
     _.isNil(section.parts) ||
     _.isNil(section.name)

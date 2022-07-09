@@ -15,6 +15,10 @@ export type RenderCommand =
   // Commands that correspond to structural UI components
   (
     | {
+        type: 'section-heading'
+        title: string
+      }
+    | {
         type: 'title'
         title: string
         size: string
@@ -22,6 +26,7 @@ export type RenderCommand =
         italic: boolean
         color?: string
         maxW?: string
+        originalType?: string
       }
     | {
         type: 'description'
