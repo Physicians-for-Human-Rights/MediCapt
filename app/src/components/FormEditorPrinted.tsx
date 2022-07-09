@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import _ from 'lodash'
-import { Text, VStack, View } from 'native-base'
+import { HStack, Text, VStack, View } from 'native-base'
 import { FormType } from 'utils/types/form'
 // @ts-ignore typescript doesn't do native/web modules
 import DisplayPDF from './DisplayPDF'
@@ -75,21 +75,27 @@ import {
   renderSection,
 } from 'utils/formPrinting/print'
 import FormPrinted from 'components/FormPrinted'
+import FormEditorComponent from 'components/FormEditorComponent'
 
 export default function FormEditorPrinted({
   formMetadata,
   manifest,
   setManifest,
+  setForm,
 }: {
   formMetadata: Partial<FormMetadata>
   manifest: FormManifestWithData
   setManifest: any
+  setForm: (form: FormType) => any
 }) {
   return (
-    <FormPrinted
-      formMetadata={formMetadata}
-      manifest={manifest}
-      setManifest={setManifest}
-    />
+    <HStack justifyContent="center">
+      <FormEditorComponent manifest={manifest} setForm={setForm} />
+      <FormPrinted
+        formMetadata={formMetadata}
+        manifest={manifest}
+        setManifest={setManifest}
+      />
+    </HStack>
   )
 }

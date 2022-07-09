@@ -15,44 +15,11 @@ import {
 } from 'utils/manifests'
 import { useInfo } from 'utils/errors'
 import { getFormTypeFromManifest } from 'utils/manifests'
+import FormEditorComponent from 'components/FormEditorComponent'
 
 const FormMemo = React.memo(Form)
 
 function onCancel() {}
-
-const defaultForm: FormType = {
-  'storage-version': '1.0.0',
-  common: {
-    gender: [
-      { key: 'male', value: 'Male' },
-      { key: 'female', value: 'Female' },
-      { key: 'transgender', value: 'Transgender' },
-    ],
-  },
-  sections: [
-    {
-      consent: {
-        title: 'Consent',
-        parts: [
-          {
-            'medical-exam': {
-              title: 'Authorizing medical exam',
-              description:
-                'I AUTHORIZE the clinician to conduct a medical examination including a pelvic exam.',
-              type: 'bool',
-            },
-          },
-          {
-            signature: {
-              title: 'Authorizing medical exam',
-              type: 'signature',
-            },
-          },
-        ],
-      },
-    },
-  ],
-}
 
 export default function FormEditor({
   formMetadata,
@@ -63,135 +30,34 @@ export default function FormEditor({
   manifest: FormManifestWithData
   setForm: (form: FormType) => any
 }) {
-  const [error, warning, success] = useInfo()
-  const [contents, setContents] = React.useState('' as string)
-  const [localForm, setLocalForm] = React.useState({
-    'storage-version': '1.0.0',
-    common: {},
-    sections: [],
-  } as FormType)
-  const [rawContents, setRawContents] = React.useState(contents)
-  const [localManifest, setLocalManifest] = React.useState(manifest)
-
-  // TODO Is there a cleaner way to deal with getting a reference to the raw
-  // contents? Could we merge rawContentsRef and setRawContents?
-  const rawContentsRef = useRef(rawContents)
-  useEffect(() => {
-    rawContentsRef.current = rawContents
-  }, [rawContents])
-
-  useEffect(() => {
-    setLocalManifest(
-      addOrReplaceFileToManifestByFilename(
-        manifest,
-        JSON.stringify(localForm),
-        'form.yaml',
-        'text/yaml',
-        false
-      )
-    )
-  }, [localForm, manifest])
-
-  // Pull the initial contents from the manifest
-  useEffect(() => {
-    try {
-      const f = lookupManifest(
-        manifest,
-        e => e.filetype === 'text/yaml' && e.filename === 'form.yaml'
-      )
-      if (f) {
-        const text = yaml.dump(JSON.parse(f.data))
-        setContents(text)
-        setRawContents(text)
-      } else {
-        const text = yaml.dump(defaultForm)
-        setContents(text)
-        setRawContents(text)
-        setLocalForm(defaultForm)
-        setForm(defaultForm)
-      }
-      // This is important due to the debouncing that we perform with contents and
-      // raw contents. Since the for takes some time to render, we want to delay
-      // such renders between keystrokes. But when you leave the screen too quickly
-      // after typing, you lose your last changes. We check focused on the way out
-      // and do a final commit from rawContents to contents and to the form.
-      return () => {
-        const form = (yaml.load(rawContentsRef.current) || {}) as FormType
-        form['storage-version'] = form['storage-version'] || '1.0.0'
-        form.common = form.common || {}
-        form.sections = form.sections || []
-        setLocalForm(form)
-        setForm(form)
-      }
-    } catch (e) {
-      // TODO Error handling
-      console.error(e)
-    }
-  }, [])
-
-  // Push text updates to the contents (this is debouncing)
-  useDebounce(
-    () => {
-      setContents(rawContents)
-    },
-    1000,
-    [rawContents]
-  )
-
-  // Push contents changes to the manifest
-  useEffect(() => {
-    if (contents) {
-      try {
-        const form = (yaml.load(contents) || {}) as FormType
-        form['storage-version'] = form['storage-version'] || '1.0.0'
-        form.common = form.common || {}
-        form.sections = form.sections || []
-        setLocalForm(form)
-        setForm(form)
-      } catch (e) {
-        // TODO Error handling
-        console.error(e)
-      }
-    }
-  }, [contents])
-
   const window = useWindowDimensions()
   const padding = Platform.OS === 'web' ? 0.03 : 0
   const ratio = Platform.OS === 'web' ? (window.width > 1000 ? 0.6 : 0.45) : 0
 
-  const form = getFormTypeFromManifest(localManifest)
-  // TODO files below should be converted to metadata
   return (
-    form && (
-      <VStack>
-        {Platform.OS !== 'web' ? (
-          <Center py={2}>
-            <Text>Preview: Editing is web-only</Text>
-          </Center>
-        ) : null}
-        <HStack pt="0" space={3} justifyContent="center">
-          <CodeEditor
-            ratio={ratio}
-            contents={contents}
-            window={window}
-            setRawContents={setRawContents}
+    <VStack>
+      {Platform.OS !== 'web' ? (
+        <Center py={2}>
+          <Text>Preview: Editing is web-only</Text>
+        </Center>
+      ) : null}
+      <HStack pt="0" space={3} justifyContent="center">
+        <FormEditorComponent manifest={manifest} setForm={setForm} />
+        <Box
+          h={Math.round(window.height * 0.85) + 'px'}
+          w={Math.round(window.width * (1 - ratio - padding)) + 'px'}
+        >
+          <FormMemo
+            // @ts-ignore TODO partial forms should be ok
+            formMetadata={formMetadata}
+            formManifest={manifest}
+            noRenderCache={true}
+            onCancel={onCancel}
+            disableMenu={true}
+            overrideTransformation={'compact'}
           />
-          <Box
-            h={Math.round(window.height * 0.85) + 'px'}
-            w={Math.round(window.width * (1 - ratio - padding)) + 'px'}
-          >
-            <FormMemo
-              // @ts-ignore TODO partial forms should be ok
-              formMetadata={formMetadata}
-              formManifest={localManifest}
-              noRenderCache={true}
-              onCancel={onCancel}
-              disableMenu={true}
-              overrideTransformation={'compact'}
-            />
-          </Box>
-        </HStack>
-      </VStack>
-    )
+        </Box>
+      </HStack>
+    </VStack>
   )
 }

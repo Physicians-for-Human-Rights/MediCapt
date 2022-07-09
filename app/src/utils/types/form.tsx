@@ -2,9 +2,21 @@ export type FormType = {
   'storage-version'?: '1.0.0'
   // A consent entry must exist and must be the first entry unless this is set.
   skipConsent?: boolean
-  // Main contents
   // Definitions you can refernece with Ref
   common: Record<string, FormDefinition>
+  // You can assign sections to TODO
+  pdf?: {
+    pdfSections?: Array<{
+      [key: string]: Partial<{
+        title: string
+        subtitle: string
+        id: string
+        logo: string
+        description: string
+      }>
+    }>
+  }
+  // Main contents
   sections: Array<FormSectionMap>
 }
 

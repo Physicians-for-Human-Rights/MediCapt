@@ -218,6 +218,7 @@ export default {
     },
   },
   form: {
+    'not-filled': 'N/A',
     filter: {
       'select-form-enabled': 'Enabled or disabled forms',
       'any-is-form-enabled': 'All forms',

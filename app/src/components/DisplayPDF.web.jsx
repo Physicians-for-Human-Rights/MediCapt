@@ -26,6 +26,8 @@ export default function DisplayPDF({
   toggleDebug,
   mock,
   toggleMock,
+  usPageSize,
+  toggleUsPageSize,
   downloadPdf,
 }) {
   const [numPages, setNumPages] = useState(null)
@@ -49,16 +51,25 @@ export default function DisplayPDF({
   }
 
   return (
-    <VStack py={3}>
-      <HStack justifyContent="space-between">
-        <HStack w="35%">
-          <Center>
-            <Switch size="md" mr={3} isChecked={debug} onToggle={toggleDebug} />
-          </Center>
-          <Center>
-            <Text fontSize="md">Debug</Text>
-          </Center>
-        </HStack>
+    <VStack py={3} width={width}>
+      <HStack justifyContent="space-between" px={10}>
+        <VStack>
+          <Text fontSize="md">Debug</Text>
+          <Switch size="md" mr={3} isChecked={debug} onToggle={toggleDebug} />
+        </VStack>
+        <VStack>
+          <Text fontSize="md">Mock</Text>
+          <Switch size="md" mr={3} isChecked={mock} onToggle={toggleMock} />
+        </VStack>
+        <VStack>
+          <Text fontSize="md">{usPageSize ? 'Letter' : '  ' + 'A4'}</Text>
+          <Switch
+            size="md"
+            mr={3}
+            isChecked={usPageSize}
+            onToggle={toggleUsPageSize}
+          />
+        </VStack>
         <Center py={3}>
           <Button
             fontWeight="bold"
@@ -71,22 +82,14 @@ export default function DisplayPDF({
             Download PDF
           </Button>
         </Center>
-        <HStack w="35%">
-          <Center>
-            <Switch size="md" mr={3} isChecked={mock} onToggle={toggleMock} />
-          </Center>
-          <Center>
-            <Text fontSize="md">Mock</Text>
-          </Center>
-        </HStack>
       </HStack>
-      <HStack pt={5} justifyContent="space-between">
-        <Center w="30%">
+      <HStack py={1} justifyContent="space-between" px={10}>
+        <Center>
           <Text fontSize="md" isTruncated maxW="100px">
             Page {pageNumber} of {numPages}
           </Text>
         </Center>
-        <HStack w="35%">
+        <HStack>
           <Button.Group isAttached colorScheme="blue" size="md">
             <Button isDisabled={pageNumber === 1} onPress={previousPage}>
               Previous page

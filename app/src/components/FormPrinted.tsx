@@ -4,6 +4,7 @@ import { Text, VStack, View } from 'native-base'
 import { FormType } from 'utils/types/form'
 // @ts-ignore typescript doesn't do native/web modules
 import DisplayPDF from './DisplayPDF'
+import yaml from 'js-yaml'
 import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
 import {
   isImage,
@@ -74,18 +75,22 @@ import {
   handleCellCommand,
   renderSection,
 } from 'utils/formPrinting/print'
+import { RecordMetadata } from 'utils/types/recordMetadata'
 
 export default function FormPrinted({
   formMetadata,
   manifest,
   setManifest,
+  recordMetadata,
 }: {
   formMetadata: Partial<FormMetadata>
   manifest: FormManifestWithData
   setManifest: any
+  recordMetadata?: Partial<RecordMetadata>
 }) {
   const [width, setWidth] = useState(null as number | null)
   const [debug, setDebug] = useState(false)
+  const [usPageSize, setUsPageSize] = useState(true)
   const [mock, setMock] = useState(true)
   const [pdf, setPdf] = useState(
     lookupManifestByNameAndType(manifest, 'form.pdf', 'application/pdf')!.data
@@ -95,29 +100,19 @@ export default function FormPrinted({
     async function fn() {
       try {
         const doc = await PDFDocument.create()
-        // TODO Set metadata
         // TODO toggle page size
-        const pageSize = false ? PageSizes.Letter : PageSizes.A4
+        const pageSize = usPageSize ? PageSizes.Letter : PageSizes.A4
         const font = await doc.embedFont(StandardFonts.Helvetica)
         const fontO = await doc.embedFont(StandardFonts.HelveticaOblique)
         const fontB = await doc.embedFont(StandardFonts.HelveticaBold)
         const fontBO = await doc.embedFont(StandardFonts.HelveticaBoldOblique)
         const fontSize = 12
-        const h1 = 1.3
-        const h2 = 1.1
-        const lg = 1
-        const md = 0.8
-        const sm = 0.64
         let page: PDFPage = doc.addPage(pageSize)
 
         const skipTopWithTitle = 120
         const skipTop = 0
         const skipBottom = 50
-        const notFilled = 'N/A'
         const indent = 0.01
-        const gapBetweenLabelAndData = 0.2
-        const gapBetweenRows = 0.5
-        const gapBetweenCells = 0.02 // TODO Implement me
 
         let pi: PageInfo = mkPageInfo(
           page,
@@ -127,9 +122,13 @@ export default function FormPrinted({
           { font, fontO, fontB, fontBO },
           { skipTopWithTitle, skipTop, skipBottom },
           indent,
-          { gapBetweenLabelAndData, gapBetweenRows, gapBetweenCells },
+          {
+            gapBetweenLabelAndData: 0.2,
+            gapBetweenRows: 0.5,
+            gapBetweenCells: 0.02,
+          },
           debug,
-          { h1, h2, lg, md, sm },
+          { h1: 1.3, h2: 1.1, lg: 1, md: 0.8, sm: 0.64 },
           fontSize
         )
         let pis = [pi]
@@ -149,17 +148,32 @@ export default function FormPrinted({
           pending: [],
         }
 
-        await renderTitleHeader(
-          pi,
-          manifest,
-          'Post Rape Care Form (PRC) — PART A',
-          'FORM IS NOT FOR SALE',
-          'MOH 363',
-          'ministry_logo',
-          'Ministry of Health National Rape Management Guidelines: Examination documentation form for survivors of rape/sexual violence (to be used as clinical notes to guide filling in of the P3 form).'
-        )
-
         const form: FormType = getFormTypeFromManifest(manifest)!
+
+        const pdfSections = form?.pdf?.pdfSections
+
+        if (
+          pdfSections &&
+          _.isArray(pdfSections) &&
+          pdfSections[0] &&
+          _.isObject(pdfSections[0]) &&
+          _.isObject(pdfSections[0][_.keys(pdfSections[0])[0]])
+        ) {
+          const pdfSection = pdfSections[0][_.keys(pdfSections[0])[0]]
+          await renderTitleHeader(
+            pi,
+            manifest,
+            formMetadata,
+            pdfSection.title,
+            pdfSection.subtitle,
+            pdfSection.id,
+            pdfSection.logo,
+            pdfSection.description
+          )
+        } else {
+          await renderTitleHeader(pi, manifest, formMetadata)
+        }
+
         for (const section of nameFormSections(form.sections)) {
           const commands = _.concat(
             [
@@ -184,7 +198,7 @@ export default function FormPrinted({
             pis,
             manifest,
             mock,
-            notFilled,
+            t('form.not-filled'),
             _.filter(commands, c => c.type !== 'description'),
             position,
             skipTitles,
@@ -202,7 +216,15 @@ export default function FormPrinted({
             pi.pageNumber,
             pis,
             formatDate(new Date(), 'PPP'),
-            'MR3-ADE-7DJ-2XY',
+            _.join(
+              _.concat(
+                formMetadata.formID ? ['Form ' + formMetadata.formID] : [],
+                recordMetadata && recordMetadata.recordID
+                  ? ['Record ' + recordMetadata.recordID]
+                  : []
+              ),
+              '  —  '
+            ),
             'MDL code xyz'
           )
         }
@@ -213,7 +235,12 @@ export default function FormPrinted({
       }
     }
     fn()
-  }, [debug, mock])
+  }, [
+    debug,
+    mock,
+    usPageSize,
+    lookupManifestByNameAndType(manifest, 'form.yaml', 'text/yaml')!.sha256,
+  ])
 
   const downloadPdf = useCallback(async () => {
     try {
@@ -227,24 +254,24 @@ export default function FormPrinted({
     }
   }, [pdf])
 
-  if (isInManifest(manifest, e => e.filename == 'form.pdf')) {
+  if (pdf) {
     return (
       <View
         onLayout={event => {
           setWidth(event.nativeEvent.layout.width)
         }}
       >
-        {width && (
-          <DisplayPDF
-            width={width}
-            file={pdf}
-            debug={debug}
-            toggleDebug={() => setDebug(x => !x)}
-            mock={mock}
-            toggleMock={() => setMock(x => !x)}
-            downloadPdf={downloadPdf}
-          />
-        )}
+        <DisplayPDF
+          width={'500'}
+          file={pdf}
+          debug={debug}
+          toggleDebug={() => setDebug(x => !x)}
+          mock={mock}
+          toggleMock={() => setMock(x => !x)}
+          usPageSize={usPageSize}
+          toggleUsPageSize={() => setUsPageSize(x => !x)}
+          downloadPdf={downloadPdf}
+        />
       </View>
     )
   }

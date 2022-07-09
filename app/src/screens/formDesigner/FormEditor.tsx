@@ -243,6 +243,7 @@ export default function FormEditor({
           formMetadata={formMetadata}
           manifest={manifest}
           setManifest={setManifest}
+          setForm={setForm}
         />
       )
       break
@@ -293,7 +294,7 @@ export default function FormEditor({
           <Tabs tabName={tabName} setTabName={setTabName} />
         )
       }
-      fullWidth={tabName === 'Editor'}
+      fullWidth={tabName === 'Editor' || tabName === 'Printed'}
     >
       <>
         <VStack
@@ -303,7 +304,7 @@ export default function FormEditor({
           borderColor="coolGray.200"
           bg={tabName !== 'Editor' ? 'white' : null}
           px={
-            tabName === 'Editor'
+            tabName === 'Editor' || tabName === 'Printed'
               ? 0
               : {
                   base: 4,

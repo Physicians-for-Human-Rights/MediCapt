@@ -72,45 +72,56 @@ import {
 export async function renderTitleHeader(
   pi: PageInfo,
   manifest: FormManifestWithData,
-  title: string,
-  subtitle: string,
-  id: string,
-  logo: string,
-  description: string
+  formMetadata: Partial<FormMetadata>,
+  title?: string,
+  subtitle?: string,
+  id?: string,
+  logo?: string,
+  description?: string
 ) {
-  const ny1 = text(pi, title, {
+  const ny1 = text(pi, title || formMetadata.title || 'Form', {
     scale: pi.h1,
     xcenter: true,
     y: 0,
     bold: true,
   })
-  const ny2 = text(pi, subtitle, {
+  const ny2 = text(pi, subtitle || formMetadata.subtitle || '', {
     scale: pi.md,
     xcenter: true,
     y: ny1.y + 5,
     bold: true,
   })
-  const ny3 = text(pi, id, {
-    scale: pi.h2,
-    xcenter: true,
-    y: ny2.y + 10,
-    bold: true,
-  })
-  await image(
+  const ny3 = text(
     pi,
-    manifest,
-    logo,
-    pi.maxX - 100,
-    50 + pi.fontSize * pi.h1 + 10,
-    100,
-    100
+    id ||
+      (formMetadata['official-name'] && formMetadata['official-code']
+        ? formMetadata['official-name'] + '-' + formMetadata['official-code']
+        : ''),
+    {
+      scale: pi.h2,
+      xcenter: true,
+      y: ny2.y + 10,
+      bold: true,
+    }
   )
-  text(pi, description, {
-    scale: pi.md,
-    x: 10,
-    y: ny3.y + 20,
-    maxW: pi.w * 0.7,
-  })
+  if (logo) {
+    await image(
+      pi,
+      manifest,
+      logo,
+      pi.maxX - 100,
+      50 + pi.fontSize * pi.h1 + 10,
+      100,
+      100
+    )
+  }
+  if (description)
+    text(pi, description, {
+      scale: pi.md,
+      x: 10,
+      y: ny3.y + 20,
+      maxW: pi.w * 0.7,
+    })
 }
 
 export async function renderFooter(
