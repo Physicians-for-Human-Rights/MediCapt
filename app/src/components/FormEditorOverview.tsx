@@ -245,7 +245,6 @@ export default function FormEditorOverview({
               locationUUID: uuid,
             })
           }
-          any={'1'}
           mx={3}
           mt={1}
         />
