@@ -1,8 +1,8 @@
 # Medicapt
 
-MediCapt is a project by Physicians for Human Rights' (PHR) Sexual Violence team (SV) to assist clinicians in securely documenting forensic evidence so that victims may seek justice. 
+MediCapt is a mobile application, developed by the Program on Sexual Violence in Conflict Zones at Physicians for Human Rights (PHR), to help clinicians more effectively collect, document, and preserve forensic medical evidence of sexual violence to support the prosecution of these crimes. This critical tool converts a standardized medical intake form for forensic documentation to a digital platform and combines it with a secure mobile camera to facilitate forensic photography. By combining these components, MediCapt will help preserve critical forensic medical evidence of mass atrocities, including sexual violence and torture, for use in courts. Health care providers will use the app to compile medical evidence, photograph survivors’ injuries, and securely transmit the data to authorities engaged in prosecuting and seeking accountability for these crimes
 
-For more information, please see: medicapt.org
+For more information, please see: https://phr.org/issues/sexual-violence/medicapt/
 
 IMPORTANT NOTICE
 -----------------
