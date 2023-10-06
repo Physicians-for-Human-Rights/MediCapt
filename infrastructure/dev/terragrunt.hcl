@@ -36,11 +36,11 @@ remote_state {
   backend = "s3"
   config = {
     encrypt                   = true
-    bucket                    = "${local.namespace}-terraform-state-${local.stage}"
+    bucket                    = "${local.namespace}-terraform-state-test-${local.stage}"
     key                       = "${path_relative_to_include()}/terraform.tfstate"
     region                    = local.aws_region
     dynamodb_table            = "${local.namespace}-terraform-locks-${local.stage}"
-    accesslogging_bucket_name = "${local.namespace}-terraform-state-logs-${local.stage}"
+    accesslogging_bucket_name = "${local.namespace}-terraform-state-logs-test-${local.stage}"
   }
   generate = {
     path      = "backend.tf"
