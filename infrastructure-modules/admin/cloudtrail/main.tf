@@ -15,6 +15,7 @@ variable "namespace" {
 module "s3_bucket" {
   source = "cloudposse/cloudtrail-s3-bucket/aws"
   version     = "0.23.1"
+  acl    = "private"
   name      = "${var.stage}-${var.namespace}-test-cloudtrail"
 }
 
