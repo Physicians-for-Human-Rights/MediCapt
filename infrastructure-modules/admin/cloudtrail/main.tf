@@ -15,7 +15,7 @@ variable "namespace" {
 module "s3_bucket" {
   source = "cloudposse/cloudtrail-s3-bucket/aws"
   version     = "0.23.1"
-  name      = "${var.stage}-${var.namespace}-cloudtrail"
+  name      = "${var.stage}-${var.namespace}-test-cloudtrail"
 }
 
 module "cloudtrail" {
@@ -26,7 +26,7 @@ module "cloudtrail" {
   include_global_service_events = true
   is_multi_region_trail         = true
   enable_logging                = true
-  s3_bucket_name                = "${var.stage}-${var.namespace}-cloudtrail"
+  s3_bucket_name                = "${var.stage}-${var.namespace}-test-cloudtrail"
 }
 
 output "cloudtrail_bucket_name" {

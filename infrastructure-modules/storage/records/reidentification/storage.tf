@@ -8,7 +8,7 @@ module "s3_bucket" {
   sse_algorithm                = "aws:kms"
   bucket_key_enabled           = true
   allow_encrypted_uploads_only = true
-  name                         = "${var.stage}-${var.namespace}-reidentification"
+  name                         = "${var.stage}-${var.namespace}-test-reidentification"
 }
 
 output "reidentification_s3_bucket_arn" {

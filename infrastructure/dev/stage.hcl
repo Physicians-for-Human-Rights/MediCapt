@@ -25,7 +25,7 @@ locals {
   #
   api_file = "api.yaml"
   #
-  budget_slack_webhook = "https://hooks.slack.com/services/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"
+  budget_slack_webhook = "https://hooks.slack.com/services/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"
   budgets = [
     # We don't use EC2 but this is a common resource that attackers exploit.
     {

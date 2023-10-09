@@ -23,7 +23,7 @@ variable "dynamodb_point_in_time_recovery" {
 }
 
 resource "aws_s3_bucket" "forms" {
-  bucket = "${var.namespace}-${var.stage}-forms"
+  bucket = "${var.namespace}-${var.stage}-test-forms"
   acl    = "private"
   versioning {
     enabled = true

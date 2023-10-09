@@ -55,7 +55,7 @@ module "s3_bucket" {
     "s3:PutObject",
     "s3:PutObjectTagging"
   ]
-  name                         = "${var.stage}-${var.namespace}-records"
+  name                         = "${var.stage}-${var.namespace}-test-records"
   privileged_principal_arns    = var.records_bucket_privileged_principal_arns
   privileged_principal_actions = [
     "s3:PutObject", 

@@ -223,7 +223,7 @@ module "s3_bucket" {
     "s3:PutObject",
     "s3:PutObjectTagging"
   ]
-  name                         = "${var.stage}-${var.namespace}-cognito-image-${var.user_type}"
+  name                         = "${var.stage}-${var.namespace}-cognito-image-${var.user_type}-test"
   cors_rule_inputs = [{
     allowed_headers = ["*"]
     allowed_methods = ["GET", "PUT", "POST"]
