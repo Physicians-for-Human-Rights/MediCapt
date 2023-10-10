@@ -18,7 +18,7 @@ variable "domain_name" {
 }
 
 resource "aws_route53_zone" "primary" {
-  name = "medicapt.click"
+  name = "dev-medicapt.org"
 }
 
 module "acm_request_certificate" {

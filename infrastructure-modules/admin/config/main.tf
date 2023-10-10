@@ -25,7 +25,7 @@ variable "support_role_arns" {
 module "aws_config_storage" {
   source  = "cloudposse/config-storage/aws"
   version = "0.4.0"
-  name    = "${var.stage}-${var.namespace}-config"
+  name    = "${var.stage}-${var.namespace}-test-config"
 }
 
 module "aws_config" {
