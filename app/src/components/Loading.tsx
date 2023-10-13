@@ -1,5 +1,5 @@
 import React from 'react'
-import { Heading, Center, HStack, Text, View, Spinner } from 'native-base'
+import { Heading, Center, HStack, View, Spinner } from 'native-base'
 import { t } from 'i18n-js'
 
 const spinnerStyle = {

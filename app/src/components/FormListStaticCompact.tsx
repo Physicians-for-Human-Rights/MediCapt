@@ -1,17 +1,7 @@
 import React from 'react'
-import {
-  Box,
-  HStack,
-  Text,
-  VStack,
-  ScrollView,
-  Pressable,
-  Stack,
-  Center,
-  Button,
-  Icon,
-  Select,
-} from 'native-base'
+import { Box, HStack, VStack, ScrollView, Pressable } from 'native-base'
+import { Text, useStyleSheet } from '@ui-kitten/components'
+import themedStyles from 'themeStyled'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
@@ -24,6 +14,7 @@ import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import { Platform } from 'react-native'
 
+const styleS = useStyleSheet(themedStyles)
 export function ListItem({
   item,
   selectItem,
@@ -37,28 +28,44 @@ export function ListItem({
         <HStack alignItems="center" space={4} w="70%">
           <VStack>
             <Text
-              isTruncated
-              bold
-              fontSize="sm"
-              _light={{ color: 'coolGray.900' }}
+              style={[
+                styleS.truncated,
+                styleS.fontBold,
+                styleS.fontSizeSm,
+                styleS.colorCoolGray900,
+              ]}
             >
               {item.title}
             </Text>
             <Text
-              pl={3}
-              isTruncated
-              fontSize="sm"
-              _light={{ color: 'coolGray.900' }}
+              style={[
+                styleS.truncated,
+                styleS.pl3,
+                styleS.fontSizeSm,
+                styleS.colorCoolGray900,
+              ]}
             >
               {item.subtitle}
             </Text>
           </VStack>
         </HStack>
         <VStack w="30%">
-          <Text isTruncated fontSize="sm" _light={{ color: 'coolGray.900' }}>
-            {formatDate(item.createdDate, 'PPP')}
+          <Text
+            style={[
+              styleS.truncated,
+              styleS.fontSizeSm,
+              styleS.colorCoolGray900,
+            ]}
+          >
+            {formatDate(item.createdDate, 'PPP') as string}
           </Text>
-          <Text isTruncated fontSize="sm" _light={{ color: 'coolGray.900' }}>
+          <Text
+            style={[
+              styleS.truncated,
+              styleS.fontSizeSm,
+              styleS.colorCoolGray900,
+            ]}
+          >
             {item.formID}
           </Text>
         </VStack>
@@ -83,15 +90,9 @@ export function ListItemDesktop({
     >
       <HStack alignItems="center" flex={1} justifyContent="space-between">
         <VStack w="100%">
-          <Text bold isTruncated>
-            {item.title}
-          </Text>
-          <Text isTruncated ml={2}>
-            {item.subtitle}
-          </Text>
-          <Text isTruncated ml={2}>
-            {item.formID}
-          </Text>
+          <Text style={[styleS.fontBold, styleS.truncated]}>{item.title}</Text>
+          <Text style={[styleS.ml2, styleS.truncated]}>{item.subtitle}</Text>
+          <Text style={[styleS.ml2, styleS.truncated]}>{item.formID}</Text>
         </VStack>
       </HStack>
     </Pressable>

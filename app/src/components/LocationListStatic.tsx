@@ -4,7 +4,6 @@ import {
   HStack,
   Stack,
   Center,
-  Text,
   VStack,
   ScrollView,
   Pressable,
@@ -15,6 +14,8 @@ import {
   Select,
   Heading,
 } from 'native-base'
+import { Text, useStyleSheet } from '@ui-kitten/components'
+import themedStyles from 'themeStyled'
 import { LocationType } from 'utils/types/location'
 import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons'
 import { Platform } from 'react-native'
@@ -23,6 +24,8 @@ import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 
+const styleS = useStyleSheet(themedStyles)
+
 export function ListItem({ item }: { item: LocationType }) {
   return (
     <Pressable p={2} borderBottomWidth={0.8} borderBottomColor="coolGray.300">
@@ -30,40 +33,86 @@ export function ListItem({ item }: { item: LocationType }) {
         <HStack alignItems="center" space={4} w="55%">
           <VStack>
             <Text
-              isTruncated
-              bold
-              fontSize="sm"
-              noOfLines={2}
-              maxW="64"
-              color="coolGray.900"
+              style={[
+                styleS.truncated,
+                styleS.fontBold,
+                styleS.fontSizeSm,
+                styleS.maxWidth64x4,
+                styleS.colorCoolGray900,
+              ]}
+              numberOfLines={2}
             >
               {item.legalName}
             </Text>
             <HStack>
-              <Text pl={3} isTruncated fontSize="sm" color="coolGray.600">
+              <Text
+                style={[
+                  styleS.truncated,
+                  styleS.fontSizeSm,
+                  styleS.pl3,
+                  styleS.colorCoolGray600,
+                ]}
+              >
                 {t('location.entity.' + item.entityType)}
               </Text>
-              <Text isTruncated ml={2} color="coolGray.600">
+              <Text
+                style={[styleS.truncated, styleS.ml2, styleS.colorCoolGray600]}
+              >
                 {t('country.' + item.country)}
               </Text>
             </HStack>
-            <Text pl={3} isTruncated fontSize="sm" color="coolGray.700">
-              {formatDate(item.lastChangedDate, 'PPP')}
+            <Text
+              style={[
+                styleS.truncated,
+                styleS.pl3,
+                styleS.colorCoolGray700,
+                styleS.fontSizeSm,
+              ]}
+            >
+              {formatDate(item.lastChangedDate, 'PPP') as string}
             </Text>
           </VStack>
         </HStack>
         <HStack alignItems="center" space={4} w="32%">
           <VStack>
-            <Text isTruncated maxW="100%" fontSize="xs" color="coolGray.900">
+            <Text
+              style={[
+                styleS.truncated,
+                styleS.maxWidth100Percent,
+                styleS.colorCoolGray900,
+                styleS.fontSizeXs,
+              ]}
+            >
               {item.shortName}
             </Text>
-            <Text isTruncated maxW="100%" fontSize="xs" color="coolGray.900">
+            <Text
+              style={[
+                styleS.truncated,
+                styleS.maxWidth100Percent,
+                styleS.fontSizeXs,
+                styleS.colorCoolGray900,
+              ]}
+            >
               {item.locationID}
             </Text>
-            <Text isTruncated maxW="100%" fontSize="xs" color="coolGray.500">
-              {formatDate(item.createdDate, 'PPP')}
+            <Text
+              style={[
+                styleS.truncated,
+                styleS.maxWidth100Percent,
+                styleS.fontSizeXs,
+                styleS.colorCoolGray500,
+              ]}
+            >
+              {formatDate(item.createdDate, 'PPP') as string}
             </Text>
-            <Text isTruncated fontSize="xs" maxW="60%" color="coolGray.500">
+            <Text
+              style={[
+                styleS.truncated,
+                styleS.maxWidth60Percent,
+                styleS.fontSizeXs,
+                styleS.colorCoolGray500,
+              ]}
+            >
               {item.enabled}
             </Text>
           </VStack>
@@ -101,18 +150,18 @@ export function ListItemDesktop({
     >
       <HStack alignItems="center" flex={1} justifyContent="space-between">
         <VStack w="30%">
-          <Text bold isTruncated noOfLines={2}>
+          <Text style={[styleS.fontBold, styleS.truncated]} numberOfLines={2}>
             {_.isString(item) ? item : item.legalName}
           </Text>
           {!_.isString(item) && (
             <HStack alignItems="center" flex={1} justifyContent="flex-start">
-              <Text isTruncated ml={2}>
+              <Text style={[styleS.ml2, styleS.truncated]}>
                 {item.shortName}
               </Text>
             </HStack>
           )}
           {!_.isString(item) && (
-            <Text isTruncated ml={2}>
+            <Text style={[styleS.ml2, styleS.truncated]}>
               {t('location.entity.' + item.entityType)}
             </Text>
           )}
@@ -120,18 +169,26 @@ export function ListItemDesktop({
 
         <VStack w="20%">
           {!_.isString(item) && (
-            <Text isTruncated>{t('country.' + item.country)}</Text>
+            <Text style={[styleS.truncated]}>
+              {t('country.' + item.country)}
+            </Text>
           )}
           {!_.isString(item) && (
-            <Text isTruncated>{t('languages.' + item.language)}</Text>
+            <Text style={[styleS.truncated]}>
+              {t('languages.' + item.language)}
+            </Text>
           )}
         </VStack>
 
         <VStack w="30%">
           {!_.isString(item) && (
-            <Text isTruncated>{formatDate(item.lastChangedDate, 'PPP')}</Text>
+            <Text style={[styleS.truncated]}>
+              {formatDate(item.lastChangedDate, 'PPP') as string}
+            </Text>
           )}
-          {!_.isString(item) && <Text isTruncated>{item.locationID}</Text>}
+          {!_.isString(item) && (
+            <Text style={[styleS.truncated]}>{item.locationID}</Text>
+          )}
         </VStack>
 
         <HStack w="5%">

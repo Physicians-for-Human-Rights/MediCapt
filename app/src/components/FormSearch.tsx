@@ -1,22 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import {
-  Box,
-  HStack,
-  Icon,
-  Text,
-  VStack,
-  Avatar,
-  ScrollView,
-  Pressable,
-  useColorMode,
-  Center,
-  Input,
-  Fab,
-  IconButton,
-  Divider,
-  Button,
-} from 'native-base'
-import {
   AntDesign,
   Ionicons,
   MaterialIcons,

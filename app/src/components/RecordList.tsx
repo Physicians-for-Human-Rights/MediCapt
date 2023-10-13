@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import {
   Box,
   HStack,
-  Text,
   VStack,
   ScrollView,
   Pressable,
@@ -12,6 +11,8 @@ import {
   Icon,
   Select,
 } from 'native-base'
+import { Text, useStyleSheet } from '@ui-kitten/components'
+import themedStyles from 'themeStyled'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Record some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
@@ -25,6 +26,8 @@ import { getFormCached, getUserByUUIDCached } from 'api/common'
 import { UserType } from 'utils/types/user'
 import { userFullName } from 'utils/userTypes'
 import { Platform } from 'react-native'
+
+const styleS = useStyleSheet(themedStyles)
 
 export function ListItemMobile({
   item,
@@ -48,19 +51,23 @@ export function ListItemMobile({
         <HStack alignItems="center" space={4} w="70%">
           <VStack>
             <Text
-              isTruncated
-              bold
-              fontSize="sm"
-              _light={{ color: 'coolGray.900' }}
+              style={[
+                styleS.truncated,
+                styleS.fontBold,
+                styleS.fontSizeSm,
+                styleS.colorCoolGray900,
+              ]}
             >
               {item.patientName || t('record.missing-patient-name')}
             </Text>
             {item.patientGender ? (
               <Text
-                pl={3}
-                isTruncated
-                fontSize="sm"
-                _light={{ color: 'coolGray.900' }}
+                style={[
+                  styleS.truncated,
+                  styleS.pl3,
+                  styleS.fontSizeSm,
+                  styleS.colorCoolGray900,
+                ]}
               >
                 {t('gender.' + item.patientGender)}
               </Text>
@@ -69,22 +76,26 @@ export function ListItemMobile({
             )}
             {item.patientDateOfBirth > new Date('January 01 1500') ? (
               <Text
-                pl={3}
-                isTruncated
-                fontSize="sm"
-                _light={{ color: 'coolGray.900' }}
+                style={[
+                  styleS.truncated,
+                  styleS.pl3,
+                  styleS.fontSizeSm,
+                  styleS.colorCoolGray900,
+                ]}
               >
-                {formatDate(item.patientDateOfBirth, 'PPP')}
+                {formatDate(item.patientDateOfBirth, 'PPP') as string}
               </Text>
             ) : (
               <></>
             )}
             {item.patientAddress ? (
               <Text
-                pl={3}
-                isTruncated
-                fontSize="sm"
-                _light={{ color: 'coolGray.900' }}
+                style={[
+                  styleS.truncated,
+                  styleS.pl3,
+                  styleS.fontSizeSm,
+                  styleS.colorCoolGray900,
+                ]}
               >
                 {item.patientAddress}
               </Text>
@@ -92,10 +103,12 @@ export function ListItemMobile({
               <></>
             )}
             <Text
-              pl={3}
-              isTruncated
-              fontSize="sm"
-              _light={{ color: 'coolGray.900' }}
+              style={[
+                styleS.truncated,
+                styleS.pl3,
+                styleS.fontSizeSm,
+                styleS.colorCoolGray900,
+              ]}
             >
               {forms[item.formUUID]
                 ? forms[item.formUUID].title
@@ -106,7 +119,7 @@ export function ListItemMobile({
                 _.split(forms[item.formUUID].tags, ','),
                 e => e !== ''
               ).map((s: string, n: number) => (
-                <Text isTruncated key={n} pl={3}>
+                <Text style={[styleS.truncated, styleS.pl3]} key={n}>
                   {t('tag.' + s)}
                 </Text>
               ))
@@ -117,16 +130,28 @@ export function ListItemMobile({
         </HStack>
 
         <VStack w="30%">
-          <Text isTruncated fontSize="sm" _light={{ color: 'coolGray.900' }}>
-            {formatDate(item.lastChangedDate, 'PPP')}
+          <Text
+            style={[
+              styleS.truncated,
+              styleS.fontSizeSm,
+              styleS.colorCoolGray900,
+            ]}
+          >
+            {formatDate(item.lastChangedDate, 'PPP') as string}
           </Text>
-          <Text isTruncated>
+          <Text style={[styleS.truncated]}>
             {userFullName(
               users[item.lastChangedByUUID],
               item.lastChangedByUUID
             )}
           </Text>
-          <Text isTruncated fontSize="sm" _light={{ color: 'coolGray.900' }}>
+          <Text
+            style={[
+              styleS.truncated,
+              styleS.fontSizeSm,
+              styleS.colorCoolGray900,
+            ]}
+          >
             {item.recordID}
           </Text>
           {item.caseId ? <Text>item.caseId</Text> : <></>}
@@ -156,18 +181,18 @@ export function ListItemDesktop({
     >
       <HStack alignItems="center" flex={1} justifyContent="space-between">
         <VStack w="45%">
-          <Text bold isTruncated>
+          <Text style={[styleS.truncated, styleS.fontBold]}>
             {item.patientName || t('record.missing-patient-name')}
           </Text>
-          <Text isTruncated ml={2}>
+          <Text style={[styleS.truncated, styleS.ml2]}>
             {item.patientGender ? t('gender.' + item.patientGender) : ''}
           </Text>
-          <Text isTruncated ml={2}>
+          <Text style={[styleS.truncated, styleS.ml2]}>
             {item.patientDateOfBirth > new Date('January 01 1500')
-              ? formatDate(item.patientDateOfBirth, 'PPP')
+              ? (formatDate(item.patientDateOfBirth, 'PPP') as string)
               : ''}
           </Text>
-          <Text isTruncated ml={2}>
+          <Text style={[styleS.truncated, styleS.ml2]}>
             {item.patientAddress ? item.patientAddress : ''}
           </Text>
           <Text>{item.recordID}</Text>
@@ -179,7 +204,7 @@ export function ListItemDesktop({
               _.split(forms[item.formUUID].tags, ','),
               e => e !== ''
             ).map((s: string, n: number) => (
-              <Text isTruncated key={n}>
+              <Text style={[styleS.truncated]} key={n}>
                 {t('tag.' + s)}
               </Text>
             ))
@@ -201,15 +226,19 @@ export function ListItemDesktop({
         </VStack>
 
         <VStack w="20%">
-          <Text isTruncated>{formatDate(item.lastChangedDate, 'PPP')}</Text>
-          <Text isTruncated>
+          <Text style={[styleS.truncated]}>
+            {formatDate(item.lastChangedDate, 'PPP') as string}
+          </Text>
+          <Text style={[styleS.truncated]}>
             {userFullName(
               users[item.lastChangedByUUID],
               item.lastChangedByUUID
             )}
           </Text>
-          <Text isTruncated>{formatDate(item.createdDate, 'PPP')}</Text>
-          <Text isTruncated>
+          <Text style={[styleS.truncated]}>
+            {formatDate(item.createdDate, 'PPP') as string}
+          </Text>
+          <Text style={[styleS.truncated]}>
             {userFullName(users[item.createdByUUID], item.createdByUUID)}
           </Text>
         </VStack>
@@ -462,39 +491,47 @@ export default function RecordList({
                 _light={{ borderColor: 'coolGray.200' }}
               >
                 <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="50%"
-                  mb={3}
-                  _light={{ color: 'coolGray.800' }}
+                  style={[
+                    styleS.fontBold,
+                    styleS.textLeft,
+                    styleS.width50Percent,
+                    styleS.mb3,
+                    styleS.colorCoolGray800,
+                  ]}
                 >
                   {t('record.heading.patient')}
                 </Text>
                 <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="23%"
-                  mb={3}
-                  _light={{ color: 'coolGray.900' }}
+                  style={[
+                    styleS.fontBold,
+                    styleS.textLeft,
+                    styleS.width23Percent,
+                    styleS.mb3,
+                    styleS.colorCoolGray900,
+                  ]}
                 >
                   {t('record.heading.form')}
                 </Text>
                 <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="23%"
-                  mb={3}
-                  _light={{ color: 'coolGray.900' }}
+                  style={[
+                    styleS.fontBold,
+                    styleS.textLeft,
+                    styleS.width23Percent,
+                    styleS.mb3,
+                    styleS.colorCoolGray900,
+                  ]}
                 >
                   {t('record.heading.changed-created')}
                 </Text>
                 <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="8%"
-                  mb={3}
-                  _light={{ color: 'coolGray.900' }}
-                  mr={-1}
+                  style={[
+                    styleS.fontBold,
+                    styleS.textLeft,
+                    styleS.width8Percent,
+                    styleS.mb3,
+                    styleS.colorCoolGray900,
+                    styleS.mrMinus1,
+                  ]}
                 >
                   {t('record.heading.sealed')}
                 </Text>

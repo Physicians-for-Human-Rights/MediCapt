@@ -4,13 +4,13 @@ import {
   HStack,
   Pressable,
   Icon,
-  Text,
   Button,
   Badge,
   useBreakpointValue,
   FlatList,
   Stack,
 } from 'native-base'
+import { Text } from '@ui-kitten/components'
 import { AntDesign } from '@expo/vector-icons'
 import _ from 'lodash'
 import { NamedFormSection } from 'utils/types/formHelpers'
@@ -47,10 +47,7 @@ function Section({
           <Badge px={2} colorScheme={completed ? 'success' : 'red'}>
             {sectionIndex + 1}
           </Badge>
-          <Text
-            color={completed ? 'success.600' : 'primary.800'}
-            selectable={false}
-          >
+          <Text status={completed ? 'success' : 'primary'} selectable={false}>
             {title}
           </Text>
         </HStack>

@@ -102,6 +102,9 @@ const themedStyles = StyleService.create({
   width64x4: {
     width: 64 * 4,
   },
+  width45Percent: {
+    width: '45%',
+  },
   width50Percent: {
     width: '50%',
   },
@@ -111,11 +114,20 @@ const themedStyles = StyleService.create({
   width25Percent: {
     width: '25%',
   },
+  width23Percent: {
+    width: '23%',
+  },
   width20Percent: {
     width: '20%',
   },
   width10Percent: {
     width: '10%',
+  },
+  width8Percent: {
+    width: '8%',
+  },
+  maxWidth64x4: {
+    maxWidth: 64 * 4,
   },
   maxWidth100Percent: {
     maxWidth: '100%',

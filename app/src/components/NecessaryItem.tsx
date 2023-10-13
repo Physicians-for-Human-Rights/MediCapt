@@ -1,13 +1,13 @@
 import React from 'react'
 import {
   HStack,
-  Text,
   CheckIcon,
   CloseIcon,
   WarningTwoIcon,
   Popover,
   Button,
 } from 'native-base'
+import { Text } from '@ui-kitten/components'
 import _ from 'lodash'
 
 export default function NecessaryItem({
@@ -45,7 +45,7 @@ export default function NecessaryItem({
           mx={mx}
           color={optional ? 'warning.500' : 'error.500'}
         />
-        <Text color={optional ? 'warning.500' : 'error.500'}>{todoText}</Text>
+        <Text status={optional ? 'warning' : 'error'}>{todoText}</Text>
         {help && (
           <Popover
             trigger={triggerProps => {

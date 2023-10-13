@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import {
   Box,
   HStack,
-  Text,
   VStack,
   ScrollView,
   Pressable,
@@ -13,6 +12,8 @@ import {
   Select,
 } from 'native-base'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
+import { Text, useStyleSheet } from '@ui-kitten/components'
+import themedStyles from 'themeStyled'
 import { UserType } from 'utils/types/user'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
@@ -26,6 +27,8 @@ import Language from 'components/Language'
 import { Platform } from 'react-native'
 import { getUserByUUIDCachedAnyPool } from 'api/common'
 import { userFullName } from 'utils/userTypes'
+
+const styleS = useStyleSheet(themedStyles)
 
 export function ListItem({
   item,
@@ -42,28 +45,44 @@ export function ListItem({
         <HStack alignItems="center" space={4} w="70%">
           <VStack>
             <Text
-              isTruncated
-              bold
-              fontSize="sm"
-              _light={{ color: 'coolGray.900' }}
+              style={[
+                styleS.truncated,
+                styleS.fontBold,
+                styleS.fontSizeSm,
+                styleS.colorCoolGray900,
+              ]}
             >
               {item.title}
             </Text>
             <Text
-              pl={3}
-              isTruncated
-              fontSize="sm"
-              _light={{ color: 'coolGray.900' }}
+              style={[
+                styleS.truncated,
+                styleS.pl3,
+                styleS.fontSizeSm,
+                styleS.colorCoolGray900,
+              ]}
             >
               {item.subtitle}
             </Text>
           </VStack>
         </HStack>
         <VStack w="30%">
-          <Text isTruncated fontSize="sm" _light={{ color: 'coolGray.900' }}>
-            {formatDate(item.createdDate, 'PPP')}
+          <Text
+            style={[
+              styleS.truncated,
+              styleS.fontSizeSm,
+              styleS.colorCoolGray900,
+            ]}
+          >
+            {formatDate(item.createdDate, 'PPP') as string}
           </Text>
-          <Text isTruncated fontSize="sm" _light={{ color: 'coolGray.900' }}>
+          <Text
+            style={[
+              styleS.truncated,
+              styleS.fontSizeSm,
+              styleS.colorCoolGray900,
+            ]}
+          >
             {item.formID}
           </Text>
         </VStack>
@@ -90,17 +109,17 @@ export function ListItemDesktop({
     >
       <HStack alignItems="center" flex={1} justifyContent="space-between">
         <VStack w="45%">
-          <Text bold isTruncated>
+          <Text style={[styleS.fontBold, styleS.truncated]}>
             {item.patientName || t('record.missing-patient-name')}
           </Text>
-          <Text isTruncated ml={2}>
+          <Text style={[styleS.ml2, styleS.truncated]}>
             {item.patientGender ? t('gender.' + item.patientGender) : ''}
           </Text>
-          <Text isTruncated ml={2}>
+          <Text style={[styleS.ml2, styleS.truncated]}>
             {item.patientAddress ? item.patientAddress : ''}
           </Text>
-          <Text isTruncated ml={2}>
-            {formatDate(item.patientDateOfBirth, 'PPP')}
+          <Text style={[styleS.ml2, styleS.truncated]}>
+            {formatDate(item.patientDateOfBirth, 'PPP') as string}
           </Text>
           <Text>{item.recordID}</Text>
         </VStack>
@@ -110,7 +129,7 @@ export function ListItemDesktop({
           <Text>{item.formID}</Text>
           <Text>{item.caseId ? item.caseId : ''}</Text>
           {_.split(item.formTags, ',').map((s: string, n: number) => (
-            <Text isTruncated key={n}>
+            <Text style={[styleS.truncated]} key={n}>
               {t('tag.' + s)}
             </Text>
           ))}
@@ -119,17 +138,17 @@ export function ListItemDesktop({
           </Text>
         </VStack>
         <VStack w="20%">
-          <Text isTruncated>Record creation</Text>
-          <Text isTruncated ml={2}>
-            {formatDate(item.recordCreatedDate, 'PPP')}
+          <Text style={[styleS.truncated]}>Record creation</Text>
+          <Text style={[styleS.truncated, styleS.ml2]}>
+            {formatDate(item.recordCreatedDate, 'PPP') as string}
           </Text>
-          <Text isTruncated>Share creation</Text>
-          <Text isTruncated ml={2}>
-            {formatDate(item.lastChangedDate, 'PPP')}
+          <Text style={[styleS.truncated]}>Share creation</Text>
+          <Text style={[styleS.truncated, styleS.ml2]}>
+            {formatDate(item.lastChangedDate, 'PPP') as string}
           </Text>
-          <Text isTruncated>Share expiration</Text>
-          <Text isTruncated ml={2}>
-            {formatDate(item.shareExpiresOn, 'PPP')}
+          <Text style={[styleS.truncated]}>Share expiration</Text>
+          <Text style={[styleS.truncated, styleS.ml2]}>
+            {formatDate(item.shareExpiresOn, 'PPP') as string}
           </Text>
         </VStack>
       </HStack>
@@ -313,29 +332,35 @@ export default function ShareList({
                 _light={{ borderColor: 'coolGray.200' }}
               >
                 <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="45%"
-                  mb={3}
-                  _light={{ color: 'coolGray.800' }}
+                  style={[
+                    styleS.fontBold,
+                    styleS.textLeft,
+                    styleS.width45Percent,
+                    styleS.colorCoolGray800,
+                    styleS.mb3,
+                  ]}
                 >
                   Record
                 </Text>
                 <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="30%"
-                  mb={3}
-                  _light={{ color: 'coolGray.900' }}
+                  style={[
+                    styleS.fontBold,
+                    styleS.textLeft,
+                    styleS.width30Percent,
+                    styleS.colorCoolGray900,
+                    styleS.mb3,
+                  ]}
                 >
                   Form
                 </Text>
                 <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="20%"
-                  mb={3}
-                  _light={{ color: 'coolGray.900' }}
+                  style={[
+                    styleS.fontBold,
+                    styleS.textLeft,
+                    styleS.width20Percent,
+                    styleS.colorCoolGray900,
+                    styleS.mb3,
+                  ]}
                 >
                   Dates
                 </Text>

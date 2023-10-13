@@ -3,13 +3,14 @@ import {
   Box,
   HStack,
   Icon,
-  Text,
   VStack,
   ScrollView,
   Pressable,
   Input,
   Spinner,
 } from 'native-base'
+import { Text, useStyleSheet } from '@ui-kitten/components'
+import themedStyles from 'themeStyled'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
@@ -17,6 +18,8 @@ import { t } from 'i18n-js'
 import _ from 'lodash'
 import { UserType } from 'utils/types/user'
 import { LocationType } from 'utils/types/location'
+
+const styleS = useStyleSheet(themedStyles)
 
 export default function paginateComponent(
   Component: JSX.Element,
@@ -88,7 +91,7 @@ export default function paginateComponent(
               borderWidth={n === page ? 1 : undefined}
               onPress={() => setPage(n)}
             >
-              <Text color="coolGray.500" fontSize="sm">
+              <Text style={[styleS.colorCoolGray500, styleS.fontSizeSm]}>
                 {n + 1}
               </Text>
             </Pressable>
@@ -109,7 +112,7 @@ export default function paginateComponent(
                 onMore()
               }}
             >
-              <Text color="coolGray.500" fontSize="sm">
+              <Text style={[styleS.colorCoolGray500, styleS.fontSizeSm]}>
                 More
               </Text>
             </Pressable>

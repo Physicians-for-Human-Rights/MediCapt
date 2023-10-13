@@ -4,7 +4,6 @@ import {
   HStack,
   Stack,
   Center,
-  Text,
   VStack,
   ScrollView,
   Pressable,
@@ -14,6 +13,8 @@ import {
   Button,
   Select,
 } from 'native-base'
+import { Text, useStyleSheet } from '@ui-kitten/components'
+import themedStyles from 'themeStyled'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import { Platform } from 'react-native'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
@@ -25,6 +26,7 @@ import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 
+const styleS = useStyleSheet(themedStyles)
 export function ListItem({ item }: { item: LocationType }) {
   return (
     <Pressable p={2} borderBottomWidth={0.8} borderBottomColor="coolGray.300">
@@ -32,40 +34,84 @@ export function ListItem({ item }: { item: LocationType }) {
         <HStack alignItems="center" space={4} w="55%">
           <VStack>
             <Text
-              isTruncated
-              bold
-              fontSize="sm"
-              noOfLines={2}
-              maxW="64"
-              color="coolGray.900"
+              style={[
+                styleS.truncated,
+                styleS.fontBold,
+                styleS.fontSizeSm,
+                styleS.maxWidth64x4,
+                styleS.colorCoolGray900,
+              ]}
             >
               {item.legalName}
             </Text>
             <HStack>
-              <Text pl={3} isTruncated fontSize="sm" color="coolGray.600">
+              <Text
+                style={[
+                  styleS.truncated,
+                  styleS.fontSizeSm,
+                  styleS.colorCoolGray600,
+                  styleS.pl3,
+                ]}
+              >
                 {t('location.entity.' + item.entityType)}
               </Text>
-              <Text isTruncated ml={2} color="coolGray.600">
+              <Text
+                style={[styleS.truncated, styleS.colorCoolGray600, styleS.ml2]}
+              >
                 {t('country.' + item.country)}
               </Text>
             </HStack>
-            <Text pl={3} isTruncated fontSize="sm" color="coolGray.700">
-              {formatDate(item.lastChangedDate, 'PPP')}
+            <Text
+              style={[
+                styleS.truncated,
+                styleS.colorCoolGray700,
+                styleS.fontSizeSm,
+              ]}
+            >
+              {formatDate(item.lastChangedDate, 'PPP') as string}
             </Text>
           </VStack>
         </HStack>
         <HStack alignItems="center" space={4} w="32%">
           <VStack>
-            <Text isTruncated maxW="100%" fontSize="xs" color="coolGray.900">
+            <Text
+              style={[
+                styleS.truncated,
+                styleS.colorCoolGray900,
+                styleS.fontSizeXs,
+                styleS.maxWidth100Percent,
+              ]}
+            >
               {item.shortName}
             </Text>
-            <Text isTruncated maxW="100%" fontSize="xs" color="coolGray.900">
+            <Text
+              style={[
+                styleS.truncated,
+                styleS.colorCoolGray900,
+                styleS.fontSizeXs,
+                styleS.maxWidth100Percent,
+              ]}
+            >
               {item.locationID}
             </Text>
-            <Text isTruncated maxW="100%" fontSize="xs" color="coolGray.500">
-              {formatDate(item.createdDate, 'PPP')}
+            <Text
+              style={[
+                styleS.truncated,
+                styleS.colorCoolGray500,
+                styleS.fontSizeXs,
+                styleS.maxWidth100Percent,
+              ]}
+            >
+              {formatDate(item.createdDate, 'PPP') as string}
             </Text>
-            <Text isTruncated fontSize="xs" maxW="60%" color="coolGray.500">
+            <Text
+              style={[
+                styleS.truncated,
+                styleS.colorCoolGray500,
+                styleS.fontSizeXs,
+                styleS.maxWidth60Percent,
+              ]}
+            >
               {item.enabled}
             </Text>
           </VStack>
