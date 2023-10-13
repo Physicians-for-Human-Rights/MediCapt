@@ -3,7 +3,6 @@ import {
   Box,
   HStack,
   Icon,
-  Text,
   VStack,
   Center,
   Button,
@@ -17,6 +16,7 @@ import {
   IconButton,
   Modal,
 } from 'native-base'
+import { Text } from '@ui-kitten/components'
 import { FormType } from 'utils/types/form'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'

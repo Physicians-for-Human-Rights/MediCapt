@@ -150,7 +150,10 @@ function recordOverviewPage(
       recordMetadataRef.current &&
         recordMetadataRef.current.patientDateOfBirth >
           new Date('January 01 1500')
-        ? formatDate(recordMetadataRef.current.patientDateOfBirth, 'PPP')
+        ? (formatDate(
+            recordMetadataRef.current.patientDateOfBirth,
+            'PPP'
+          ) as string)
         : 'N/A',
       'pdob'
     ),
@@ -172,7 +175,7 @@ function recordOverviewPage(
       t('record.incident-date'),
       recordMetadataRef.current &&
         recordMetadataRef.current.incidentDate > new Date('January 01 1500')
-        ? formatDate(recordMetadataRef.current.incidentDate, 'PPP')
+        ? (formatDate(recordMetadataRef.current.incidentDate, 'PPP') as string)
         : 'N/A',
       'pincidentdate'
     ),
@@ -215,7 +218,7 @@ function recordOverviewPage(
       t('record.overview.created-date'),
       recordMetadataRef.current &&
         recordMetadataRef.current.createdDate > new Date('January 01 1500')
-        ? formatDate(recordMetadataRef.current.createdDate, 'PPP')
+        ? (formatDate(recordMetadataRef.current.createdDate, 'PPP') as string)
         : 'N/A',
       'cdate'
     ),
@@ -233,7 +236,10 @@ function recordOverviewPage(
       t('record.overview.last-changed-date'),
       recordMetadataRef.current &&
         recordMetadataRef.current.lastChangedDate > new Date('January 01 1500')
-        ? formatDate(recordMetadataRef.current.lastChangedDate, 'PPP')
+        ? (formatDate(
+            recordMetadataRef.current.lastChangedDate,
+            'PPP'
+          ) as string)
         : 'N/A',
       'ldate'
     ),

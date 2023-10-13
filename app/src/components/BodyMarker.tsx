@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Box, VStack, Image, Text, Button, Modal, View } from 'native-base'
+import { Box, VStack, Image, Button, Modal, View } from 'native-base'
+import { Text } from '@ui-kitten/components'
 import {
   StyleSheet,
   ImageBackground,
@@ -11,6 +12,10 @@ import Photo from 'components/form-parts/Photo'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
+import { useStyleSheet } from '@ui-kitten/components'
+import themedStyles from 'themeStyled'
+
+const styleS = useStyleSheet(themedStyles)
 
 function squareToImageCoordinates(
   p: {
@@ -245,7 +250,11 @@ function BodyMarker({
                       w={markerSize + 'px'}
                       h={markerSize + 'px'}
                     />
-                    <Text bold color="red" selectable={false}>
+                    <Text
+                      style={[styleS.fontBold]}
+                      status="primary"
+                      selectable={false}
+                    >
                       {idx + 1}
                     </Text>
                   </View>

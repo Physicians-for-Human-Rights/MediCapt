@@ -5,7 +5,6 @@ import {
   HStack,
   Pressable,
   Icon,
-  Text,
   Button,
   Badge,
   useBreakpointValue,

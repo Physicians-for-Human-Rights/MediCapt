@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react'
-import { Box, HStack, Text, VStack, Center } from 'native-base'
 import { FormType } from 'utils/types/form'
 import yaml from 'js-yaml'
 import { useWindowDimensions } from 'react-native'

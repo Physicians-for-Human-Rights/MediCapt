@@ -2,7 +2,6 @@ import React from 'react'
 import {
   Box,
   HStack,
-  Text,
   VStack,
   ScrollView,
   Pressable,
@@ -12,6 +11,8 @@ import {
   Icon,
   Select,
 } from 'native-base'
+import { Text, useStyleSheet } from '@ui-kitten/components'
+import themedStyles from 'themeStyled'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
@@ -23,6 +24,8 @@ import SelectLocation from 'components/SelectLocation'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import { Platform } from 'react-native'
+
+const styleS = useStyleSheet(themedStyles)
 
 export function ListItem({
   item,
@@ -37,28 +40,44 @@ export function ListItem({
         <HStack alignItems="center" space={4} w="70%">
           <VStack>
             <Text
-              isTruncated
-              bold
-              fontSize="sm"
-              _light={{ color: 'coolGray.900' }}
+              style={[
+                styleS.truncated,
+                styleS.fontBold,
+                styleS.fontSizeSm,
+                styleS.colorCoolGray900,
+              ]}
             >
               {item.title}
             </Text>
             <Text
-              pl={3}
-              isTruncated
-              fontSize="sm"
-              _light={{ color: 'coolGray.900' }}
+              style={[
+                styleS.truncated,
+                styleS.fontSizeSm,
+                styleS.colorCoolGray900,
+                styleS.pl3,
+              ]}
             >
               {item.subtitle}
             </Text>
           </VStack>
         </HStack>
         <VStack w="30%">
-          <Text isTruncated fontSize="sm" _light={{ color: 'coolGray.900' }}>
-            {formatDate(item.createdDate, 'PPP')}
+          <Text
+            style={[
+              styleS.truncated,
+              styleS.fontSizeSm,
+              styleS.colorCoolGray900,
+            ]}
+          >
+            {formatDate(item.createdDate, 'PPP') as string}
           </Text>
-          <Text isTruncated fontSize="sm" _light={{ color: 'coolGray.900' }}>
+          <Text
+            style={[
+              styleS.truncated,
+              styleS.fontSizeSm,
+              styleS.colorCoolGray900,
+            ]}
+          >
             {item.formID}
           </Text>
         </VStack>
@@ -83,17 +102,13 @@ export function ListItemDesktop({
     >
       <HStack alignItems="center" flex={1} justifyContent="space-between">
         <VStack w="45%">
-          <Text bold isTruncated>
-            {item.title}
-          </Text>
-          <Text isTruncated ml={2}>
-            {item.subtitle}
-          </Text>
+          <Text style={[styleS.fontBold, styleS.truncated]}>{item.title}</Text>
+          <Text style={[styleS.ml2, styleS.truncated]}>{item.subtitle}</Text>
         </VStack>
 
         <VStack w="20%">
           {_.split(item.tags, ',').map((s: string, n: number) => (
-            <Text isTruncated key={n}>
+            <Text style={[styleS.truncated]} key={n}>
               {t('tag.' + s)}
             </Text>
           ))}
@@ -101,7 +116,9 @@ export function ListItemDesktop({
         </VStack>
 
         <VStack w="20%">
-          <Text isTruncated>{formatDate(item.lastChangedDate, 'PPP')}</Text>
+          <Text style={[styleS.truncated]}>
+            {formatDate(item.lastChangedDate, 'PPP') as string}
+          </Text>
         </VStack>
 
         <HStack w="5%">
@@ -298,39 +315,47 @@ export default function FormList({
                 _light={{ borderColor: 'coolGray.200' }}
               >
                 <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="50%"
-                  mb={3}
-                  _light={{ color: 'coolGray.800' }}
+                  style={[
+                    styleS.fontBold,
+                    styleS.textLeft,
+                    styleS.width50Percent,
+                    styleS.mb3,
+                    styleS.colorCoolGray800,
+                  ]}
                 >
                   Title
                 </Text>
                 <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="25%"
-                  mb={3}
-                  _light={{ color: 'coolGray.900' }}
+                  style={[
+                    styleS.fontBold,
+                    styleS.textLeft,
+                    styleS.width25Percent,
+                    styleS.mb3,
+                    styleS.colorCoolGray900,
+                  ]}
                 >
                   Tags / Form ID
                 </Text>
                 <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="20%"
-                  mb={3}
-                  _light={{ color: 'coolGray.900' }}
+                  style={[
+                    styleS.fontBold,
+                    styleS.textLeft,
+                    styleS.width20Percent,
+                    styleS.mb3,
+                    styleS.colorCoolGray900,
+                  ]}
                 >
                   Date changed
                 </Text>
                 <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="10%"
-                  mb={3}
-                  _light={{ color: 'coolGray.900' }}
-                  mr={-1}
+                  style={[
+                    styleS.fontBold,
+                    styleS.textLeft,
+                    styleS.width10Percent,
+                    styleS.mb3,
+                    styleS.colorCoolGray900,
+                    styleS.mrMinus1,
+                  ]}
                 >
                   Enabled
                 </Text>

@@ -2,7 +2,7 @@
 
 export STAGE=dev
 export REGION=us-east-1
-export P=../medicapt-infrastructure/$STAGE/$REGION
+export P=../infrastructure/$STAGE/$REGION
 
 echo $P/admin/users/provider
 

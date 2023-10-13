@@ -17,6 +17,9 @@ import i18n from 'i18n-js'
 import en from 'localization/en'
 import fr from 'localization/fr'
 import * as Sentry from 'sentry-expo'
+import { ApplicationProvider } from '@ui-kitten/components'
+import { default as themeKitten } from './custom-theme.json'
+import * as eva from '@eva-design/eva'
 
 Sentry.init({
   dsn: 'https://6fa825c71abb485092554ccb55e4cf67@o1300636.ingest.sentry.io/6535444',
@@ -89,7 +92,12 @@ function LoginScreen() {
             theme={theme}
             config={{ suppressColorAccessibilityWarning: true }}
           >
-            <AuthApp />
+            <ApplicationProvider
+              {...eva}
+              theme={{ ...eva.light, ...themeKitten }}
+            >
+              <AuthApp />
+            </ApplicationProvider>
           </NativeBaseProvider>
         </StoreProvider>
       </SafeAreaProvider>

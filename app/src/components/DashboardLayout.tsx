@@ -8,7 +8,6 @@ import {
   Pressable,
   Icon,
   Image,
-  Text,
   Hidden,
   IconButton,
   Divider,
@@ -17,6 +16,7 @@ import {
   Button,
   Input,
 } from 'native-base'
+
 import {
   AntDesign,
   FontAwesome,
@@ -24,12 +24,18 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from '@expo/vector-icons'
-import { useUser, useSignOut } from 'utils/store'
+
+import { useSignOut } from 'utils/store'
 import _ from 'lodash'
 
 import medicapt_logo from '../../assets/medicapt.png'
 import phr_logo from '../../assets/phr_small.png'
 import { goBackMaybeRefreshing } from 'utils/navigation'
+
+import { useStyleSheet, Text } from '@ui-kitten/components'
+import themedStyles from 'themeStyled'
+
+const styleS = useStyleSheet(themedStyles)
 
 export function Sidebar(signOut: any) {
   const list = [
@@ -93,18 +99,22 @@ export function Sidebar(signOut: any) {
           />
           <HStack alignItems="center" justifyContent="center" space="2">
             <Text
-              fontSize="xl"
-              fontWeight="bold"
-              _light={{ color: 'coolGray.800' }}
+              style={[
+                styleS.fontSizeXl,
+                styleS.fontBold,
+                styleS.colorCoolGray800,
+              ]}
             >
               Jane Doe
             </Text>
           </HStack>
           <Text
-            fontSize="md"
-            fontWeight="medium"
-            textAlign="center"
-            _light={{ color: 'coolGray.500' }}
+            style={[
+              styleS.fontSizeLg,
+              styleS.fontMedium,
+              styleS.textCenter,
+              styleS.colorCoolGray500,
+            ]}
           >
             janedoe2@mydomain.com
           </Text>
@@ -127,9 +137,11 @@ export function Sidebar(signOut: any) {
                     _light={{ color: 'coolGray.500' }}
                   />
                   <Text
-                    fontSize="md"
-                    fontWeight="medium"
-                    _light={{ color: 'coolGray.800' }}
+                    style={[
+                      styleS.fontSizeMd,
+                      styleS.fontMedium,
+                      styleS.colorCoolGray800,
+                    ]}
                   >
                     {item.iconText}
                   </Text>
@@ -155,9 +167,11 @@ export function Sidebar(signOut: any) {
                 _light={{ color: 'coolGray.500' }}
               />
               <Text
-                fontSize="md"
-                fontWeight="medium"
-                _light={{ color: 'coolGray.800' }}
+                style={[
+                  styleS.fontSizeMd,
+                  styleS.fontMedium,
+                  styleS.colorCoolGray800,
+                ]}
               >
                 Logout
               </Text>
@@ -259,7 +273,13 @@ export function Header({
               />
             </Pressable>
             {displayHeaderTitle && (
-              <Text fontSize="3xl" color="coolGray.500" fontWeight={300}>
+              <Text
+                style={[
+                  styleS.fontSize3xl,
+                  styleS.fontLight,
+                  styleS.colorCoolGray500,
+                ]}
+              >
                 {title}
               </Text>
             )}
@@ -359,7 +379,7 @@ function MainContent({
                 _light={{ color: 'coolGray.800' }}
               />
             </Pressable>
-            <Text fontSize="lg" _light={{ color: 'coolGray.800' }}>
+            <Text style={[styleS.fontSizeLg, styleS.colorCoolGray800]}>
               {title}
             </Text>
           </HStack>
@@ -446,7 +466,7 @@ export function MobileHeader({
               ) : (
                 <Box w={10} />
               )}
-              <Text color="coolGray.50" fontSize="lg">
+              <Text style={[styleS.colorCoolGray50, styleS.fontSizeLg]}>
                 {title}
               </Text>
             </HStack>

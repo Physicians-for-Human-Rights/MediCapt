@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import {
-  Text,
   Heading,
   VStack,
   View,
@@ -11,6 +10,8 @@ import {
   Select,
   Box,
 } from 'native-base'
+import { Text, useStyleSheet } from '@ui-kitten/components'
+import themedStyles from 'themeStyled'
 import { Feather, MaterialIcons } from '@expo/vector-icons'
 import { FormType } from 'utils/types/form'
 import FloatingLabelInput from 'components/FloatingLabelInput'
@@ -43,6 +44,8 @@ import formatDate from 'utils/date.ts'
 import { submitForm } from 'api/formdesigner'
 import { RootStackParamList } from 'utils/formDesigner/navigation'
 import { StackNavigationProp } from '@react-navigation/stack'
+
+const styleS = useStyleSheet(themedStyles)
 
 export default function FormEditorVersions({
   formMetadata,
@@ -81,7 +84,7 @@ export default function FormEditorVersions({
     !formMetadata.lastChangedDate
   )
     return (
-      <Text py={10}>
+      <Text style={[styleS.py10]}>
         These features are only available after you create the form for the
         first time.
       </Text>
@@ -89,7 +92,7 @@ export default function FormEditorVersions({
 
   if (changed && !historyMode)
     return (
-      <Text py={10}>
+      <Text style={[styleS.py10]}>
         History browsing is only enabled when the form is unchanged.
       </Text>
     )
@@ -167,12 +170,12 @@ export default function FormEditorVersions({
         {historyMode && (
           <Box bg={'primary.50'} rounded="8">
             <Center py={2}>
-              <Text fontWeight="bold">History mode</Text>
-              <Text fontWeight="medium">
+              <Text style={[styleS.fontBold]}>History mode</Text>
+              <Text style={[styleS.fontMedium]}>
                 Showing Version {formMetadata.version} created on{' '}
-                {formatDate(formMetadata.lastChangedDate, 'PPP')}
+                {formatDate(formMetadata.lastChangedDate, 'PPP') as string}
               </Text>
-              <Text fontWeight="light" pb={2}>
+              <Text style={[styleS.fontLight, styleS.pb2]}>
                 You cannot make changes, but you can browse the form. Leave the
                 from an come back to reset.
               </Text>
@@ -224,7 +227,9 @@ export default function FormEditorVersions({
           >
             <HStack space={10}>
               <Center>
-                <Text pt={1}>Select a version of the form to load</Text>
+                <Text style={[styleS.pt1]}>
+                  Select a version of the form to load
+                </Text>
               </Center>
               <Select
                 selectedValue={selectedVersion}
