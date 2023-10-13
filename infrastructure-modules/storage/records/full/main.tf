@@ -55,21 +55,21 @@ module "s3_bucket" {
     "s3:PutObject",
     "s3:PutObjectTagging"
   ]
-  name                         = "${var.stage}-${var.namespace}-records"
+  name                         = "${var.stage}-${var.namespace}-test-records"
   privileged_principal_arns    = var.records_bucket_privileged_principal_arns
   privileged_principal_actions = [
-    "s3:PutObject", 
-    "s3:GetObject", 
-    "s3:DeleteObject", 
+    "s3:PutObject",
+    "s3:GetObject",
+    "s3:DeleteObject",
     "s3:PutObjectTagging",
     "s3:GetObjectTagging",
-    "s3:ListBucket", 
-    "s3:ListBucketMultipartUploads", 
-    "s3:ListBucketVersions", 
-    "s3:GetBucketLocation", 
-    "s3:GetBucketLogging", 
-    "s3:GetBucketPolicy", 
-    "s3:GetBucketWebsite", 
+    "s3:ListBucket",
+    "s3:ListBucketMultipartUploads",
+    "s3:ListBucketVersions",
+    "s3:GetBucketLocation",
+    "s3:GetBucketLogging",
+    "s3:GetBucketPolicy",
+    "s3:GetBucketWebsite",
     "s3:AbortMultipartUpload"
   ]
   cors_rule_inputs = [{

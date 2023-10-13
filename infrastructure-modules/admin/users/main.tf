@@ -95,7 +95,7 @@ module "cognito_user_pool" {
   invite_email_message = var.invite_email_message
   invite_sms_message   = var.invite_sms_message
 
-  domain                = "${var.namespace}-${var.user_type}-${var.stage}"
+  domain                = "${var.namespace}-draft-${var.user_type}-${var.stage}"
   default_email_option  = "CONFIRM_WITH_LINK"
   email_subject         = "MediCapt Verification Code"
   email_subject_by_link = "MediCapt Verification Link"
@@ -223,7 +223,7 @@ module "s3_bucket" {
     "s3:PutObject",
     "s3:PutObjectTagging"
   ]
-  name                         = "${var.stage}-${var.namespace}-cognito-image-${var.user_type}"
+  name                         = "${var.stage}-${var.namespace}-cognito-image-${var.user_type}-test"
   cors_rule_inputs = [{
     allowed_headers = ["*"]
     allowed_methods = ["GET", "PUT", "POST"]

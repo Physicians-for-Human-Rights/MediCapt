@@ -23,7 +23,7 @@ variable "dynamodb_point_in_time_recovery" {
 }
 
 resource "aws_s3_bucket" "forms" {
-  bucket = "${var.namespace}-${var.stage}-forms"
+  bucket = "${var.namespace}-${var.stage}-test-forms"
   acl    = "private"
   versioning {
     enabled = true
@@ -53,7 +53,7 @@ resource "aws_s3_bucket_public_access_block" "forms" {
 }
 
 module "dynamodb_table" {
-  source                       = "cloudposse/dynamodb/aws" 
+  source                       = "cloudposse/dynamodb/aws"
   version                      = "0.29.4"
   name                         = "${var.stage}-${var.namespace}-forms"
   enable_encryption	       = true
