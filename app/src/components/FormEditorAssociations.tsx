@@ -16,6 +16,7 @@ import {
   IconButton,
   Modal,
 } from 'native-base'
+import { View, Dimensions } from 'react-native'
 import { Text } from '@ui-kitten/components'
 import { FormType } from 'utils/types/form'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
@@ -31,16 +32,12 @@ import { Feather, MaterialIcons } from '@expo/vector-icons'
 import { tryConvertToWebP } from 'utils/imageConverter'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
-import {
-  isImage,
-  isInManifest,
-  filterManifest,
-  mapManifest,
-  addFileToManifest,
-  makeManifestEntry,
-  changeFilenameInManifest,
-} from 'utils/manifests'
+
 import FormSearch from 'components/FormSearch'
+import styles from './styles'
+import { breakpoints } from './nativeBaseSpec'
+
+const { width } = Dimensions.get('window')
 
 export default function FormEditorAssociations({
   formMetadata,
@@ -132,10 +129,11 @@ export default function FormEditorAssociations({
               Add associated form
             </Button>
           </Center>
-          <Box
-            p={{ md: '3' }}
-            justifyContent="center"
-            alignItems={{ md: 'center' }}
+          <View
+            style={[
+              styles.formEditorContainer,
+              { padding: width > breakpoints.md ? 12 : 0 },
+            ]}
           >
             <FlatList
               mb={{ base: 0, md: 20 }}
@@ -146,7 +144,7 @@ export default function FormEditorAssociations({
               data={formMetadata.associatedForms}
               renderItem={({ item }) => {
                 return (
-                  <Box bg={'muted.50'} rounded="8" my={2} p={2}>
+                  <View style={[styles.formEditorListBox]}>
                     <VStack m={1} borderRadius="md" key={item.title}>
                       {showForm(
                         _.find(forms || [], f => f.formUUID === item.formUUID)
@@ -158,7 +156,7 @@ export default function FormEditorAssociations({
                           size="lg"
                           color="black"
                           debounceMs={1000}
-                          value={stripFileExtension(item.title)}
+                          value={stripFileExtension(item?.title || '')}
                           onChangeText={t =>
                             setFormMetadata({
                               ...formMetadata,
@@ -194,12 +192,12 @@ export default function FormEditorAssociations({
                         />
                       </HStack>
                     </VStack>
-                  </Box>
+                  </View>
                 )
               }}
               keyExtractor={(item, index) => 'key' + index}
             />
-          </Box>
+          </View>
         </VStack>
       </VStack>
       <Modal

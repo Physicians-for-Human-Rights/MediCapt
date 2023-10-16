@@ -1,5 +1,6 @@
 import React from 'react'
-import { Stack, Pressable, Text, Center, Checkbox } from 'native-base'
+import { Stack, Pressable, Center, Checkbox } from 'native-base'
+import { Text } from '@ui-kitten/components'
 import { StyleSheet } from 'react-native'
 import _ from 'lodash'
 import { t } from 'i18n-js'
@@ -51,9 +52,10 @@ export default function SkipButton({
         </Center>
         <Center>
           <Text
-            pt={direction === 'column' ? '1' : '0'}
-            pl={direction === 'row' ? '1' : '0'}
-            fontSize={10}
+            style={{
+              paddingLeft: direction === 'row' ? 4 : 0,
+              paddingTop: direction === 'column' ? 4 : 0,
+            }}
           >
             SKIP
           </Text>

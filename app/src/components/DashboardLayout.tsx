@@ -16,7 +16,7 @@ import {
   Button,
   Input,
 } from 'native-base'
-
+import { View, Dimensions, SafeAreaView } from 'react-native'
 import {
   AntDesign,
   FontAwesome,
@@ -34,8 +34,11 @@ import { goBackMaybeRefreshing } from 'utils/navigation'
 
 import { useStyleSheet, Text } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
+import styles, { spacing } from './styles'
+import { colors, breakpoints } from './nativeBaseSpec'
 
 const styleS = useStyleSheet(themedStyles)
+const { width } = Dimensions.get('window')
 
 export function Sidebar(signOut: any) {
   const list = [
@@ -75,12 +78,7 @@ export function Sidebar(signOut: any) {
     },
   ] as any
   return (
-    <Box
-      w="80"
-      borderRightWidth="1"
-      display="flex"
-      _light={{ bg: 'white', borderRightColor: 'coolGray.200' }}
-    >
+    <View style={styles.dashboardWrapper}>
       <ScrollView>
         <VStack
           pb="4"
@@ -151,7 +149,7 @@ export function Sidebar(signOut: any) {
           })}
         </VStack>
         <Divider />
-        <Box px="4" py="2">
+        <View style={[spacing.px5, spacing.py2]}>
           <Button
             variant="ghost"
             justifyContent="flex-start"
@@ -177,9 +175,9 @@ export function Sidebar(signOut: any) {
               </Text>
             </HStack>
           </Button>
-        </Box>
+        </View>
       </ScrollView>
-    </Box>
+    </View>
   )
 }
 
@@ -213,15 +211,16 @@ export function Header({
   searchbar: boolean
 }) {
   return (
-    <Box
-      px="6"
-      pt="3"
-      pb="3"
-      borderBottomWidth="1"
-      _light={{
-        bg: { base: 'primary.900', md: 'white' },
-        borderColor: 'coolGray.200',
-      }}
+    <View
+      style={[
+        styles.headerWrapper,
+        spacing.px6,
+        spacing.py3,
+        {
+          backgroundColor:
+            width > breakpoints.md ? 'white' : colors.primary[900],
+        },
+      ]}
     >
       <VStack
         alignSelf="center"
@@ -260,7 +259,7 @@ export function Header({
                 }
               />
             ) : (
-              <Box w={10} />
+              <View style={{ width: 40 }} />
             )}
             {/* TODO What should the logo button do? It used to go back. */}
             <Pressable>
@@ -350,7 +349,7 @@ export function Header({
           </HStack>
         </HStack>
       </VStack>
-    </Box>
+    </View>
   )
 }
 
@@ -409,16 +408,12 @@ export function MobileHeader({
   showLogos: boolean
   reloadPrevious: React.RefObject<boolean> | undefined
 }) {
+  const localStyle = {
+    borderColor: colors.coolGray[200],
+    backgroundColor: width > breakpoints.md ? 'white' : colors.primary[900],
+  }
   return (
-    <Box
-      px="1"
-      pt="4"
-      pb="4"
-      _light={{
-        bg: { base: 'primary.900', md: 'white' },
-        borderColor: 'coolGray.200',
-      }}
-    >
+    <View style={[spacing.px1, spacing.py4, localStyle]}>
       <HStack space="2" justifyContent="space-between">
         <HStack
           flex="1"
@@ -464,7 +459,7 @@ export function MobileHeader({
                   />
                 </HStack>
               ) : (
-                <Box w={10} />
+                <View style={{ width: 40 }} />
               )}
               <Text style={[styleS.colorCoolGray50, styleS.fontSizeLg]}>
                 {title}
@@ -518,7 +513,7 @@ export function MobileHeader({
           </>
         </HStack>
       </HStack>
-    </Box>
+    </View>
   )
 }
 
@@ -563,13 +558,13 @@ export default function DashboardLayout({
     setIsSidebarVisible(!isSidebarVisible)
   }
   return (
-    <>
+    <View>
       <StatusBar
         translucent
         barStyle="light-content"
         backgroundColor="transparent"
       />
-      <Box safeAreaTop _light={{ bg: 'primary.900' }} />
+      <SafeAreaView style={{ backgroundColor: colors.primary[900] }} />
       <VStack flex={1} bg="muted.50">
         {displayHeader && (
           <Hidden from="md">
@@ -605,11 +600,11 @@ export default function DashboardLayout({
           </Hidden>
         )}
 
-        <Box
-          flex={1}
-          safeAreaBottom
-          flexDirection={{ base: 'column', md: 'row' }}
-          borderTopColor="coolGray.200"
+        <SafeAreaView
+          style={[
+            styles.dashbordContainer,
+            { flexDirection: width > breakpoints.md ? 'row' : 'column' },
+          ]}
         >
           {isSidebarVisible && displaySidebar && (
             <Hidden till="md">
@@ -640,8 +635,8 @@ export default function DashboardLayout({
               children={children}
             />
           </Hidden>
-        </Box>
+        </SafeAreaView>
       </VStack>
-    </>
+    </View>
   )
 }

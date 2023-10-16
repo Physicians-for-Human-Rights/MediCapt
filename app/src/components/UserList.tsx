@@ -5,7 +5,6 @@ import {
   HStack,
   Stack,
   Center,
-  Text,
   VStack,
   ScrollView,
   Pressable,
@@ -15,6 +14,8 @@ import {
   Button,
   Select,
 } from 'native-base'
+import { Text, useStyleSheet } from '@ui-kitten/components'
+import themedStyles from 'themeStyled'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
@@ -26,6 +27,8 @@ import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import SelectLocation from 'components/SelectLocation'
+
+const styleS = useStyleSheet(themedStyles)
 
 export function ListItem({ item }: { item: UserType }) {
   return (
@@ -40,34 +43,80 @@ export function ListItem({ item }: { item: UserType }) {
               noOfLines={2}
               maxW="64"
               color="coolGray.900"
+              style={[
+                styleS.truncated,
+                styleS.fontBold,
+                styleS.fontSizeSm,
+                styleS.maxWidth64x4,
+              ]}
             >
-              {item.legalName}
+              {item?.legalName}
             </Text>
             <HStack>
-              <Text pl={3} isTruncated fontSize="sm" color="coolGray.600">
+              <Text
+                style={[
+                  styleS.truncated,
+                  styleS.pl3,
+                  styleS.fontSizeSm,
+                  styleS.colorCoolGray600,
+                ]}
+              >
                 {t('user.user.' + item.userType)}
               </Text>
-              <Text isTruncated ml={2} color="coolGray.600">
+              <Text
+                style={[styleS.truncated, styleS.ml2, styleS.colorCoolGray600]}
+              >
                 {t('country.' + item.country)}
               </Text>
             </HStack>
-            <Text pl={3} isTruncated fontSize="sm" color="coolGray.700">
-              {formatDate(item.lastChangedDate, 'PPP')}
+            <Text
+              style={[styleS.truncated, styleS.pl3, styleS.colorCoolGray700]}
+              pl={3}
+            >
+              {formatDate(item?.lastChangedDate, 'PPP')}
             </Text>
           </VStack>
         </HStack>
         <HStack alignItems="center" space={4} w="32%">
           <VStack>
-            <Text isTruncated maxW="100%" fontSize="xs" color="coolGray.900">
+            <Text
+              style={[
+                styleS.truncated,
+                styleS.maxWidth100Percent,
+                styleS.fontSizeXs,
+                styleS.colorCoolGray900,
+              ]}
+            >
               {item.shortName}
             </Text>
-            <Text isTruncated maxW="100%" fontSize="xs" color="coolGray.900">
+            <Text
+              style={[
+                styleS.truncated,
+                styleS.maxWidth100Percent,
+                styleS.fontSizeXs,
+                styleS.colorCoolGray900,
+              ]}
+            >
               {item.userID}
             </Text>
-            <Text isTruncated maxW="100%" fontSize="xs" color="coolGray.500">
+            <Text
+              style={[
+                styleS.truncated,
+                styleS.maxWidth100Percent,
+                styleS.fontSizeXs,
+                styleS.colorCoolGray500,
+              ]}
+            >
               {formatDate(item.createdDate, 'PPP')}
             </Text>
-            <Text isTruncated fontSize="xs" maxW="60%" color="coolGray.500">
+            <Text
+              style={[
+                styleS.truncated,
+                styleS.maxWidth60Percent,
+                styleS.fontSizeXs,
+                styleS.colorCoolGray500,
+              ]}
+            >
               {item.enabled}
             </Text>
           </VStack>

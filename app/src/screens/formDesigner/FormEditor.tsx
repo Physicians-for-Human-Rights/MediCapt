@@ -1,15 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react'
-import {
-  Box,
-  HStack,
-  Text,
-  VStack,
-  Pressable,
-  Divider,
-  Hidden,
-  Select,
-  CheckIcon,
-} from 'native-base'
+import { Box, VStack, Select, CheckIcon } from 'native-base'
 import { FormType } from 'utils/types/form'
 import { lookupManifestByNameAndType } from 'utils/manifests'
 import {

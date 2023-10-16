@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import {
   Box,
   HStack,
-  Text,
   VStack,
   ScrollView,
   Pressable,
@@ -12,6 +11,8 @@ import {
   Icon,
   Select,
 } from 'native-base'
+import { Text, useStyleSheet } from '@ui-kitten/components'
+import themedStyles from 'themeStyled'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
@@ -26,6 +27,8 @@ import { Platform } from 'react-native'
 import { UserType } from 'utils/types/user'
 import { getUserByUUIDCachedAnyPool } from 'api/common'
 import { userFullName, UserKindNames } from 'utils/userTypes'
+
+const styleS = useStyleSheet(themedStyles)
 
 export function ListItemMobile({
   item,
@@ -42,18 +45,22 @@ export function ListItemMobile({
         <HStack alignItems="center" space={4} w="60%">
           <VStack>
             <Text
-              isTruncated
-              bold
-              fontSize="sm"
-              _light={{ color: 'coolGray.900' }}
+              style={[
+                styleS.truncated,
+                styleS.fontBold,
+                styleS.fontSizeSm,
+                styleS.colorCoolGray900,
+              ]}
             >
               {item.formTitle}
             </Text>
             <Text
-              pl={3}
-              isTruncated
-              fontSize="sm"
-              _light={{ color: 'coolGray.900' }}
+              style={[
+                styleS.truncated,
+                styleS.pl3,
+                styleS.fontSizeSm,
+                styleS.colorCoolGray900,
+              ]}
             >
               {item.formSubtitle}
             </Text>
@@ -62,18 +69,22 @@ export function ListItemMobile({
         <HStack alignItems="center" space={4} w="40%">
           <VStack>
             <Text
-              isTruncated
-              bold
-              fontSize="sm"
-              _light={{ color: 'coolGray.900' }}
+              style={[
+                styleS.truncated,
+                styleS.fontBold,
+                styleS.fontSizeSm,
+                styleS.colorCoolGray900,
+              ]}
             >
               {item.formTitle}
             </Text>
             <Text
-              pl={3}
-              isTruncated
-              fontSize="sm"
-              _light={{ color: 'coolGray.900' }}
+              style={[
+                styleS.truncated,
+                styleS.pl3,
+                styleS.fontSizeSm,
+                styleS.colorCoolGray900,
+              ]}
             >
               {item.formSubtitle}
             </Text>

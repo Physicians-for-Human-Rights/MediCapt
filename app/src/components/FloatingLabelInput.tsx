@@ -1,7 +1,8 @@
 import React, { Component, useCallback, useEffect } from 'react'
 import useDebounce from 'react-use/lib/useDebounce'
-import { Platform, Animated } from 'react-native'
-import { Input, Box } from 'native-base'
+import { Platform, Animated, StyleSheet, View } from 'react-native'
+import { Input } from 'native-base'
+import { spacing } from './styles'
 import _ from 'lodash'
 
 export class RawFloatingLabelInput extends Component<any, any> {
@@ -74,8 +75,16 @@ export class RawFloatingLabelInput extends Component<any, any> {
       }),
       color: this.props.labelColor,
     } as any
+    const localStyles = StyleSheet.create({
+      container: {
+        width: this.props.containerWidth,
+        marginHorizontal: 12,
+        marginTop: this.props.mt,
+        marginBottom: 12,
+      },
+    })
     return (
-      <Box w={this.props.containerWidth} m={3} mt={this.props.mt}>
+      <View style={localStyles.container}>
         <Animated.View pointerEvents="none" style={lableContainerStyles}>
           <Animated.Text
             style={
@@ -93,7 +102,7 @@ export class RawFloatingLabelInput extends Component<any, any> {
           padding="3"
           _hover={{ bg: this.props.labelBGColor }}
         />
-      </Box>
+      </View>
     )
   }
 }

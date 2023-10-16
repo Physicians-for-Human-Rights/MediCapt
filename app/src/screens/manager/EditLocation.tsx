@@ -1,8 +1,5 @@
 import React, { useState, useRef } from 'react'
 import {
-  Box,
-  HStack,
-  Text,
   VStack,
   Pressable,
   Divider,

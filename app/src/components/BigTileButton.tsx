@@ -1,5 +1,6 @@
 import React from 'react'
-import { Box, Icon, VStack, Center, Pressable } from 'native-base'
+import { Icon, VStack, Center, Pressable } from 'native-base'
+import { StyleSheet } from 'react-native'
 
 export default function BigTileButton({
   navigateTo,
@@ -22,6 +23,13 @@ export default function BigTileButton({
   size?: number
   fontSize?: string
 }) {
+  const styles = StyleSheet.create({
+    bigTileButton: {
+      fontWeight: 'bold',
+      color: 'white',
+      fontSize: +fontSize,
+    },
+  })
   return (
     <Pressable
       m={2}
@@ -32,15 +40,7 @@ export default function BigTileButton({
           <Center>
             <Icon as={icon} color="white" size={size} />
           </Center>
-          <Box
-            _text={{
-              fontWeight: 'bold',
-              fontSize: fontSize,
-              color: 'white',
-            }}
-          >
-            {label}
-          </Box>
+          <div style={styles.bigTileButton}>{label}</div>
         </VStack>
       </Center>
     </Pressable>

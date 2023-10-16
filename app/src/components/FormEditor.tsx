@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from 'react'
+import React from 'react'
 import { Box, HStack, VStack, Center } from 'native-base'
 import { Text } from '@ui-kitten/components'
 import { FormType } from 'utils/types/form'
 import yaml from 'js-yaml'
-import { useWindowDimensions } from 'react-native'
+import { useWindowDimensions, View } from 'react-native'
 import useDebounce from 'react-use/lib/useDebounce'
 import { Platform } from 'react-native'
 import Form from 'components/Form'
@@ -34,7 +34,8 @@ export default function FormEditor({
   const window = useWindowDimensions()
   const padding = Platform.OS === 'web' ? 0.03 : 0
   const ratio = Platform.OS === 'web' ? (window.width > 1000 ? 0.6 : 0.45) : 0
-
+  const boxHeight = Math.round(window.height * 0.85) + 'px'
+  const boxWidth = Math.round(window.width * (1 - ratio - padding)) + 'px'
   return (
     <VStack>
       {Platform.OS !== 'web' ? (
@@ -44,10 +45,7 @@ export default function FormEditor({
       ) : null}
       <HStack pt="0" space={3} justifyContent="center">
         <FormEditorComponent manifest={manifest} setForm={setForm} />
-        <Box
-          h={Math.round(window.height * 0.85) + 'px'}
-          w={Math.round(window.width * (1 - ratio - padding)) + 'px'}
-        >
+        <View style={{ height: boxHeight, width: boxWidth }}>
           <FormMemo
             // @ts-ignore TODO partial forms should be ok
             formMetadata={formMetadata}
@@ -57,7 +55,7 @@ export default function FormEditor({
             disableMenu={true}
             overrideTransformation={'compact'}
           />
-        </Box>
+        </View>
       </HStack>
     </VStack>
   )
