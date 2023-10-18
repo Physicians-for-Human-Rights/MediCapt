@@ -23,8 +23,12 @@ import { Platform } from 'react-native'
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
 import _ from 'lodash'
+import { View, Dimensions } from 'react-native'
+import { breakpoints } from './nativeBaseSpec'
 
+const { width } = Dimensions.get('window')
 const styleS = useStyleSheet(themedStyles)
+const isWider = width > breakpoints.md
 
 export function ListItem({ item }: { item: LocationType }) {
   return (
@@ -220,17 +224,22 @@ export default function LocationListStatic({
         borderBottomWidth="1"
         space="4"
       >
-        <Box>
+        <View>
           <Center>
             <Heading size="md">Allowed locations</Heading>
           </Center>
           <ScrollView>
-            <Box position="relative" display={{ md: 'none', base: 'flex' }}>
+            <View
+              style={{
+                position: 'relative',
+                display: isWider ? 'none' : 'flex',
+              }}
+            >
               {locations.map((item: LocationType | string, index: number) => {
                 return <ListItem item={item} key={index} />
               })}
-            </Box>
-            <Box display={{ md: 'flex', base: 'none' }}>
+            </View>
+            <View style={{ display: isWider ? 'flex' : 'none' }}>
               <VStack mt={3} space={3}>
                 {locations.map((item: LocationType | string, index: number) => {
                   return (
@@ -242,9 +251,9 @@ export default function LocationListStatic({
                   )
                 })}
               </VStack>
-            </Box>
+            </View>
           </ScrollView>
-        </Box>
+        </View>
       </VStack>
     </>
   )

@@ -13,7 +13,6 @@ import {
   HStack,
   Text,
   Heading,
-  Box,
 } from 'native-base'
 // @ts-ignore TODO TS doesn't understand .native.tsx and .web.tsx files
 import DateTimePicker from 'components/DateTimePicker'
@@ -38,6 +37,7 @@ import { wrapCommandMemo } from 'utils/memo'
 import { RecordMetadata } from 'utils/types/recordMetadata'
 import RecordListStaticComponent from 'components/RecordListStaticComponent'
 import ShareListStatic from 'components/ShareListStatic'
+import { View } from 'react-native'
 
 const CDebouncedTextInput = wrapCommandMemo(DebouncedTextInput)
 const CButtonGroup = wrapCommandMemo(ButtonGroup)
@@ -866,7 +866,12 @@ export function renderCommand(
     }
     case 'padding':
       return (
-        <Box px={command.padding} bg={disabled(command, disabledBackground)}>
+        <View
+          style={{
+            paddingHorizontal: command.padding,
+            backgroundColor: disabled(command, disabledBackground),
+          }}
+        >
           {renderCommand(
             command.contents,
             setPath,
@@ -877,7 +882,7 @@ export function renderCommand(
             addKeepAlive,
             removeKeepAlive
           )}
-        </Box>
+        </View>
       )
     case 'row':
       return (

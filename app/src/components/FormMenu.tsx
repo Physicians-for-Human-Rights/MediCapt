@@ -1,10 +1,7 @@
 import React from 'react'
 import {
-  Box,
   HStack,
   Pressable,
-  Icon,
-  Button,
   Badge,
   useBreakpointValue,
   FlatList,
@@ -15,6 +12,8 @@ import { AntDesign } from '@expo/vector-icons'
 import _ from 'lodash'
 import { NamedFormSection } from 'utils/types/formHelpers'
 import FormButtons from 'components/FormButtons'
+import styles from './styles'
+import { View } from 'react-native'
 
 function Section({
   completed,
@@ -36,13 +35,7 @@ function Section({
         toggleMenu()
       }}
     >
-      <Box
-        borderBottomWidth="1"
-        borderColor="coolGray.200"
-        pl="4"
-        pr="5"
-        py="2"
-      >
+      <View style={styles.formMenuContainer}>
         <HStack space={3} justifyContent="flex-start">
           <Badge px={2} colorScheme={completed ? 'success' : 'red'}>
             {sectionIndex + 1}
@@ -51,7 +44,7 @@ function Section({
             {title}
           </Text>
         </HStack>
-      </Box>
+      </View>
     </Pressable>
   )
 }

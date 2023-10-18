@@ -16,7 +16,7 @@ import {
   FlatList,
   IconButton,
 } from 'native-base'
-import { FormType } from 'utils/types/form'
+import { View, Dimensions } from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import * as DocumentPicker from 'expo-document-picker'
@@ -38,6 +38,10 @@ import {
   changeFilenameInManifest,
   generateZip,
 } from 'utils/manifests'
+import styles, { spacing } from './styles'
+import { breakpoints } from './nativeBaseSpec'
+
+const { width } = Dimensions.get('window')
 
 export default function FormEditorFiles({
   formMetadata,
@@ -233,10 +237,11 @@ export default function FormEditorFiles({
             Upload an image
           </Button>
         </HStack>
-        <Box
-          p={{ md: '3' }}
-          justifyContent="center"
-          alignItems={{ md: 'center' }}
+        <View
+          style={[
+            styles.formEditorFileContainer,
+            { padding: width > breakpoints.md ? 12 : 0 },
+          ]}
         >
           <FlatList
             mb={{ base: 0, md: 20 }}
@@ -291,7 +296,7 @@ export default function FormEditorFiles({
             )}
             keyExtractor={(item, index) => 'key' + index}
           />
-        </Box>
+        </View>
       </VStack>
     </VStack>
   )

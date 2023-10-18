@@ -23,8 +23,10 @@ import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import SelectLocation from 'components/SelectLocation'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
-import { Platform } from 'react-native'
+import { Platform, View, Dimensions } from 'react-native'
+import { breakpoints } from './nativeBaseSpec'
 
+const { width } = Dimensions.get('window')
 const styleS = useStyleSheet(themedStyles)
 
 export function ListItem({
@@ -298,16 +300,21 @@ export default function FormList({
         borderBottomWidth="1"
         space="4"
       >
-        <Box>
+        <View>
           <ScrollView>
-            <Box position="relative" display={{ md: 'none', base: 'flex' }}>
+            <View
+              style={{
+                position: 'relative',
+                display: width > breakpoints.md ? 'none' : 'flex',
+              }}
+            >
               {forms.map((item: FormMetadata, index: number) => {
                 return (
                   <ListItem item={item} key={index} selectItem={selectItem} />
                 )
               })}
-            </Box>
-            <Box display={{ md: 'flex', base: 'none' }}>
+            </View>
+            <View style={{ display: width > breakpoints.md ? 'flex' : 'none' }}>
               <HStack
                 alignItems="center"
                 justifyContent="space-between"
@@ -371,9 +378,9 @@ export default function FormList({
                   )
                 })}
               </VStack>
-            </Box>
+            </View>
           </ScrollView>
-        </Box>
+        </View>
       </VStack>
     </>
   )

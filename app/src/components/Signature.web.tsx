@@ -1,8 +1,9 @@
 import React, { useState, useRef } from 'react'
-import { Box, Icon, Image, Button, Center, Modal } from 'native-base'
+import { Icon, Image, Button, Center, Modal } from 'native-base'
 import { AntDesign } from '@expo/vector-icons'
 import { disabledBackground } from 'utils/formRendering/utils'
-
+import { View } from 'react-native'
+import styles from './styles'
 // https://www.npmjs.com/package/react-signature-pad-wrapper
 import SignatureCanvas from 'react-signature-pad-wrapper'
 
@@ -80,9 +81,9 @@ function Signature({
         <Modal.Content maxWidth="400px">
           <Modal.Header>Sign here</Modal.Header>
           <Modal.Body>
-            <Box h="210px" w="410px" p={5}>
+            <View style={styles.signatureWeb}>
               <SignatureCanvas height={200} width={400} ref={signatureRef} />
-            </Box>
+            </View>
           </Modal.Body>
           <Modal.Footer>
             <Button.Group space={2}>

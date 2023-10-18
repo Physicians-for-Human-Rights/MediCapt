@@ -1,20 +1,18 @@
 import React from 'react'
-import { Box, HStack, VStack, ScrollView, Pressable } from 'native-base'
+import { HStack, VStack, ScrollView, Pressable } from 'native-base'
 import { Text, useStyleSheet } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
-import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import { FormMetadata } from 'utils/types/formMetadata'
-import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
-import SelectLocation from 'components/SelectLocation'
-import AnyCountry from 'components/AnyCountry'
-import Language from 'components/Language'
-import { Platform } from 'react-native'
+import { Dimensions, View } from 'react-native'
+import { breakpoints } from './nativeBaseSpec'
 
 const styleS = useStyleSheet(themedStyles)
+const { width } = Dimensions.get('window')
+
 export function ListItem({
   item,
   selectItem,
@@ -120,16 +118,21 @@ export default function FormListStaticCompact({
         borderBottomWidth="1"
         space="4"
       >
-        <Box>
+        <View>
           <ScrollView>
-            <Box position="relative" display={{ md: 'none', base: 'flex' }}>
+            <View
+              style={{
+                position: 'relative',
+                display: width > breakpoints.md ? 'none' : 'flex',
+              }}
+            >
               {forms.map((item: FormMetadata, index: number) => {
                 return (
                   <ListItem item={item} key={index} selectItem={selectItem} />
                 )
               })}
-            </Box>
-            <Box display={{ md: 'flex', base: 'none' }}>
+            </View>
+            <View style={{ display: width > breakpoints.md ? 'flex' : 'none' }}>
               <VStack mt={3} space={3}>
                 {forms.map((item: FormMetadata, index: number) => {
                   return (
@@ -141,9 +144,9 @@ export default function FormListStaticCompact({
                   )
                 })}
               </VStack>
-            </Box>
+            </View>
           </ScrollView>
-        </Box>
+        </View>
       </VStack>
     </>
   )

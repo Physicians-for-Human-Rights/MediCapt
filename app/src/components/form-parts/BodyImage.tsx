@@ -6,6 +6,8 @@ import { disabledBackground } from 'utils/formRendering/utils'
 import { AntDesign } from '@expo/vector-icons'
 import { t } from 'i18n-js'
 import _ from 'lodash'
+import { View } from 'react-native'
+import styles from '../styles'
 
 export type ImageAnnotation = BodyMarkerAnnotation
 
@@ -37,14 +39,14 @@ function BodyImage({
   return (
     <>
       <Center bg={isDisabled ? disabledBackground : undefined}>
-        <Box h="200px" w="200px">
+        <View style={styles.userListContainer}>
           <BodyMarker
             baseImage={image}
             annotations={annotations}
             onCoverPress={internalOpen}
             isDisabled={isDisabled}
           />
-        </Box>
+        </View>
         <Button
           isDisabled={isDisabled}
           mt={2}
@@ -63,7 +65,7 @@ function BodyImage({
           <Modal.Header>{t('form.mark-diagram')}</Modal.Header>
           <Modal.Body>
             <Center flex={1}>
-              <Box h={modalSize * 0.7} w={modalSize * 0.7}>
+              <View style={{ height: modalSize * 0.7, width: modalSize * 0.7 }}>
                 <BodyMarker
                   isDisabled={false}
                   baseImage={image}
@@ -71,7 +73,7 @@ function BodyImage({
                   onAnnotate={addMarker}
                   onDeleteAnnotation={removeMarker}
                 />
-              </Box>
+              </View>
             </Center>
           </Modal.Body>
           <Modal.Footer>

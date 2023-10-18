@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Box, VStack, Image, Button, Modal, View } from 'native-base'
+import { VStack, Image, Button, Modal } from 'native-base'
 import { Text } from '@ui-kitten/components'
 import {
   StyleSheet,
@@ -7,6 +7,7 @@ import {
   TouchableWithoutFeedback,
   Platform,
   GestureResponderEvent,
+  View,
 } from 'react-native'
 import Photo from 'components/form-parts/Photo'
 import { t } from 'i18n-js'
@@ -92,7 +93,7 @@ function BodyMarker({
   const [imageDimensions, setImageDimensions] = useState(
     null as null | { w: number; h: number }
   )
-  const ref = useRef()
+  const ref = useRef(null)
 
   const [currentMarkerIndex, setCurrentMarkerIndex] = useState(
     null as null | number
@@ -195,7 +196,7 @@ function BodyMarker({
     <>
       <View
         ref={ref}
-        flex={1}
+        style={{ flex: 1 }}
         onLayout={event => {
           const { width, height } = event.nativeEvent.layout
           setImageSquareSize(Math.min(width, height))
@@ -220,6 +221,10 @@ function BodyMarker({
                 annotation.location,
                 imageDimensions
               )
+              const valTop =
+                squareLocation.y * imageSquareSize - markerSize / 2 + 'px'
+              const valLeft =
+                squareLocation.x * imageSquareSize - markerSize / 2 + 'px'
               return (
                 <TouchableWithoutFeedback
                   disabled={!onAnnotate}
@@ -236,19 +241,14 @@ function BodyMarker({
                   }
                 >
                   <View
-                    position="absolute"
-                    flexDirection="row"
-                    top={
-                      squareLocation.y * imageSquareSize - markerSize / 2 + 'px'
-                    }
-                    left={
-                      squareLocation.x * imageSquareSize - markerSize / 2 + 'px'
-                    }
+                    style={[styles.bodyMarker, { top: valTop, left: valLeft }]}
                   >
-                    <Box
-                      bg="#f00"
-                      w={markerSize + 'px'}
-                      h={markerSize + 'px'}
+                    <View
+                      style={{
+                        backgroundColor: '#f00',
+                        width: markerSize,
+                        height: markerSize,
+                      }}
                     />
                     <Text
                       style={[styleS.fontBold]}
@@ -334,6 +334,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   markerContainer: {
+    position: 'absolute',
+    flexDirection: 'row',
+  },
+  bodyMarker: {
     position: 'absolute',
     flexDirection: 'row',
   },

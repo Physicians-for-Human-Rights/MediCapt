@@ -5,15 +5,12 @@ import {
   VStack,
   ScrollView,
   Pressable,
-  Stack,
-  Center,
-  Button,
   Icon,
   Select,
 } from 'native-base'
 import { Text, useStyleSheet } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
-import { AntDesign, MaterialIcons } from '@expo/vector-icons'
+import { AntDesign } from '@expo/vector-icons'
 // @ts-ignore Record some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
@@ -25,8 +22,11 @@ import SelectLocation from 'components/SelectLocation'
 import { getFormCached, getUserByUUIDCached } from 'api/common'
 import { UserType } from 'utils/types/user'
 import { userFullName } from 'utils/userTypes'
-import { Platform } from 'react-native'
+import { View, Dimensions } from 'react-native'
+import { breakpoints } from './nativeBaseSpec'
 
+const { width } = Dimensions.get('window')
+const isWider = width > breakpoints.md
 const styleS = useStyleSheet(themedStyles)
 
 export function ListItemMobile({
@@ -285,9 +285,11 @@ export default function RecordListStaticComponent({
       borderBottomWidth="1"
       space="4"
     >
-      <Box>
+      <View>
         <ScrollView>
-          <Box position="relative" display={{ md: 'none', base: 'flex' }}>
+          <View
+            style={{ position: 'relative', display: isWider ? 'none' : 'flex' }}
+          >
             {records.map((item: RecordMetadata, index: number) => {
               return (
                 <ListItemMobile
@@ -299,8 +301,8 @@ export default function RecordListStaticComponent({
                 />
               )
             })}
-          </Box>
-          <Box display={{ md: 'flex', base: 'none' }}>
+          </View>
+          <View style={{ display: isWider ? 'flex' : 'none' }}>
             <VStack mt={3} space={3}>
               {records.map((item: RecordMetadata, index: number) => {
                 return (
@@ -314,9 +316,9 @@ export default function RecordListStaticComponent({
                 )
               })}
             </VStack>
-          </Box>
+          </View>
         </ScrollView>
-      </Box>
+      </View>
     </VStack>
   )
 }

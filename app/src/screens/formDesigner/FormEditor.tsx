@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react'
-import { Box, VStack, Select, CheckIcon } from 'native-base'
+import { VStack, Select, CheckIcon } from 'native-base'
 import { FormType } from 'utils/types/form'
 import { lookupManifestByNameAndType } from 'utils/manifests'
 import {
@@ -30,6 +30,12 @@ import {
 } from 'utils/manifests'
 import useLeave from 'utils/useLeave'
 import { dataURItoBlob } from 'utils/data'
+import { Dimensions, View } from 'react-native'
+import styles from '../../components/styles'
+import { breakpoints, colors } from 'components/nativeBaseSpec'
+
+const { width } = Dimensions.get('window')
+const isWider = width > breakpoints.md
 
 function Tabs({
   tabName,
@@ -39,11 +45,13 @@ function Tabs({
   setTabName: React.Dispatch<React.SetStateAction<string>>
 }) {
   return (
-    <Box
-      width={{ md: '50%', base: '50%' }}
-      _light={{ bg: { base: 'primary.900', md: 'white' } }}
+    <View
+      style={{
+        width: '50%',
+        backgroundColor: isWider ? 'white' : colors.primary[900],
+      }}
     >
-      <Box pl="10" w="2/4" maxW="300">
+      <View style={styles.formEditorFormdesigner}>
         <Select
           selectedValue={tabName}
           minWidth="100"
@@ -64,8 +72,8 @@ function Tabs({
           <Select.Item label="Print preview" value="Printed" />
           <Select.Item label="Versions" value="Versions" />
         </Select>
-      </Box>
-    </Box>
+      </View>
+    </View>
   )
 }
 

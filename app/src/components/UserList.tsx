@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import { Platform } from 'react-native'
+import { Dimensions, Platform } from 'react-native'
 import {
-  Box,
   HStack,
   Stack,
   Center,
@@ -15,6 +14,7 @@ import {
   Select,
 } from 'native-base'
 import { Text, useStyleSheet } from '@ui-kitten/components'
+import { View } from 'react-native'
 import themedStyles from 'themeStyled'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
@@ -27,7 +27,11 @@ import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import SelectLocation from 'components/SelectLocation'
+import { breakpoints } from './nativeBaseSpec'
+import { spacing } from './styles'
 
+const { width } = Dimensions.get('window')
+const isWider = width > breakpoints.md
 const styleS = useStyleSheet(themedStyles)
 
 export function ListItem({ item }: { item: UserType }) {
@@ -37,17 +41,12 @@ export function ListItem({ item }: { item: UserType }) {
         <HStack alignItems="center" space={4} w="55%">
           <VStack>
             <Text
-              isTruncated
-              bold
-              fontSize="sm"
-              noOfLines={2}
-              maxW="64"
-              color="coolGray.900"
               style={[
                 styleS.truncated,
                 styleS.fontBold,
                 styleS.fontSizeSm,
                 styleS.maxWidth64x4,
+                styleS.colorCoolGray900,
               ]}
             >
               {item?.legalName}
@@ -154,24 +153,24 @@ export function ListItemDesktop({
     >
       <HStack alignItems="center" flex={1} justifyContent="space-between">
         <VStack w="30%">
-          <Text bold isTruncated noOfLines={2}>
+          <Text style={[styleS.fontBold, styleS.truncated]} numberOfLines={2}>
             {item.name}
           </Text>
           <HStack alignItems="center" flex={1} justifyContent="flex-start">
-            <Text isTruncated ml={2}>
-              {item.nickname}
-            </Text>
+            <Text style={[spacing.ml2, styleS.truncated]}>{item.nickname}</Text>
           </HStack>
         </VStack>
 
         <VStack w="20%">
-          <Text isTruncated>{item.email}</Text>
-          <Text isTruncated>{item.username}</Text>
+          <Text style={[styleS.truncated]}>{item.email}</Text>
+          <Text style={[styleS.truncated]}>{item.username}</Text>
         </VStack>
 
         <VStack w="30%">
-          <Text isTruncated>{formatDate(item.last_updated_time, 'PPP')}</Text>
-          <Text isTruncated>{item.userID}</Text>
+          <Text style={[styleS.truncated]}>
+            {formatDate(item.last_updated_time, 'PPP') as string}
+          </Text>
+          <Text style={[styleS.truncated]}>{item.userID}</Text>
         </VStack>
 
         <HStack w="5%">
@@ -368,14 +367,23 @@ export default function UserList({
         borderBottomWidth="1"
         space="4"
       >
-        <Box>
+        <View>
           <ScrollView>
-            <Box position="relative" display={{ md: 'none', base: 'flex' }}>
+            <View
+              style={{
+                position: 'relative',
+                display: isWider ? 'none' : 'flex',
+              }}
+            >
               {users.map((item: UserType, index: number) => {
                 return <ListItem item={item} key={index} />
               })}
-            </Box>
-            <Box display={{ md: 'flex', base: 'none' }}>
+            </View>
+            <View
+              style={{
+                display: isWider ? 'flex' : 'none',
+              }}
+            >
               <HStack
                 alignItems="center"
                 justifyContent="space-between"
@@ -383,40 +391,48 @@ export default function UserList({
                 _light={{ borderColor: 'coolGray.200' }}
               >
                 <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="30%"
-                  ml={1}
-                  mb={3}
-                  _light={{ color: 'coolGray.800' }}
+                  style={[
+                    styleS.fontBold,
+                    styleS.textLeft,
+                    styleS.width30Percent,
+                    spacing.ml1,
+                    spacing.mb3,
+                    styleS.colorCoolGray800,
+                  ]}
                 >
                   {t('heading.name')}
                 </Text>
                 <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="20%"
-                  mb={3}
-                  _light={{ color: 'coolGray.900' }}
+                  style={[
+                    styleS.fontBold,
+                    styleS.textLeft,
+                    styleS.width20Percent,
+                    styleS.colorCoolGray900,
+                    spacing.mb3,
+                  ]}
                 >
                   {t('heading.usernameAndEmail')}
                 </Text>
                 <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="25%"
-                  mb={3}
-                  _light={{ color: 'coolGray.900' }}
+                  style={[
+                    styleS.fontBold,
+                    styleS.textLeft,
+                    styleS.width25Percent,
+                    styleS.colorCoolGray900,
+                    spacing.mb3,
+                  ]}
                 >
                   {t('heading.lastChangedAndId')}
                 </Text>
                 <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="10%"
-                  mb={3}
-                  _light={{ color: 'coolGray.900' }}
-                  mr={-1}
+                  style={[
+                    styleS.fontBold,
+                    styleS.textLeft,
+                    styleS.width10Percent,
+                    styleS.colorCoolGray900,
+                    spacing.mb3,
+                    styleS.mrMinus1,
+                  ]}
                 >
                   {t('heading.enabled')}
                 </Text>
@@ -432,9 +448,9 @@ export default function UserList({
                   )
                 })}
               </VStack>
-            </Box>
+            </View>
           </ScrollView>
-        </Box>
+        </View>
       </VStack>
     </>
   )

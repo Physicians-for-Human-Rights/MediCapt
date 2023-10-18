@@ -7,8 +7,6 @@ import {
   VStack,
   ScrollView,
   Pressable,
-  Input,
-  IconButton,
   Icon,
   Button,
   Select,
@@ -25,7 +23,11 @@ import { LocationType, locationEntityTypes } from 'utils/types/location'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
+import { View, Dimensions } from 'react-native'
+import { breakpoints } from './nativeBaseSpec'
+import { spacing } from './styles'
 
+const { width } = Dimensions.get('window')
 const styleS = useStyleSheet(themedStyles)
 export function ListItem({ item }: { item: LocationType }) {
   return (
@@ -149,27 +151,31 @@ export function ListItemDesktop({
     >
       <HStack alignItems="center" flex={1} justifyContent="space-between">
         <VStack w="30%">
-          <Text bold isTruncated noOfLines={2}>
+          <Text style={[styleS.fontBold, styleS.truncated]} numberOfLines={2}>
             {item.legalName}
           </Text>
           <HStack alignItems="center" flex={1} justifyContent="flex-start">
-            <Text isTruncated ml={2}>
+            <Text style={[styleS.truncated, spacing.ml2]}>
               {item.shortName}
             </Text>
           </HStack>
-          <Text isTruncated ml={2}>
+          <Text style={[styleS.truncated, spacing.ml2]}>
             {t('location.entity.' + item.entityType)}
           </Text>
         </VStack>
 
         <VStack w="20%">
-          <Text isTruncated>{t('country.' + item.country)}</Text>
-          <Text isTruncated>{t('languages.' + item.language)}</Text>
+          <Text style={[styleS.truncated]}>{t('country.' + item.country)}</Text>
+          <Text style={[styleS.truncated]}>
+            {t('languages.' + item.language)}
+          </Text>
         </VStack>
 
         <VStack w="30%">
-          <Text isTruncated>{formatDate(item.lastChangedDate, 'PPP')}</Text>
-          <Text isTruncated>{item.locationID}</Text>
+          <Text style={[styleS.truncated]}>
+            {formatDate(item.lastChangedDate, 'PPP') as string}
+          </Text>
+          <Text style={[styleS.truncated]}>{item.locationID}</Text>
         </VStack>
 
         <HStack w="5%">
@@ -218,6 +224,7 @@ export default function LocationList({
   doSearch: () => any
   selectItem: (location: LocationType) => any
 }) {
+  const isWider = width > breakpoints.md
   return (
     <>
       <Stack
@@ -333,14 +340,19 @@ export default function LocationList({
         borderBottomWidth="1"
         space="4"
       >
-        <Box>
+        <View>
           <ScrollView>
-            <Box position="relative" display={{ md: 'none', base: 'flex' }}>
+            <View
+              style={{
+                position: 'relative',
+                display: isWider ? 'none' : 'flex',
+              }}
+            >
               {locations.map((item: LocationType, index: number) => {
                 return <ListItem item={item} key={index} />
               })}
-            </Box>
-            <Box display={{ md: 'flex', base: 'none' }}>
+            </View>
+            <View style={{ display: isWider ? 'flex' : 'none' }}>
               <HStack
                 alignItems="center"
                 justifyContent="space-between"
@@ -348,40 +360,48 @@ export default function LocationList({
                 _light={{ borderColor: 'coolGray.200' }}
               >
                 <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="30%"
-                  ml={1}
-                  mb={3}
-                  _light={{ color: 'coolGray.800' }}
+                  style={[
+                    styleS.fontBold,
+                    styleS.textLeft,
+                    styleS.width30Percent,
+                    styleS.colorCoolGray800,
+                    spacing.ml1,
+                    spacing.mb3,
+                  ]}
                 >
                   {t('heading.name')}
                 </Text>
                 <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="20%"
-                  mb={3}
-                  _light={{ color: 'coolGray.900' }}
+                  style={[
+                    styleS.fontBold,
+                    styleS.textLeft,
+                    styleS.width20Percent,
+                    styleS.mb3,
+                    styleS.colorCoolGray900,
+                  ]}
                 >
                   {t('heading.countryAndLanguage')}
                 </Text>
                 <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="25%"
-                  mb={3}
-                  _light={{ color: 'coolGray.900' }}
+                  style={[
+                    styleS.fontBold,
+                    styleS.textLeft,
+                    styleS.width25Percent,
+                    styleS.mb3,
+                    styleS.colorCoolGray900,
+                  ]}
                 >
                   {t('heading.lastChangedAndId')}
                 </Text>
                 <Text
-                  fontWeight="bold"
-                  textAlign="left"
-                  w="10%"
-                  mb={3}
-                  _light={{ color: 'coolGray.900' }}
-                  mr={-1}
+                  style={[
+                    styleS.fontBold,
+                    styleS.textLeft,
+                    styleS.width10Percent,
+                    styleS.mb3,
+                    styleS.colorCoolGray900,
+                    styleS.mrMinus1,
+                  ]}
                 >
                   {t('heading.enabled')}
                 </Text>
@@ -397,9 +417,9 @@ export default function LocationList({
                   )
                 })}
               </VStack>
-            </Box>
+            </View>
           </ScrollView>
-        </Box>
+        </View>
       </VStack>
     </>
   )

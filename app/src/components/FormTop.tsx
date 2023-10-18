@@ -1,6 +1,8 @@
 import React from 'react'
-import { Box, VStack, HStack, Icon, Text, IconButton } from 'native-base'
+import { VStack, HStack, Icon, Text, IconButton } from 'native-base'
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'
+import { View, StyleSheet } from 'react-native'
+import { colors } from './nativeBaseSpec'
 
 const FormTop = ({
   sectionOffset,
@@ -22,7 +24,15 @@ const FormTop = ({
   overrideTitle?: string
 }) => {
   return (
-    <Box
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: isSectionCompleted
+            ? colors.success[500]
+            : colors.primary[800],
+        },
+      ]}
       px="1"
       bg={isSectionCompleted ? 'success.600' : 'primary.800'}
       borderColor="coolGray.200"
@@ -102,8 +112,15 @@ const FormTop = ({
           />
         </HStack>
       </HStack>
-    </Box>
+    </View>
   )
 }
 
 export default React.memo(FormTop)
+
+export const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 4,
+    borderColor: colors.coolGray[200],
+  },
+})

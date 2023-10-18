@@ -3,7 +3,6 @@ import {
   Box,
   HStack,
   Icon,
-  Text,
   VStack,
   Center,
   Button,
@@ -12,14 +11,18 @@ import {
   Hidden,
   Square,
   Circle,
+  theme,
 } from 'native-base'
-
+import { Text, useStyleSheet } from '@ui-kitten/components'
 import { MaterialIcons } from '@expo/vector-icons'
 import DashboardLayout from 'components/DashboardLayout'
 import {
   RootStackScreenProps,
   RootStackParamList,
 } from 'utils/formDesigner/navigation'
+import themedStyles from 'themeStyled'
+
+const styleS = useStyleSheet(themedStyles)
 
 export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
   return (
@@ -54,15 +57,15 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
                     size={16}
                   />
                 </Center>
-                <Box
-                  _text={{
-                    fontWeight: 'bold',
-                    fontSize: 'lg',
-                    color: 'white',
-                  }}
+                <Text
+                  style={[
+                    styleS.fontBold,
+                    styleS.fontSizeLg,
+                    { color: 'white' },
+                  ]}
                 >
                   Create a new form
-                </Box>
+                </Text>
               </VStack>
             </Center>
           </Pressable>
@@ -79,15 +82,13 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
                     size={16}
                   />
                 </Center>
-                <Box
-                  _text={{
-                    fontWeight: 'bold',
-                    fontSize: 'lg',
-                    color: 'white',
-                  }}
+                <Text
+                  style={
+                    (styleS.fontBold, styleS.fontSizeLg, { color: 'white' })
+                  }
                 >
                   Edit an existing form
-                </Box>
+                </Text>
               </VStack>
             </Center>
           </Pressable>

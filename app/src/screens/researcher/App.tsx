@@ -1,12 +1,13 @@
 import React from 'react'
-import { NativeBaseProvider, Box, Button } from 'native-base'
+import { NativeBaseProvider, Button } from 'native-base'
 import { useSignOut } from 'utils/store'
+import { View } from 'react-native'
 
 export default function App({}: {}) {
   const [signOut] = useSignOut()
   return (
     <NativeBaseProvider>
-      <Box>Researcher</Box>
+      <View>Researcher</View>
       <Button onPress={signOut}>Sign out</Button>
     </NativeBaseProvider>
   )

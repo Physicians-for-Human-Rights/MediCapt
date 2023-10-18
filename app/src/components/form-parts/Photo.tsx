@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Alert } from 'react-native'
 import {
-  Box,
   VStack,
   HStack,
   Pressable,
@@ -19,7 +18,7 @@ import { Feather, MaterialIcons } from '@expo/vector-icons'
 import { disabledBackground } from 'utils/formRendering/utils'
 import { t } from 'i18n-js'
 import _ from 'lodash'
-import { useWindowDimensions } from 'react-native'
+import { useWindowDimensions, View } from 'react-native'
 
 type PhotoSelectorProps = {
   photos: Photo[]
@@ -191,7 +190,7 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
           <Modal.Header>{t('form.camera-viewer')}</Modal.Header>
           <Modal.Body>
             <Center flex={1}>
-              <Box h={modalSize * 0.7} w={modalSize * 0.7}>
+              <View style={{ height: modalSize * 0.7, width: modalSize * 0.7 }}>
                 {isOpen && (
                   <Camera
                     ref={setCamera}
@@ -199,7 +198,7 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
                     ratio={'1:1'}
                   />
                 )}
-              </Box>
+              </View>
             </Center>
           </Modal.Body>
           <Modal.Footer>

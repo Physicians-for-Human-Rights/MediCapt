@@ -11,7 +11,8 @@ import {
 import '@aws-amplify/ui-react/styles.css'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import ButtonGroup from 'components/form-parts/ButtonGroup'
-import { Button, Box } from 'native-base'
+import { Button } from 'native-base'
+import { View } from 'react-native'
 
 import indexOf from 'lodash/indexOf'
 import medicapt_logo from '../../assets/medicapt.png'
@@ -81,11 +82,11 @@ function Header(userKind, setAccountType) {
 
 function Footer() {
   return (
-    <Box bg="#fff" p={4}>
+    <View style={{ backgroundColor: '#fff', padding: 16 }}>
       <Button onPress={() => Linking.openURL('mailto:help@medicapt.click')}>
         Ask for help from help@medicapt.click
       </Button>
-    </Box>
+    </View>
   )
 }
 

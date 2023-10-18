@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import {
-  Box,
-  HStack,
-  VStack,
-  ScrollView,
-  Pressable,
-  Stack,
-  Center,
-  Button,
-  Icon,
-  Select,
-} from 'native-base'
+import { Box, HStack, VStack, ScrollView, Pressable } from 'native-base'
 import { Text, useStyleSheet } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
@@ -23,11 +12,14 @@ import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import SelectLocation from 'components/SelectLocation'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
-import { Platform } from 'react-native'
+import { Platform, Dimensions, View } from 'react-native'
 import { UserType } from 'utils/types/user'
 import { getUserByUUIDCachedAnyPool } from 'api/common'
 import { userFullName, UserKindNames } from 'utils/userTypes'
+import { breakpoints } from './nativeBaseSpec'
 
+const { width } = Dimensions.get('window')
+const isWider = width > breakpoints.md
 const styleS = useStyleSheet(themedStyles)
 
 export function ListItemMobile({
@@ -113,21 +105,21 @@ export function ListItemDesktop({
     >
       <HStack alignItems="center" flex={1} justifyContent="space-between">
         <VStack w="60%">
-          <Text bold isTruncated>
+          <Text style={[styleS.fontBold, styleS.truncated]}>
             {userFullName(users[item.sharedWithUUID], item.sharedWithUUID)}
           </Text>
-          <Text isTruncated ml={2}>
+          <Text style={[styleS.ml2, styleS.truncated]}>
             {t('user.' + item.sharedWithUUIDUserType)}
           </Text>
-          <Text isTruncated ml={2}>
+          <Text style={[styleS.ml2, styleS.truncated]}>
             {users[item.sharedWithUUID]
               ? users[item.sharedWithUUID].phone_number
               : ''}
           </Text>
-          <Text isTruncated ml={2}>
+          <Text style={[styleS.ml2, styleS.truncated]}>
             {users[item.sharedWithUUID] ? users[item.sharedWithUUID].email : ''}
           </Text>
-          <Text isTruncated ml={2}>
+          <Text style={[styleS.ml2, styleS.truncated]}>
             {users[item.sharedWithUUID]
               ? users[item.sharedWithUUID].address
               : ''}
@@ -135,28 +127,22 @@ export function ListItemDesktop({
         </VStack>
         <VStack w="40%">
           <HStack>
-            <Text bold isTruncated>
-              Shared on
-            </Text>
-            <Text isTruncated ml={2}>
-              {formatDate(item.createdDate, 'PPP')}
+            <Text style={[styleS.fontBold, styleS.truncated]}>Shared on</Text>
+            <Text style={[styleS.ml2, styleS.truncated]}>
+              {formatDate(item.createdDate, 'PPP') as string}
             </Text>
           </HStack>
           <HStack>
-            <Text bold isTruncated>
-              Expires on
-            </Text>
-            <Text isTruncated ml={2}>
-              {formatDate(item.shareExpiresOn, 'PPP')}
+            <Text style={[styleS.fontBold, styleS.truncated]}>Expires on</Text>
+            <Text style={[styleS.ml2, styleS.truncated]}>
+              {formatDate(item.shareExpiresOn, 'PPP') as string}
             </Text>
           </HStack>
-          <Text bold isTruncated>
-            Shared by
-          </Text>
-          <Text isTruncated ml={2}>
+          <Text style={[styleS.fontBold, styleS.truncated]}>Shared by</Text>
+          <Text style={[styleS.ml2, styleS.truncated]}>
             {userFullName(users[item.createdByUUID], item.createdByUUID)}
           </Text>
-          <Text isTruncated ml={2}>
+          <Text style={[styleS.ml2, styleS.truncated]}>
             {users[item.sharedWithUUID] ? users[item.sharedWithUUID].email : ''}
           </Text>
         </VStack>
@@ -215,9 +201,14 @@ export default function ShareListStatic({
         borderBottomWidth="1"
         space="4"
       >
-        <Box>
+        <View>
           <ScrollView>
-            <Box position="relative" display={{ md: 'none', base: 'flex' }}>
+            <View
+              style={{
+                position: 'relative',
+                display: isWider ? 'none' : 'flex',
+              }}
+            >
               {shares.map((item: Share, index: number) => {
                 return (
                   <ListItemMobile
@@ -228,8 +219,12 @@ export default function ShareListStatic({
                   />
                 )
               })}
-            </Box>
-            <Box display={{ md: 'flex', base: 'none' }}>
+            </View>
+            <View
+              style={{
+                display: isWider ? 'flex' : 'none',
+              }}
+            >
               <VStack mt={3} space={3}>
                 {shares.map((item: Share, index: number) => {
                   return (
@@ -242,9 +237,9 @@ export default function ShareListStatic({
                   )
                 })}
               </VStack>
-            </Box>
+            </View>
           </ScrollView>
-        </Box>
+        </View>
       </VStack>
     </>
   )

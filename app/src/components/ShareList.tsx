@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import {
-  Box,
   HStack,
   VStack,
   ScrollView,
@@ -24,10 +23,13 @@ import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import SelectLocation from 'components/SelectLocation'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
-import { Platform } from 'react-native'
+import { Dimensions, Platform, View } from 'react-native'
 import { getUserByUUIDCachedAnyPool } from 'api/common'
 import { userFullName } from 'utils/userTypes'
+import { breakpoints } from './nativeBaseSpec'
 
+const { width } = Dimensions.get('window')
+const isWider = width > breakpoints.md
 const styleS = useStyleSheet(themedStyles)
 
 export function ListItem({
@@ -310,9 +312,14 @@ export default function ShareList({
         borderBottomWidth="1"
         space="4"
       >
-        <Box>
+        <View>
           <ScrollView>
-            <Box position="relative" display={{ md: 'none', base: 'flex' }}>
+            <View
+              style={{
+                position: 'relative',
+                display: isWider ? 'none' : 'flex',
+              }}
+            >
               {shares.map((item: Share, index: number) => {
                 return (
                   <ListItem
@@ -323,8 +330,12 @@ export default function ShareList({
                   />
                 )
               })}
-            </Box>
-            <Box display={{ md: 'flex', base: 'none' }}>
+            </View>
+            <View
+              style={{
+                display: isWider ? 'none' : 'flex',
+              }}
+            >
               <HStack
                 alignItems="center"
                 justifyContent="space-between"
@@ -377,9 +388,9 @@ export default function ShareList({
                   )
                 })}
               </VStack>
-            </Box>
+            </View>
           </ScrollView>
-        </Box>
+        </View>
       </VStack>
     </>
   )

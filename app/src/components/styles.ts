@@ -26,6 +26,15 @@ export const spacing = StyleSheet.create({
   mx3: {
     marginHorizontal: 12,
   },
+  ml1: {
+    marginLeft: 4,
+  },
+  ml2: {
+    marginLeft: 8,
+  },
+  mb3: {
+    marginBottom: 12,
+  },
 })
 
 const styles = StyleSheet.create({
@@ -53,6 +62,47 @@ const styles = StyleSheet.create({
     padding: 8,
     marginVertical: 8,
     barckgroundColor: colors.muted[50],
+  },
+  formEditorFileContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  formEditorVersionBox: {
+    backgroundColor: colors.primary[50],
+    borderRadius: 8,
+  },
+  formEditorVersionBoxCenter: {
+    borderColor: colors.muted[100],
+    backgroundColor: colors.primary[50],
+    borderWidth: 2,
+    borderRadius: 8,
+    padding: 12,
+  },
+  formMenuContainer: {
+    borderBottomWidth: 1,
+    borderColor: colors.coolGray[200],
+    paddingLeft: 16,
+    paddingRight: 20,
+    paddingVertical: 8,
+  },
+  signatureNative: {
+    height: 210,
+    width: 410,
+    padding: 0,
+  },
+  signatureWeb: {
+    height: 210,
+    width: 410,
+    padding: 20,
+  },
+  userListContainer: {
+    width: 200,
+    height: 200,
+  },
+  formEditorFormdesigner: {
+    paddingLeft: 40,
+    width: 2 / 4,
+    maxWidth: 300,
   },
 })
 

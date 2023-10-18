@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import {
   Heading,
   VStack,
-  View,
   HStack,
   Center,
   Button,
@@ -10,6 +9,7 @@ import {
   Select,
   Box,
 } from 'native-base'
+import { View } from 'react-native'
 import { Text, useStyleSheet } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { Feather, MaterialIcons } from '@expo/vector-icons'
@@ -22,19 +22,7 @@ import {
   FormManifest,
   FormManifestWithData,
 } from 'utils/types/formMetadata'
-import {
-  isImage,
-  isInManifest,
-  filterManifest,
-  mapManifest,
-  addFileToManifest,
-  makeManifestEntry,
-  changeFilenameInManifest,
-  lookupManifestByNameAndType,
-  fileExtension,
-  fetchManifestContents,
-  generateZip,
-} from 'utils/manifests'
+import { fetchManifestContents, generateZip } from 'utils/manifests'
 import _ from 'lodash'
 import { getFormVersion } from 'api/formdesigner'
 import { useInfo } from 'utils/errors'
@@ -44,6 +32,7 @@ import formatDate from 'utils/date.ts'
 import { submitForm } from 'api/formdesigner'
 import { RootStackParamList } from 'utils/formDesigner/navigation'
 import { StackNavigationProp } from '@react-navigation/stack'
+import styles from './styles'
 
 const styleS = useStyleSheet(themedStyles)
 
@@ -168,7 +157,7 @@ export default function FormEditorVersions({
     <>
       <VStack space={0} py={5}>
         {historyMode && (
-          <Box bg={'primary.50'} rounded="8">
+          <View style={styles.formEditorVersionBox}>
             <Center py={2}>
               <Text style={[styleS.fontBold]}>History mode</Text>
               <Text style={[styleS.fontMedium]}>
@@ -201,7 +190,7 @@ export default function FormEditorVersions({
                 Make this the latest version
               </Button>
             </Center>
-          </Box>
+          </View>
         )}
         <Center py={5}>
           <Heading size="md">Form history browser</Heading>
@@ -218,13 +207,7 @@ export default function FormEditorVersions({
           </HStack>
         </Center>
         <Center>
-          <Box
-            borderColor={'muted.100'}
-            bg={'muted.50'}
-            borderWidth={2}
-            rounded="8"
-            p={3}
-          >
+          <View style={styles.formEditorVersionBoxCenter}>
             <HStack space={10}>
               <Center>
                 <Text style={[styleS.pt1]}>
@@ -244,7 +227,7 @@ export default function FormEditorVersions({
                 ))}
               </Select>
             </HStack>
-          </Box>
+          </View>
         </Center>
       </VStack>
       <Loading loading={waiting} />

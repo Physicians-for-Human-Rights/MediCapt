@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import {
-  Box,
   HStack,
   VStack,
   ScrollView,
@@ -25,8 +24,11 @@ import SelectLocation from 'components/SelectLocation'
 import { getFormCached, getUserByUUIDCached } from 'api/common'
 import { UserType } from 'utils/types/user'
 import { userFullName } from 'utils/userTypes'
-import { Platform } from 'react-native'
+import { Platform, View, Dimensions } from 'react-native'
+import { breakpoints } from './nativeBaseSpec'
 
+const { width } = Dimensions.get('window')
+const isWider = width > breakpoints.md
 const styleS = useStyleSheet(themedStyles)
 
 export function ListItemMobile({
@@ -466,9 +468,14 @@ export default function RecordList({
         borderBottomWidth="1"
         space="4"
       >
-        <Box>
+        <View>
           <ScrollView>
-            <Box position="relative" display={{ md: 'none', base: 'flex' }}>
+            <View
+              style={{
+                position: 'relative',
+                display: isWider ? 'none' : 'flex',
+              }}
+            >
               {_.filter(records, filter).map(
                 (item: RecordMetadata, index: number) => {
                   return (
@@ -482,8 +489,8 @@ export default function RecordList({
                   )
                 }
               )}
-            </Box>
-            <Box display={{ md: 'flex', base: 'none' }}>
+            </View>
+            <View style={{ display: isWider ? 'flex' : 'none' }}>
               <HStack
                 alignItems="center"
                 justifyContent="space-between"
@@ -551,9 +558,9 @@ export default function RecordList({
                   }
                 )}
               </VStack>
-            </Box>
+            </View>
           </ScrollView>
-        </Box>
+        </View>
       </VStack>
     </>
   )
