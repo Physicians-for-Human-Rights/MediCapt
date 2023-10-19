@@ -1,21 +1,27 @@
 import React from 'react'
 import {
-  Box,
   Center,
   HStack,
-  Pressable,
-  Icon,
-  Button,
-  Badge,
   useBreakpointValue,
   FlatList,
   Stack,
   VStack,
   Tooltip,
 } from 'native-base'
-import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons'
 import _ from 'lodash'
 import { t } from 'i18n-js'
+import { Button } from '@ui-kitten/components'
+import { colors } from './nativeBaseSpec'
+import {
+  CloseIcon,
+  SaveIcon,
+  ShareIcon,
+  PlusIcon,
+  AlertIcon,
+  PrinterIcon,
+  StarIcon,
+  ArrowLeftIcon,
+} from './Icons'
 
 export default function FormButtons({
   isSectionCompleteList,
@@ -52,6 +58,7 @@ export default function FormButtons({
     base: 'column',
     sm: 'row',
   })
+
   return (
     <VStack>
       <Stack
@@ -66,36 +73,25 @@ export default function FormButtons({
         {changed ? (
           <HStack space="2" justifyContent="center">
             <Button
-              bg="info.500"
-              leftIcon={<Icon as={AntDesign} name="save" size="sm" />}
+              status="info"
+              accessoryLeft={SaveIcon}
               onPress={onSaveAndExit}
-              _text={{ selectable: false }}
             >
               {t('record.buttons.save-and-exit')}
             </Button>
-            <Button
-              bg="info.500"
-              leftIcon={<Icon as={AntDesign} name="save" size="sm" />}
-              onPress={onSave}
-              _text={{ selectable: false }}
-            >
+            <Button status="info" accessoryLeft={SaveIcon} onPress={onSave}>
               {t('record.buttons.save')}
             </Button>
-            <Button
-              leftIcon={<Icon as={AntDesign} name="close" size="sm" />}
-              bg="info.500"
-              onPress={onExit}
-              _text={{ selectable: false }}
-            >
+            <Button accessoryLeft={CloseIcon} status="info" onPress={onExit}>
               {t('record.buttons.cancel')}
             </Button>
           </HStack>
         ) : (
           <Button
-            leftIcon={<Icon as={Feather} name="arrow-left" size="sm" />}
-            bg="info.500"
+            accessoryLeft={ArrowLeftIcon}
+            status="info"
             onPress={onExit}
-            _text={{ selectable: false }}
+            // _text={{ selectable: false }}
           >
             {t('record.buttons.exit')}
           </Button>
@@ -103,23 +99,27 @@ export default function FormButtons({
         {!changed && (
           <HStack space="2" justifyContent="center">
             <Button
-              bg="info.500"
-              leftIcon={<Icon as={AntDesign} name="printer" size="sm" />}
+              status="info"
+              accessoryLeft={PrinterIcon}
               onPress={onPrint}
-              _text={{ selectable: false }}
+              // _text={{ selectable: false }}
             >
               {t('record.buttons.print')}
             </Button>
             {!isSealed && !readOnly && (
               <Button
-                bg={
-                  _.every(isSectionCompleteList, (a: boolean) => a)
-                    ? 'success.600'
-                    : 'primary.800'
-                }
-                leftIcon={<Icon as={AntDesign} name="staro" size="sm" />}
+                style={{
+                  backgroundColor: _.every(
+                    isSectionCompleteList,
+                    (a: boolean) => a
+                  )
+                    ? colors.success[600]
+                    : colors.primary[800],
+                }}
+                accessoryLeft={StarIcon}
+                // accessoryLeft={<Icon as={AntDesign} name="staro" size="sm" />}
                 onPress={onCompleteRecord}
-                _text={{ selectable: false }}
+                // _text={{ selectable: false }}
               >
                 {t('record.buttons.complete-record')}
               </Button>
@@ -130,10 +130,10 @@ export default function FormButtons({
       {!isSealed && !readOnly && onUpgrade && (
         <Center>
           <Button
-            leftIcon={<Icon as={Feather} name="alert-triangle" size="sm" />}
-            bg="error.500"
+            accessoryLeft={AlertIcon}
+            status="danger"
             onPress={onUpgrade}
-            _text={{ selectable: false }}
+            // _text={{ selectable: false }}
           >
             {t('record.buttons.upgrade-form')}
           </Button>
@@ -149,10 +149,14 @@ export default function FormButtons({
           key="header1"
         >
           <Button
-            bg={hasAssociatedForms ? 'info.500' : 'muted.200'}
-            leftIcon={<Icon as={Feather} name="plus-square" size="sm" />}
+            style={{
+              backgroundColor: hasAssociatedForms
+                ? colors.info[500]
+                : colors.muted[200],
+            }}
+            accessoryLeft={PlusIcon}
             onPress={onAddRecord}
-            _text={{ selectable: false }}
+            // _text={{ selectable: false }}
             disabled={!hasAssociatedForms}
           >
             {hasAssociatedForms
@@ -160,10 +164,10 @@ export default function FormButtons({
               : t('record.buttons.no-associated-form')}
           </Button>
           <Button
-            bg={'info.500'}
-            leftIcon={<Icon as={MaterialIcons} name="share" size="sm" />}
+            status="info"
+            accessoryLeft={ShareIcon}
             onPress={onShareRecord}
-            _text={{ selectable: false }}
+            // _text={{ selectable: false }}
           >
             {t('record.buttons.share-record')}
           </Button>

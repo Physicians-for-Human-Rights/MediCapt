@@ -1,17 +1,15 @@
 import React from 'react'
 import {
-  Box,
   HStack,
   VStack,
   ScrollView,
   Pressable,
   Stack,
   Center,
-  Button,
   Icon,
   Select,
 } from 'native-base'
-import { Text, useStyleSheet } from '@ui-kitten/components'
+import { Text, useStyleSheet, Button } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
@@ -25,6 +23,7 @@ import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import { Platform, View, Dimensions } from 'react-native'
 import { breakpoints } from './nativeBaseSpec'
+import { CloseIcon, RefreshIcon } from './Icons'
 
 const { width } = Dimensions.get('window')
 const styleS = useStyleSheet(themedStyles)
@@ -277,15 +276,15 @@ export default function FormList({
             setFilterSearchType('')
             setFilterText('')
           }}
-          leftIcon={<Icon as={MaterialIcons} name="close" />}
+          accessoryLeft={CloseIcon}
           size="sm"
-          mr={2}
+          style={[styleS.mr2]}
         />
         <Button
           onPress={doSearch}
-          leftIcon={<Icon as={MaterialIcons} name="refresh" />}
+          accessoryLeft={RefreshIcon}
           size="sm"
-          mr={2}
+          style={[styleS.mr2]}
         />
       </HStack>
       <VStack

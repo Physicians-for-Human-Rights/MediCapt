@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import {
-  Box,
   HStack,
   Stack,
   Center,
@@ -8,10 +7,9 @@ import {
   ScrollView,
   Pressable,
   Icon,
-  Button,
   Select,
 } from 'native-base'
-import { Text, useStyleSheet } from '@ui-kitten/components'
+import { Text, useStyleSheet, Button } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import { Platform } from 'react-native'
@@ -26,6 +24,7 @@ import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import { View, Dimensions } from 'react-native'
 import { breakpoints } from './nativeBaseSpec'
 import { spacing } from './styles'
+import { CloseIcon, RefreshIcon } from './Icons'
 
 const { width } = Dimensions.get('window')
 const styleS = useStyleSheet(themedStyles)
@@ -289,16 +288,11 @@ export default function LocationList({
               setFilterEntityType('')
               setFilterText('')
             }}
-            leftIcon={<Icon as={MaterialIcons} name="close" />}
+            accessoryLeft={CloseIcon}
             size="sm"
-            ml={4}
-            mr={2}
+            style={[styleS.ml4, styleS.mr2]}
           />
-          <Button
-            onPress={doSearch}
-            leftIcon={<Icon as={MaterialIcons} name="refresh" />}
-            size="sm"
-          />
+          <Button onPress={doSearch} accessoryLeft={RefreshIcon} size="sm" />
         </HStack>
       </Stack>
       <HStack py={2} w="100%" justifyContent="center" bg={'muted.50'}>

@@ -9,7 +9,7 @@ info:
     email: TODO@TODO.TODO
   license:
     name: TODO
-    url: https://formdesigner-api.dev.medicapt.click
+    url: https://formdesigner-api.dev.dev-medicapt.org
 securityDefinitions:
   CognitoUserProvider:
     type: apiKey

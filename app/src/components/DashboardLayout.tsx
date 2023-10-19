@@ -1,6 +1,5 @@
 import React from 'react'
 import {
-  Box,
   VStack,
   StatusBar,
   ScrollView,
@@ -13,7 +12,6 @@ import {
   Divider,
   Menu,
   Avatar,
-  Button,
   Input,
 } from 'native-base'
 import { View, Dimensions, SafeAreaView } from 'react-native'
@@ -32,7 +30,7 @@ import medicapt_logo from '../../assets/medicapt.png'
 import phr_logo from '../../assets/phr_small.png'
 import { goBackMaybeRefreshing } from 'utils/navigation'
 
-import { useStyleSheet, Text } from '@ui-kitten/components'
+import { useStyleSheet, Text, Button } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import styles, { spacing } from './styles'
 import { colors, breakpoints } from './nativeBaseSpec'
@@ -121,11 +119,9 @@ export function Sidebar(signOut: any) {
           {list.map((item: any, idx: number) => {
             return (
               <Button
+                style={styles.dashboardButton}
                 key={idx}
-                variant="ghost"
-                justifyContent="flex-start"
-                py="4"
-                px="5"
+                appearance="ghost"
               >
                 <HStack space="4" alignItems="center">
                   <Icon
@@ -151,10 +147,8 @@ export function Sidebar(signOut: any) {
         <Divider />
         <View style={[spacing.px5, spacing.py2]}>
           <Button
-            variant="ghost"
-            justifyContent="flex-start"
-            py="4"
-            px="5"
+            style={styles.dashboardButton}
+            appearance="ghost"
             onPress={signOut}
           >
             <HStack space="4" alignItems="center">

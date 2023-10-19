@@ -1,8 +1,13 @@
 import { StyleService } from '@ui-kitten/components'
 const themedStyles = StyleService.create({
+  p0: {
+    padding: 0,
+  },
   py10: {
-    paddingTop: 40,
-    paddingBottom: 40,
+    paddingVertical: 40,
+  },
+  py2: {
+    paddingVertical: 8,
   },
   pb2: {
     paddingBottom: 8,
@@ -22,11 +27,35 @@ const themedStyles = StyleService.create({
   ml2: {
     marginLeft: 8,
   },
+  ml4: {
+    marginLeft: 16,
+  },
+  ml5: {
+    marginLeft: 20,
+  },
+  mt2: {
+    marginTop: 8,
+  },
+  mb2: {
+    marginBottom: 8,
+  },
   mb3: {
     marginBottom: 12,
   },
+  my2: {
+    marginVertical: 8,
+  },
+  my4: {
+    marginVertical: 16,
+  },
+  mx2: {
+    marginHorizontal: 8,
+  },
   mrMinus1: {
     marginRight: -4,
+  },
+  mr2: {
+    marginRight: 8,
   },
   fontBold: {
     fontWeight: 'bold',
@@ -102,6 +131,12 @@ const themedStyles = StyleService.create({
   width64x4: {
     width: 64 * 4,
   },
+  width300: {
+    width: 300,
+  },
+  width100Percent: {
+    width: '100%',
+  },
   width45Percent: {
     width: '45%',
   },
@@ -128,6 +163,9 @@ const themedStyles = StyleService.create({
   },
   maxWidth64x4: {
     maxWidth: 64 * 4,
+  },
+  maxWidth300: {
+    maxWidth: 300,
   },
   maxWidth100Percent: {
     maxWidth: '100%',

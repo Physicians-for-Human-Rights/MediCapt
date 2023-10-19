@@ -7,13 +7,10 @@ import {
   VStack,
   ScrollView,
   Pressable,
-  Input,
-  IconButton,
   Icon,
-  Button,
   Select,
 } from 'native-base'
-import { Text, useStyleSheet } from '@ui-kitten/components'
+import { Text, useStyleSheet, Button } from '@ui-kitten/components'
 import { View } from 'react-native'
 import themedStyles from 'themeStyled'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
@@ -23,12 +20,11 @@ import { t } from 'i18n-js'
 import _ from 'lodash'
 import { UserType } from 'utils/types/user'
 import { UserKindList } from 'utils/userTypes'
-import AnyCountry from 'components/AnyCountry'
-import Language from 'components/Language'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import SelectLocation from 'components/SelectLocation'
 import { breakpoints } from './nativeBaseSpec'
 import { spacing } from './styles'
+import { CloseIcon, RefreshIcon } from './Icons'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -72,7 +68,7 @@ export function ListItem({ item }: { item: UserType }) {
               style={[styleS.truncated, styleS.pl3, styleS.colorCoolGray700]}
               pl={3}
             >
-              {formatDate(item?.lastChangedDate, 'PPP')}
+              {formatDate(item?.lastChangedDate, 'PPP') as string}
             </Text>
           </VStack>
         </HStack>
@@ -295,16 +291,11 @@ export default function UserList({
               setFilterSearchType('')
               setFilterText('')
             }}
-            leftIcon={<Icon as={MaterialIcons} name="close" />}
+            accessoryLeft={CloseIcon}
             size="sm"
-            ml={4}
-            mr={2}
+            style={[styleS.ml4, styleS.mr2]}
           />
-          <Button
-            onPress={doSearch}
-            leftIcon={<Icon as={MaterialIcons} name="refresh" />}
-            size="sm"
-          />
+          <Button onPress={doSearch} accessoryLeft={RefreshIcon} size="sm" />
         </HStack>
       </Stack>
       <HStack py={2} w="100%" justifyContent="center" bg={'muted.50'}>

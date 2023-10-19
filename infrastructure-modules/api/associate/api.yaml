@@ -9,7 +9,7 @@ info:
     email: TODO@TODO.TODO
   license:
     name: TODO
-    url: https://associate-api.dev.medicapt.click
+    url: https://associate-api.dev.dev-medicapt.org
 securityDefinitions:
   CognitoUserProvider:
     type: apiKey

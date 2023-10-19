@@ -7,7 +7,6 @@ import {
   Icon,
   Image,
   Divider,
-  Button,
   Center,
   Modal,
   FlatList,
@@ -19,6 +18,11 @@ import { disabledBackground } from 'utils/formRendering/utils'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import { useWindowDimensions, View } from 'react-native'
+import { Button, useStyleSheet } from '@ui-kitten/components'
+import themedStyles from 'themeStyled'
+import { CameraIcon, DeleteIcon, UploadCloudIcon } from 'components/Icons'
+
+const styleS = useStyleSheet(themedStyles)
 
 type PhotoSelectorProps = {
   photos: Photo[]
@@ -133,12 +137,10 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
               />
             </Pressable>
             <Button
-              py={2}
-              isDisabled={isDisabled}
-              fontWeight="bold"
-              colorScheme="blue"
-              fontSize="md"
-              leftIcon={<Icon as={MaterialIcons} name="delete" size="sm" />}
+              style={[styleS.fontBold, styleS.fontSizeMd, styleS.py2]}
+              disabled={isDisabled}
+              appearance="info"
+              accessoryLeft={DeleteIcon}
               onPress={() => removePhoto(index)}
               accessibilityLabel={t('form.delete-photo')}
             >
@@ -153,28 +155,30 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
           ) : (
             <HStack justifyContent="center">
               <Button
-                my={2}
-                mx={2}
-                fontWeight="bold"
-                colorScheme="blue"
-                isDisabled={isDisabled}
-                fontSize="md"
-                leftIcon={<Icon as={Feather} name="upload-cloud" size="sm" />}
+                style={[
+                  styleS.my2,
+                  styleS.mx2,
+                  styleS.fontBold,
+                  styleS.fontSizeMd,
+                ]}
+                status="info"
+                disabled={isDisabled}
+                accessoryLeft={UploadCloudIcon}
                 onPress={onAddPhoto}
                 accessibilityLabel={t('form.add-photo')}
               >
                 {t('form.add-photo')}
               </Button>
               <Button
-                my={2}
-                mx={2}
-                fontWeight="bold"
-                colorScheme="blue"
-                isDisabled={isDisabled}
-                fontSize="md"
-                leftIcon={
-                  <Icon as={MaterialIcons} name="camera-alt" size="sm" />
-                }
+                style={[
+                  styleS.my2,
+                  styleS.mx2,
+                  styleS.fontBold,
+                  styleS.fontSizeMd,
+                ]}
+                status="info"
+                disabled={isDisabled}
+                accessoryLeft={CameraIcon}
                 onPress={onTakePhotoOpenModal}
                 accessibilityLabel={t('form.take-photo')}
               >
@@ -202,12 +206,15 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
             </Center>
           </Modal.Body>
           <Modal.Footer>
-            <Button.Group space={2}>
-              <Button variant="ghost" colorScheme="blueGray" onPress={onCancel}>
-                {t('form.cancel-photo')}
-              </Button>
-              <Button onPress={onTakePhoto}>{t('form.save-photo')}</Button>
-            </Button.Group>
+            <Button
+              style={[styleS.mr2]}
+              appearance="ghost"
+              status="blueGray"
+              onPress={onCancel}
+            >
+              {t('form.cancel-photo')}
+            </Button>
+            <Button onPress={onTakePhoto}>{t('form.save-photo')}</Button>
           </Modal.Footer>
         </Modal.Content>
       </Modal>

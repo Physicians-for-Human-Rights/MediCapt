@@ -1,18 +1,11 @@
 import React, { useState } from 'react'
 import {
-  Box,
   HStack,
-  Icon,
-  Text,
   VStack,
   Center,
-  Button,
   Divider,
   Badge,
   Image,
-  Input,
-  InputGroup,
-  Popover,
   FlatList,
   IconButton,
 } from 'native-base'
@@ -32,15 +25,25 @@ import {
   isImage,
   isInManifest,
   filterManifest,
-  mapManifest,
   addFileToManifest,
-  makeManifestEntry,
   changeFilenameInManifest,
   generateZip,
 } from 'utils/manifests'
 import styles, { spacing } from './styles'
 import { breakpoints } from './nativeBaseSpec'
+import {
+  Button,
+  useStyleSheet,
+  Icon,
+  Text,
+  Popover,
+} from '@ui-kitten/components'
+import themedStyles from 'themeStyled'
+import { DownloadCloudIcon, UploadCloudIcon, CloseCircleIcon } from './Icons'
+import { IconGrayButton } from './styledComponents/IconButtons'
+import PopoverContent from './PopOverContent'
 
+const styleS = useStyleSheet(themedStyles)
 const { width } = Dimensions.get('window')
 
 export default function FormEditorFiles({
@@ -54,6 +57,7 @@ export default function FormEditorFiles({
   manifest: FormManifestWithData
   setManifest: React.Dispatch<React.SetStateAction<FormManifestWithData>>
 }) {
+  const [visible, setVisible] = useState<boolean>(false)
   const pickPdf = async () => {
     const result = await DocumentPicker.getDocumentAsync({
       type: 'application/pdf',
@@ -109,20 +113,25 @@ export default function FormEditorFiles({
   }
 
   const pdfHasAnnotations = false
+  const renderToggleButton = (): React.ReactElement => (
+    <Button
+      status="secondary"
+      appearance="ghost"
+      onPress={() => setVisible(true)}
+    >
+      Tell me more
+    </Button>
+  )
 
   return (
     <VStack my="2" space={3}>
       <Center py={3}>
-        <Button
-          fontWeight="bold"
-          color="coolGray.800"
-          bg="info.500"
-          fontSize="md"
+        <IconGrayButton
+          text="Download all files"
+          status="info"
+          leftIcon={DownloadCloudIcon}
           onPress={() => generateZip(formMetadata, manifest)}
-          leftIcon={<Icon as={Feather} name="download-cloud" size="sm" />}
-        >
-          Download all files
-        </Button>
+        />
       </Center>
       <HStack alignItems="center" justifyContent="space-between">
         <VStack space="4" justifyContent="flex-start" py={4} w="200" maxW="200">
@@ -141,27 +150,19 @@ export default function FormEditorFiles({
             </Badge>
           </Center>
           {isInManifest(manifest, e => e.filename == 'form.pdf') ? (
-            <Button
-              fontWeight="bold"
-              color="coolGray.800"
-              bg="red.500"
-              fontSize="md"
+            <IconGrayButton
+              text="Remove pdf"
+              status="danger"
+              leftIcon={CloseCircleIcon}
               onPress={removePdf}
-              leftIcon={<Icon as={Feather} name="x-circle" size="sm" />}
-            >
-              Remove pdf
-            </Button>
+            />
           ) : (
-            <Button
-              fontWeight="bold"
-              color="coolGray.800"
-              bg="info.500"
-              fontSize="md"
+            <IconGrayButton
+              text="Upload an annotated pdf"
+              status="info"
+              leftIcon={UploadCloudIcon}
               onPress={pickPdf}
-              leftIcon={<Icon as={Feather} name="upload-cloud" size="sm" />}
-            >
-              Upload an annotated pdf
-            </Button>
+            />
           )}
         </VStack>
         {isInManifest(manifest, e => e.filename == 'form.pdf') ? (
@@ -179,32 +180,25 @@ export default function FormEditorFiles({
                 optional={false}
               />
               <Popover
-                trigger={triggerProps => {
-                  return (
-                    <Button
-                      {...triggerProps}
-                      variant="link"
-                      colorScheme="secondary"
-                    >
-                      Tell me more
-                    </Button>
-                  )
-                }}
+                visible={visible}
+                anchor={renderToggleButton}
+                onBackdropPress={() => setVisible(false)}
               >
-                <Popover.Content accessibilityLabel="Delete Customerd" w="64">
-                  <Popover.Arrow />
-                  <Popover.CloseButton />
-                  <Popover.Header>Annotating pdfs</Popover.Header>
-                  <Popover.Body>
-                    TODO Describe how to annotate a pdf in Acrobat and how to
-                    fill it out with Xs
-                  </Popover.Body>
-                </Popover.Content>
+                <PopoverContent
+                  content="TODO Describe how to annotate a pdf in Acrobat and how to fill
+                  it out with Xs"
+                  headerText="Annotating pdfs"
+                  button1text="Close"
+                  funcButton1={() => setVisible(false)}
+                />
               </Popover>
             </HStack>
           </VStack>
         ) : (
-          <Text maxW="300" w="300" isTruncated noOfLines={3}>
+          <Text
+            style={[styleS.maxWidth300, styleS.width300, styleS.truncated]}
+            numberOfLines={3}
+          >
             TODO Instructions for what to upload and how to annoate
           </Text>
         )}
@@ -226,16 +220,12 @@ export default function FormEditorFiles({
               IMAGES
             </Badge>
           </Center>
-          <Button
-            fontWeight="bold"
-            color="coolGray.800"
-            bg="info.500"
-            fontSize="md"
+          <IconGrayButton
+            text="Upload an image"
+            status="info"
+            leftIcon={UploadCloudIcon}
             onPress={pickImage}
-            leftIcon={<Icon as={Feather} name="upload-cloud" size="sm" />}
-          >
-            Upload an image
-          </Button>
+          />
         </HStack>
         <View
           style={[

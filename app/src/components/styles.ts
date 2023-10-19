@@ -32,6 +32,9 @@ export const spacing = StyleSheet.create({
   ml2: {
     marginLeft: 8,
   },
+  mr2: {
+    marginRight: 8,
+  },
   mb3: {
     marginBottom: 12,
   },
@@ -103,6 +106,11 @@ const styles = StyleSheet.create({
     paddingLeft: 40,
     width: 2 / 4,
     maxWidth: 300,
+  },
+  dashboardButton: {
+    justifyContent: 'flex-start',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
   },
 })
 

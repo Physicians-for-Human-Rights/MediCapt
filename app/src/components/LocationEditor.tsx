@@ -1,35 +1,22 @@
 import React, { useState } from 'react'
-import {
-  HStack,
-  VStack,
-  Button,
-  View,
-  Icon,
-  Select,
-  CheckIcon,
-  CloseIcon,
-  Tooltip,
-  Popover,
-} from 'native-base'
+import { HStack, VStack, View, Select, Tooltip, Popover } from 'native-base'
+import { Button, useStyleSheet } from '@ui-kitten/components'
 import type { LocationType } from 'utils/types/location'
 import { locationEntityTypes } from 'utils/types/location'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 import NecessaryItem from 'components/NecessaryItem'
 import { t } from 'i18n-js'
 import _ from 'lodash'
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  Feather,
-  MaterialIcons,
-} from '@expo/vector-icons'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import Loading from 'components/Loading'
 import { useInfo } from 'utils/errors'
 import { createLocation, updateLocation, deleteLocation } from 'api/manager'
 import { standardHandler } from 'api/utils'
+import themedStyles from 'themeStyled'
+import { DeleteIcon, SaveIcon, CheckIcon, CloseIcon } from './Icons'
+
+const styleS = useStyleSheet(themedStyles)
 
 export default function LocationEditor({
   files,
@@ -199,7 +186,7 @@ export default function LocationEditor({
           <Popover
             trigger={triggerProps => {
               return (
-                <Button {...triggerProps} colorScheme="warning" m={4}>
+                <Button {...triggerProps} status="warning" m={4}>
                   Help
                 </Button>
               )
@@ -289,8 +276,8 @@ export default function LocationEditor({
         {createMode ? (
           <HStack mt={5} justifyContent="center">
             <Button
-              leftIcon={<Icon as={MaterialIcons} name="save" size="sm" />}
-              colorScheme="green"
+              accessoryLeft={SaveIcon}
+              status="success"
               onPress={handleCreateLocation}
             >
               {t('location.create-location')}
@@ -299,31 +286,22 @@ export default function LocationEditor({
         ) : (
           <HStack mt={5} justifyContent="space-between">
             <Button
-              leftIcon={<Icon as={MaterialIcons} name="save" size="sm" />}
-              colorScheme="green"
+              accessoryLeft={SaveIcon}
+              status="success"
               onPress={handleSubmitLocation}
             >
               {t('location.submit-location')}
             </Button>
             {false && (
               // TODO We don't allow location deletion anymore
-              <Button
-                leftIcon={<Icon as={MaterialIcons} name="delete" size="sm" />}
-                onPress={handleDeleteLocation}
-              >
+              <Button accessoryLeft={DeleteIcon} onPress={handleDeleteLocation}>
                 {t('location.delete-location')}
               </Button>
             )}
             <Tooltip openDelay={0} label="Submit first" isDisabled={!changed}>
               <Button
-                leftIcon={
-                  location.enabled ? (
-                    <CloseIcon size={'5'} mx={2} />
-                  ) : (
-                    <CheckIcon size={'5'} mx={2} />
-                  )
-                }
-                colorScheme={location.enabled ? 'red' : 'green'}
+                accessoryLeft={location.enabled ? CloseIcon : CheckIcon}
+                status={location.enabled ? 'danger' : 'success'}
                 onPress={toggleLocation}
               >
                 {location.enabled

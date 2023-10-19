@@ -1,14 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
-import {
-  VStack,
-  Modal,
-  Text,
-  Button,
-  Box,
-  HStack,
-  Pressable,
-  Center,
-} from 'native-base'
+import { VStack, Modal } from 'native-base'
+import { Button } from '@ui-kitten/components'
 import _ from 'lodash'
 import Form from 'components/Form'
 import DashboardLayout from 'components/DashboardLayout'
@@ -47,7 +39,6 @@ import ShareListStatic from 'components/ShareListStatic'
 import { goBackMaybeRefreshing } from 'utils/navigation'
 import { createShareForRecord, getSharesForRecord } from 'api/provider'
 import { Share } from 'utils/types/share'
-import UserSearch from 'components/UserSearch'
 import { useUserLocations } from 'utils/store'
 
 const FormMemo = React.memo(Form)
@@ -556,15 +547,13 @@ export default function RecordEditor({
               />
             </Modal.Body>
             <Modal.Footer>
-              <Button.Group space={2}>
-                <Button
-                  variant="ghost"
-                  colorScheme="blueGray"
-                  onPress={() => setIsAssociatedModalOpen(false)}
-                >
-                  Cancel
-                </Button>
-              </Button.Group>
+              <Button
+                appearance="ghost"
+                status="blueGray"
+                onPress={() => setIsAssociatedModalOpen(false)}
+              >
+                Cancel
+              </Button>
             </Modal.Footer>
           </Modal.Content>
         </Modal>

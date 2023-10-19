@@ -6,12 +6,11 @@ import {
   Pressable,
   Stack,
   Center,
-  Button,
   Icon,
   Select,
 } from 'native-base'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
-import { Text, useStyleSheet } from '@ui-kitten/components'
+import { Button, Text, useStyleSheet } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { UserType } from 'utils/types/user'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
@@ -27,6 +26,7 @@ import { Dimensions, Platform, View } from 'react-native'
 import { getUserByUUIDCachedAnyPool } from 'api/common'
 import { userFullName } from 'utils/userTypes'
 import { breakpoints } from './nativeBaseSpec'
+import { CloseIcon, RefreshIcon } from './Icons'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -289,15 +289,15 @@ export default function ShareList({
             setFilterSearchType('')
             setFilterText('')
           }}
-          leftIcon={<Icon as={MaterialIcons} name="close" />}
+          accessoryLeft={CloseIcon}
           size="sm"
-          mr={2}
+          style={[styleS.mr2]}
         />
         <Button
           onPress={doSearch}
-          leftIcon={<Icon as={MaterialIcons} name="refresh" />}
+          accessoryLeft={RefreshIcon}
           size="sm"
-          mr={2}
+          style={[styleS.mr2]}
         />
       </HStack>
       <VStack

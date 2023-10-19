@@ -5,10 +5,12 @@ import {
   CloseIcon,
   WarningTwoIcon,
   Popover,
-  Button,
 } from 'native-base'
-import { Text } from '@ui-kitten/components'
+import { Button, Text, useStyleSheet } from '@ui-kitten/components'
 import _ from 'lodash'
+import themedStyles from 'themeStyled'
+
+const styleS = useStyleSheet(themedStyles)
 
 export default function NecessaryItem({
   todoText,
@@ -52,10 +54,9 @@ export default function NecessaryItem({
               return (
                 <Button
                   {...triggerProps}
-                  variant="link"
-                  colorScheme="secondary"
-                  ml={5}
-                  p={0}
+                  appearance="ghost"
+                  status="secondary"
+                  style={[styleS.ml5, styleS.p0]}
                   size="sm"
                 >
                   Tell me more

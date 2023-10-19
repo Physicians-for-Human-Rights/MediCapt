@@ -3,7 +3,8 @@ import * as Linking from 'expo-linking'
 import { Amplify, I18n, Logger } from 'aws-amplify'
 import { Auth } from 'aws-amplify'
 import { ActivityIndicator, Image, View } from 'react-native'
-import { Button, Heading } from 'native-base'
+import { Heading } from 'native-base'
+import { Button } from '@ui-kitten/components'
 import {
   Greetings,
   SignIn,
@@ -134,8 +135,8 @@ function Header(userKind, setAccountType) {
           onPress={setAccountType}
           pt={2}
           pb={1}
-          colorScheme="red"
-          size="md"
+          colorScheme="primary"
+          size="medium"
           flex={0}
           maxW="40%"
           justifyContent="center"
@@ -150,8 +151,8 @@ function Header(userKind, setAccountType) {
             }}
             onPress={setAccountType}
             pb={3}
-            colorScheme="red"
-            size="md"
+            colorScheme="primary"
+            size="medium"
             flex={0}
             maxW="40%"
             justifyContent="center"

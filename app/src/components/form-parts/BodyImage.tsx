@@ -1,14 +1,17 @@
 import React, { useState } from 'react'
-import { Box, Icon, Button, Center, Modal } from 'native-base'
+import { Center, Modal } from 'native-base'
 import BodyMarker, { BodyMarkerAnnotation } from 'components/BodyMarker'
 import { useWindowDimensions } from 'react-native'
 import { disabledBackground } from 'utils/formRendering/utils'
-import { AntDesign } from '@expo/vector-icons'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import { View } from 'react-native'
 import styles from '../styles'
+import { Button, useStyleSheet } from '@ui-kitten/components'
+import { EditIcon } from 'components/Icons'
+import themedStyles from 'themeStyled'
 
+const styleS = useStyleSheet(themedStyles)
 export type ImageAnnotation = BodyMarkerAnnotation
 
 function BodyImage({
@@ -48,12 +51,11 @@ function BodyImage({
           />
         </View>
         <Button
-          isDisabled={isDisabled}
-          mt={2}
-          colorScheme="blue"
-          w="100%"
+          disabled={isDisabled}
+          style={[styleS.mt2, styleS.width100Percent]}
+          status="info"
           size="md"
-          leftIcon={<Icon as={AntDesign} name={'edit'} size="sm" />}
+          accessoryLeft={EditIcon}
           onPress={internalOpen}
         >
           {t('form.mark-diagram')}
@@ -77,9 +79,7 @@ function BodyImage({
             </Center>
           </Modal.Body>
           <Modal.Footer>
-            <Button.Group space={2}>
-              <Button onPress={internalClose}>Save</Button>
-            </Button.Group>
+            <Button onPress={internalClose}>Save</Button>
           </Modal.Footer>
         </Modal.Content>
       </Modal>

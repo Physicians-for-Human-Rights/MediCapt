@@ -6,11 +6,10 @@ import {
   Pressable,
   Stack,
   Center,
-  Button,
   Icon,
   Select,
 } from 'native-base'
-import { Text, useStyleSheet } from '@ui-kitten/components'
+import { Text, useStyleSheet, Button } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Record some reason expo doesn't pick up this module without the extension
@@ -26,6 +25,7 @@ import { UserType } from 'utils/types/user'
 import { userFullName } from 'utils/userTypes'
 import { Platform, View, Dimensions } from 'react-native'
 import { breakpoints } from './nativeBaseSpec'
+import { CloseIcon, RefreshIcon } from './Icons'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -444,15 +444,15 @@ export default function RecordList({
               setFilterSearchType('')
               setFilterText('')
             }}
-            leftIcon={<Icon as={MaterialIcons} name="close" size="sm" />}
+            accessoryLeft={CloseIcon}
             size="sm"
-            mr={2}
+            style={[styleS.mr2]}
           />
           <Button
             onPress={doSearch}
-            leftIcon={<Icon as={MaterialIcons} name="refresh" size="sm" />}
+            accessoryLeft={RefreshIcon}
             size="sm"
-            mr={2}
+            style={[styleS.mr2]}
           />
         </HStack>
       </Stack>

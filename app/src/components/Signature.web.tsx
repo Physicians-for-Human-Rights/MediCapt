@@ -1,11 +1,15 @@
 import React, { useState, useRef } from 'react'
-import { Icon, Image, Button, Center, Modal } from 'native-base'
-import { AntDesign } from '@expo/vector-icons'
+import { Image, Center, Modal } from 'native-base'
 import { disabledBackground } from 'utils/formRendering/utils'
 import { View } from 'react-native'
 import styles from './styles'
 // https://www.npmjs.com/package/react-signature-pad-wrapper
 import SignatureCanvas from 'react-signature-pad-wrapper'
+import { Button, useStyleSheet } from '@ui-kitten/components'
+import { CloseCircleIcon, EditIcon } from './Icons'
+import themedStyles from 'themeStyled'
+
+const styleS = useStyleSheet(themedStyles)
 
 export type SignatureProps = {
   isDisabled: boolean
@@ -62,16 +66,10 @@ function Signature({
           />
         )}
         <Button
-          isDisabled={isDisabled}
-          bg="info.500"
-          w="100%"
-          leftIcon={
-            <Icon
-              as={AntDesign}
-              name={imageURI ? 'closecircleo' : 'edit'}
-              size="sm"
-            />
-          }
+          disabled={isDisabled}
+          status="info"
+          style={[styleS.width100Percent]}
+          accessoryLeft={imageURI ? CloseCircleIcon : EditIcon}
           onPress={internalOpen}
         >
           {imageURI ? 'Clear and sign again' : 'Sign'}
@@ -86,12 +84,15 @@ function Signature({
             </View>
           </Modal.Body>
           <Modal.Footer>
-            <Button.Group space={2}>
-              <Button variant="ghost" colorScheme="blueGray" onPress={onCancel}>
-                Cancel and clear
-              </Button>
-              <Button onPress={onSave}>Save</Button>
-            </Button.Group>
+            <Button
+              appearance="ghost"
+              status="blueGray"
+              onPress={onCancel}
+              style={[styleS.mr2]}
+            >
+              Cancel and clear
+            </Button>
+            <Button onPress={onSave}>Save</Button>
           </Modal.Footer>
         </Modal.Content>
       </Modal>

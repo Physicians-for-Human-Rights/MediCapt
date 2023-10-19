@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { VStack, Image, Button, Modal } from 'native-base'
-import { Text } from '@ui-kitten/components'
+import { VStack, Image, Modal } from 'native-base'
+import { Text, Button, useStyleSheet } from '@ui-kitten/components'
 import {
   StyleSheet,
   ImageBackground,
@@ -13,8 +13,8 @@ import Photo from 'components/form-parts/Photo'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
-import { useStyleSheet } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
+import { spacing } from './styles'
 
 const styleS = useStyleSheet(themedStyles)
 
@@ -301,25 +301,25 @@ function BodyMarker({
             </VStack>
           </Modal.Body>
           <Modal.Footer>
-            <Button.Group space={2}>
-              <Button
-                variant="ghost"
-                colorScheme="red"
-                onPress={onDeleteMarker}
-              >
-                Delete
-              </Button>
-              <Button
-                variant="ghost"
-                colorScheme="blueGray"
-                onPress={onCancelMarker}
-              >
-                Cancel
-              </Button>
-              <Button colorScheme="blue" onPress={onSaveMarker}>
-                Save
-              </Button>
-            </Button.Group>
+            <Button
+              style={[spacing.mr2]}
+              appearance="ghost"
+              status="danger"
+              onPress={onDeleteMarker}
+            >
+              Delete
+            </Button>
+            <Button
+              style={[spacing.mr2]}
+              appearance="ghost"
+              status="info"
+              onPress={onCancelMarker}
+            >
+              Cancel
+            </Button>
+            <Button status="info" onPress={onSaveMarker}>
+              Save
+            </Button>
           </Modal.Footer>
         </Modal.Content>
       </Modal>

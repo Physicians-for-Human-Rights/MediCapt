@@ -1,24 +1,11 @@
 import React, { useState } from 'react'
-import {
-  Box,
-  HStack,
-  Icon,
-  Text,
-  VStack,
-  Center,
-  Button,
-  Pressable,
-  Divider,
-  Hidden,
-  Square,
-  Circle,
-  Select,
-  CheckIcon,
-  Switch,
-} from 'native-base'
+import { HStack, Text, VStack, Center, Switch } from 'native-base'
+import { Button, useStyleSheet, Icon, ButtonGroup } from '@ui-kitten/components'
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack'
-import { Feather } from '@expo/vector-icons'
+import themedStyles from 'themeStyled'
 
+const styleS = useStyleSheet(themedStyles)
+const DownloadIcon = props => <Icon name="download" {...props} />
 export default function DisplayPDF({
   file,
   width,
@@ -72,12 +59,14 @@ export default function DisplayPDF({
         </VStack>
         <Center py={3}>
           <Button
-            fontWeight="bold"
-            color="coolGray.800"
-            bg="info.500"
-            fontSize="md"
+            style={[
+              styleS.fontBold,
+              styleS.colorCoolGray800,
+              styleS.fontSizeMd,
+            ]}
+            status="info"
             onPress={downloadPdf}
-            leftIcon={<Icon as={Feather} name="download-cloud" size="sm" />}
+            accessoryLeft={DownloadIcon}
           >
             Download PDF
           </Button>
@@ -90,14 +79,14 @@ export default function DisplayPDF({
           </Text>
         </Center>
         <HStack>
-          <Button.Group isAttached colorScheme="blue" size="md">
+          <ButtonGroup status="info" size="medium">
             <Button isDisabled={pageNumber === 1} onPress={previousPage}>
               Previous page
             </Button>
             <Button isDisabled={pageNumber === numPages} onPress={nextPage}>
               Next page
             </Button>
-          </Button.Group>
+          </ButtonGroup>
         </HStack>
       </HStack>
       <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>

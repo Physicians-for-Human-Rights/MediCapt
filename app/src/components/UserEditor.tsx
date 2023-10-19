@@ -3,31 +3,16 @@ import {
   Badge,
   HStack,
   VStack,
-  Button,
-  View,
-  Icon,
   Select,
-  CheckIcon,
-  CloseIcon,
   Tooltip,
-  Popover,
   Center,
   Heading,
-  Text,
-  Modal,
 } from 'native-base'
 import { userTypes, UserType } from 'utils/types/user'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 import NecessaryItem from 'components/NecessaryItem'
 import { t } from 'i18n-js'
 import _ from 'lodash'
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  Feather,
-  MaterialIcons,
-} from '@expo/vector-icons'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import Loading from 'components/Loading'
@@ -54,6 +39,18 @@ import {
   RootStackParamList,
 } from 'utils/manager/navigation'
 import { StackNavigationProp } from '@react-navigation/stack'
+import { Button, useStyleSheet } from '@ui-kitten/components'
+import themedStyles from 'themeStyled'
+import {
+  AlertIcon,
+  PlusIcon,
+  SaveIcon,
+  CheckIcon,
+  LockIcon,
+  CloseIcon,
+} from './Icons'
+
+const styleS = useStyleSheet(themedStyles)
 
 const dummyDate = new Date()
 
@@ -266,33 +263,29 @@ export default function UserEditor({
               {_.includes(editorAllowedLocationIDs, 'admin') &&
                 (_.includes(user.allowed_locations, 'admin') ? (
                   <Button
-                    leftIcon={
-                      <Icon as={Feather} name="alert-triangle" size="sm" />
-                    }
-                    bg="warning.500"
+                    accessoryLeft={AlertIcon}
+                    status="warning"
                     onPress={() =>
                       setUser(u => {
                         return { ...u, allowed_locations: '' }
                       })
                     }
-                    _text={{ selectable: false }}
-                    mb={2}
+                    style={[styleS.mb2]}
+                    // _text={{ selectable: false }}
                   >
                     Revoke admin permissions
                   </Button>
                 ) : (
                   <Button
-                    leftIcon={
-                      <Icon as={Feather} name="alert-triangle" size="sm" />
-                    }
-                    bg="error.500"
+                    accessoryLeft={AlertIcon}
+                    status="danger"
                     onPress={() =>
                       setUser(u => {
                         return { ...u, allowed_locations: '' }
                       })
                     }
-                    _text={{ selectable: false }}
-                    mb={2}
+                    // _text={{ selectable: false }}
+                    style={[styleS.mb2]}
                   >
                     Make user an admin
                   </Button>
@@ -304,8 +297,8 @@ export default function UserEditor({
           <VStack py={2}>
             <Center pb={2}>
               <Button
-                bg={'info.500'}
-                leftIcon={<Icon as={Feather} name="plus-square" size="sm" />}
+                status="info"
+                accessoryLeft={PlusIcon}
                 onPress={() => {
                   navigation.push('FindLocation', {
                     onSelect: async l => {
@@ -326,7 +319,7 @@ export default function UserEditor({
                     },
                   })
                 }}
-                _text={{ selectable: false }}
+                // _text={{ selectable: false }}
               >
                 Add allowed location
               </Button>
@@ -557,8 +550,8 @@ export default function UserEditor({
         {createMode ? (
           <HStack my={5} justifyContent="center">
             <Button
-              leftIcon={<Icon as={MaterialIcons} name="save" size="sm" />}
-              colorScheme="green"
+              accessoryLeft={SaveIcon}
+              status="success"
               onPress={handleCreateUser}
             >
               {t('user.create-user')}
@@ -570,19 +563,14 @@ export default function UserEditor({
               <HStack my={5} justifyContent="space-between">
                 {user.status === 'FORCE_CHANGE_PASSWORD' &&
                   user.email_verified !== 'true' && (
-                    <Button
-                      colorScheme="info"
-                      onPress={resendConfirmationEmail}
-                    >
+                    <Button status="info" onPress={resendConfirmationEmail}>
                       {t('user.resend-confirmation-email')}
                     </Button>
                   )}
                 {user.status === 'CONFIRMED' && user.email_verified !== 'true' && (
                   <Button
-                    leftIcon={
-                      <Icon as={MaterialIcons} name="check" size="sm" />
-                    }
-                    colorScheme="orange"
+                    accessoryLeft={CheckIcon}
+                    status="warning"
                     onPress={confirmEmail}
                   >
                     {t('user.confirm-email')}
@@ -592,16 +580,16 @@ export default function UserEditor({
             </Center>
             <HStack my={5} justifyContent="space-between">
               <Button
-                leftIcon={<Icon as={MaterialIcons} name="save" size="sm" />}
-                colorScheme="green"
+                accessoryLeft={SaveIcon}
+                status="success"
                 onPress={handleSubmitUser}
               >
                 {t('user.submit-user')}
               </Button>
               {user.email_verified === 'true' && (
                 <Button
-                  leftIcon={<Icon as={MaterialIcons} name="lock" size="sm" />}
-                  colorScheme="orange"
+                  accessoryLeft={LockIcon}
+                  status="warning"
                   onPress={resetPassword}
                 >
                   {t('user.reset-password')}
@@ -609,14 +597,8 @@ export default function UserEditor({
               )}
               <Tooltip openDelay={0} label="Submit first" isDisabled={!changed}>
                 <Button
-                  leftIcon={
-                    user.enabled ? (
-                      <CloseIcon size={'5'} mx={2} />
-                    ) : (
-                      <CheckIcon size={'5'} mx={2} />
-                    )
-                  }
-                  colorScheme={user.enabled ? 'red' : 'green'}
+                  accessoryLeft={user.enabled ? CloseIcon : CheckIcon}
+                  status={user.enabled ? 'danger' : 'success'}
                   onPress={toggleUser}
                 >
                   {user.enabled

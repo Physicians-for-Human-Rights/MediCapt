@@ -1,34 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import {
-  HStack,
-  VStack,
-  CheckIcon,
-  Button,
-  Badge,
-  View,
-  Tooltip,
-  Icon,
-  Center,
-  CloseIcon,
-} from 'native-base'
-import { FormType } from 'utils/types/form'
+import { HStack, VStack, Badge, Tooltip, Center } from 'native-base'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 import NecessaryItem from 'components/NecessaryItem'
-import {
-  FormMetadata,
-  formManifestSchema,
-  FormManifest,
-  FormManifestWithData,
-} from 'utils/types/formMetadata'
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  Feather,
-  MaterialIcons,
-} from '@expo/vector-icons'
+import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
 import { useInfo } from 'utils/errors'
-import Loading from 'components/Loading'
 import { standardHandler } from 'api/utils'
 import { createForm, submitForm } from 'api/formdesigner'
 import { t } from 'i18n-js'
@@ -36,16 +11,9 @@ import _ from 'lodash'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import SelectLocation from 'components/SelectLocation'
-import {
-  sha256,
-  md5,
-  lookupManifestSHA256,
-  filetypeIsDataURI,
-  isInManifest,
-  lookupManifest,
-} from 'utils/manifests'
-import { dataURItoBlob } from 'utils/data'
-import yaml from 'js-yaml'
+import { isInManifest, lookupManifest } from 'utils/manifests'
+import { Button } from '@ui-kitten/components'
+import { SaveIcon, CloseIcon, CheckIcon } from './Icons'
 
 export function listDuplicates<T>(arr: T[]): T[] {
   return _.uniq(
@@ -364,8 +332,8 @@ export default function FormEditorOverview({
       {createMode ? (
         <HStack my={5} justifyContent="center">
           <Button
-            leftIcon={<Icon as={MaterialIcons} name="save" size="sm" />}
-            colorScheme="green"
+            accessoryLeft={SaveIcon}
+            status="success"
             onPress={handleCreateForm}
           >
             {t('form-editor.create-form')}
@@ -374,22 +342,16 @@ export default function FormEditorOverview({
       ) : (
         <HStack my={5} justifyContent="space-between">
           <Button
-            leftIcon={<Icon as={MaterialIcons} name="save" size="sm" />}
-            colorScheme="green"
+            accessoryLeft={SaveIcon}
+            status="success"
             onPress={handleSubmitForm}
           >
             {t('form-editor.submit-form')}
           </Button>
           <Tooltip openDelay={0} label="Submit first" isDisabled={!changed}>
             <Button
-              leftIcon={
-                formMetadata.enabled ? (
-                  <CloseIcon size={'5'} mx={2} />
-                ) : (
-                  <CheckIcon size={'5'} mx={2} />
-                )
-              }
-              colorScheme={formMetadata.enabled ? 'red' : 'green'}
+              accessoryLeft={formMetadata.enabled ? CloseIcon : CheckIcon}
+              status={formMetadata.enabled ? 'danger' : 'success'}
               onPress={toggleForm}
             >
               {formMetadata.enabled

@@ -2,8 +2,9 @@ import React, { useState } from 'react'
 import Picker from 'react-native-modal-datetime-picker'
 import { t } from 'i18n-js'
 
-import { Button } from 'native-base'
+import { Button } from '@ui-kitten/components'
 import _ from 'lodash'
+import { colors } from './nativeBaseSpec'
 
 export default function DateTimePicker({
   title,
@@ -37,7 +38,11 @@ export default function DateTimePicker({
       <Button
         isDisabled={isDisabled}
         onPress={openInternal}
-        bg={_.isDate(date) ? 'success.600' : 'primary.800'}
+        style={{
+          backgroundColor: _.isDate(date)
+            ? colors.success[600]
+            : colors.primary[800],
+        }}
         accessibilityLabel={t(
           time ? 'form.enter-date-time' : 'form.enter-date'
         )}

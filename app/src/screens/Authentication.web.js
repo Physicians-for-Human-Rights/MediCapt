@@ -11,8 +11,8 @@ import {
 import '@aws-amplify/ui-react/styles.css'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import ButtonGroup from 'components/form-parts/ButtonGroup'
-import { Button } from 'native-base'
 import { View } from 'react-native'
+import { Button } from '@ui-kitten/components'
 
 import indexOf from 'lodash/indexOf'
 import medicapt_logo from '../../assets/medicapt.png'
@@ -61,7 +61,7 @@ function Header(userKind, setAccountType) {
         onPress={setAccountType}
         pt={2}
         pb={1}
-        colorScheme="red"
+        colorScheme="primary"
         justifyContent="center"
       />
       <ButtonGroup
@@ -73,7 +73,7 @@ function Header(userKind, setAccountType) {
         }}
         onPress={setAccountType}
         pb={3}
-        colorScheme="red"
+        colorScheme="primary"
         justifyContent="center"
       />
     </View>

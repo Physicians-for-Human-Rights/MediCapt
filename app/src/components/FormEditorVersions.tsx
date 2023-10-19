@@ -1,22 +1,11 @@
 import React, { useState } from 'react'
-import {
-  Heading,
-  VStack,
-  HStack,
-  Center,
-  Button,
-  Icon,
-  Select,
-  Box,
-} from 'native-base'
+import { Heading, VStack, HStack, Center, Icon, Select } from 'native-base'
 import { View } from 'react-native'
-import { Text, useStyleSheet } from '@ui-kitten/components'
+import { Text, useStyleSheet, Button } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
-import { Feather, MaterialIcons } from '@expo/vector-icons'
-import { FormType } from 'utils/types/form'
+import { Feather } from '@expo/vector-icons'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 // @ts-ignore typescript doesn't do native/web modules
-import DisplayPDF from './DisplayPDF'
 import {
   FormMetadata,
   FormManifest,
@@ -33,6 +22,7 @@ import { submitForm } from 'api/formdesigner'
 import { RootStackParamList } from 'utils/formDesigner/navigation'
 import { StackNavigationProp } from '@react-navigation/stack'
 import styles from './styles'
+import { AlertIcon } from './Icons'
 
 const styleS = useStyleSheet(themedStyles)
 
@@ -169,10 +159,10 @@ export default function FormEditorVersions({
                 from an come back to reset.
               </Text>
               <Button
-                fontWeight="bold"
-                color="coolGray.800"
-                bg="error.500"
-                fontSize="sm"
+                style={
+                  (styleS.fontBold, styleS.colorCoolGray800, styleS.fontSizeSm)
+                }
+                status="danger"
                 size="sm"
                 onPress={() =>
                   revertFormToVersion(
@@ -183,9 +173,7 @@ export default function FormEditorVersions({
                     () => {}
                   )
                 }
-                leftIcon={
-                  <Icon as={Feather} name="alert-triangle" size="xsm" />
-                }
+                accessoryLeft={AlertIcon}
               >
                 Make this the latest version
               </Button>

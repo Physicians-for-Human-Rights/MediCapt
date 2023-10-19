@@ -1,27 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import {
-  Box,
   HStack,
-  Icon,
   VStack,
   Center,
-  Button,
-  Divider,
-  Badge,
-  Image,
-  Input,
-  InputGroup,
-  Popover,
   FlatList,
   IconButton,
   Modal,
 } from 'native-base'
 import { View, Dimensions } from 'react-native'
-import { Text } from '@ui-kitten/components'
+import {
+  Text,
+  Button,
+  useStyleSheet,
+  Icon,
+  IconElement,
+} from '@ui-kitten/components'
 import { FormType } from 'utils/types/form'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import * as ImagePicker from 'expo-image-picker'
-import * as DocumentPicker from 'expo-document-picker'
 import { readImage, stripFileExtension } from 'utils/forms'
 import _ from 'lodash'
 import NecessaryItem from 'components/NecessaryItem'
@@ -36,8 +31,11 @@ import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
 import FormSearch from 'components/FormSearch'
 import styles from './styles'
 import { breakpoints } from './nativeBaseSpec'
+import themedStyles from 'themeStyled'
+import { PlusIcon } from './Icons'
 
 const { width } = Dimensions.get('window')
+const styleS = useStyleSheet(themedStyles)
 
 export default function FormEditorAssociations({
   formMetadata,
@@ -118,13 +116,15 @@ export default function FormEditorAssociations({
         <VStack my="2">
           <Center>
             <Button
-              fontWeight="bold"
-              color="coolGray.800"
-              bg="info.500"
-              fontSize="lg"
+              style={[
+                styleS.fontBold,
+                styleS.colorCoolGray800,
+                styleS.fontSizeLg,
+                styleS.my4,
+              ]}
+              status="info"
               onPress={pickForm}
-              my={4}
-              leftIcon={<Icon as={Feather} name="plus-square" size="sm" />}
+              accessoryLeft={PlusIcon}
             >
               Add associated form
             </Button>
@@ -214,15 +214,14 @@ export default function FormEditorAssociations({
             <FormSearch selectItem={addForm} />
           </Modal.Body>
           <Modal.Footer>
-            <Button.Group space={2}>
-              <Button
-                variant="ghost"
-                colorScheme="blueGray"
-                onPress={() => setIsSearchModalOpen(false)}
-              >
-                Cancel
-              </Button>
-            </Button.Group>
+            <Button
+              appearance="ghost"
+              // colorScheme="blueGray"
+              status="info"
+              onPress={() => setIsSearchModalOpen(false)}
+            >
+              Cancel
+            </Button>
           </Modal.Footer>
         </Modal.Content>
       </Modal>
