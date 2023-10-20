@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { VStack, Image, Modal } from 'native-base'
+import { Modal } from 'native-base'
 import { Text, Button, useStyleSheet } from '@ui-kitten/components'
 import {
   StyleSheet,
@@ -8,13 +8,14 @@ import {
   Platform,
   GestureResponderEvent,
   View,
+  Image,
 } from 'react-native'
 import Photo from 'components/form-parts/Photo'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import themedStyles from 'themeStyled'
-import { spacing } from './styles'
+import { spacing, layout } from './styles'
 
 const styleS = useStyleSheet(themedStyles)
 
@@ -273,7 +274,7 @@ function BodyMarker({
           <Modal.CloseButton />
           <Modal.Header>{t('form.mark-diagram')}</Modal.Header>
           <Modal.Body>
-            <VStack>
+            <View style={layout.vStack}>
               <DebouncedTextInput
                 value={currentAnnotation}
                 onChangeText={setCurrentAnnotation}
@@ -298,7 +299,7 @@ function BodyMarker({
                   setCurrentPhotos(r)
                 }}
               />
-            </VStack>
+            </View>
           </Modal.Body>
           <Modal.Footer>
             <Button

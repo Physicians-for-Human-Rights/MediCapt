@@ -1,9 +1,7 @@
 import React from 'react'
 import {
-  VStack,
   StatusBar,
   ScrollView,
-  HStack,
   Pressable,
   Image,
   Hidden,
@@ -27,7 +25,7 @@ import {
   Avatar,
 } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
-import styles, { spacing } from './styles'
+import styles, { spacing, layout } from './styles'
 import { colors, breakpoints } from './nativeBaseSpec'
 import { MenuIcon } from './Icons'
 
@@ -74,21 +72,12 @@ export function Sidebar(signOut: any) {
   return (
     <View style={styles.dashboardWrapper}>
       <ScrollView>
-        <VStack
-          pb="4"
-          mt="10"
-          space="3"
-          alignItems="center"
-          borderBottomWidth="1"
-          _light={{
-            borderBottomColor: 'coolGray.200',
-          }}
-        >
+        <View style={styles.dashboardLayoutBox}>
           <Avatar
             source={medicapt_logo}
             size={width > breakpoints.md ? 'medium' : 'tiny'}
           />
-          <HStack alignItems="center" justifyContent="center" space="2">
+          <View style={layout.hStackCenterGap2}>
             <Text
               style={[
                 styleS.fontSizeXl,
@@ -98,7 +87,7 @@ export function Sidebar(signOut: any) {
             >
               Jane Doe
             </Text>
-          </HStack>
+          </View>
           <Text
             style={[
               styleS.fontSizeLg,
@@ -109,8 +98,8 @@ export function Sidebar(signOut: any) {
           >
             janedoe2@mydomain.com
           </Text>
-        </VStack>
-        <VStack px="4" py="4">
+        </View>
+        <View style={[layout.vStack, spacing.px4, spacing.py4]}>
           {list.map((item: any, idx: number) => {
             return (
               <Button
@@ -118,7 +107,7 @@ export function Sidebar(signOut: any) {
                 key={idx}
                 appearance="ghost"
               >
-                <HStack space="4" alignItems="center">
+                <View style={[layout.hStackGap4, layout.alignCenter]}>
                   <Icon
                     size="6"
                     pack="material"
@@ -134,11 +123,11 @@ export function Sidebar(signOut: any) {
                   >
                     {item.iconText}
                   </Text>
-                </HStack>
+                </View>
               </Button>
             )
           })}
-        </VStack>
+        </View>
         <Divider />
         <View style={[spacing.px5, spacing.py2]}>
           <Button
@@ -146,7 +135,7 @@ export function Sidebar(signOut: any) {
             appearance="ghost"
             onPress={signOut}
           >
-            <HStack space="4" alignItems="center">
+            <View style={[layout.hStackGap4, layout.alignCenter]}>
               <Icon
                 size="6"
                 pack="material"
@@ -162,7 +151,7 @@ export function Sidebar(signOut: any) {
               >
                 Logout
               </Text>
-            </HStack>
+            </View>
           </Button>
         </View>
       </ScrollView>
@@ -211,13 +200,11 @@ export function Header({
         },
       ]}
     >
-      <VStack
-        alignSelf="center"
-        width="100%"
-        maxW={menuButton ? null : '1016px'}
+      <View
+        style={[styles.headerBox, { maxWidth: menuButton ? 'none' : 1016 }]}
       >
-        <HStack alignItems="center" justifyContent="space-between">
-          <HStack space="4" alignItems="center">
+        <View style={[layout.hStack, layout.spaceBet, layout.alignCenter]}>
+          <View style={[layout.hStackGap4, layout.alignCenter]}>
             {menuButton && (
               <Button
                 appearance="ghost"
@@ -266,7 +253,7 @@ export function Header({
                 {title}
               </Text>
             )}
-          </HStack>
+          </View>
 
           {searchbar && (
             <Input
@@ -289,7 +276,7 @@ export function Header({
 
           {middlebar}
 
-          <HStack space="2" alignItems="center">
+          <View style={[layout.hStackGap2, layout.alignCenter]}>
             <Button
               appearance="ghost"
               status="blueGray"
@@ -327,9 +314,9 @@ export function Header({
                 <Menu.Item onPress={signOut}>Log out</Menu.Item>
               </Menu.Group>
             </Menu>
-          </HStack>
-        </HStack>
-      </VStack>
+          </View>
+        </View>
+      </View>
     </View>
   )
 }
@@ -347,10 +334,15 @@ function MainContent({
   fullWidth: boolean
 }) {
   return (
-    <VStack maxW={fullWidth ? undefined : '1016px'} flex={1} width="100%">
+    <View
+      style={[
+        layout.vStack,
+        { flex: 1, maxWidth: fullWidth ? undefined : '1016px', width: '100%' },
+      ]}
+    >
       {displayScreenTitle && (
         <Hidden till="md">
-          <HStack mb="4" space={2} alignItems="center">
+          <View style={[layout.hStackGap2, layout.alignCenter, spacing.mb4]}>
             <Pressable>
               <Icon
                 size="6"
@@ -362,11 +354,11 @@ function MainContent({
             <Text style={[styleS.fontSizeLg, styleS.colorCoolGray800]}>
               {title}
             </Text>
-          </HStack>
+          </View>
         </Hidden>
       )}
       {children}
-    </VStack>
+    </View>
   )
 }
 
@@ -395,15 +387,17 @@ export function MobileHeader({
   }
   return (
     <View style={[spacing.px1, spacing.py4, localStyle]}>
-      <HStack space="2" justifyContent="space-between">
-        <HStack
-          flex="1"
-          space="2"
-          justifyContent="space-between"
-          alignItems="center"
+      <View style={[layout.hStackGap2, layout.spaceBet]}>
+        <View
+          style={[
+            layout.hStackGap2,
+            layout.spaceBet,
+            layout.alignCenter,
+            layout.flex1,
+          ]}
         >
           <>
-            <HStack alignItems="center" space="1">
+            <View style={[layout.hStackGap1, layout.alignCenter]}>
               {backButton ? (
                 <Button
                   appearance="ghost"
@@ -421,7 +415,7 @@ export function MobileHeader({
                   }
                 />
               ) : showLogos ? (
-                <HStack>
+                <View style={layout.hStack}>
                   <Image
                     h="10"
                     w={10}
@@ -438,16 +432,16 @@ export function MobileHeader({
                     resizeMode="cover"
                     source={phr_logo}
                   />
-                </HStack>
+                </View>
               ) : (
                 <View style={{ width: 40 }} />
               )}
               <Text style={[styleS.colorCoolGray50, styleS.fontSizeLg]}>
                 {title}
               </Text>
-            </HStack>
+            </View>
             {mobileMiddlebar}
-            <HStack space="1">
+            <View style={layout.hStackGap1}>
               <Button
                 appearance="ghost"
                 status="blueGray"
@@ -489,10 +483,10 @@ export function MobileHeader({
                 <Menu.Item>Lock</Menu.Item>
                 <Menu.Item onPress={signOut}>Log out</Menu.Item>
               </Menu>
-            </HStack>
+            </View>
           </>
-        </HStack>
-      </HStack>
+        </View>
+      </View>
     </View>
   )
 }
@@ -545,7 +539,13 @@ export default function DashboardLayout({
         backgroundColor="transparent"
       />
       <SafeAreaView style={{ backgroundColor: colors.primary[900] }} />
-      <VStack flex={1} bg="muted.50">
+      <View
+        style={[
+          layout.vStack,
+          layout.flex1,
+          { backgroundColor: colors.muted[50] },
+        ]}
+      >
         {displayHeader && (
           <Hidden from="md">
             <MobileHeader
@@ -616,7 +616,7 @@ export default function DashboardLayout({
             />
           </Hidden>
         </SafeAreaView>
-      </VStack>
+      </View>
     </View>
   )
 }

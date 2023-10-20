@@ -8,8 +8,11 @@ export const spacing = StyleSheet.create({
   px1: {
     paddingHorizontal: 4,
   },
-  px5: {
+  px4: {
     paddingHorizontal: 16,
+  },
+  px5: {
+    paddingHorizontal: 20,
   },
   px6: {
     paddingHorizontal: 24,
@@ -38,12 +41,58 @@ export const spacing = StyleSheet.create({
   mb3: {
     marginBottom: 12,
   },
+  mb4: {
+    marginBottom: 16,
+  },
 })
 export const layout = StyleSheet.create({
   center: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  vStack: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  vStackGap3: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 24,
+  },
+  hStack: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  hStackGap2: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  hStackGap1: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 1,
+  },
+  hStackGap4: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 16,
+  },
+  hStackCenterGap2: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+  },
+  spaceBet: {
+    justifyContent: 'space-between',
+  },
+  alignCenter: {
+    alignItems: 'center',
+  },
+  flex1: {
+    flex: 1,
   },
 })
 
@@ -118,6 +167,21 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     paddingHorizontal: 20,
     paddingVertical: 16,
+  },
+  dashboardLayoutBox: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 24,
+    flexDirection: 'column',
+    borderBottomWidth: 1,
+    borderBottomColor: colors.coolGray[200],
+    paddingBottom: 16,
+    marginTop: 40,
+  },
+  headerBox: {
+    flexDirection: 'column',
+    width: '100%',
+    alignSelf: 'center',
   },
 })
 

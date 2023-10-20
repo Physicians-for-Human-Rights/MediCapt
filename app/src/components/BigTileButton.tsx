@@ -53,7 +53,7 @@ export default function BigTileButton({
         ]}
         // rounded="md"
       >
-        <VStack space={3}>
+        <View style={layout.vStackGap3}>
           <View style={[layout.center]}>
             <Icon
               style={{ width: size, height: 'auto' }}
@@ -63,7 +63,7 @@ export default function BigTileButton({
             />
           </View>
           <div style={styles.bigTileButton}>{label}</div>
-        </VStack>
+        </View>
       </View>
     </Pressable>
   )
