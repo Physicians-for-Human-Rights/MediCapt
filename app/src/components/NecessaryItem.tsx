@@ -1,12 +1,6 @@
 import React from 'react'
-import {
-  HStack,
-  CheckIcon,
-  CloseIcon,
-  WarningTwoIcon,
-  Popover,
-} from 'native-base'
-import { Button, Text, useStyleSheet } from '@ui-kitten/components'
+import { HStack, Popover } from 'native-base'
+import { Button, Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import _ from 'lodash'
 import themedStyles from 'themeStyled'
 
@@ -15,7 +9,7 @@ const styleS = useStyleSheet(themedStyles)
 export default function NecessaryItem({
   todoText,
   doneText,
-  size = 4,
+  size = 'tiny',
   mx = 4,
   isDone,
   optional = false,
@@ -24,7 +18,7 @@ export default function NecessaryItem({
 }: {
   todoText: string
   doneText: string
-  size?: number | string
+  size?: string
   mx?: number | string
   isDone: boolean
   optional?: boolean
@@ -34,18 +28,25 @@ export default function NecessaryItem({
   if (isDone) {
     return (
       <HStack space={0} alignItems="center">
-        <CheckIcon size={size} mx={mx} color="emerald.500" />
+        <Icon
+          size={size}
+          fill="success"
+          name="checkmark-outline"
+          style={{ marginHorizontal: +mx * 4 }}
+        />
+        {/* <CheckIcon size={size} mx={mx} /> */}
         <Text>{doneText}</Text>
       </HStack>
     )
   } else {
-    const Icon = optional ? WarningTwoIcon : CloseIcon
+    // const Icon = optional ? WarningTwoIcon : CloseIcon
     return (
       <HStack space={0} alignItems="center">
         <Icon
           size={size}
-          mx={mx}
-          color={optional ? 'warning.500' : 'error.500'}
+          style={{ marginHorizontal: +mx * 4 }}
+          fill={optional ? 'warning' : 'danger'}
+          name={optional ? 'alert-triangle' : 'close'}
         />
         <Text status={optional ? 'warning' : 'error'}>{todoText}</Text>
         {help && (

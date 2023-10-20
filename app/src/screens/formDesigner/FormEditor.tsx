@@ -2,12 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { VStack, Select, CheckIcon } from 'native-base'
 import { FormType } from 'utils/types/form'
 import { lookupManifestByNameAndType } from 'utils/manifests'
-import {
-  FormMetadata,
-  FormManifest,
-  formManifestSchema,
-  FormManifestWithData,
-} from 'utils/types/formMetadata'
+import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
 import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
 import FormEditorComponent from 'components/FormEditor'

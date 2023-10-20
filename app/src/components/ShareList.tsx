@@ -6,11 +6,9 @@ import {
   Pressable,
   Stack,
   Center,
-  Icon,
   Select,
 } from 'native-base'
-import { AntDesign, MaterialIcons } from '@expo/vector-icons'
-import { Button, Text, useStyleSheet } from '@ui-kitten/components'
+import { Button, Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { UserType } from 'utils/types/user'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
@@ -20,13 +18,12 @@ import _ from 'lodash'
 import { Share } from 'utils/types/share'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import SelectLocation from 'components/SelectLocation'
-import AnyCountry from 'components/AnyCountry'
-import Language from 'components/Language'
 import { Dimensions, Platform, View } from 'react-native'
 import { getUserByUUIDCachedAnyPool } from 'api/common'
 import { userFullName } from 'utils/userTypes'
 import { breakpoints } from './nativeBaseSpec'
 import { CloseIcon, RefreshIcon } from './Icons'
+import { colors } from './nativeBaseSpec'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -267,13 +264,11 @@ export default function ShareList({
           bg="white"
           InputLeftElement={
             <Icon
-              as={<AntDesign name="search1" />}
-              size={{ base: '4', md: '4' }}
-              my={2}
-              ml={2}
-              _light={{
-                color: 'coolGray.400',
-              }}
+              pack="material"
+              size="tiny"
+              name="search"
+              fill={colors.coolGray[400]}
+              style={[styleS.my2, styleS.ml2]}
             />
           }
           size="lg"

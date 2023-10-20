@@ -176,7 +176,7 @@ export default function FormEditorFiles({
                 isDone={pdfHasAnnotations}
                 todoText="PDF has no annotations!"
                 doneText="PDF has annotations"
-                size={4}
+                size="tiny"
                 optional={false}
               />
               <Popover
@@ -267,11 +267,11 @@ export default function FormEditorFiles({
                       )
                     }
                   />
-                  <IconButton
-                    icon={
-                      <Icon as={MaterialCommunityIcons} name="delete-forever" />
+                  <Button
+                    accessoryLeft={
+                      <Icon pack="material" name="delete-forever" />
                     }
-                    borderRadius="full"
+                    // borderRadius="full"
                     onPress={() =>
                       setManifest(
                         filterManifest(

@@ -39,6 +39,13 @@ export const spacing = StyleSheet.create({
     marginBottom: 12,
   },
 })
+export const layout = StyleSheet.create({
+  center: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+})
 
 const styles = StyleSheet.create({
   dashboardWrapper: {

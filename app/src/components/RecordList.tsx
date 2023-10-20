@@ -6,12 +6,10 @@ import {
   Pressable,
   Stack,
   Center,
-  Icon,
   Select,
 } from 'native-base'
-import { Text, useStyleSheet, Button } from '@ui-kitten/components'
+import { Text, useStyleSheet, Button, Icon } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
-import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Record some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
@@ -26,6 +24,7 @@ import { userFullName } from 'utils/userTypes'
 import { Platform, View, Dimensions } from 'react-native'
 import { breakpoints } from './nativeBaseSpec'
 import { CloseIcon, RefreshIcon } from './Icons'
+import { colors } from './nativeBaseSpec'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -247,9 +246,9 @@ export function ListItemDesktop({
 
         <VStack w="5%">
           {item.sealed ? (
-            <Icon color="success.400" size="6" name="star" as={AntDesign} />
+            <Icon fill="success" size="6" name="star" />
           ) : (
-            <Icon color="error.700" size="6" name="staro" as={AntDesign} />
+            <Icon fill="danger" size="6" name="star-outline" />
           )}
         </VStack>
       </HStack>
@@ -422,13 +421,11 @@ export default function RecordList({
             minH={10}
             InputLeftElement={
               <Icon
-                as={<AntDesign name="search1" />}
-                size={{ base: '4', md: '4' }}
-                my={2}
-                ml={2}
-                _light={{
-                  color: 'coolGray.400',
-                }}
+                pack="material"
+                size="tiny"
+                name="search"
+                fill={colors.coolGray[400]}
+                style={[styleS.my2, styleS.ml2]}
               />
             }
             size="lg"

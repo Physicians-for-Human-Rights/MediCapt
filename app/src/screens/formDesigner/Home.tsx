@@ -1,19 +1,6 @@
 import React from 'react'
-import {
-  Box,
-  HStack,
-  Icon,
-  VStack,
-  Center,
-  Button,
-  Pressable,
-  Divider,
-  Hidden,
-  Square,
-  Circle,
-  theme,
-} from 'native-base'
-import { Text, useStyleSheet } from '@ui-kitten/components'
+import { HStack, VStack, Center, Pressable } from 'native-base'
+import { Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import { MaterialIcons } from '@expo/vector-icons'
 import DashboardLayout from 'components/DashboardLayout'
 import {
@@ -51,11 +38,7 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
             <Center h="80" w="190" bg="primary.600" rounded="md" shadow={3}>
               <VStack space={3}>
                 <Center>
-                  <Icon
-                    as={<MaterialIcons name="add-box" />}
-                    color="white"
-                    size={16}
-                  />
+                  <Icon pack="material" name="add-box" fill="white" size={16} />
                 </Center>
                 <Text
                   style={[
@@ -77,9 +60,11 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
               <VStack space={3}>
                 <Center>
                   <Icon
-                    as={<MaterialIcons name="edit" />}
-                    color="white"
-                    size={16}
+                    pack="material"
+                    fill="white"
+                    size="tiny"
+                    // size={16}
+                    name="edit"
                   />
                 </Center>
                 <Text

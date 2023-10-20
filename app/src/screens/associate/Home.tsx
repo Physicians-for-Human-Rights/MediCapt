@@ -1,26 +1,24 @@
 import React from 'react'
 import { VStack, Center, FlatList, useBreakpointValue } from 'native-base'
 import BigTileButton from 'components/BigTileButton'
-import { MaterialIcons } from '@expo/vector-icons'
 import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
 import { useUser } from 'utils/store'
 import { Platform } from 'react-native'
-import * as Sentry from 'sentry-expo'
 
 const options = [
   {
-    icon: <MaterialIcons name="search" />,
+    icon: 'search',
     label: 'Find a share',
     to: 'FindShare',
   },
   {
-    icon: <MaterialIcons name="settings" />,
+    icon: 'settings',
     label: 'Settings',
     to: 'Settings',
   },
   {
-    icon: <MaterialIcons name="school" />,
+    icon: 'school',
     label: 'Training',
     to: 'Training',
   },
@@ -75,6 +73,7 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
                 h={shape.h}
                 size={shape.size}
                 fontSize={shape.fontSize}
+                pack="material"
               />
             )}
             key={shape.columns}

@@ -371,7 +371,7 @@ export default function UserEditor({
               isDone={user.enabled || false}
               todoText="User is disabled"
               doneText="User is enabled"
-              size={4}
+              size="tiny"
             />
           </Center>
         )}

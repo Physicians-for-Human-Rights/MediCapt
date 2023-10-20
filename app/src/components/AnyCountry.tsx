@@ -1,7 +1,67 @@
 import React from 'react'
-import { Select, ISelectProps, ISelectItemProps } from 'native-base'
+import {
+  Select,
+  SelectItem,
+  SelectItemProps,
+  SelectProps,
+  IndexPath,
+} from '@ui-kitten/components'
 import { t } from 'i18n-js'
 import _ from 'lodash'
+
+export default function AnyCountry({
+  placeholder,
+  value,
+  setValue,
+  bg,
+  any,
+  itemProps,
+  ...props
+}: {
+  placeholder: string
+  value: string | undefined
+  setValue: (val: string) => any
+  bg?: string
+  any?: string
+  itemProps?: SelectItemProps
+} & SelectProps) {
+  const assignValue = (path: IndexPath | IndexPath[]) => {
+    if (!Array.isArray(path)) {
+      setValue(coutries[path.row])
+    }
+  }
+  return (
+    <Select
+      style={{ backgroundColor: bg, marginLeft: 12 }}
+      size="medium"
+      value={value}
+      placeholder={placeholder}
+      onSelect={assignValue}
+      {...props}
+    >
+      {_.concat(
+        any
+          ? [
+              <SelectItem
+                key={'__any__'}
+                title={t(any)}
+                // value={''}
+                {...itemProps}
+              />,
+            ]
+          : [],
+        _.map(coutries, e => (
+          <SelectItem
+            key={e}
+            title={t('country.' + e)}
+            // value={e}
+            {...itemProps}
+          />
+        ))
+      )}
+    </Select>
+  )
+}
 
 export const coutries = [
   'AF',
@@ -254,54 +314,3 @@ export const coutries = [
   'ZM',
   'ZW',
 ]
-
-export default function AnyCountry({
-  placeholder,
-  value,
-  setValue,
-  bg,
-  any,
-  itemProps,
-  ...props
-}: {
-  placeholder: string
-  value: string | undefined
-  setValue: (val: string) => any
-  bg?: string
-  any?: string
-  itemProps?: ISelectItemProps
-} & ISelectProps) {
-  return (
-    <Select
-      bg={bg}
-      size="md"
-      selectedValue={value}
-      placeholder={placeholder}
-      onValueChange={setValue}
-      ml={3}
-      {...props}
-    >
-      {_.concat(
-        any
-          ? [
-              <Select.Item
-                key={'__any__'}
-                label={t(any)}
-                value={''}
-                {...itemProps}
-              />,
-            ]
-          : [],
-        _.map(coutries, e => (
-          <Select.Item
-            size="md"
-            key={e}
-            label={t('country.' + e)}
-            value={e}
-            {...itemProps}
-          />
-        ))
-      )}
-    </Select>
-  )
-}

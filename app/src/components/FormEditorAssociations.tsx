@@ -1,28 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import {
-  HStack,
-  VStack,
-  Center,
-  FlatList,
-  IconButton,
-  Modal,
-} from 'native-base'
+import { HStack, VStack, Center, FlatList, Modal } from 'native-base'
 import { View, Dimensions } from 'react-native'
-import {
-  Text,
-  Button,
-  useStyleSheet,
-  Icon,
-  IconElement,
-} from '@ui-kitten/components'
-import { FormType } from 'utils/types/form'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { Text, Button, useStyleSheet, Icon } from '@ui-kitten/components'
 import { readImage, stripFileExtension } from 'utils/forms'
 import _ from 'lodash'
-import NecessaryItem from 'components/NecessaryItem'
 import { t } from 'i18n-js'
 import { getFormCached, getUserByUUIDCached } from 'api/common'
-import { Feather, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore TODO TS doesn't understand .native.js and .web.js files
 import { tryConvertToWebP } from 'utils/imageConverter'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
@@ -171,15 +154,15 @@ export default function FormEditorAssociations({
                             })
                           }
                         />
-                        <IconButton
-                          icon={
+                        <Button
+                          accessoryLeft={
                             <Icon
-                              as={MaterialCommunityIcons}
+                              pack="material"
                               name="delete-forever"
-                              color="blue"
+                              status="info"
                             />
                           }
-                          borderRadius="full"
+                          // borderRadius="full"
                           onPress={() =>
                             setFormMetadata({
                               ...formMetadata,

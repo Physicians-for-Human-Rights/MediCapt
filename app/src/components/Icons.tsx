@@ -1,4 +1,5 @@
 import { Icon, IconElement } from '@ui-kitten/components'
+import { StyleSheet } from 'react-native'
 
 export const StarIcon = (props: any): IconElement => (
   <Icon {...props} name="star" />
@@ -50,4 +51,16 @@ export const LockIcon = (props: any): IconElement => (
 )
 export const CameraIcon = (props: any): IconElement => (
   <Icon {...props} name="camera" />
+)
+export const SearchIcon = (props: any): IconElement => (
+  <Icon {...props} name="search" pack="material" />
+)
+export const SettingsIcon = (props: any): IconElement => (
+  <Icon {...props} name="settings" pack="material" />
+)
+export const TrainingIcon = (props: any): IconElement => (
+  <Icon {...props} name="school" pack="material" />
+)
+export const MenuIcon = (props: any): IconElement => (
+  <Icon {...props} name="menu" pack="material" />
 )

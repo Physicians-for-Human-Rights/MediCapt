@@ -26,32 +26,32 @@ import { useUser } from 'utils/store'
 
 const options = [
   {
-    icon: <MaterialIcons name="add-box" />,
+    icon: 'add-box',
     label: 'Add a user',
     to: 'EditUser',
   },
   {
-    icon: <MaterialIcons name="search" />,
+    icon: 'search',
     label: 'Find a user',
     to: 'FindUser',
   },
   {
-    icon: <MaterialIcons name="add-location" />,
+    icon: 'add-location',
     label: 'Add a location',
     to: 'EditLocation',
   },
   {
-    icon: <MaterialIcons name="map" />,
+    icon: 'map',
     label: 'Find a location',
     to: 'FindLocation',
   },
   {
-    icon: <MaterialIcons name="settings" />,
+    icon: 'settings',
     label: 'Settings',
     to: 'Settings',
   },
   {
-    icon: <MaterialIcons name="school" />,
+    icon: 'school',
     label: 'Training',
     to: 'Training',
   },
@@ -100,6 +100,7 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
                 h={shape.h}
                 size={shape.size}
                 fontSize={shape.fontSize}
+                pack="material"
               />
             )}
             key={shape.columns}

@@ -6,10 +6,16 @@ import {
   Pressable,
   Stack,
   Center,
-  Icon,
-  Select,
 } from 'native-base'
-import { Text, useStyleSheet, Button } from '@ui-kitten/components'
+import {
+  Text,
+  useStyleSheet,
+  Button,
+  Select,
+  SelectItem,
+  IndexPath,
+  Icon,
+} from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
@@ -22,7 +28,7 @@ import SelectLocation from 'components/SelectLocation'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import { Platform, View, Dimensions } from 'react-native'
-import { breakpoints } from './nativeBaseSpec'
+import { breakpoints, colors } from './nativeBaseSpec'
 import { CloseIcon, RefreshIcon } from './Icons'
 
 const { width } = Dimensions.get('window')
@@ -125,13 +131,20 @@ export function ListItemDesktop({
         <HStack w="5%">
           {item.enabled ? (
             <Icon
-              color="success.400"
+              fill="success"
+              // color="success.400"
               size="6"
               name="check-circle"
-              as={MaterialIcons}
+              pack="material"
             />
           ) : (
-            <Icon color="error.700" size="6" name="cancel" as={MaterialIcons} />
+            <Icon
+              // color="error.700"
+              fill="error"
+              size="6"
+              name="cancel"
+              pack="material"
+            />
           )}
         </HStack>
       </HStack>
@@ -177,6 +190,16 @@ export default function FormList({
   doSearch: () => any
   selectItem: (f: FormMetadata) => any
 }) {
+  const selectList: string[] = [
+    t('form.filter.any-is-form-enabled'),
+    'enabled',
+    'disabled',
+  ]
+  const onChangeSelect = (path: IndexPath | IndexPath[]) => {
+    if (!Array.isArray(path) && path.row && setFilterEnabled) {
+      setFilterEnabled(selectList[path.row])
+    }
+  }
   return (
     <>
       <Stack
@@ -203,9 +226,9 @@ export default function FormList({
             value={filterCountry}
             setValue={setFilterCountry}
             any={'location.any-country'}
-            mt={Platform.OS === 'android' ? 0 : { md: 0, base: 2 }}
-            ml={Platform.OS === 'android' ? 0 : 3}
-            w={Platform.OS === 'android' ? '80%' : undefined}
+            // mt={Platform.OS === 'android' ? 0 : { md: 0, base: 2 }}
+            // ml={Platform.OS === 'android' ? 0 : 3}
+            // w={Platform.OS === 'android' ? '80%' : undefined}
           />
         </Center>
         <Center>
@@ -223,21 +246,25 @@ export default function FormList({
         {setFilterEnabled && (
           <Center>
             <Select
-              size="md"
-              bg="white"
-              selectedValue={filterEnabled}
-              onValueChange={setFilterEnabled}
+              size="medium"
+              value={filterEnabled}
+              onSelect={onChangeSelect}
               placeholder={t('form.filter.select-form-enabled')}
-              ml={{ base: 0, md: 2 }}
+              style={[
+                styleS.bgWhite,
+                { marginLeft: width > breakpoints.md ? 4 : 0 },
+              ]}
             >
-              <Select.Item
-                key={'__any__'}
-                label={t('form.filter.any-is-form-enabled')}
-                value={''}
-              />
-              {['enabled', 'disabled'].map(e => (
-                <Select.Item key={e} label={t('form.filter.' + e)} value={e} />
-              ))}
+              <>
+                <SelectItem
+                  key={'__any__'}
+                  title={t('form.filter.any-is-form-enabled')}
+                  // value={''}
+                />
+                {['enabled', 'disabled'].map(e => (
+                  <SelectItem key={e} title={t('form.filter.' + e)} />
+                ))}
+              </>
             </Select>
           </Center>
         )}
@@ -252,13 +279,12 @@ export default function FormList({
           bg="white"
           InputLeftElement={
             <Icon
-              as={<AntDesign name="search1" />}
-              size={{ base: '4', md: '4' }}
-              my={2}
-              ml={2}
-              _light={{
-                color: 'coolGray.400',
-              }}
+              // as={<AntDesign name="search1" />}
+              pack="material"
+              name="search"
+              size="tiny"
+              style={[styleS.my2, styleS.ml2]}
+              fill={colors.coolGray[400]}
             />
           }
           size="lg"

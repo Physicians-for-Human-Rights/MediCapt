@@ -2,18 +2,10 @@ import _ from 'lodash'
 import { RecordValuePath, RecordValue } from 'utils/types/record'
 import React from 'react'
 import { t } from 'i18n-js'
-import { MaterialIcons } from '@expo/vector-icons'
 import uuid from 'react-native-uuid'
 
-import {
-  Icon,
-  Center,
-  Divider,
-  VStack,
-  HStack,
-  Text,
-  Heading,
-} from 'native-base'
+import { Center, Divider, VStack, HStack, Text, Heading } from 'native-base'
+import { Icon } from '@ui-kitten/components'
 // @ts-ignore TODO TS doesn't understand .native.tsx and .web.tsx files
 import DateTimePicker from 'components/DateTimePicker'
 // @ts-ignore TODO TS doesn't understand .native.tsx and .web.tsx files
@@ -832,7 +824,7 @@ export function renderCommand(
             }}
             mt={2}
             p={2}
-            icon={<Icon as={MaterialIcons} name="add-box" size="sm" />}
+            icon={<Icon pack="material" name="add-box" size="small" />}
             maxW="80%"
           />
         </Center>
@@ -858,7 +850,7 @@ export function renderCommand(
             }
             mt={2}
             p={2}
-            icon={<Icon as={MaterialIcons} name="delete" size="sm" />}
+            icon={<Icon pack="material" name="delete" size="small" />}
             maxW="80%"
           />
         </Center>

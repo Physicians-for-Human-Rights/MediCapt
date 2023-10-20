@@ -1,9 +1,15 @@
 import React, { useState } from 'react'
-import { Heading, VStack, HStack, Center, Icon, Select } from 'native-base'
+import { Heading, VStack, HStack, Center } from 'native-base'
 import { View } from 'react-native'
-import { Text, useStyleSheet, Button } from '@ui-kitten/components'
+import {
+  Text,
+  useStyleSheet,
+  Button,
+  Select,
+  SelectItem,
+  IndexPath,
+} from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
-import { Feather } from '@expo/vector-icons'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 // @ts-ignore typescript doesn't do native/web modules
 import {
@@ -11,7 +17,7 @@ import {
   FormManifest,
   FormManifestWithData,
 } from 'utils/types/formMetadata'
-import { fetchManifestContents, generateZip } from 'utils/manifests'
+import { fetchManifestContents } from 'utils/manifests'
 import _ from 'lodash'
 import { getFormVersion } from 'api/formdesigner'
 import { useInfo } from 'utils/errors'
@@ -134,12 +140,16 @@ export default function FormEditorVersions({
     }
   }
 
-  async function setSelectedVersion(v: string) {
-    setSelectedVersionRaw(v)
-    await loadForm(v)
-    if (v === latestVersion.current) {
-      setChanged(false)
-      setHistoryMode(false)
+  async function setSelectedVersion(index: IndexPath | IndexPath[]) {
+    if (!Array.isArray(index)) {
+      const v =
+        latestVersion?.current?.length && latestVersion.current[index.row]
+      setSelectedVersionRaw(v + '')
+      await loadForm(v + '')
+      if (v === latestVersion.current) {
+        setChanged(false)
+        setHistoryMode(false)
+      }
     }
   }
 
@@ -203,15 +213,13 @@ export default function FormEditorVersions({
                 </Text>
               </Center>
               <Select
-                selectedValue={selectedVersion}
-                minWidth="100"
+                value={selectedVersion}
                 accessibilityLabel="Select version"
-                bg="white"
-                mt={1}
-                onValueChange={setSelectedVersion}
+                onSelect={setSelectedVersion}
+                style={[styleS.minWidth100, styleS.bgWhite, styleS.mt1]}
               >
                 {_.map(_.range(1, 1 + parseInt(latestVersion.current)), v => (
-                  <Select.Item label={'Version ' + v} value={'' + v} />
+                  <SelectItem title={'Version ' + v} />
                 ))}
               </Select>
             </HStack>

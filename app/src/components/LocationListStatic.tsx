@@ -1,24 +1,15 @@
 import React, { useState } from 'react'
 import {
-  Box,
   HStack,
-  Stack,
   Center,
   VStack,
   ScrollView,
   Pressable,
-  Input,
-  IconButton,
-  Icon,
-  Button,
-  Select,
   Heading,
 } from 'native-base'
-import { Text, useStyleSheet } from '@ui-kitten/components'
+import { Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { LocationType } from 'utils/types/location'
-import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons'
-import { Platform } from 'react-native'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
@@ -123,14 +114,9 @@ export function ListItem({ item }: { item: LocationType }) {
         </HStack>
         <HStack w="5%">
           {item.enabled ? (
-            <Icon
-              color="success.400"
-              size="6"
-              name="check-circle"
-              as={MaterialIcons}
-            />
+            <Icon fill="success" size="6" name="check-circle" pack="material" />
           ) : (
-            <Icon color="error.700" size="6" name="cancel" as={MaterialIcons} />
+            <Icon fill="danger" size="6" name="cancel" pack="material" />
           )}
         </HStack>
       </HStack>
@@ -196,7 +182,7 @@ export function ListItemDesktop({
         </VStack>
 
         <HStack w="5%">
-          <Icon color="red.400" size="6" name="trash-2" as={Feather} />
+          <Icon fill="danger" size="6" name="delete" pack="material" />
         </HStack>
       </HStack>
     </Pressable>

@@ -6,12 +6,10 @@ import {
   VStack,
   ScrollView,
   Pressable,
-  Icon,
   Select,
 } from 'native-base'
-import { Text, useStyleSheet, Button } from '@ui-kitten/components'
+import { Text, useStyleSheet, Button, Icon } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
-import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import { Platform } from 'react-native'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
@@ -22,7 +20,7 @@ import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import { View, Dimensions } from 'react-native'
-import { breakpoints } from './nativeBaseSpec'
+import { breakpoints, colors } from './nativeBaseSpec'
 import { spacing } from './styles'
 import { CloseIcon, RefreshIcon } from './Icons'
 
@@ -119,14 +117,9 @@ export function ListItem({ item }: { item: LocationType }) {
         </HStack>
         <HStack w="5%">
           {item.enabled ? (
-            <Icon
-              color="success.400"
-              size="6"
-              name="check-circle"
-              as={MaterialIcons}
-            />
+            <Icon fill="success" size="6" name="check-circle" pack="material" />
           ) : (
-            <Icon color="error.700" size="6" name="cancel" as={MaterialIcons} />
+            <Icon fill="danger" size="6" name="cancel" pack="material" />
           )}
         </HStack>
       </HStack>
@@ -179,14 +172,9 @@ export function ListItemDesktop({
 
         <HStack w="5%">
           {item.enabled ? (
-            <Icon
-              color="success.400"
-              size="6"
-              name="check-circle"
-              as={MaterialIcons}
-            />
+            <Icon fill="success" size="6" name="check-circle" pack="material" />
           ) : (
-            <Icon color="error.700" size="6" name="cancel" as={MaterialIcons} />
+            <Icon fill="danger" size="6" name="cancel" pack="material" />
           )}
         </HStack>
       </HStack>
@@ -238,8 +226,8 @@ export default function LocationList({
             value={filterCountry}
             setValue={setFilterCountry}
             any={'location.any-country'}
-            mt={Platform.OS === 'android' ? 2 : { md: 0, base: 2 }}
-            w={Platform.OS === 'android' ? '80%' : undefined}
+            // mt={Platform.OS === 'android' ? 2 : { md: 0, base: 2 }}
+            // w={Platform.OS === 'android' ? '80%' : undefined}
           />
         </Center>
         <Center>
@@ -305,13 +293,11 @@ export default function LocationList({
           bg="white"
           InputLeftElement={
             <Icon
-              as={<AntDesign name="search1" />}
-              size={{ base: '4', md: '4' }}
-              my={2}
-              ml={2}
-              _light={{
-                color: 'coolGray.400',
-              }}
+              pack="material"
+              size="tiny"
+              name="search"
+              fill={colors.coolGray[400]}
+              style={[styleS.my2, styleS.ml2]}
             />
           }
           size="lg"

@@ -33,6 +33,9 @@ const themedStyles = StyleService.create({
   ml5: {
     marginLeft: 20,
   },
+  mt1: {
+    marginTop: 4,
+  },
   mt2: {
     marginTop: 8,
   },
@@ -172,6 +175,17 @@ const themedStyles = StyleService.create({
   },
   maxWidth60Percent: {
     maxWidth: '60%',
+  },
+  minWidth100: {
+    minWidth: 100,
+  },
+  bgWhite: {
+    backgroundColor: 'white',
+  },
+  center: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })
 

@@ -220,7 +220,7 @@ export default function LocationEditor({
               isDone={location.enabled || false}
               todoText="Location is disabled"
               doneText="Location is enabled"
-              size={4}
+              size="tiny"
             />
           </View>
         </HStack>

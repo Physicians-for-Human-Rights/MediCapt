@@ -5,24 +5,13 @@ import {
   ScrollView,
   HStack,
   Pressable,
-  Icon,
   Image,
   Hidden,
-  IconButton,
   Divider,
   Menu,
-  Avatar,
   Input,
 } from 'native-base'
 import { View, Dimensions, SafeAreaView } from 'react-native'
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  MaterialCommunityIcons,
-  MaterialIcons,
-} from '@expo/vector-icons'
-
 import { useSignOut } from 'utils/store'
 import _ from 'lodash'
 
@@ -30,10 +19,17 @@ import medicapt_logo from '../../assets/medicapt.png'
 import phr_logo from '../../assets/phr_small.png'
 import { goBackMaybeRefreshing } from 'utils/navigation'
 
-import { useStyleSheet, Text, Button } from '@ui-kitten/components'
+import {
+  useStyleSheet,
+  Text,
+  Button,
+  Icon,
+  Avatar,
+} from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import styles, { spacing } from './styles'
 import { colors, breakpoints } from './nativeBaseSpec'
+import { MenuIcon } from './Icons'
 
 const styleS = useStyleSheet(themedStyles)
 const { width } = Dimensions.get('window')
@@ -90,8 +86,7 @@ export function Sidebar(signOut: any) {
         >
           <Avatar
             source={medicapt_logo}
-            width={{ base: 20, md: 40 }}
-            height={{ base: 20, md: 40 }}
+            size={width > breakpoints.md ? 'medium' : 'tiny'}
           />
           <HStack alignItems="center" justifyContent="center" space="2">
             <Text
@@ -126,9 +121,9 @@ export function Sidebar(signOut: any) {
                 <HStack space="4" alignItems="center">
                   <Icon
                     size="6"
-                    as={MaterialIcons}
+                    pack="material"
                     name={item.iconName}
-                    _light={{ color: 'coolGray.500' }}
+                    fill={colors.coolGray[500]}
                   />
                   <Text
                     style={[
@@ -154,9 +149,9 @@ export function Sidebar(signOut: any) {
             <HStack space="4" alignItems="center">
               <Icon
                 size="6"
-                as={MaterialIcons}
+                pack="material"
                 name="exit-to-app"
-                _light={{ color: 'coolGray.500' }}
+                fill={colors.coolGray[500]}
               />
               <Text
                 style={[
@@ -224,31 +219,26 @@ export function Header({
         <HStack alignItems="center" justifyContent="space-between">
           <HStack space="4" alignItems="center">
             {menuButton && (
-              <IconButton
-                variant="ghost"
-                colorScheme="light"
+              <Button
+                appearance="ghost"
+                status="coolGray"
                 onPress={toggleSidebar}
-                icon={
-                  <Icon
-                    size="6"
-                    name="menu-sharp"
-                    as={Ionicons}
-                    _light={{ color: 'coolGray.800' }}
-                  />
+                accessoryLeft={
+                  <MenuIcon size="6" fill={colors.coolGray[800]} />
                 }
               />
             )}
             {backButton ? (
-              <IconButton
+              <Button
                 onPress={() =>
                   goBackMaybeRefreshing(route, navigation, reloadPrevious)
                 }
-                icon={
+                accessoryLeft={
                   <Icon
                     size="6"
-                    as={AntDesign}
-                    name="arrowleft"
-                    color="coolGray.500"
+                    pack="material"
+                    name="keyboard_backspace"
+                    fill={colors.coolGray[500]}
                   />
                 }
               />
@@ -289,10 +279,9 @@ export function Header({
                   px="2"
                   size="4"
                   name="search"
-                  as={FontAwesome}
-                  _light={{
-                    color: 'coolGray.400',
-                  }}
+                  pack="material"
+                  // as={FontAwesome}
+                  fill={colors.coolGray[400]}
                 />
               }
             />
@@ -301,17 +290,15 @@ export function Header({
           {middlebar}
 
           <HStack space="2" alignItems="center">
-            <IconButton
-              variant="ghost"
-              colorScheme="light"
-              icon={
+            <Button
+              appearance="ghost"
+              status="blueGray"
+              accessoryLeft={
                 <Icon
                   size="6"
                   name="lock"
-                  as={MaterialIcons}
-                  _light={{
-                    color: 'coolGray.400',
-                  }}
+                  pack="material"
+                  fill={colors.coolGray[400]}
                 />
               }
             />
@@ -321,11 +308,11 @@ export function Header({
               placement="bottom right"
               trigger={triggerProps => {
                 return (
-                  <IconButton
+                  <Button
                     {...triggerProps}
-                    variant="ghost"
-                    colorScheme="light"
-                    icon={<Avatar w="8" h="8" source={phr_logo} />}
+                    appearance="ghost"
+                    status="blueGray"
+                    icon={<Avatar size="tiny" source={phr_logo} />}
                   />
                 )
               }}
@@ -367,9 +354,9 @@ function MainContent({
             <Pressable>
               <Icon
                 size="6"
-                as={AntDesign}
-                name="arrowleft"
-                _light={{ color: 'coolGray.800' }}
+                pack="material"
+                name="keyboard_backspace"
+                fill={colors.coolGray[800]}
               />
             </Pressable>
             <Text style={[styleS.fontSizeLg, styleS.colorCoolGray800]}>
@@ -418,18 +405,18 @@ export function MobileHeader({
           <>
             <HStack alignItems="center" space="1">
               {backButton ? (
-                <IconButton
-                  variant="ghost"
-                  colorScheme="light"
+                <Button
+                  appearance="ghost"
+                  status="blueGray"
                   onPress={() =>
                     goBackMaybeRefreshing(route, navigation, reloadPrevious)
                   }
-                  icon={
+                  accessoryLeft={
                     <Icon
                       size="6"
-                      as={AntDesign}
-                      name="arrowleft"
-                      color="coolGray.50"
+                      pack="material"
+                      name="keyboard_backspace"
+                      fill={colors.coolGray[50]}
                     />
                   }
                 />
@@ -461,17 +448,15 @@ export function MobileHeader({
             </HStack>
             {mobileMiddlebar}
             <HStack space="1">
-              <IconButton
-                variant="ghost"
-                colorScheme="light"
-                icon={
+              <Button
+                appearance="ghost"
+                status="blueGray"
+                accessoryLeft={
                   <Icon
                     size="6"
                     name="lock"
-                    as={MaterialIcons}
-                    _light={{
-                      color: 'coolGray.50',
-                    }}
+                    pack="material"
+                    fill={colors.coolGray[100]}
                   />
                 }
               />
@@ -479,7 +464,7 @@ export function MobileHeader({
                 w="150"
                 trigger={triggerProps => {
                   return (
-                    <IconButton
+                    <Button
                       variant="ghost"
                       colorScheme="light"
                       accessibilityLabel="More options menu"
@@ -487,9 +472,10 @@ export function MobileHeader({
                       icon={
                         <Icon
                           size="6"
-                          color="coolGray.50"
-                          name="dots-vertical"
-                          as={MaterialCommunityIcons}
+                          fill={colors.coolGray[100]}
+                          // color="coolGray.50"
+                          name="more-vert"
+                          pack="material"
                         />
                       }
                     />

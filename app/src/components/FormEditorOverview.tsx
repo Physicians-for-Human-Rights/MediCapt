@@ -161,7 +161,7 @@ export default function FormEditorOverview({
             isDone={!!formMetadata.enabled}
             todoText="Form is disabled"
             doneText="Form is enabled"
-            size={4}
+            size="tiny"
           />
         </Center>
       )}
@@ -190,8 +190,8 @@ export default function FormEditorOverview({
           placeholder={t('form-editor.select-country')}
           value={formMetadata.country}
           setValue={v => setFormMetadata({ ...formMetadata, country: v })}
-          mx={3}
-          mt={1}
+          // mx={3}
+          // mt={1}
         />
         <Language
           placeholder={t('form-editor.select-language')}
@@ -285,7 +285,7 @@ export default function FormEditorOverview({
           isDone={isInManifest(manifest, e => e.filename == 'form.yaml')}
           todoText="No form body filled out"
           doneText="Form body exists"
-          size={4}
+          size="tiny"
           optional={false}
           help="Click the editor tab and fill in the form body"
         />
@@ -293,7 +293,7 @@ export default function FormEditorOverview({
           isDone={_.isEmpty(pathsWithPeriods)}
           todoText="Form has paths with periods in it"
           doneText="From paths have no periods"
-          size={4}
+          size="tiny"
           helpHeader="Paths with periods"
           help={
             'Your form has a path with a period. Any text in a form that comes before a colon is part of a path and cannot have a period in it. The following paths have periods in them.' +
@@ -304,7 +304,7 @@ export default function FormEditorOverview({
           isDone={_.isEmpty(duplicatePaths)}
           todoText="From has duplicate paths"
           doneText="Form paths are unique"
-          size={4}
+          size="tiny"
           helpHeader="Dupicate form paths"
           help={
             'Your form has duplicate paths in the definition. You must rename at least one these. ' +
@@ -315,7 +315,7 @@ export default function FormEditorOverview({
           isDone={isInManifest(manifest, e => e.filename == 'form.pdf')}
           todoText="No PDF uploaded"
           doneText="PDF uploaded"
-          size={4}
+          size="tiny"
           optional={true}
           help="Without a pdf form to fill out we will still generate a pdf with automatic formatting"
         />
@@ -324,7 +324,7 @@ export default function FormEditorOverview({
             isDone={false}
             todoText="Some parts of the PDF not filled out"
             doneText="All PDF fields covered"
-            size={4}
+            size="tiny"
             help="TODO implement this"
           />
         )}

@@ -1,14 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import {
-  Box,
-  HStack,
-  VStack,
-  ScrollView,
-  Pressable,
-  Icon,
-  Select,
-} from 'native-base'
-import { Text, useStyleSheet } from '@ui-kitten/components'
+import { HStack, VStack, ScrollView, Pressable } from 'native-base'
+import { Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { AntDesign } from '@expo/vector-icons'
 // @ts-ignore Record some reason expo doesn't pick up this module without the extension
@@ -213,9 +205,9 @@ export function ListItemDesktop({
 
         <VStack w="5%">
           {item.sealed ? (
-            <Icon color="success.400" size="6" name="star" as={AntDesign} />
+            <Icon fill="success" size="6" name="star" />
           ) : (
-            <Icon color="error.700" size="6" name="staro" as={AntDesign} />
+            <Icon fill="danger" size="6" name="star-outline" />
           )}
         </VStack>
       </HStack>

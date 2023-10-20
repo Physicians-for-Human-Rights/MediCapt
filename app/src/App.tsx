@@ -21,6 +21,7 @@ import { ApplicationProvider, IconRegistry } from '@ui-kitten/components'
 import { default as themeKitten } from './custom-theme.json'
 import * as eva from '@eva-design/eva'
 import { EvaIconsPack } from '@ui-kitten/eva-icons'
+import { MaterialIconsPack } from './MaterialIcons' // <-- Import Material icons
 
 Sentry.init({
   dsn: 'https://6fa825c71abb485092554ccb55e4cf67@o1300636.ingest.sentry.io/6535444',
@@ -93,7 +94,7 @@ function LoginScreen() {
             theme={theme}
             config={{ suppressColorAccessibilityWarning: true }}
           >
-            <IconRegistry icons={EvaIconsPack} />
+            <IconRegistry icons={[EvaIconsPack, MaterialIconsPack]} />
             <ApplicationProvider
               {...eva}
               theme={{ ...eva.light, ...themeKitten }}
