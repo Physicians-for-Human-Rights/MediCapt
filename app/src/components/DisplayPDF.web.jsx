@@ -1,8 +1,16 @@
 import React, { useState } from 'react'
-import { HStack, Text, VStack, Center, Switch } from 'native-base'
-import { Button, useStyleSheet, Icon, ButtonGroup } from '@ui-kitten/components'
+import { Switch } from 'native-base'
+import {
+  Button,
+  useStyleSheet,
+  Icon,
+  ButtonGroup,
+  Text,
+} from '@ui-kitten/components'
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack'
 import themedStyles from 'themeStyled'
+import { View } from 'react-native'
+import { layout, spacing } from './styles'
 
 const styleS = useStyleSheet(themedStyles)
 const DownloadIcon = props => <Icon name="download" {...props} />
@@ -38,26 +46,28 @@ export default function DisplayPDF({
   }
 
   return (
-    <VStack py={3} width={width}>
-      <HStack justifyContent="space-between" px={10}>
-        <VStack>
+    <View style={[layout.vStack, spacing.py3, { width: width }]}>
+      <View style={[layout.hStack, layout.spaceBet, spacing.px10]}>
+        <View style={layout.vStack}>
           <Text fontSize="md">Debug</Text>
           <Switch size="md" mr={3} isChecked={debug} onToggle={toggleDebug} />
-        </VStack>
-        <VStack>
-          <Text fontSize="md">Mock</Text>
+        </View>
+        <View style={layout.vStack}>
+          <Text style={[styleS.fontSizeMd]}>Mock</Text>
           <Switch size="md" mr={3} isChecked={mock} onToggle={toggleMock} />
-        </VStack>
-        <VStack>
-          <Text fontSize="md">{usPageSize ? 'Letter' : '  ' + 'A4'}</Text>
+        </View>
+        <View style={layout.vStack}>
+          <Text style={[styleS.fontSizeMd]}>
+            {usPageSize ? 'Letter' : '  ' + 'A4'}
+          </Text>
           <Switch
             size="md"
             mr={3}
             isChecked={usPageSize}
             onToggle={toggleUsPageSize}
           />
-        </VStack>
-        <Center py={3}>
+        </View>
+        <View style={[layout.center, spacing.py3]}>
           <Button
             style={[
               styleS.fontBold,
@@ -70,15 +80,17 @@ export default function DisplayPDF({
           >
             Download PDF
           </Button>
-        </Center>
-      </HStack>
-      <HStack py={1} justifyContent="space-between" px={10}>
-        <Center>
-          <Text fontSize="md" isTruncated maxW="100px">
+        </View>
+      </View>
+      <View style={[layout.hStack, spacing.py1, spacing.px10, layout.spaceBet]}>
+        <View style={[layout.center]}>
+          <Text
+            style={[styleS.fontSizeMd, styleS.truncated, { maxWidth: 100 }]}
+          >
             Page {pageNumber} of {numPages}
           </Text>
-        </Center>
-        <HStack>
+        </View>
+        <View style={layout.hStack}>
           <ButtonGroup status="info" size="medium">
             <Button isDisabled={pageNumber === 1} onPress={previousPage}>
               Previous page
@@ -87,11 +99,11 @@ export default function DisplayPDF({
               Next page
             </Button>
           </ButtonGroup>
-        </HStack>
-      </HStack>
+        </View>
+      </View>
       <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
         <Page width={width} pageNumber={pageNumber} />
       </Document>
-    </VStack>
+    </View>
   )
 }

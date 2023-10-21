@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native'
-import { colors } from './nativeBaseSpec'
+import { colors, rounded } from './nativeBaseSpec'
 
 export const spacing = StyleSheet.create({
   p2: {
@@ -17,6 +17,12 @@ export const spacing = StyleSheet.create({
   px6: {
     paddingHorizontal: 24,
   },
+  px10: {
+    paddingHorizontal: 10,
+  },
+  py1: {
+    paddingVertical: 4,
+  },
   py2: {
     paddingVertical: 8,
   },
@@ -25,6 +31,9 @@ export const spacing = StyleSheet.create({
   },
   py4: {
     paddingVertical: 16,
+  },
+  m1: {
+    margin: 4,
   },
   mx3: {
     marginHorizontal: 12,
@@ -44,6 +53,15 @@ export const spacing = StyleSheet.create({
   mb4: {
     marginBottom: 16,
   },
+  my2: {
+    marginVertical: 8,
+  },
+})
+
+export const borders = StyleSheet.create({
+  roundedMd: {
+    borderRadius: rounded.md,
+  },
 })
 export const layout = StyleSheet.create({
   center: {
@@ -55,24 +73,40 @@ export const layout = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
   },
+  vStackGap2: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8,
+  },
   vStackGap3: {
     display: 'flex',
     flexDirection: 'column',
-    gap: 24,
+    gap: 12,
+  },
+  vStackGap4: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 16,
   },
   hStack: {
     display: 'flex',
     flexDirection: 'row',
+  },
+
+  hStackGap1: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 4,
   },
   hStackGap2: {
     display: 'flex',
     flexDirection: 'row',
     gap: 8,
   },
-  hStackGap1: {
+  hStackGap3: {
     display: 'flex',
     flexDirection: 'row',
-    gap: 1,
+    gap: 12,
   },
   hStackGap4: {
     display: 'flex',
@@ -88,11 +122,23 @@ export const layout = StyleSheet.create({
   spaceBet: {
     justifyContent: 'space-between',
   },
+  justifyCenter: {
+    justifyContent: 'center',
+  },
+  justifyStart: {
+    justifyContent: 'flex-start',
+  },
+  justifyEnd: {
+    justifyContent: 'flex-end',
+  },
   alignCenter: {
     alignItems: 'center',
   },
   flex1: {
     flex: 1,
+  },
+  width100percent: {
+    width: '100%',
   },
 })
 
@@ -182,6 +228,32 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     width: '100%',
     alignSelf: 'center',
+  },
+  formButtonContainer: {
+    display: 'flex',
+  },
+  formEditorAssociations: {
+    display: 'flex',
+    flexDirection: 'row',
+    maxWidth: 300,
+    width: 300,
+    marginVertical: 12,
+  },
+  formEditorFileView: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 16,
+    justifyContent: 'flex-start',
+    width: 200,
+    maxWidth: 200,
+    paddingVertical: 16,
+  },
+  formEditorFileButtonBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: 200,
+    maxWidth: 200,
+    marginVertical: 12,
   },
 })
 

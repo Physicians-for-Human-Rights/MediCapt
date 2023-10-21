@@ -1,5 +1,4 @@
 import React from 'react'
-import { VStack } from 'native-base'
 import { StyleSheet, Pressable, View } from 'react-native'
 import { Icon } from '@ui-kitten/components'
 import { layout } from './styles'

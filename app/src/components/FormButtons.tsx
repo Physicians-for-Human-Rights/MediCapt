@@ -1,17 +1,8 @@
 import React from 'react'
-import {
-  Center,
-  HStack,
-  useBreakpointValue,
-  FlatList,
-  Stack,
-  VStack,
-  Tooltip,
-} from 'native-base'
 import _ from 'lodash'
 import { t } from 'i18n-js'
 import { Button } from '@ui-kitten/components'
-import { colors } from './nativeBaseSpec'
+import { breakpoints, colors } from './nativeBaseSpec'
 import {
   CloseIcon,
   SaveIcon,
@@ -22,6 +13,10 @@ import {
   StarIcon,
   ArrowLeftIcon,
 } from './Icons'
+import { View, Dimensions, StyleSheet } from 'react-native'
+import { layout } from './styles'
+
+const { width } = Dimensions.get('window')
 
 export default function FormButtons({
   isSectionCompleteList,
@@ -54,24 +49,29 @@ export default function FormButtons({
   topSpace?: string
   readOnly: boolean
 }) {
-  const stackDirection = useBreakpointValue({
-    base: 'column',
-    sm: 'row',
+  const direction = width > breakpoints.sm ? 'row' : 'column'
+  const localStyle = StyleSheet.create({
+    container: {
+      justifyContent: 'center',
+      flexDirection: direction,
+      paddingTop: topSpace,
+      paddingBottom: 12,
+      gap: 8,
+      backgroundColor: 'white',
+    },
+    containerMiddle: {
+      justifyContent: 'center',
+      flexDirection: direction,
+      paddingVertical: 12,
+      gap: 8,
+      backgroundColor: 'white',
+    },
   })
-
   return (
-    <VStack>
-      <Stack
-        pt={topSpace}
-        pb="3"
-        direction={stackDirection}
-        space="2"
-        justifyContent="center"
-        bg="white"
-        key="header2"
-      >
+    <View style={layout.vStack}>
+      <View style={localStyle.container} key="header2">
         {changed ? (
-          <HStack space="2" justifyContent="center">
+          <View style={[layout.hStackGap2, layout.justifyCenter]}>
             <Button
               status="info"
               accessoryLeft={SaveIcon}
@@ -85,7 +85,7 @@ export default function FormButtons({
             <Button accessoryLeft={CloseIcon} status="info" onPress={onExit}>
               {t('record.buttons.cancel')}
             </Button>
-          </HStack>
+          </View>
         ) : (
           <Button
             accessoryLeft={ArrowLeftIcon}
@@ -97,7 +97,7 @@ export default function FormButtons({
           </Button>
         )}
         {!changed && (
-          <HStack space="2" justifyContent="center">
+          <View style={[layout.hStackGap2, layout.justifyCenter]}>
             <Button
               status="info"
               accessoryLeft={PrinterIcon}
@@ -124,11 +124,11 @@ export default function FormButtons({
                 {t('record.buttons.complete-record')}
               </Button>
             )}
-          </HStack>
+          </View>
         )}
-      </Stack>
+      </View>
       {!isSealed && !readOnly && onUpgrade && (
-        <Center>
+        <View style={layout.center}>
           <Button
             accessoryLeft={AlertIcon}
             status="danger"
@@ -137,17 +137,10 @@ export default function FormButtons({
           >
             {t('record.buttons.upgrade-form')}
           </Button>
-        </Center>
+        </View>
       )}
       {!changed && onAddRecord && onShareRecord ? (
-        <Stack
-          py="3"
-          direction={stackDirection}
-          space="2"
-          justifyContent="center"
-          bg="white"
-          key="header1"
-        >
+        <View style={localStyle.containerMiddle} key="header1">
           <Button
             style={{
               backgroundColor: hasAssociatedForms
@@ -171,10 +164,10 @@ export default function FormButtons({
           >
             {t('record.buttons.share-record')}
           </Button>
-        </Stack>
+        </View>
       ) : (
         <></>
       )}
-    </VStack>
+    </View>
   )
 }

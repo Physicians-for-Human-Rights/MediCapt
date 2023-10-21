@@ -1,22 +1,13 @@
 import React from 'react'
-import { Box, HStack, VStack, Center } from 'native-base'
 import { Text } from '@ui-kitten/components'
 import { FormType } from 'utils/types/form'
-import yaml from 'js-yaml'
 import { useWindowDimensions, View } from 'react-native'
-import useDebounce from 'react-use/lib/useDebounce'
 import { Platform } from 'react-native'
 import Form from 'components/Form'
 // @ts-ignore typescript doesn't support .web.js and .native.js files
-import CodeEditor from './CodeEditor'
 import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
-import {
-  lookupManifest,
-  addOrReplaceFileToManifestByFilename,
-} from 'utils/manifests'
-import { useInfo } from 'utils/errors'
-import { getFormTypeFromManifest } from 'utils/manifests'
 import FormEditorComponent from 'components/FormEditorComponent'
+import { layout, spacing } from './styles'
 
 const FormMemo = React.memo(Form)
 
@@ -37,13 +28,13 @@ export default function FormEditor({
   const boxHeight = Math.round(window.height * 0.85) + 'px'
   const boxWidth = Math.round(window.width * (1 - ratio - padding)) + 'px'
   return (
-    <VStack>
+    <View style={layout.vStack}>
       {Platform.OS !== 'web' ? (
-        <Center py={2}>
+        <View style={[layout.center, spacing.py2]}>
           <Text>Preview: Editing is web-only</Text>
-        </Center>
+        </View>
       ) : null}
-      <HStack pt="0" space={3} justifyContent="center">
+      <View style={[layout.hStackGap3, layout.justifyCenter]}>
         <FormEditorComponent manifest={manifest} setForm={setForm} />
         <View style={{ height: boxHeight, width: boxWidth }}>
           <FormMemo
@@ -56,7 +47,7 @@ export default function FormEditor({
             overrideTransformation={'compact'}
           />
         </View>
-      </HStack>
-    </VStack>
+      </View>
+    </View>
   )
 }

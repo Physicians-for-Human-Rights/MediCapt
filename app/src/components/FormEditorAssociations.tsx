@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { HStack, VStack, Center, FlatList, Modal } from 'native-base'
+import { FlatList, Modal } from 'native-base'
 import { View, Dimensions } from 'react-native'
 import { Text, Button, useStyleSheet, Icon } from '@ui-kitten/components'
 import { readImage, stripFileExtension } from 'utils/forms'
@@ -7,15 +7,15 @@ import _ from 'lodash'
 import { t } from 'i18n-js'
 import { getFormCached, getUserByUUIDCached } from 'api/common'
 // @ts-ignore TODO TS doesn't understand .native.js and .web.js files
-import { tryConvertToWebP } from 'utils/imageConverter'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
 
 import FormSearch from 'components/FormSearch'
-import styles from './styles'
+import styles, { borders, spacing } from './styles'
 import { breakpoints } from './nativeBaseSpec'
 import themedStyles from 'themeStyled'
 import { PlusIcon } from './Icons'
+import { layout } from './styles'
 
 const { width } = Dimensions.get('window')
 const styleS = useStyleSheet(themedStyles)
@@ -84,10 +84,10 @@ export default function FormEditorAssociations({
   const showForm = (f: FormMetadata | null | undefined) => {
     if (f) {
       return (
-        <VStack my="2" space={0}>
+        <View style={[layout.vStack, spacing.my2]}>
           <Text>{f.title}</Text>
           <Text>{f.subtitle}</Text>
-        </VStack>
+        </View>
       )
     } else {
     }
@@ -95,9 +95,9 @@ export default function FormEditorAssociations({
 
   return (
     <>
-      <VStack my="2" space={3}>
-        <VStack my="2">
-          <Center>
+      <View style={[layout.vStackGap3, spacing.my2]}>
+        <View style={[layout.vStack, spacing.my2]}>
+          <View style={layout.center}>
             <Button
               style={[
                 styleS.fontBold,
@@ -111,7 +111,7 @@ export default function FormEditorAssociations({
             >
               Add associated form
             </Button>
-          </Center>
+          </View>
           <View
             style={[
               styles.formEditorContainer,
@@ -128,11 +128,14 @@ export default function FormEditorAssociations({
               renderItem={({ item }) => {
                 return (
                   <View style={[styles.formEditorListBox]}>
-                    <VStack m={1} borderRadius="md" key={item.title}>
+                    <View
+                      style={[layout.vStack, spacing.m1, borders.roundedMd]}
+                      key={item.title}
+                    >
                       {showForm(
                         _.find(forms || [], f => f.formUUID === item.formUUID)
                       )}
-                      <HStack w="300px" maxWidth="300px" my={3}>
+                      <View style={[styles.formEditorAssociations]}>
                         <DebouncedTextInput
                           w={{ md: '100%', lg: '100%', base: '100%' }}
                           bg="white"
@@ -173,16 +176,16 @@ export default function FormEditorAssociations({
                             })
                           }
                         />
-                      </HStack>
-                    </VStack>
+                      </View>
+                    </View>
                   </View>
                 )
               }}
               keyExtractor={(item, index) => 'key' + index}
             />
           </View>
-        </VStack>
-      </VStack>
+        </View>
+      </View>
       <Modal
         isOpen={isSearchModalOpen}
         onClose={() => setIsSearchModalOpen(false)}

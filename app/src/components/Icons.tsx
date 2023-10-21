@@ -64,3 +64,6 @@ export const TrainingIcon = (props: any): IconElement => (
 export const MenuIcon = (props: any): IconElement => (
   <Icon {...props} name="menu" pack="material" />
 )
+export const CalenderIcon = (props: any): IconElement => (
+  <Icon {...props} name="calendar_month" pack="material" />
+)

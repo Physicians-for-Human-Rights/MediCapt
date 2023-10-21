@@ -1,22 +1,11 @@
 import React, { useState } from 'react'
-import {
-  HStack,
-  VStack,
-  Center,
-  Divider,
-  Badge,
-  Image,
-  FlatList,
-  IconButton,
-} from 'native-base'
+import { Divider, Badge, Image, FlatList } from 'native-base'
 import { View, Dimensions } from 'react-native'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import * as DocumentPicker from 'expo-document-picker'
 import { readImage, stripFileExtension } from 'utils/forms'
 import _ from 'lodash'
 import NecessaryItem from 'components/NecessaryItem'
-import { Feather } from '@expo/vector-icons'
 // @ts-ignore TODO TS doesn't understand .native.js and .web.js files
 import { tryConvertToWebP } from 'utils/imageConverter'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
@@ -29,7 +18,7 @@ import {
   changeFilenameInManifest,
   generateZip,
 } from 'utils/manifests'
-import styles, { spacing } from './styles'
+import styles, { spacing, layout, borders } from './styles'
 import { breakpoints } from './nativeBaseSpec'
 import {
   Button,
@@ -45,6 +34,7 @@ import PopoverContent from './PopOverContent'
 
 const styleS = useStyleSheet(themedStyles)
 const { width } = Dimensions.get('window')
+const isWider = width > breakpoints.md
 
 export default function FormEditorFiles({
   formMetadata,
@@ -124,18 +114,18 @@ export default function FormEditorFiles({
   )
 
   return (
-    <VStack my="2" space={3}>
-      <Center py={3}>
+    <View style={[layout.vStackGap3, spacing.my2]}>
+      <View style={[layout.center, spacing.py3]}>
         <IconGrayButton
           text="Download all files"
           status="info"
           leftIcon={DownloadCloudIcon}
           onPress={() => generateZip(formMetadata, manifest)}
         />
-      </Center>
-      <HStack alignItems="center" justifyContent="space-between">
-        <VStack space="4" justifyContent="flex-start" py={4} w="200" maxW="200">
-          <Center>
+      </View>
+      <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
+        <View style={styles.formEditorFileView}>
+          <View style={layout.center}>
             <Badge
               variant="solid"
               bg="red.400"
@@ -148,7 +138,7 @@ export default function FormEditorFiles({
             >
               FORM PDF
             </Badge>
-          </Center>
+          </View>
           {isInManifest(manifest, e => e.filename == 'form.pdf') ? (
             <IconGrayButton
               text="Remove pdf"
@@ -164,14 +154,22 @@ export default function FormEditorFiles({
               onPress={pickPdf}
             />
           )}
-        </VStack>
+        </View>
         {isInManifest(manifest, e => e.filename == 'form.pdf') ? (
-          <VStack
-            space="2"
-            px={{ base: '4', md: '8' }}
-            justifyContent="flex-end"
+          <View
+            style={[
+              layout.vStackGap2,
+              layout.justifyEnd,
+              { paddingHorizontal: isWider ? 8 : 4 },
+            ]}
           >
-            <HStack w="100%" space={3} alignItems="center">
+            <View
+              style={[
+                layout.hStackGap3,
+                layout.alignCenter,
+                layout.width100percent,
+              ]}
+            >
               <NecessaryItem
                 isDone={pdfHasAnnotations}
                 todoText="PDF has no annotations!"
@@ -192,8 +190,8 @@ export default function FormEditorFiles({
                   funcButton1={() => setVisible(false)}
                 />
               </Popover>
-            </HStack>
-          </VStack>
+            </View>
+          </View>
         ) : (
           <Text
             style={[styleS.maxWidth300, styleS.width300, styleS.truncated]}
@@ -202,11 +200,11 @@ export default function FormEditorFiles({
             TODO Instructions for what to upload and how to annoate
           </Text>
         )}
-      </HStack>
+      </View>
       <Divider py="0.1" bg="coolGray.200" />
-      <VStack my="2">
-        <HStack space={3}>
-          <Center>
+      <View style={[layout.vStack, spacing.my2]}>
+        <View style={layout.hStackGap3}>
+          <View style={layout.center}>
             <Badge
               variant="solid"
               bg="red.400"
@@ -219,14 +217,14 @@ export default function FormEditorFiles({
             >
               IMAGES
             </Badge>
-          </Center>
+          </View>
           <IconGrayButton
             text="Upload an image"
             status="info"
             leftIcon={UploadCloudIcon}
             onPress={pickImage}
           />
-        </HStack>
+        </View>
         <View
           style={[
             styles.formEditorFileContainer,
@@ -241,7 +239,10 @@ export default function FormEditorFiles({
             numColumns={3}
             data={filterManifest(manifest, isImage).contents}
             renderItem={({ item }) => (
-              <VStack m={1} borderRadius="md" key={item.filename}>
+              <View
+                style={[layout.vStack, spacing.m1, borders.roundedMd]}
+                key={item.filename}
+              >
                 <Image
                   borderWidth={1}
                   borderColor="coolGray.200"
@@ -253,7 +254,7 @@ export default function FormEditorFiles({
                   source={item.data}
                   resizeMode="contain"
                 />
-                <HStack w="200px" maxWidth="200px" my={3}>
+                <View style={styles.formEditorFileButtonBox}>
                   <DebouncedTextInput
                     w={{ md: '100%', lg: '100%', base: '100%' }}
                     bg="white"
@@ -281,13 +282,13 @@ export default function FormEditorFiles({
                       )
                     }
                   />
-                </HStack>
-              </VStack>
+                </View>
+              </View>
             )}
             keyExtractor={(item, index) => 'key' + index}
           />
         </View>
-      </VStack>
-    </VStack>
+      </View>
+    </View>
   )
 }

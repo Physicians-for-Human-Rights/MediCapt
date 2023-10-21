@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { HStack, IconButton, Input, Center, Modal } from 'native-base'
+import { View } from 'react-native'
+import { Input, Modal } from 'native-base'
 import _ from 'lodash'
-import { AntDesign } from '@expo/vector-icons'
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
 import { disabledBackground } from 'utils/formRendering/utils'
@@ -10,6 +10,8 @@ import FloatingLabelInput from 'components/FloatingLabelInput'
 import 'react-datepicker/dist/react-datepicker.css'
 import DatePicker from 'react-datepicker'
 import { parseDate } from 'chrono-node'
+import { Button } from '@ui-kitten/components'
+import { layout } from './styles'
 
 export default function DateTimePicker({
   title,
@@ -72,8 +74,13 @@ export default function DateTimePicker({
 
   return (
     <>
-      <Center bg={isDisabled ? disabledBackground : undefined}>
-        <HStack>
+      <View
+        style={[
+          layout.center,
+          { backgroundColor: isDisabled ? disabledBackground : undefined },
+        ]}
+      >
+        <View style={layout.hStack}>
           {fancyLabel ? (
             <FloatingLabelInput
               label={fancyLabel}
@@ -101,29 +108,26 @@ export default function DateTimePicker({
               )}
             />
           )}
-          <Center>
-            <IconButton
-              isDisabled={isDisabled}
+          <View style={layout.center}>
+            <Button
+              disabled={isDisabled}
               onPress={openInternal}
-              size="sm"
+              size="small"
               mt={fancyLabel ? 2 : 0}
-              colorScheme="indigo"
-              variant="solid"
-              _icon={{
-                as: AntDesign,
-                name: 'calendar',
-              }}
+              status="indigo"
+              appearance="filled"
+              accessoryLeft={CalenderIcon}
               accessibilityLabel={'Open calendar'}
             />
-          </Center>
-        </HStack>
-      </Center>
+          </View>
+        </View>
+      </View>
       <Modal isOpen={modalVisible} onClose={onClose}>
         <Modal.Content maxWidth="400px">
           <Modal.CloseButton />
           <Modal.Header>{title}</Modal.Header>
           <Modal.Body>
-            <Center>
+            <View style={layout.center}>
               <DatePicker
                 selected={date}
                 onChange={onSave}
@@ -131,7 +135,7 @@ export default function DateTimePicker({
                 fixedHeight
                 showYearDropdown={fancyLabel ? true : false}
               />
-            </Center>
+            </View>
           </Modal.Body>
         </Modal.Content>
       </Modal>
