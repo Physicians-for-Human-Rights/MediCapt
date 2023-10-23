@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { HStack, VStack, Badge, Tooltip, Center } from 'native-base'
+import { Badge, Tooltip, Center } from 'native-base'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 import NecessaryItem from 'components/NecessaryItem'
 import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
@@ -14,6 +14,8 @@ import SelectLocation from 'components/SelectLocation'
 import { isInManifest, lookupManifest } from 'utils/manifests'
 import { Button } from '@ui-kitten/components'
 import { SaveIcon, CloseIcon, CheckIcon } from './Icons'
+import { layout, spacing } from './styles'
+import { View } from 'react-native'
 
 export function listDuplicates<T>(arr: T[]): T[] {
   return _.uniq(
@@ -29,7 +31,7 @@ export function getFormPathsAndInfo(manifest: FormManifestWithData) {
   if (f) {
     let pathsWithPeriods: { prefix: string; path: string }[] = []
     const allPaths: string[] = []
-    function pathsPartMap(prefix: string, parts: any) {
+    function pathsPartMaΩp(prefix: string, parts: any) {
       for (const key in parts) {
         if (_.includes(key, '.')) pathsWithPeriods.push({ prefix, path: key })
         paths(prefix + '.' + key, parts[key])
@@ -144,7 +146,7 @@ export default function FormEditorOverview({
   }
 
   return (
-    <VStack>
+    <View style={layout.vStack}>
       <FloatingLabelInput
         label={t('form-editor.title')}
         value={formMetadata.title}
@@ -165,7 +167,7 @@ export default function FormEditorOverview({
           />
         </Center>
       )}
-      <HStack alignItems="center" justifyContent="space-between">
+      <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
         <FloatingLabelInput
           label={t('form-editor.official-name')}
           w="100%"
@@ -184,8 +186,8 @@ export default function FormEditorOverview({
             setFormMetadata({ ...formMetadata, 'official-code': v })
           }
         />
-      </HStack>
-      <HStack alignItems="center" justifyContent="space-between">
+      </View>
+      <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
         <AnyCountry
           placeholder={t('form-editor.select-country')}
           value={formMetadata.country}
@@ -200,8 +202,8 @@ export default function FormEditorOverview({
           mx={3}
           mt={1}
         />
-      </HStack>
-      <HStack alignItems="center" justifyContent="space-between">
+      </View>
+      <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
         <SelectLocation
           bg="white"
           placeholder={t('form-editor.select-location')}
@@ -223,8 +225,8 @@ export default function FormEditorOverview({
           value={formMetadata.priority}
           setValue={v => setFormMetadata({ ...formMetadata, priority: v })}
         />
-      </HStack>
-      <HStack alignItems="center" justifyContent="space-between">
+      </View>
+      <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
         <FloatingLabelInput
           label={t('form-editor.created-on')}
           w="100%"
@@ -247,8 +249,8 @@ export default function FormEditorOverview({
           w="100%"
           containerW="45%"
         />
-      </HStack>
-      <HStack alignItems="center" justifyContent="space-between">
+      </View>
+      <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
         <FloatingLabelInput
           label={t('form-editor.version')}
           w="100%"
@@ -267,8 +269,8 @@ export default function FormEditorOverview({
             formMetadata.formID ? formMetadata.formID : 'Not yet created'
           }
         />
-      </HStack>
-      <VStack mt={10} space={3} mb={5}>
+      </View>
+      <View style={[layout.vStackGap3, spacing.mt10, spacing.mb5]}>
         <Badge
           variant="solid"
           bg="coolGray.400"
@@ -328,9 +330,9 @@ export default function FormEditorOverview({
             help="TODO implement this"
           />
         )}
-      </VStack>
+      </View>
       {createMode ? (
-        <HStack my={5} justifyContent="center">
+        <View style={[layout.hStack, layout.justifyCenter, spacing.my5]}>
           <Button
             accessoryLeft={SaveIcon}
             status="success"
@@ -338,9 +340,9 @@ export default function FormEditorOverview({
           >
             {t('form-editor.create-form')}
           </Button>
-        </HStack>
+        </View>
       ) : (
-        <HStack my={5} justifyContent="space-between">
+        <View style={[layout.hStack, layout.spaceBet, spacing.my5]}>
           <Button
             accessoryLeft={SaveIcon}
             status="success"
@@ -359,8 +361,8 @@ export default function FormEditorOverview({
                 : t('form-editor.enable-form')}
             </Button>
           </Tooltip>
-        </HStack>
+        </View>
       )}
-    </VStack>
+    </View>
   )
 }

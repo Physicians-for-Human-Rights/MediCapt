@@ -53,8 +53,17 @@ export const spacing = StyleSheet.create({
   mb4: {
     marginBottom: 16,
   },
+  mb5: {
+    marginBottom: 20,
+  },
   my2: {
     marginVertical: 8,
+  },
+  my5: {
+    marginVertical: 20,
+  },
+  mt10: {
+    marginTop: 40,
   },
 })
 
