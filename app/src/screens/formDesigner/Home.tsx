@@ -1,15 +1,22 @@
 import React from 'react'
-import { HStack, VStack, Center, Pressable } from 'native-base'
+import { Pressable } from 'native-base'
 import { Text, useStyleSheet, Icon } from '@ui-kitten/components'
-import { MaterialIcons } from '@expo/vector-icons'
 import DashboardLayout from 'components/DashboardLayout'
-import {
-  RootStackScreenProps,
-  RootStackParamList,
-} from 'utils/formDesigner/navigation'
+import { RootStackScreenProps } from 'utils/formDesigner/navigation'
 import themedStyles from 'themeStyled'
+import styles, {
+  backgrounds,
+  borders,
+  layout,
+  shadows,
+  spacing,
+} from 'components/styles'
+import { View, SafeAreaView, Dimensions } from 'react-native'
+import { breakpoints } from 'components/nativeBaseSpec'
 
+const { width } = Dimensions.get('window')
 const styleS = useStyleSheet(themedStyles)
+const isWider = width > breakpoints.md
 
 export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
   return (
@@ -20,26 +27,28 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
       backButton={false}
       navigation={navigation}
     >
-      <VStack
-        safeAreaBottom
-        height="90%"
-        borderRadius={{ md: '8' }}
-        borderColor="coolGray.200"
-        bg="white"
-        px={{
-          base: 4,
-          md: 32,
-        }}
+      <SafeAreaView
+        style={[
+          styles.formDesignerView,
+          { paddingHorizontal: isWider ? 32 : 4 },
+        ]}
       >
-        <HStack pt="5" space={3} justifyContent="center">
+        <View style={[layout.hStackGap3, layout.justifyCenter, spacing.pt5]}>
           <Pressable
             onPress={() => navigation.navigate('FormEditor', route.params)}
           >
-            <Center h="80" w="190" bg="primary.600" rounded="md" shadow={3}>
-              <VStack space={3}>
-                <Center>
+            <View
+              style={[
+                layout.center,
+                backgrounds.primary600,
+                borders.roundedMd,
+                { height: 80, width: 190 },
+              ]}
+            >
+              <View style={[layout.vStackGap3]}>
+                <View style={[layout.center]}>
                   <Icon pack="material" name="add-box" fill="white" size={16} />
-                </Center>
+                </View>
                 <Text
                   style={[
                     styleS.fontBold,
@@ -49,16 +58,24 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
                 >
                   Create a new form
                 </Text>
-              </VStack>
-            </Center>
+              </View>
+            </View>
           </Pressable>
 
           <Pressable
             onPress={() => navigation.navigate('FormList', route.params)}
           >
-            <Center h="80" w="190" bg="primary.600" rounded="md" shadow={3}>
-              <VStack space={3}>
-                <Center>
+            <View
+              style={[
+                layout.center,
+                backgrounds.primary600,
+                borders.roundedMd,
+                { height: 80, width: 190 },
+                shadows[3],
+              ]}
+            >
+              <View style={[layout.vStackGap3]}>
+                <View style={[layout.center]}>
                   <Icon
                     pack="material"
                     fill="white"
@@ -66,7 +83,7 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
                     // size={16}
                     name="edit"
                   />
-                </Center>
+                </View>
                 <Text
                   style={
                     (styleS.fontBold, styleS.fontSizeLg, { color: 'white' })
@@ -74,11 +91,11 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
                 >
                   Edit an existing form
                 </Text>
-              </VStack>
-            </Center>
+              </View>
+            </View>
           </Pressable>
-        </HStack>
-      </VStack>
+        </View>
+      </SafeAreaView>
     </DashboardLayout>
   )
 }

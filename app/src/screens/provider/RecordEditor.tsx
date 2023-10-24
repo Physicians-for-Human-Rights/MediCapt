@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { VStack, Modal } from 'native-base'
+import { Modal } from 'native-base'
 import { Button } from '@ui-kitten/components'
 import _ from 'lodash'
 import Form from 'components/Form'
@@ -40,7 +40,12 @@ import { goBackMaybeRefreshing } from 'utils/navigation'
 import { createShareForRecord, getSharesForRecord } from 'api/provider'
 import { Share } from 'utils/types/share'
 import { useUserLocations } from 'utils/store'
+import { backgrounds, borders, layout } from 'components/styles'
+import { breakpoints } from 'components/nativeBaseSpec'
+import { Dimensions, SafeAreaView } from 'react-native'
 
+const { width } = Dimensions.get('window')
+const isWider = width > breakpoints.md
 const FormMemo = React.memo(Form)
 
 export default function RecordEditor({
@@ -451,16 +456,14 @@ export default function RecordEditor({
       reloadPrevious={reloadPrevious}
     >
       <>
-        <VStack
-          safeAreaBottom
-          flex={1}
-          borderRadius={{ md: '8' }}
-          borderColor="coolGray.200"
-          bg={'white'}
-          px={{
-            base: 0,
-            md: 0,
-          }}
+        <SafeAreaView
+          style={[
+            layout.vStack,
+            layout.flex1,
+            borders.borderColorCG200,
+            backgrounds.white,
+            { borderRadius: isWider ? 8 : 0, paddingHorizontal: 0 },
+          ]}
         >
           {formMetadata && formManifest && (!recordMetadata || recordManifest) && (
             <FormMemo
@@ -501,7 +504,7 @@ export default function RecordEditor({
               reloadPrevious={reloadPrevious}
             />
           )}
-        </VStack>
+        </SafeAreaView>
         <Modal
           isOpen={isAssociatedModalOpen}
           onClose={() => setIsAssociatedModalOpen(false)}

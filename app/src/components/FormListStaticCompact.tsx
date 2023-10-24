@@ -1,5 +1,5 @@
 import React from 'react'
-import { HStack, VStack, ScrollView, Pressable } from 'native-base'
+import { ScrollView, Pressable } from 'native-base'
 import { Text, useStyleSheet } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
@@ -9,9 +9,11 @@ import _ from 'lodash'
 import { FormMetadata } from 'utils/types/formMetadata'
 import { Dimensions, View } from 'react-native'
 import { breakpoints } from './nativeBaseSpec'
+import styles, { layout, spacing } from './styles'
 
 const styleS = useStyleSheet(themedStyles)
 const { width } = Dimensions.get('window')
+const isWider = width > breakpoints.md
 
 export function ListItem({
   item,
@@ -22,9 +24,11 @@ export function ListItem({
 }) {
   return (
     <Pressable p={2} onPress={() => selectItem(item)}>
-      <HStack justifyContent="space-between" w="100%">
-        <HStack alignItems="center" space={4} w="70%">
-          <VStack>
+      <View style={[layout.hStack, layout.width100percent, layout.spaceBet]}>
+        <View
+          style={[layout.hStackGap4, layout.alignCenter, layout.width70percent]}
+        >
+          <View style={layout.vStack}>
             <Text
               style={[
                 styleS.truncated,
@@ -45,9 +49,9 @@ export function ListItem({
             >
               {item.subtitle}
             </Text>
-          </VStack>
-        </HStack>
-        <VStack w="30%">
+          </View>
+        </View>
+        <View style={[layout.vStack, layout.width30percent]} w="30%">
           <Text
             style={[
               styleS.truncated,
@@ -66,8 +70,8 @@ export function ListItem({
           >
             {item.formID}
           </Text>
-        </VStack>
-      </HStack>
+        </View>
+      </View>
     </Pressable>
   )
 }
@@ -86,13 +90,20 @@ export function ListItemDesktop({
       _hover={{ bg: 'coolGray.100' }}
       onPress={() => selectItem(item)}
     >
-      <HStack alignItems="center" flex={1} justifyContent="space-between">
-        <VStack w="100%">
+      <View
+        style={[
+          layout.hStack,
+          layout.flex1,
+          layout.alignCenter,
+          layout.spaceBet,
+        ]}
+      >
+        <View style={[layout.vStack, layout.width100percent]}>
           <Text style={[styleS.fontBold, styleS.truncated]}>{item.title}</Text>
           <Text style={[styleS.ml2, styleS.truncated]}>{item.subtitle}</Text>
           <Text style={[styleS.ml2, styleS.truncated]}>{item.formID}</Text>
-        </VStack>
-      </HStack>
+        </View>
+      </View>
     </Pressable>
   )
 }
@@ -106,17 +117,11 @@ export default function FormListStaticCompact({
 }) {
   return (
     <>
-      <VStack
-        px={{ base: 4, md: 8 }}
-        py={{ base: 2, md: 8 }}
-        borderRadius={{ md: '8' }}
-        _light={{
-          borderColor: 'coolGray.200',
-          bg: { base: 'white' },
-        }}
-        borderWidth={{ md: '1' }}
-        borderBottomWidth="1"
-        space="4"
+      <View
+        style={[
+          styles.formListVStack,
+          isWider ? styles.formListVStackMd : styles.formListVStackBase,
+        ]}
       >
         <View>
           <ScrollView>
@@ -133,7 +138,7 @@ export default function FormListStaticCompact({
               })}
             </View>
             <View style={{ display: width > breakpoints.md ? 'flex' : 'none' }}>
-              <VStack mt={3} space={3}>
+              <View style={[layout.vStackGap3, spacing.mt3]}>
                 {forms.map((item: FormMetadata, index: number) => {
                   return (
                     <ListItemDesktop
@@ -143,11 +148,11 @@ export default function FormListStaticCompact({
                     />
                   )
                 })}
-              </VStack>
+              </View>
             </View>
           </ScrollView>
         </View>
-      </VStack>
+      </View>
     </>
   )
 }

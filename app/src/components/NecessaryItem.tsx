@@ -1,8 +1,10 @@
 import React from 'react'
-import { HStack, Popover } from 'native-base'
+import { Popover } from 'native-base'
 import { Button, Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import _ from 'lodash'
 import themedStyles from 'themeStyled'
+import { layout } from './styles'
+import { View } from 'react-native'
 
 const styleS = useStyleSheet(themedStyles)
 
@@ -27,7 +29,7 @@ export default function NecessaryItem({
 }) {
   if (isDone) {
     return (
-      <HStack space={0} alignItems="center">
+      <View style={[layout.hStack, layout.alignCenter]}>
         <Icon
           size={size}
           fill="success"
@@ -36,12 +38,12 @@ export default function NecessaryItem({
         />
         {/* <CheckIcon size={size} mx={mx} /> */}
         <Text>{doneText}</Text>
-      </HStack>
+      </View>
     )
   } else {
     // const Icon = optional ? WarningTwoIcon : CloseIcon
     return (
-      <HStack space={0} alignItems="center">
+      <View style={[layout.hStack, layout.alignCenter]}>
         <Icon
           size={size}
           style={{ marginHorizontal: +mx * 4 }}
@@ -75,7 +77,7 @@ export default function NecessaryItem({
             </Popover.Content>
           </Popover>
         )}
-      </HStack>
+      </View>
     )
   }
 }

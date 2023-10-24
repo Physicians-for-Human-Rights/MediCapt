@@ -1,32 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import _ from 'lodash'
-import { VStack, View } from 'native-base'
 import { Text } from '@ui-kitten/components'
 import { FormType } from 'utils/types/form'
 // @ts-ignore typescript doesn't do native/web modules
 import DisplayPDF from './DisplayPDF'
-import yaml from 'js-yaml'
 import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
 import {
-  isImage,
-  isInManifest,
-  filterManifest,
-  mapManifest,
-  addFileToManifest,
-  makeManifestEntry,
-  changeFilenameInManifest,
   lookupManifestByNameAndType,
-  addOrReplaceFileToManifestByFilename,
-  lookupManifest,
-  getRecordTypeFormManifest,
   getFormTypeFromManifest,
 } from 'utils/manifests'
 import {
   PDFDocument,
   PageSizes,
   StandardFonts,
-  PDFFont,
-  TextAlignment,
   LayoutBounds as Box,
   rgb,
   grayscale,
@@ -34,42 +20,15 @@ import {
   breakTextIntoLines,
   PDFPage,
 } from 'pdf-lib'
-import { tryConvertToJpeg } from 'utils/imageConverter.web'
 import { mapSectionWithPaths, nameFormSections } from 'utils/forms'
 import { allFormRenderCommands } from 'utils/formRendering/commands'
 import { RenderCommand } from 'utils/formRendering/types'
 import formatDate from 'utils/date.ts'
-import {
-  randBoolean,
-  randNumber,
-  randPastDate,
-  randSentence,
-  randText,
-  rand,
-  randAddress,
-  randPhoneNumber,
-} from '@ngneat/falso'
 import { t } from 'i18n-js'
 import { dataURItoBlob } from 'utils/data'
 import { PageInfo, Row, rowSizeByType } from 'utils/formPrinting/types'
-import {
-  mkPageInfo,
-  updatePageInfo,
-  overflowsPage,
-  hasSpaceOnRow,
-} from 'utils/formPrinting/layout'
-import {
-  mkPage,
-  pageDebug,
-  debugPoint,
-  box,
-  line,
-  text,
-  mkImage,
-  mkText,
-  renderRowLines,
-  startPage,
-} from 'utils/formPrinting/draw'
+import { mkPageInfo } from 'utils/formPrinting/layout'
+import { pageDebug } from 'utils/formPrinting/draw'
 import {
   renderTitleHeader,
   renderFooter,
@@ -77,6 +36,8 @@ import {
   renderSection,
 } from 'utils/formPrinting/print'
 import { RecordMetadata } from 'utils/types/recordMetadata'
+import { layout } from './styles'
+import { View } from 'react-native'
 
 export default function FormPrinted({
   formMetadata,
@@ -277,8 +238,8 @@ export default function FormPrinted({
     )
   }
   return (
-    <VStack>
+    <View style={layout.vStack}>
       <Text>PDF is not uploaded</Text>
-    </VStack>
+    </View>
   )
 }

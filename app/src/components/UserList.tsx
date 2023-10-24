@@ -1,18 +1,9 @@
 import React, { useState } from 'react'
 import { Dimensions, Platform } from 'react-native'
-import {
-  HStack,
-  Stack,
-  Center,
-  VStack,
-  ScrollView,
-  Pressable,
-  Select,
-} from 'native-base'
+import { ScrollView, Pressable, Select } from 'native-base'
 import { Text, useStyleSheet, Button, Icon } from '@ui-kitten/components'
 import { View } from 'react-native'
 import themedStyles from 'themeStyled'
-import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
@@ -22,9 +13,10 @@ import { UserKindList } from 'utils/userTypes'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import SelectLocation from 'components/SelectLocation'
 import { breakpoints } from './nativeBaseSpec'
-import { spacing } from './styles'
+import styles, { backgrounds, borders, spacing } from './styles'
 import { CloseIcon, RefreshIcon } from './Icons'
 import { colors } from './nativeBaseSpec'
+import { layout } from './styles'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -33,9 +25,11 @@ const styleS = useStyleSheet(themedStyles)
 export function ListItem({ item }: { item: UserType }) {
   return (
     <Pressable p={2} borderBottomWidth={0.8} borderBottomColor="coolGray.300">
-      <HStack justifyContent="space-between" w="100%">
-        <HStack alignItems="center" space={4} w="55%">
-          <VStack>
+      <View style={[layout.hStack, layout.spaceBet, layout.width100percent]}>
+        <View
+          style={[layout.hStackGap4, layout.alignCenter, layout.width55percent]}
+        >
+          <View>
             <Text
               style={[
                 styleS.truncated,
@@ -47,7 +41,7 @@ export function ListItem({ item }: { item: UserType }) {
             >
               {item?.legalName}
             </Text>
-            <HStack>
+            <View style={[layout.hStack]}>
               <Text
                 style={[
                   styleS.truncated,
@@ -63,17 +57,18 @@ export function ListItem({ item }: { item: UserType }) {
               >
                 {t('country.' + item.country)}
               </Text>
-            </HStack>
+            </View>
             <Text
               style={[styleS.truncated, styleS.pl3, styleS.colorCoolGray700]}
-              pl={3}
             >
               {formatDate(item?.lastChangedDate, 'PPP') as string}
             </Text>
-          </VStack>
-        </HStack>
-        <HStack alignItems="center" space={4} w="32%">
-          <VStack>
+          </View>
+        </View>
+        <View
+          style={[layout.hStackGap4, layout.alignCenter, layout.width32percent]}
+        >
+          <View style={[layout.vStack]}>
             <Text
               style={[
                 styleS.truncated,
@@ -114,16 +109,16 @@ export function ListItem({ item }: { item: UserType }) {
             >
               {item.enabled}
             </Text>
-          </VStack>
-        </HStack>
-        <HStack w="5%">
+          </View>
+        </View>
+        <View style={[layout.hStack, layout.width5percent]}>
           {item.enabled ? (
             <Icon fill="success" size="6" name="check-circle" pack="material" />
           ) : (
             <Icon color="danger" size="6" name="cancel" pack="material" />
           )}
-        </HStack>
-      </HStack>
+        </View>
+      </View>
     </Pressable>
   )
 }
@@ -142,36 +137,50 @@ export function ListItemDesktop({
       _hover={{ bg: 'coolGray.100' }}
       onPress={() => selectItem(item)}
     >
-      <HStack alignItems="center" flex={1} justifyContent="space-between">
-        <VStack w="30%">
+      <View
+        style={[
+          layout.hStack,
+          layout.alignCenter,
+          layout.flex1,
+          layout.spaceBet,
+        ]}
+      >
+        <View style={[layout.vStack, layout.width30percent]}>
           <Text style={[styleS.fontBold, styleS.truncated]} numberOfLines={2}>
             {item.name}
           </Text>
-          <HStack alignItems="center" flex={1} justifyContent="flex-start">
+          <View
+            style={[
+              layout.hStack,
+              layout.alignCenter,
+              layout.flex1,
+              layout.justifyStart,
+            ]}
+          >
             <Text style={[spacing.ml2, styleS.truncated]}>{item.nickname}</Text>
-          </HStack>
-        </VStack>
+          </View>
+        </View>
 
-        <VStack w="20%">
+        <View style={[layout.vStack, layout.width20percent]}>
           <Text style={[styleS.truncated]}>{item.email}</Text>
           <Text style={[styleS.truncated]}>{item.username}</Text>
-        </VStack>
+        </View>
 
-        <VStack w="30%">
+        <View style={[layout.vStack, layout.width30percent]}>
           <Text style={[styleS.truncated]}>
             {formatDate(item.last_updated_time, 'PPP') as string}
           </Text>
           <Text style={[styleS.truncated]}>{item.userID}</Text>
-        </VStack>
+        </View>
 
-        <HStack w="5%">
+        <View style={[layout.hStack, layout.width5percent]}>
           {item.enabled ? (
             <Icon fill="success" size="6" name="check-circle" pack="material" />
           ) : (
             <Icon fill="danger" size="6" name="cancel" pack="material" />
           )}
-        </HStack>
-      </HStack>
+        </View>
+      </View>
     </Pressable>
   )
 }
@@ -217,12 +226,16 @@ export default function UserList({
 }) {
   return (
     <>
-      <Stack
-        direction={{ md: 'row', base: 'column' }}
-        mb={{ md: 1, base: 0 }}
-        justifyContent="center"
+      <View
+        style={[
+          layout.justifyCenter,
+          {
+            flexDirection: isWider ? 'row' : 'column',
+            marginBottom: isWider ? 4 : 0,
+          },
+        ]}
       >
-        <Center>
+        <View style={[layout.center]}>
           <Select
             size="md"
             bg="white"
@@ -234,9 +247,9 @@ export default function UserList({
               <Select.Item key={e} label={t('user.' + e)} value={e} />
             ))}
           </Select>
-        </Center>
+        </View>
         {onlyEnabledUsers && (
-          <Center>
+          <View style={[layout.center]}>
             <Select
               size="md"
               bg="white"
@@ -254,9 +267,9 @@ export default function UserList({
                 <Select.Item key={e} label={t('user.filter.' + e)} value={e} />
               ))}
             </Select>
-          </Center>
+          </View>
         )}
-        <Center>
+        <View style={[layout.center]}>
           <SelectLocation
             bg="white"
             placeholder={t('user.enter-location')}
@@ -267,11 +280,13 @@ export default function UserList({
             my={Platform.OS === 'android' ? 2 : { md: 0, base: 2 }}
             w={Platform.OS === 'android' ? '80%' : undefined}
           />
-        </Center>
-        <HStack
-          my={{ md: 0, base: 2 }}
-          mb={{ md: 1, base: 2 }}
-          justifyContent="center"
+        </View>
+        <View
+          style={[
+            layout.hStack,
+            layout.justifyCenter,
+            { marginVertical: isWider ? 0 : 8, marginBottom: isWider ? 4 : 8 },
+          ]}
         >
           <Button
             onPress={() => {
@@ -286,10 +301,18 @@ export default function UserList({
             style={[styleS.ml4, styleS.mr2]}
           />
           <Button onPress={doSearch} accessoryLeft={RefreshIcon} size="sm" />
-        </HStack>
-      </Stack>
-      <HStack py={2} w="100%" justifyContent="center" bg={'muted.50'}>
-        <Center>
+        </View>
+      </View>
+      <View
+        style={[
+          layout.hStack,
+          layout.width100percent,
+          layout.justifyCenter,
+          backgrounds.bgMuted50,
+          spacing.py2,
+        ]}
+      >
+        <View style={[layout.center]}>
           <Select
             size="md"
             bg="white"
@@ -309,7 +332,7 @@ export default function UserList({
               )
             )}
           </Select>
-        </Center>
+        </View>
         <DebouncedTextInput
           flex={{ md: undefined, lg: undefined, base: 1 }}
           w={{ md: '70%', lg: '70%', base: '70%' }}
@@ -333,18 +356,12 @@ export default function UserList({
           value={filterText}
           onChangeText={setFilterText}
         />
-      </HStack>
-      <VStack
-        px={{ base: 4, md: 8 }}
-        py={{ base: 2, md: 8 }}
-        borderRadius={{ md: '8' }}
-        _light={{
-          borderColor: 'coolGray.200',
-          bg: { base: 'white' },
-        }}
-        borderWidth={{ md: '1' }}
-        borderBottomWidth="1"
-        space="4"
+      </View>
+      <View
+        style={[
+          styles.userListView,
+          isWider ? styles.locationListVStackMd : styles.locationListVStackBase,
+        ]}
       >
         <View>
           <ScrollView>
@@ -363,11 +380,14 @@ export default function UserList({
                 display: isWider ? 'flex' : 'none',
               }}
             >
-              <HStack
-                alignItems="center"
-                justifyContent="space-between"
-                borderBottomWidth={1}
-                _light={{ borderColor: 'coolGray.200' }}
+              <View
+                style={[
+                  layout.hStack,
+                  layout.alignCenter,
+                  layout.spaceBet,
+                  borders.borderBW1,
+                  borders.borderColorCG200,
+                ]}
               >
                 <Text
                   style={[
@@ -415,8 +435,8 @@ export default function UserList({
                 >
                   {t('heading.enabled')}
                 </Text>
-              </HStack>
-              <VStack mt={3} space={3}>
+              </View>
+              <View style={[layout.vStackGap3, spacing.mt3]}>
                 {users.map((item: UserType, index: number) => {
                   return (
                     <ListItemDesktop
@@ -426,11 +446,11 @@ export default function UserList({
                     />
                   )
                 })}
-              </VStack>
+              </View>
             </View>
           </ScrollView>
         </View>
-      </VStack>
+      </View>
     </>
   )
 }

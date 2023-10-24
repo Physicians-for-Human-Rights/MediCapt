@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { HStack, VStack, View, Select, Tooltip, Popover } from 'native-base'
+import { Select, Tooltip, Popover } from 'native-base'
 import { Button, useStyleSheet } from '@ui-kitten/components'
 import type { LocationType } from 'utils/types/location'
 import { locationEntityTypes } from 'utils/types/location'
@@ -15,6 +15,8 @@ import { createLocation, updateLocation, deleteLocation } from 'api/manager'
 import { standardHandler } from 'api/utils'
 import themedStyles from 'themeStyled'
 import { DeleteIcon, SaveIcon, CheckIcon, CloseIcon } from './Icons'
+import { layout, spacing } from './styles'
+import { View } from 'react-native'
 
 const styleS = useStyleSheet(themedStyles)
 
@@ -94,14 +96,14 @@ export default function LocationEditor({
 
   return (
     <>
-      <VStack>
+      <View style={layout.vStack}>
         <FloatingLabelInput
           label={t('location.full-official-name')}
           value={location.legalName}
           setValue={v => setLocation({ ...location, legalName: v })}
           mt={10}
         />
-        <HStack alignItems="center" justifyContent="space-between">
+        <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
             label={'Short name'}
             w="100%"
@@ -130,7 +132,7 @@ export default function LocationEditor({
               />
             ))}
           </Select>
-        </HStack>
+        </View>
         <FloatingLabelInput
           label={t('location.address')}
           value={location.address}
@@ -141,7 +143,7 @@ export default function LocationEditor({
           value={location.mailingAddress}
           setValue={v => setLocation({ ...location, mailingAddress: v })}
         />
-        <HStack alignItems="center" justifyContent="space-between">
+        <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <AnyCountry
             placeholder={t('location.select-country')}
             value={location.country}
@@ -158,8 +160,8 @@ export default function LocationEditor({
             mt={1}
             mb={3}
           />
-        </HStack>
-        <HStack alignItems="center" justifyContent="space-between">
+        </View>
+        <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
             label={'Phone number'}
             w="100%"
@@ -174,8 +176,8 @@ export default function LocationEditor({
             value={location.email}
             setValue={v => setLocation({ ...location, email: v })}
           />
-        </HStack>
-        <HStack alignItems="center" justifyContent="space-between">
+        </View>
+        <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
             label={'Coordinates'}
             w="100%"
@@ -204,8 +206,8 @@ export default function LocationEditor({
               </Popover.Body>
             </Popover.Content>
           </Popover>
-        </HStack>
-        <HStack alignItems="center" justifyContent="space-between">
+        </View>
+        <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
             label={'Tag (optional)'}
             w="100%"
@@ -215,7 +217,7 @@ export default function LocationEditor({
               setLocation({ ...location, tags: new Set(_.split(v, / |,/)) })
             }
           />
-          <View w="45%">
+          <View style={layout.width45percent}>
             <NecessaryItem
               isDone={location.enabled || false}
               todoText="Location is disabled"
@@ -223,8 +225,8 @@ export default function LocationEditor({
               size="tiny"
             />
           </View>
-        </HStack>
-        <HStack alignItems="center" justifyContent="space-between">
+        </View>
+        <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
             label={
               t('location.id') +
@@ -250,8 +252,8 @@ export default function LocationEditor({
             w="100%"
             containerW="45%"
           />
-        </HStack>
-        <HStack alignItems="center" justifyContent="space-between">
+        </View>
+        <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
             isReadOnly
             label={'Location version (automatic)'}
@@ -272,9 +274,16 @@ export default function LocationEditor({
             w="100%"
             containerW="45%"
           />
-        </HStack>
+        </View>
         {createMode ? (
-          <HStack mt={5} justifyContent="center">
+          <View
+            style={[
+              layout.hStack,
+              layout.justifyCenter,
+              spacing.mt5,
+              layout.justifyCenter,
+            ]}
+          >
             <Button
               accessoryLeft={SaveIcon}
               status="success"
@@ -282,9 +291,9 @@ export default function LocationEditor({
             >
               {t('location.create-location')}
             </Button>
-          </HStack>
+          </View>
         ) : (
-          <HStack mt={5} justifyContent="space-between">
+          <View style={[layout.spaceBet, layout.hStack, spacing.mt5]}>
             <Button
               accessoryLeft={SaveIcon}
               status="success"
@@ -309,9 +318,9 @@ export default function LocationEditor({
                   : t('location.enable-location')}
               </Button>
             </Tooltip>
-          </HStack>
+          </View>
         )}
-      </VStack>
+      </View>
       <Loading loading={waiting} />
     </>
   )

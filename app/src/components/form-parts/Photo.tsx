@@ -1,19 +1,8 @@
 import React, { useState } from 'react'
 import { Alert } from 'react-native'
-import {
-  VStack,
-  HStack,
-  Pressable,
-  Icon,
-  Image,
-  Divider,
-  Center,
-  Modal,
-  FlatList,
-} from 'native-base'
+import { Pressable, Image, Divider, Modal, FlatList } from 'native-base'
 import * as ImagePicker from 'expo-image-picker'
 import { Camera } from 'expo-camera'
-import { Feather, MaterialIcons } from '@expo/vector-icons'
 import { disabledBackground } from 'utils/formRendering/utils'
 import { t } from 'i18n-js'
 import _ from 'lodash'
@@ -21,6 +10,7 @@ import { useWindowDimensions, View } from 'react-native'
 import { Button, useStyleSheet } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { CameraIcon, DeleteIcon, UploadCloudIcon } from 'components/Icons'
+import { layout } from '../styles'
 
 const styleS = useStyleSheet(themedStyles)
 
@@ -121,7 +111,7 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
         data={photos}
         style={isDisabled ? disabledStyle : goodStyle}
         renderItem={({ item, index }) => (
-          <VStack>
+          <View style={[layout.vStack]}>
             <Pressable
               py={2}
               w="100%"
@@ -146,14 +136,14 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
             >
               {t('form.delete-photo')}
             </Button>
-          </VStack>
+          </View>
         )}
         ItemSeparatorComponent={() => <Divider my={2} thickness="1" />}
         ListFooterComponent={() =>
           onlyOne && photos && photos.length > 0 ? (
             <></>
           ) : (
-            <HStack justifyContent="center">
+            <View style={[layout.hStack, layout.justifyCenter]}>
               <Button
                 style={[
                   styleS.my2,
@@ -184,7 +174,7 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
               >
                 {t('form.take-photo')}
               </Button>
-            </HStack>
+            </View>
           )
         }
       />
@@ -193,7 +183,7 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
           <Modal.CloseButton />
           <Modal.Header>{t('form.camera-viewer')}</Modal.Header>
           <Modal.Body>
-            <Center flex={1}>
+            <View style={[layout.center, layout.flex1]}>
               <View style={{ height: modalSize * 0.7, width: modalSize * 0.7 }}>
                 {isOpen && (
                   <Camera
@@ -203,7 +193,7 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
                   />
                 )}
               </View>
-            </Center>
+            </View>
           </Modal.Body>
           <Modal.Footer>
             <Button

@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { Input, Center, Select, Checkbox, VStack } from 'native-base'
+import { Input, Select, Checkbox } from 'native-base'
 import useDebounce from 'react-use/lib/useDebounce'
 import _ from 'lodash'
 import { MultipleFormValueTypes, FormKVRawType } from 'utils/types/form'
@@ -7,6 +7,8 @@ import { t } from 'i18n-js'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import { disabledBackground } from 'utils/formRendering/utils'
 import uuid from 'react-native-uuid'
+import { View } from 'react-native'
+import { layout } from 'components/styles'
 
 export function isPrimitiveType(x: any) {
   return _.isString(x) || _.isBoolean(x) || _.isNumber(x)
@@ -86,8 +88,13 @@ export function ListSelectMultiple({
     )
   }
   return (
-    <Center bg={isDisabled ? disabledBackground : undefined}>
-      <VStack>{items}</VStack>
+    <View
+      style={[
+        layout.center,
+        { backgroundColor: isDisabled ? disabledBackground : undefined },
+      ]}
+    >
+      <View style={[layout.vStack]}>{items}</View>
       {otherChecked && (
         <DebouncedTextInput
           key={items.length}
@@ -103,7 +110,7 @@ export function ListSelectMultiple({
           accessibilityLabel={t('form.other-details')}
         />
       )}
-    </Center>
+    </View>
   )
 }
 
@@ -152,7 +159,12 @@ export function List({
     [rawContents]
   )
   return (
-    <Center bg={isDisabled ? disabledBackground : undefined}>
+    <View
+      style={[
+        layout.center,
+        { backgroundColor: isDisabled ? disabledBackground : undefined },
+      ]}
+    >
       <Select
         isDisabled={isDisabled}
         size="md"
@@ -215,6 +227,6 @@ export function List({
           value={rawContents}
         />
       )}
-    </Center>
+    </View>
   )
 }

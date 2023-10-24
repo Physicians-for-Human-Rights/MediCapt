@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react'
-import { VStack, Select, CheckIcon } from 'native-base'
+import { Select, CheckIcon } from 'native-base'
 import { FormType } from 'utils/types/form'
 import { lookupManifestByNameAndType } from 'utils/manifests'
 import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
@@ -16,7 +16,6 @@ import { readFile } from 'utils/forms'
 import { useInfo, handleStandardErrors } from 'utils/errors'
 import Loading from 'components/Loading'
 import { getForm } from 'api/formdesigner'
-import { unpackRemoteData, blobToBase64, base64ArrayBuffer } from 'utils/data'
 import {
   addOrReplaceFileToManifestByFilename,
   filetypeIsDataURI,
@@ -25,7 +24,7 @@ import {
 } from 'utils/manifests'
 import useLeave from 'utils/useLeave'
 import { dataURItoBlob } from 'utils/data'
-import { Dimensions, View } from 'react-native'
+import { Dimensions, View, SafeAreaView } from 'react-native'
 import styles from '../../components/styles'
 import { breakpoints, colors } from 'components/nativeBaseSpec'
 
@@ -265,7 +264,13 @@ export default function FormEditor({
     'Are you sure you want to leave, unsaved data will be lost. Go to the overview page and click update.',
     () => {}
   )
-
+  const pxVal =
+    tabName === 'Editor' || tabName === 'Printed' ? 0 : isWider ? 32 : 4
+  const localStyle = {
+    borderRadius: isWider ? 8 : 0,
+    backgroundColor: tabName !== 'Editor' ? 'white' : 'transparent',
+    paddingHorizontal: pxVal,
+  }
   return (
     <DashboardLayout
       title={'Form Editor'}
@@ -290,23 +295,9 @@ export default function FormEditor({
       fullWidth={tabName === 'Editor' || tabName === 'Printed'}
     >
       <>
-        <VStack
-          safeAreaBottom
-          height="95%"
-          borderRadius={{ md: '8' }}
-          borderColor="coolGray.200"
-          bg={tabName !== 'Editor' ? 'white' : null}
-          px={
-            tabName === 'Editor' || tabName === 'Printed'
-              ? 0
-              : {
-                  base: 4,
-                  md: 32,
-                }
-          }
-        >
+        <SafeAreaView style={[styles.formEditorDesignerView, localStyle]}>
           {page}
-        </VStack>
+        </SafeAreaView>
         <Loading loading={waiting} />
       </>
     </DashboardLayout>

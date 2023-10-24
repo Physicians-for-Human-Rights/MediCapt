@@ -1,3 +1,4 @@
+import { colors } from 'components/nativeBaseSpec'
 import { StyleSheet } from 'react-native'
 import { colors, rounded } from './nativeBaseSpec'
 
@@ -32,6 +33,24 @@ export const spacing = StyleSheet.create({
   py4: {
     paddingVertical: 16,
   },
+  py5: {
+    paddingVertical: 20,
+  },
+  pr4: {
+    paddingRight: 16,
+  },
+  pl2: {
+    paddingLeft: 8,
+  },
+  pt4: {
+    paddingTop: 16,
+  },
+  pt5: {
+    paddingTop: 20,
+  },
+  pb2: {
+    paddingBottom: 8,
+  },
   m1: {
     margin: 4,
   },
@@ -65,11 +84,26 @@ export const spacing = StyleSheet.create({
   mt10: {
     marginTop: 40,
   },
+  mt5: {
+    marginTop: 20,
+  },
+  mt3: {
+    marginTop: 12,
+  },
+  mt2: {
+    marginTop: 8,
+  },
 })
 
 export const borders = StyleSheet.create({
   roundedMd: {
     borderRadius: rounded.md,
+  },
+  borderBW1: {
+    borderBottomWidth: 1,
+  },
+  borderColorCG200: {
+    borderColor: colors.coolGray[200],
   },
 })
 export const layout = StyleSheet.create({
@@ -122,6 +156,17 @@ export const layout = StyleSheet.create({
     flexDirection: 'row',
     gap: 16,
   },
+  hStackGap5: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 20,
+  },
+  hStackGap10: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 40,
+  },
   hStackCenterGap2: {
     display: 'flex',
     justifyContent: 'center',
@@ -146,8 +191,63 @@ export const layout = StyleSheet.create({
   flex1: {
     flex: 1,
   },
+  flex3: {
+    flex: 3,
+  },
   width100percent: {
     width: '100%',
+  },
+  width70percent: {
+    width: '70%',
+  },
+  width60percent: {
+    width: '60%',
+  },
+  width55percent: {
+    width: '45%',
+  },
+  width40percent: {
+    width: '40%',
+  },
+  width45percent: {
+    width: '55%',
+  },
+  width30percent: {
+    width: '30%',
+  },
+  width32percent: {
+    width: '32%',
+  },
+  width20percent: {
+    width: '20%',
+  },
+  width5percent: {
+    width: '5%',
+  },
+})
+
+export const backgrounds = StyleSheet.create({
+  bgMuted50: {
+    backgroundColor: colors.muted[50],
+  },
+  primary600: {
+    backgroundColor: colors.primary[600],
+  },
+  white: {
+    backgroundColor: 'white',
+  },
+})
+export const shadows = StyleSheet.create({
+  3: {
+    // boxShadow: 'rgba(0, 0, 0, 0.27) 0px 3px 4.65px;',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 3.84,
+    // elevation: 5,
   },
 })
 
@@ -263,6 +363,76 @@ const styles = StyleSheet.create({
     width: 200,
     maxWidth: 200,
     marginVertical: 12,
+  },
+  formListVStack: {
+    display: 'flex',
+    flexDirection: 'column',
+    borderColor: colors.coolGray[200],
+    borderBottomWidth: 1,
+    gap: 16,
+    backgroundColor: 'white',
+  },
+  formListVStackMd: {
+    paddingHorizontal: 32,
+    paddingVertical: 32,
+    borderRadius: 32,
+    borderWidth: 1,
+  },
+  formListVStackBase: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  formListHStack: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    alignItems: 'center',
+    borderColor: colors.coolGray[800],
+  },
+  locationListVStack: {
+    borderColor: colors.coolGray[200],
+    borderBottomWidth: 1,
+    flexDirection: 'column',
+    display: 'flex',
+    gap: 16,
+  },
+  locationListVStackMd: {
+    paddingHorizontal: 32,
+    paddingVertical: 32,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  locationListVStackBase: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: 'white',
+  },
+  recordListStack: {
+    paddingTop: 0,
+    paddingBottom: 8,
+    gap: 8,
+    width: '100%',
+    justifyContent: 'center',
+    backgroundColor: colors.muted[50],
+  },
+  userListView: {
+    borderColor: colors.coolGray[200],
+    borderBottomWidth: 1,
+    gap: 16,
+  },
+  formDesignerView: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '90%',
+    borderRadius: 8,
+    backgroundColor: 'white',
+    borderColor: colors.coolGray[200],
+  },
+  formEditorDesignerView: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '95%',
+    borderColor: colors.coolGray[200],
   },
 })
 

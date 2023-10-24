@@ -1,12 +1,5 @@
 import React, { useState } from 'react'
-import {
-  HStack,
-  Center,
-  VStack,
-  ScrollView,
-  Pressable,
-  Heading,
-} from 'native-base'
+import { ScrollView, Pressable, Heading } from 'native-base'
 import { Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { LocationType } from 'utils/types/location'
@@ -16,6 +9,7 @@ import { t } from 'i18n-js'
 import _ from 'lodash'
 import { View, Dimensions } from 'react-native'
 import { breakpoints } from './nativeBaseSpec'
+import styles, { layout, spacing } from './styles'
 
 const { width } = Dimensions.get('window')
 const styleS = useStyleSheet(themedStyles)
@@ -24,9 +18,11 @@ const isWider = width > breakpoints.md
 export function ListItem({ item }: { item: LocationType }) {
   return (
     <Pressable p={2} borderBottomWidth={0.8} borderBottomColor="coolGray.300">
-      <HStack justifyContent="space-between" w="100%">
-        <HStack alignItems="center" space={4} w="55%">
-          <VStack>
+      <View style={[layout.hStack, layout.spaceBet, layout.width100percent]}>
+        <View
+          style={[layout.alignCenter, layout.hStackGap4, layout.width55percent]}
+        >
+          <View style={[layout.vStack]}>
             <Text
               style={[
                 styleS.truncated,
@@ -39,7 +35,7 @@ export function ListItem({ item }: { item: LocationType }) {
             >
               {item.legalName}
             </Text>
-            <HStack>
+            <View style={[layout.hStack]}>
               <Text
                 style={[
                   styleS.truncated,
@@ -55,7 +51,7 @@ export function ListItem({ item }: { item: LocationType }) {
               >
                 {t('country.' + item.country)}
               </Text>
-            </HStack>
+            </View>
             <Text
               style={[
                 styleS.truncated,
@@ -66,10 +62,12 @@ export function ListItem({ item }: { item: LocationType }) {
             >
               {formatDate(item.lastChangedDate, 'PPP') as string}
             </Text>
-          </VStack>
-        </HStack>
-        <HStack alignItems="center" space={4} w="32%">
-          <VStack>
+          </View>
+        </View>
+        <View
+          style={[layout.hStackGap4, layout.alignCenter, layout.width32percent]}
+        >
+          <View style={[layout.vStack]}>
             <Text
               style={[
                 styleS.truncated,
@@ -110,16 +108,16 @@ export function ListItem({ item }: { item: LocationType }) {
             >
               {item.enabled}
             </Text>
-          </VStack>
-        </HStack>
-        <HStack w="5%">
+          </View>
+        </View>
+        <View style={[layout.hStack, layout.width5percent]}>
           {item.enabled ? (
             <Icon fill="success" size="6" name="check-circle" pack="material" />
           ) : (
             <Icon fill="danger" size="6" name="cancel" pack="material" />
           )}
-        </HStack>
-      </HStack>
+        </View>
+      </View>
     </Pressable>
   )
 }
@@ -138,26 +136,40 @@ export function ListItemDesktop({
       _hover={{ bg: 'coolGray.100' }}
       onPress={() => selectItem(item)}
     >
-      <HStack alignItems="center" flex={1} justifyContent="space-between">
-        <VStack w="30%">
+      <View
+        style={[
+          layout.hStack,
+          layout.alignCenter,
+          layout.flex1,
+          layout.spaceBet,
+        ]}
+      >
+        <View style={[layout.vStack, layout.width30percent]}>
           <Text style={[styleS.fontBold, styleS.truncated]} numberOfLines={2}>
             {_.isString(item) ? item : item.legalName}
           </Text>
           {!_.isString(item) && (
-            <HStack alignItems="center" flex={1} justifyContent="flex-start">
+            <View
+              style={[
+                layout.hStack,
+                layout.alignCenter,
+                layout.justifyStart,
+                layout.flex1,
+              ]}
+            >
               <Text style={[styleS.ml2, styleS.truncated]}>
                 {item.shortName}
               </Text>
-            </HStack>
+            </View>
           )}
           {!_.isString(item) && (
             <Text style={[styleS.ml2, styleS.truncated]}>
               {t('location.entity.' + item.entityType)}
             </Text>
           )}
-        </VStack>
+        </View>
 
-        <VStack w="20%">
+        <View style={[layout.vStack, layout.width20percent]}>
           {!_.isString(item) && (
             <Text style={[styleS.truncated]}>
               {t('country.' + item.country)}
@@ -168,9 +180,9 @@ export function ListItemDesktop({
               {t('languages.' + item.language)}
             </Text>
           )}
-        </VStack>
+        </View>
 
-        <VStack w="30%">
+        <View style={[layout.vStack, layout.width30percent]}>
           {!_.isString(item) && (
             <Text style={[styleS.truncated]}>
               {formatDate(item.lastChangedDate, 'PPP') as string}
@@ -179,12 +191,12 @@ export function ListItemDesktop({
           {!_.isString(item) && (
             <Text style={[styleS.truncated]}>{item.locationID}</Text>
           )}
-        </VStack>
+        </View>
 
-        <HStack w="5%">
+        <View style={[layout.hStack, layout.width5percent]}>
           <Icon fill="danger" size="6" name="delete" pack="material" />
-        </HStack>
-      </HStack>
+        </View>
+      </View>
     </Pressable>
   )
 }
@@ -198,22 +210,16 @@ export default function LocationListStatic({
 }) {
   return (
     <>
-      <VStack
-        px={{ base: 4, md: 8 }}
-        py={{ base: 2, md: 8 }}
-        borderRadius={{ md: '8' }}
-        _light={{
-          borderColor: 'coolGray.200',
-          bg: { base: 'white' },
-        }}
-        borderWidth={{ md: '1' }}
-        borderBottomWidth="1"
-        space="4"
+      <View
+        style={[
+          styles.locationListVStack,
+          isWider ? styles.locationListVStackMd : styles.locationListVStackBase,
+        ]}
       >
         <View>
-          <Center>
+          <View style={[layout.center]}>
             <Heading size="md">Allowed locations</Heading>
-          </Center>
+          </View>
           <ScrollView>
             <View
               style={{
@@ -226,7 +232,7 @@ export default function LocationListStatic({
               })}
             </View>
             <View style={{ display: isWider ? 'flex' : 'none' }}>
-              <VStack mt={3} space={3}>
+              <View style={[layout.vStackGap3, spacing.mt3]}>
                 {locations.map((item: LocationType | string, index: number) => {
                   return (
                     <ListItemDesktop
@@ -236,11 +242,11 @@ export default function LocationListStatic({
                     />
                   )
                 })}
-              </VStack>
+              </View>
             </View>
           </ScrollView>
         </View>
-      </VStack>
+      </View>
     </>
   )
 }

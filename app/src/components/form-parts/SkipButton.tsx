@@ -1,9 +1,10 @@
 import React from 'react'
 import { Stack, Pressable, Center, Checkbox } from 'native-base'
 import { Text } from '@ui-kitten/components'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import _ from 'lodash'
 import { t } from 'i18n-js'
+import { layout } from 'components/styles'
 
 const styles = StyleSheet.create({
   checkbox: {
@@ -41,7 +42,7 @@ export default function SkipButton({
       isDisabled={isDisabled}
     >
       <Stack direction={direction}>
-        <Center>
+        <View style={[layout.center]}>
           <Checkbox
             value="skip"
             isChecked={skipped}
@@ -49,8 +50,8 @@ export default function SkipButton({
             size="sm"
             accessibilityLabel={t('form.skip-question')}
           />
-        </Center>
-        <Center>
+        </View>
+        <View style={[layout.center]}>
           <Text
             style={{
               paddingLeft: direction === 'row' ? 4 : 0,
@@ -59,7 +60,7 @@ export default function SkipButton({
           >
             SKIP
           </Text>
-        </Center>
+        </View>
       </Stack>
     </Pressable>
   )

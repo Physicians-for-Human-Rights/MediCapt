@@ -1,22 +1,18 @@
 import React, { useState, useEffect } from 'react'
-import { Box, HStack, VStack, ScrollView, Pressable } from 'native-base'
+import { ScrollView, Pressable } from 'native-base'
 import { Text, useStyleSheet } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
-import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import { Share } from 'utils/types/share'
-import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
-import SelectLocation from 'components/SelectLocation'
-import AnyCountry from 'components/AnyCountry'
-import Language from 'components/Language'
 import { Platform, Dimensions, View } from 'react-native'
 import { UserType } from 'utils/types/user'
 import { getUserByUUIDCachedAnyPool } from 'api/common'
 import { userFullName, UserKindNames } from 'utils/userTypes'
 import { breakpoints } from './nativeBaseSpec'
+import styles, { layout, spacing } from './styles'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -33,9 +29,11 @@ export function ListItemMobile({
 }) {
   return (
     <Pressable p={2} onPress={() => selectItem(item)}>
-      <HStack justifyContent="space-between" w="100%">
-        <HStack alignItems="center" space={4} w="60%">
-          <VStack>
+      <View style={[layout.hStack, layout.spaceBet, layout.width100percent]}>
+        <View
+          style={[layout.hStackGap4, layout.alignCenter, layout.width60percent]}
+        >
+          <View style={[layout.vStack]}>
             <Text
               style={[
                 styleS.truncated,
@@ -56,10 +54,12 @@ export function ListItemMobile({
             >
               {item.formSubtitle}
             </Text>
-          </VStack>
-        </HStack>
-        <HStack alignItems="center" space={4} w="40%">
-          <VStack>
+          </View>
+        </View>
+        <View
+          style={[layout.hStackGap4, layout.alignCenter, layout.width40percent]}
+        >
+          <View style={[layout.vStack]}>
             <Text
               style={[
                 styleS.truncated,
@@ -80,9 +80,9 @@ export function ListItemMobile({
             >
               {item.formSubtitle}
             </Text>
-          </VStack>
-        </HStack>
-      </HStack>
+          </View>
+        </View>
+      </View>
     </Pressable>
   )
 }
@@ -103,8 +103,8 @@ export function ListItemDesktop({
       _hover={{ bg: 'coolGray.100' }}
       onPress={() => selectItem(item)}
     >
-      <HStack alignItems="center" flex={1} justifyContent="space-between">
-        <VStack w="60%">
+      <View style={[layout.hStack, layout.alignCenter, layout.flex1]}>
+        <View style={[layout.vStack, layout.width60percent]}>
           <Text style={[styleS.fontBold, styleS.truncated]}>
             {userFullName(users[item.sharedWithUUID], item.sharedWithUUID)}
           </Text>
@@ -124,20 +124,20 @@ export function ListItemDesktop({
               ? users[item.sharedWithUUID].address
               : ''}
           </Text>
-        </VStack>
-        <VStack w="40%">
-          <HStack>
+        </View>
+        <View style={[layout.vStack, layout.width40percent]}>
+          <View style={[layout.hStack]}>
             <Text style={[styleS.fontBold, styleS.truncated]}>Shared on</Text>
             <Text style={[styleS.ml2, styleS.truncated]}>
               {formatDate(item.createdDate, 'PPP') as string}
             </Text>
-          </HStack>
-          <HStack>
+          </View>
+          <View style={[layout.hStack]}>
             <Text style={[styleS.fontBold, styleS.truncated]}>Expires on</Text>
             <Text style={[styleS.ml2, styleS.truncated]}>
               {formatDate(item.shareExpiresOn, 'PPP') as string}
             </Text>
-          </HStack>
+          </View>
           <Text style={[styleS.fontBold, styleS.truncated]}>Shared by</Text>
           <Text style={[styleS.ml2, styleS.truncated]}>
             {userFullName(users[item.createdByUUID], item.createdByUUID)}
@@ -145,8 +145,8 @@ export function ListItemDesktop({
           <Text style={[styleS.ml2, styleS.truncated]}>
             {users[item.sharedWithUUID] ? users[item.sharedWithUUID].email : ''}
           </Text>
-        </VStack>
-      </HStack>
+        </View>
+      </View>
     </Pressable>
   )
 }
@@ -189,17 +189,11 @@ export default function ShareListStatic({
 
   return (
     <>
-      <VStack
-        px={{ base: 4, md: 8 }}
-        py={{ base: 2, md: 8 }}
-        borderRadius={{ md: '8' }}
-        _light={{
-          borderColor: 'coolGray.200',
-          bg: { base: 'white' },
-        }}
-        borderWidth={{ md: '1' }}
-        borderBottomWidth="1"
-        space="4"
+      <View
+        style={[
+          styles.locationListVStack,
+          isWider ? styles.locationListVStackMd : styles.locationListVStackBase,
+        ]}
       >
         <View>
           <ScrollView>
@@ -225,7 +219,7 @@ export default function ShareListStatic({
                 display: isWider ? 'flex' : 'none',
               }}
             >
-              <VStack mt={3} space={3}>
+              <View style={[layout.vStackGap3, spacing.mt3]}>
                 {shares.map((item: Share, index: number) => {
                   return (
                     <ListItemDesktop
@@ -236,11 +230,11 @@ export default function ShareListStatic({
                     />
                   )
                 })}
-              </VStack>
+              </View>
             </View>
           </ScrollView>
         </View>
-      </VStack>
+      </View>
     </>
   )
 }

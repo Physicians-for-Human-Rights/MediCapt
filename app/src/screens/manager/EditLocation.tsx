@@ -1,18 +1,17 @@
 import React, { useState, useRef } from 'react'
-import {
-  VStack,
-  Pressable,
-  Divider,
-  Hidden,
-  Select,
-  CheckIcon,
-} from 'native-base'
+
 import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/manager/navigation'
 import LocationEditor from 'components/LocationEditor'
 import useMap from 'react-use/lib/useMap'
 import _ from 'lodash'
 import { LocationType } from 'utils/types/location'
+import { View, Dimensions, SafeAreaView } from 'react-native'
+import styles, { backgrounds, layout } from 'components/styles'
+import { breakpoints } from 'components/nativeBaseSpec'
+
+const { width } = Dimensions.get('window')
+const isWider = width > breakpoints.md
 
 export const defaultLocation: Partial<LocationType> = {
   'storage-version': '1.0.0',
@@ -71,16 +70,15 @@ export default function EditLocation({
       route={route}
       reloadPrevious={reloadPrevious}
     >
-      <VStack
-        safeAreaBottom
-        height="95%"
-        borderRadius={{ md: '8' }}
-        borderColor="coolGray.200"
-        bg={'white'}
-        px={{
-          base: 4,
-          md: 32,
-        }}
+      <SafeAreaView
+        style={[
+          styles.formEditorDesignerView,
+          backgrounds.white,
+          {
+            borderRadius: isWider ? 8 : 0,
+            paddingHorizontal: isWider ? 32 : 4,
+          },
+        ]}
       >
         <LocationEditor
           files={files}
@@ -89,7 +87,7 @@ export default function EditLocation({
           changed={_.isEqual(lastSubmitted, location)}
           reloadPrevious={reloadPrevious}
         />
-      </VStack>
+      </SafeAreaView>
     </DashboardLayout>
   )
 }

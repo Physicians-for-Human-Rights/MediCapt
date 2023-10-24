@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { VStack } from 'native-base'
 import _ from 'lodash'
 import Form from 'components/Form'
 import DashboardLayout from 'components/DashboardLayout'
@@ -22,26 +21,16 @@ import {
   sealRecord,
   getRecordMetadata,
 } from '../../utils/localStore/store'
-import { RecordType } from 'utils/types/record'
-import {
-  addFileToManifest,
-  addOrReplaceRecordTypeInManifest,
-  removeFileFromManifestSHA256,
-  imageExtension,
-} from 'utils/manifests'
-import uuid from 'react-native-uuid'
-import useLeave from 'utils/useLeave'
-import confirmationDialog from 'utils/confirmationDialog'
-import { t } from 'i18n-js'
-import FormListStaticCompact from 'components/FormListStaticCompact'
-import ShareListStatic from 'components/ShareListStatic'
-import { goBackMaybeRefreshing } from 'utils/navigation'
-import { createShareForRecord, getSharesForRecord } from 'api/provider'
 import { Share } from 'utils/types/share'
 import UserSearch from 'components/UserSearch'
 import { useUserLocations } from 'utils/store'
 import { getRecordShare } from 'api/associate'
+import { SafeAreaView, Dimensions } from 'react-native'
+import styles, { layout } from 'components/styles'
+import { breakpoints } from 'components/nativeBaseSpec'
 
+const { width } = Dimensions.get('window')
+const isWider = width > breakpoints.md
 const FormMemo = React.memo(Form)
 
 export default function ShareViewer({
@@ -154,16 +143,12 @@ export default function ShareViewer({
       route={route}
     >
       <>
-        <VStack
-          safeAreaBottom
-          flex={1}
-          borderRadius={{ md: '8' }}
-          borderColor="coolGray.200"
-          bg={'white'}
-          px={{
-            base: 0,
-            md: 0,
-          }}
+        <SafeAreaView
+          style={[
+            styles.formDesignerView,
+            layout.flex1,
+            { borderRadius: isWider ? 8 : 0, paddingHorizontal: 0 },
+          ]}
         >
           {formMetadata && formManifest && (!recordMetadata || recordManifest) && (
             <FormMemo
@@ -183,7 +168,7 @@ export default function ShareViewer({
               readOnly={true}
             />
           )}
-        </VStack>
+        </SafeAreaView>
         <Loading loading={waiting} />
       </>
     </DashboardLayout>

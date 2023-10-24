@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import {
-  HStack,
-  VStack,
-  ScrollView,
-  Pressable,
-  Stack,
-  Center,
-  Select,
-} from 'native-base'
+import { ScrollView, Pressable, Select } from 'native-base'
 import { Text, useStyleSheet, Button, Icon } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 // @ts-ignore Record some reason expo doesn't pick up this module without the extension
@@ -25,6 +17,7 @@ import { Platform, View, Dimensions } from 'react-native'
 import { breakpoints } from './nativeBaseSpec'
 import { CloseIcon, RefreshIcon } from './Icons'
 import { colors } from './nativeBaseSpec'
+import styles, { borders, layout, spacing } from './styles'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -48,9 +41,11 @@ export function ListItemMobile({
       _hover={{ bg: 'coolGray.100' }}
       onPress={() => selectItem(item)}
     >
-      <HStack justifyContent="space-between" w="100%">
-        <HStack alignItems="center" space={4} w="70%">
-          <VStack>
+      <View style={[layout.hStack, layout.spaceBet, layout.width100percent]}>
+        <View
+          style={[layout.hStackGap4, layout.alignCenter, layout.width70percent]}
+        >
+          <View style={[layout.vStack]}>
             <Text
               style={[
                 styleS.truncated,
@@ -127,10 +122,10 @@ export function ListItemMobile({
             ) : (
               <Text></Text>
             )}
-          </VStack>
-        </HStack>
+          </View>
+        </View>
 
-        <VStack w="30%">
+        <View style={[layout.vStack, layout.width30percent]}>
           <Text
             style={[
               styleS.truncated,
@@ -156,8 +151,8 @@ export function ListItemMobile({
             {item.recordID}
           </Text>
           {item.caseId ? <Text>item.caseId</Text> : <></>}
-        </VStack>
-      </HStack>
+        </View>
+      </View>
     </Pressable>
   )
 }
@@ -180,8 +175,15 @@ export function ListItemDesktop({
       _hover={{ bg: 'coolGray.100' }}
       onPress={() => selectItem(item)}
     >
-      <HStack alignItems="center" flex={1} justifyContent="space-between">
-        <VStack w="45%">
+      <View
+        style={[
+          layout.hStack,
+          layout.alignCenter,
+          layout.flex1,
+          layout.spaceBet,
+        ]}
+      >
+        <View style={[layout.vStack, layout.width45percent]}>
           <Text style={[styleS.truncated, styleS.fontBold]}>
             {item.patientName || t('record.missing-patient-name')}
           </Text>
@@ -197,9 +199,9 @@ export function ListItemDesktop({
             {item.patientAddress ? item.patientAddress : ''}
           </Text>
           <Text>{item.recordID}</Text>
-        </VStack>
+        </View>
 
-        <VStack w="20%">
+        <View style={[layout.vStack, layout.width20percent]}>
           {forms && forms[item.formUUID] ? (
             _.filter(
               _.split(forms[item.formUUID].tags, ','),
@@ -224,9 +226,9 @@ export function ListItemDesktop({
           </Text>
           <Text>{item.formID}</Text>
           <Text>{item.caseId ? item.caseId : ''}</Text>
-        </VStack>
+        </View>
 
-        <VStack w="20%">
+        <View style={[layout.vStack, layout.width20percent]}>
           <Text style={[styleS.truncated]}>
             {formatDate(item.lastChangedDate, 'PPP') as string}
           </Text>
@@ -242,16 +244,16 @@ export function ListItemDesktop({
           <Text style={[styleS.truncated]}>
             {userFullName(users[item.createdByUUID], item.createdByUUID)}
           </Text>
-        </VStack>
+        </View>
 
-        <VStack w="5%">
+        <View style={[layout.vStack, layout.width5percent]}>
           {item.sealed ? (
             <Icon fill="success" size="6" name="star" />
           ) : (
             <Icon fill="danger" size="6" name="star-outline" />
           )}
-        </VStack>
-      </HStack>
+        </View>
+      </View>
     </Pressable>
   )
 }
@@ -335,7 +337,7 @@ export default function RecordList({
         mb={{ md: 1, base: 0 }}
         justifyContent="center"
       >
-        <Center>
+        <View style={layout.center}>
           <SelectLocation
             bg="white"
             placeholder={t('user.enter-location')}
@@ -346,9 +348,9 @@ export default function RecordList({
             my={Platform.OS === 'android' ? 2 : { md: 0, base: 2 }}
             w={Platform.OS === 'android' ? '80%' : undefined}
           />
-        </Center>
+        </View>
         {setFilterSealed ? (
-          <Center>
+          <View style={layout.center}>
             <Select
               size="md"
               bg="white"
@@ -370,21 +372,18 @@ export default function RecordList({
                 />
               ))}
             </Select>
-          </Center>
+          </View>
         ) : (
           <></>
         )}
       </Stack>
-      <Stack
-        direction={{ md: 'row', base: 'column' }}
-        pt={0}
-        pb={2}
-        space={2}
-        w="100%"
-        justifyContent="center"
-        bg={'muted.50'}
+      <View
+        style={[
+          styles.recordListStack,
+          { flexDirection: isWider ? 'row' : 'column' },
+        ]}
       >
-        <Center>
+        <View style={layout.center}>
           <Select
             size="md"
             bg="white"
@@ -403,8 +402,8 @@ export default function RecordList({
               />
             ))}
           </Select>
-        </Center>
-        <HStack justifyContent="center">
+        </View>
+        <View style={[layout.hStack, layout.justifyCenter]}>
           <DebouncedTextInput
             flex={{ md: undefined, lg: undefined, base: 1 }}
             w={
@@ -451,19 +450,13 @@ export default function RecordList({
             size="sm"
             style={[styleS.mr2]}
           />
-        </HStack>
-      </Stack>
-      <VStack
-        px={{ base: 4, md: 8 }}
-        py={{ base: 2, md: 8 }}
-        borderRadius={{ md: '8' }}
-        _light={{
-          borderColor: 'coolGray.200',
-          bg: { base: 'white' },
-        }}
-        borderWidth={{ md: '1' }}
-        borderBottomWidth="1"
-        space="4"
+        </View>
+      </View>
+      <View
+        style={[
+          styles.locationListVStack,
+          isWider ? styles.locationListVStackMd : styles.locationListVStackBase,
+        ]}
       >
         <View>
           <ScrollView>
@@ -488,11 +481,14 @@ export default function RecordList({
               )}
             </View>
             <View style={{ display: isWider ? 'flex' : 'none' }}>
-              <HStack
-                alignItems="center"
-                justifyContent="space-between"
-                borderBottomWidth={1}
-                _light={{ borderColor: 'coolGray.200' }}
+              <View
+                style={[
+                  layout.hStack,
+                  layout.alignCenter,
+                  layout.spaceBet,
+                  borders.borderBW1,
+                  borders.borderColorCG200,
+                ]}
               >
                 <Text
                   style={[
@@ -539,8 +535,8 @@ export default function RecordList({
                 >
                   {t('record.heading.sealed')}
                 </Text>
-              </HStack>
-              <VStack mt={3} space={3}>
+              </View>
+              <View style={[layout.vStackGap3, spacing.mt3]}>
                 {_.filter(records, filter).map(
                   (item: RecordMetadata, index: number) => {
                     return (
@@ -554,11 +550,11 @@ export default function RecordList({
                     )
                   }
                 )}
-              </VStack>
+              </View>
             </View>
           </ScrollView>
         </View>
-      </VStack>
+      </View>
     </>
   )
 }

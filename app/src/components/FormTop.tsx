@@ -1,9 +1,8 @@
 import React from 'react'
-import { VStack, HStack } from 'native-base'
 import { View, StyleSheet } from 'react-native'
 import { colors } from './nativeBaseSpec'
 import { Text, Icon, Button, useStyleSheet } from '@ui-kitten/components'
-import { spacing } from './styles'
+import { spacing, layout } from './styles'
 
 import themedStyles from 'themeStyled'
 
@@ -42,13 +41,15 @@ const FormTop = ({
       ]}
       // bg={isSectionCompleted ? 'success.600' : 'primary.800'}
     >
-      <HStack space="3" justifyContent="space-between" pr="4">
-        <HStack
-          py="4"
-          pl="2"
-          space="1"
-          justifyContent="space-between"
-          alignItems="center"
+      <View style={[layout.hStackGap3, layout.spaceBet, spacing.pr4]}>
+        <View
+          style={[
+            layout.hStackGap1,
+            layout.alignCenter,
+            layout.spaceBet,
+            spacing.py4,
+            spacing.pl2,
+          ]}
         >
           <Button
             status="info"
@@ -63,8 +64,8 @@ const FormTop = ({
               />
             }
           />
-        </HStack>
-        <HStack pt="4" pb="4" space="1" justifyContent="space-between">
+        </View>
+        <View style={[layout.hStackGap1, spacing.py4, layout.spaceBet]}>
           <Button
             // _disabled={{ bg: 'white' }}
             // _hover={{ bg: 'white' }}
@@ -85,8 +86,8 @@ const FormTop = ({
               />
             }
           />
-        </HStack>
-        <VStack flex="3" justifyContent="center" alignItems="center">
+        </View>
+        <View style={[layout.vStack, layout.justifyCenter, layout.flex3]}>
           <Text
             style={[
               styleS.colorCoolGray50,
@@ -108,8 +109,8 @@ const FormTop = ({
           >
             {title}
           </Text>
-        </VStack>
-        <HStack pt="4" pb="4" space="1" justifyContent="space-between">
+        </View>
+        <View style={[layout.hStackGap1, layout.spaceBet, spacing.py4]}>
           <Button
             // _disabled={{ bg: 'white' }}
             // _hover={{ bg: 'white' }}
@@ -132,8 +133,8 @@ const FormTop = ({
               />
             }
           />
-        </HStack>
-      </HStack>
+        </View>
+      </View>
     </View>
   )
 }

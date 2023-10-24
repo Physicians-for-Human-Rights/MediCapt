@@ -1,31 +1,35 @@
 import React from 'react'
-import { Heading, Center, HStack, View, Spinner } from 'native-base'
+import { Heading, Spinner } from 'native-base'
+import { View, StyleSheet } from 'react-native'
 import { t } from 'i18n-js'
+import { layout } from './styles'
 
-const spinnerStyle = {
-  position: 'absolute',
-  left: 0,
-  right: 0,
-  top: 0,
-  bottom: 0,
-  opacity: 0.5,
-  backgroundColor: 'black',
-  alignItems: 'center',
-  justifyContent: 'center',
-  zindex: 100,
-}
+const style = StyleSheet.create({
+  spinner: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    opacity: 0.5,
+    backgroundColor: 'black',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zindex: 100,
+  },
+})
 
 const Loading = ({ loading }: { loading: string | null }) => {
   return loading ? (
-    <View style={spinnerStyle}>
-      <Center>
-        <HStack space={5} justifyContent="center">
+    <View style={style.spinner}>
+      <View style={layout.center}>
+        <View style={[layout.hStackGap5, layout.justifyCenter]}>
           <Spinner size="lg" />
           <Heading size="lg" color="white">
             Loading...
           </Heading>
-        </HStack>
-      </Center>
+        </View>
+      </View>
     </View>
   ) : (
     <></>

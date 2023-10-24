@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import {
-  HStack,
-  VStack,
-  ScrollView,
-  Pressable,
-  Stack,
-  Center,
-  Select,
-} from 'native-base'
+import { ScrollView, Pressable, Select } from 'native-base'
 import { Button, Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { UserType } from 'utils/types/user'
@@ -24,6 +16,7 @@ import { userFullName } from 'utils/userTypes'
 import { breakpoints } from './nativeBaseSpec'
 import { CloseIcon, RefreshIcon } from './Icons'
 import { colors } from './nativeBaseSpec'
+import styles, { backgrounds, borders, layout, spacing } from './styles'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -40,9 +33,11 @@ export function ListItem({
 }) {
   return (
     <Pressable p={2} onPress={() => selectItem(item)}>
-      <HStack justifyContent="space-between" w="100%">
-        <HStack alignItems="center" space={4} w="70%">
-          <VStack>
+      <View style={[layout.hStack, layout.spaceBet, layout.width100percent]}>
+        <View
+          style={[layout.hStackGap4, layout.alignCenter, layout.width70percent]}
+        >
+          <View style={[layout.vStack]}>
             <Text
               style={[
                 styleS.truncated,
@@ -63,9 +58,9 @@ export function ListItem({
             >
               {item.subtitle}
             </Text>
-          </VStack>
-        </HStack>
-        <VStack w="30%">
+          </View>
+        </View>
+        <View style={[layout.vStack, layout.width30percent]}>
           <Text
             style={[
               styleS.truncated,
@@ -84,8 +79,8 @@ export function ListItem({
           >
             {item.formID}
           </Text>
-        </VStack>
-      </HStack>
+        </View>
+      </View>
     </Pressable>
   )
 }
@@ -106,8 +101,8 @@ export function ListItemDesktop({
       _hover={{ bg: 'coolGray.100' }}
       onPress={() => selectItem(item)}
     >
-      <HStack alignItems="center" flex={1} justifyContent="space-between">
-        <VStack w="45%">
+      <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
+        <View style={[layout.vStack, layout.width45percent]}>
           <Text style={[styleS.fontBold, styleS.truncated]}>
             {item.patientName || t('record.missing-patient-name')}
           </Text>
@@ -121,8 +116,8 @@ export function ListItemDesktop({
             {formatDate(item.patientDateOfBirth, 'PPP') as string}
           </Text>
           <Text>{item.recordID}</Text>
-        </VStack>
-        <VStack w="30%">
+        </View>
+        <View style={[layout.vStack, layout.width30percent]}>
           <Text>{item.formUUID ? item.formTitle : 'Unknown form'}</Text>
           <Text>{item.formOfficialName + ' ' + item.formOfficialCode}</Text>
           <Text>{item.formID}</Text>
@@ -135,8 +130,8 @@ export function ListItemDesktop({
           <Text>
             {userFullName(users[item.createdByUUID], item.createdByUUID)}
           </Text>
-        </VStack>
-        <VStack w="20%">
+        </View>
+        <View style={[layout.vStack, layout.width20percent]}>
           <Text style={[styleS.truncated]}>Record creation</Text>
           <Text style={[styleS.truncated, styleS.ml2]}>
             {formatDate(item.recordCreatedDate, 'PPP') as string}
@@ -149,8 +144,8 @@ export function ListItemDesktop({
           <Text style={[styleS.truncated, styleS.ml2]}>
             {formatDate(item.shareExpiresOn, 'PPP') as string}
           </Text>
-        </VStack>
-      </HStack>
+        </View>
+      </View>
     </Pressable>
   )
 }
@@ -215,12 +210,16 @@ export default function ShareList({
 
   return (
     <>
-      <Stack
-        direction={{ md: 'row', base: 'column' }}
-        mb={{ md: 1, base: 0 }}
-        justifyContent="center"
+      <View
+        style={[
+          layout.justifyCenter,
+          {
+            flexDirection: isWider ? 'row' : 'column',
+            marginBottom: isWider ? 4 : 0,
+          },
+        ]}
       >
-        <Center>
+        <View style={[layout.center]}>
           <SelectLocation
             bg="white"
             placeholder={t('user.enter-location')}
@@ -231,9 +230,9 @@ export default function ShareList({
             my={Platform.OS === 'android' ? 1 : { md: 0, base: 2 }}
             w={Platform.OS === 'android' ? '80%' : undefined}
           />
-        </Center>
+        </View>
         {setFilterEnabled && (
-          <Center>
+          <View style={[layout.center]}>
             <Select
               size="md"
               bg="white"
@@ -251,10 +250,18 @@ export default function ShareList({
                 <Select.Item key={e} label={t('form.filter.' + e)} value={e} />
               ))}
             </Select>
-          </Center>
+          </View>
         )}
-      </Stack>
-      <HStack py={2} w="100%" justifyContent="center" bg={'muted.50'}>
+      </View>
+      <View
+        style={[
+          layout.hStack,
+          layout.justifyCenter,
+          backgrounds.bgMuted50,
+          layout.width100percent,
+          spacing.py2,
+        ]}
+      >
         <DebouncedTextInput
           flex={{ md: undefined, lg: undefined, base: 1 }}
           w={{ md: '80%', lg: '80%', base: '50%' }}
@@ -294,18 +301,12 @@ export default function ShareList({
           size="sm"
           style={[styleS.mr2]}
         />
-      </HStack>
-      <VStack
-        px={{ base: 4, md: 8 }}
-        py={{ base: 2, md: 8 }}
-        borderRadius={{ md: '8' }}
-        _light={{
-          borderColor: 'coolGray.200',
-          bg: { base: 'white' },
-        }}
-        borderWidth={{ md: '1' }}
-        borderBottomWidth="1"
-        space="4"
+      </View>
+      <View
+        style={[
+          styles.locationListVStack,
+          isWider ? styles.locationListVStackMd : styles.locationListVStackBase,
+        ]}
       >
         <View>
           <ScrollView>
@@ -331,11 +332,14 @@ export default function ShareList({
                 display: isWider ? 'none' : 'flex',
               }}
             >
-              <HStack
-                alignItems="center"
-                justifyContent="space-between"
-                borderBottomWidth={1}
-                _light={{ borderColor: 'coolGray.200' }}
+              <View
+                style={[
+                  layout.hStack,
+                  layout.alignCenter,
+                  layout.spaceBet,
+                  borders.borderBW1,
+                  borders.borderColorCG200,
+                ]}
               >
                 <Text
                   style={[
@@ -370,8 +374,8 @@ export default function ShareList({
                 >
                   Dates
                 </Text>
-              </HStack>
-              <VStack mt={3} space={3}>
+              </View>
+              <View style={[layout.vStackGap3, spacing.mt3]}>
                 {shares.map((item: Share, index: number) => {
                   return (
                     <ListItemDesktop
@@ -382,11 +386,11 @@ export default function ShareList({
                     />
                   )
                 })}
-              </VStack>
+              </View>
             </View>
           </ScrollView>
         </View>
-      </VStack>
+      </View>
     </>
   )
 }

@@ -1,25 +1,20 @@
 import React, { useState, useEffect } from 'react'
-import {
-  Box,
-  HStack,
-  Icon,
-  VStack,
-  ScrollView,
-  Pressable,
-  Input,
-  Spinner,
-} from 'native-base'
+import { Pressable, Spinner } from 'native-base'
 import { Text, useStyleSheet } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
-import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import { UserType } from 'utils/types/user'
 import { LocationType } from 'utils/types/location'
+import { layout, spacing } from './styles'
+import { View, Dimensions } from 'react-native'
+import { breakpoints } from './nativeBaseSpec'
 
 const styleS = useStyleSheet(themedStyles)
+const { width } = Dimensions.get('window')
+const isWider = width > breakpoints.md
 
 export default function paginateComponent(
   Component: JSX.Element,
@@ -71,12 +66,14 @@ export default function paginateComponent(
           <Component data={cache[page]} {...props} />
         )}
         (
-        <HStack
-          display={{ base: 'none', md: 'flex' }}
-          space="2"
-          alignItems="center"
-          mt="2"
-          justifyContent="flex-end"
+        <View
+          style={[
+            layout.hStackGap2,
+            layout.alignCenter,
+            layout.justifyEnd,
+            spacing.mt2,
+            { display: isWider ? 'flex' : 'none' },
+          ]}
         >
           {_.range(0, cache.length).map((n: number) => (
             <Pressable
@@ -117,7 +114,7 @@ export default function paginateComponent(
               </Text>
             </Pressable>
           )}
-        </HStack>
+        </View>
         )
       </>
     )

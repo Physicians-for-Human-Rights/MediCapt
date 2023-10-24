@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Heading, VStack, HStack, Center } from 'native-base'
+import { Heading } from 'native-base'
 import { View } from 'react-native'
 import {
   Text,
@@ -27,7 +27,7 @@ import formatDate from 'utils/date.ts'
 import { submitForm } from 'api/formdesigner'
 import { RootStackParamList } from 'utils/formDesigner/navigation'
 import { StackNavigationProp } from '@react-navigation/stack'
-import styles from './styles'
+import styles, { layout, spacing } from './styles'
 import { AlertIcon } from './Icons'
 
 const styleS = useStyleSheet(themedStyles)
@@ -155,10 +155,10 @@ export default function FormEditorVersions({
 
   return (
     <>
-      <VStack space={0} py={5}>
+      <View style={[layout.vStack, spacing.py5]}>
         {historyMode && (
           <View style={styles.formEditorVersionBox}>
-            <Center py={2}>
+            <View style={[layout.center, spacing.py2]}>
               <Text style={[styleS.fontBold]}>History mode</Text>
               <Text style={[styleS.fontMedium]}>
                 Showing Version {formMetadata.version} created on{' '}
@@ -187,14 +187,14 @@ export default function FormEditorVersions({
               >
                 Make this the latest version
               </Button>
-            </Center>
+            </View>
           </View>
         )}
-        <Center py={5}>
+        <View style={[layout.center, spacing.py5]}>
           <Heading size="md">Form history browser</Heading>
-        </Center>
-        <Center>
-          <HStack alignItems="center" justifyContent="space-between">
+        </View>
+        <View style={[layout.center]}>
+          <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
             <FloatingLabelInput
               isReadOnly
               label={'Latest version'}
@@ -202,16 +202,16 @@ export default function FormEditorVersions({
               w="300px"
               containerW="45%"
             />
-          </HStack>
-        </Center>
-        <Center>
+          </View>
+        </View>
+        <View style={[layout.center]}>
           <View style={styles.formEditorVersionBoxCenter}>
-            <HStack space={10}>
-              <Center>
+            <View style={[layout.hStackGap10]}>
+              <View style={[layout.center]}>
                 <Text style={[styleS.pt1]}>
                   Select a version of the form to load
                 </Text>
-              </Center>
+              </View>
               <Select
                 value={selectedVersion}
                 accessibilityLabel="Select version"
@@ -222,10 +222,10 @@ export default function FormEditorVersions({
                   <SelectItem title={'Version ' + v} />
                 ))}
               </Select>
-            </HStack>
+            </View>
           </View>
-        </Center>
-      </VStack>
+        </View>
+      </View>
       <Loading loading={waiting} />
     </>
   )

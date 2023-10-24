@@ -1,18 +1,11 @@
 import React from 'react'
-import {
-  HStack,
-  Pressable,
-  Badge,
-  useBreakpointValue,
-  FlatList,
-  Stack,
-} from 'native-base'
+import { Pressable, Badge, useBreakpointValue, FlatList } from 'native-base'
 import { Text } from '@ui-kitten/components'
 import { AntDesign } from '@expo/vector-icons'
 import _ from 'lodash'
 import { NamedFormSection } from 'utils/types/formHelpers'
 import FormButtons from 'components/FormButtons'
-import styles from './styles'
+import styles, { layout } from './styles'
 import { View } from 'react-native'
 
 function Section({
@@ -36,14 +29,14 @@ function Section({
       }}
     >
       <View style={styles.formMenuContainer}>
-        <HStack space={3} justifyContent="flex-start">
+        <View style={[layout.justifyStart, layout.hStackGap3]}>
           <Badge px={2} colorScheme={completed ? 'success' : 'red'}>
             {sectionIndex + 1}
           </Badge>
           <Text status={completed ? 'success' : 'primary'} selectable={false}>
             {title}
           </Text>
-        </HStack>
+        </View>
       </View>
     </Pressable>
   )

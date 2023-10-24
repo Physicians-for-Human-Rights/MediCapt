@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Badge, Tooltip, Center } from 'native-base'
+import { Badge, Tooltip } from 'native-base'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 import NecessaryItem from 'components/NecessaryItem'
 import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
@@ -158,14 +158,14 @@ export default function FormEditorOverview({
         setValue={v => setFormMetadata({ ...formMetadata, subtitle: v })}
       />
       {!createMode && (
-        <Center my={2}>
+        <View style={[layout.center, spacing.my2]}>
           <NecessaryItem
             isDone={!!formMetadata.enabled}
             todoText="Form is disabled"
             doneText="Form is enabled"
             size="tiny"
           />
-        </Center>
+        </View>
       )}
       <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
         <FloatingLabelInput

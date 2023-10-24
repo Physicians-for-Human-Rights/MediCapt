@@ -1,12 +1,5 @@
 import React from 'react'
-import {
-  HStack,
-  VStack,
-  ScrollView,
-  Pressable,
-  Stack,
-  Center,
-} from 'native-base'
+import { ScrollView, Pressable } from 'native-base'
 import {
   Text,
   useStyleSheet,
@@ -17,7 +10,6 @@ import {
   Icon,
 } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
-import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
@@ -30,9 +22,10 @@ import Language from 'components/Language'
 import { Platform, View, Dimensions } from 'react-native'
 import { breakpoints, colors } from './nativeBaseSpec'
 import { CloseIcon, RefreshIcon } from './Icons'
-
+import styles, { layout, spacing, backgrounds } from './styles'
 const { width } = Dimensions.get('window')
 const styleS = useStyleSheet(themedStyles)
+const isWider = width > breakpoints.md
 
 export function ListItem({
   item,
@@ -43,9 +36,11 @@ export function ListItem({
 }) {
   return (
     <Pressable p={2} onPress={() => selectItem(item)}>
-      <HStack justifyContent="space-between" w="100%">
-        <HStack alignItems="center" space={4} w="70%">
-          <VStack>
+      <View style={[layout.hStack, layout.spaceBet, layout.width100percent]}>
+        <View
+          style={[layout.hStackGap4, layout.alignCenter, layout.width70percent]}
+        >
+          <View style={layout.vStack}>
             <Text
               style={[
                 styleS.truncated,
@@ -66,9 +61,9 @@ export function ListItem({
             >
               {item.subtitle}
             </Text>
-          </VStack>
-        </HStack>
-        <VStack w="30%">
+          </View>
+        </View>
+        <View style={[layout.vStack, layout.width30percent]} w="30%">
           <Text
             style={[
               styleS.truncated,
@@ -87,8 +82,8 @@ export function ListItem({
           >
             {item.formID}
           </Text>
-        </VStack>
-      </HStack>
+        </View>
+      </View>
     </Pressable>
   )
 }
@@ -107,28 +102,35 @@ export function ListItemDesktop({
       _hover={{ bg: 'coolGray.100' }}
       onPress={() => selectItem(item)}
     >
-      <HStack alignItems="center" flex={1} justifyContent="space-between">
-        <VStack w="45%">
+      <View
+        style={[
+          layout.hStack,
+          layout.alignCenter,
+          layout.flex1,
+          layout.spaceBet,
+        ]}
+      >
+        <View style={[layout.vStack, layout.width45percent]}>
           <Text style={[styleS.fontBold, styleS.truncated]}>{item.title}</Text>
           <Text style={[styleS.ml2, styleS.truncated]}>{item.subtitle}</Text>
-        </VStack>
+        </View>
 
-        <VStack w="20%">
+        <View style={[layout.vStack, layout.width20percent]}>
           {_.split(item.tags, ',').map((s: string, n: number) => (
             <Text style={[styleS.truncated]} key={n}>
               {t('tag.' + s)}
             </Text>
           ))}
           <Text>{item.formID}</Text>
-        </VStack>
+        </View>
 
-        <VStack w="20%">
+        <View style={[layout.vStack, layout.width20percent]}>
           <Text style={[styleS.truncated]}>
             {formatDate(item.lastChangedDate, 'PPP') as string}
           </Text>
-        </VStack>
+        </View>
 
-        <HStack w="5%">
+        <View style={[layout.hStack, layout.width5percent]} w="5%">
           {item.enabled ? (
             <Icon
               fill="success"
@@ -146,8 +148,8 @@ export function ListItemDesktop({
               pack="material"
             />
           )}
-        </HStack>
-      </HStack>
+        </View>
+      </View>
     </Pressable>
   )
 }
@@ -202,12 +204,14 @@ export default function FormList({
   }
   return (
     <>
-      <Stack
-        direction={{ md: 'row', base: 'column' }}
-        mb={{ md: 1, base: 0 }}
-        justifyContent="center"
+      <View
+        style={{
+          flexDirection: isWider ? 'row' : 'column',
+          marginBottom: isWider ? 4 : 0,
+          justifyContent: 'center',
+        }}
       >
-        <Center>
+        <View style={[layout.center]}>
           <SelectLocation
             bg="white"
             placeholder={t('user.enter-location')}
@@ -218,8 +222,8 @@ export default function FormList({
             my={Platform.OS === 'android' ? 1 : { md: 0, base: 2 }}
             w={Platform.OS === 'android' ? '80%' : undefined}
           />
-        </Center>
-        <Center>
+        </View>
+        <View style={[layout.center]}>
           <AnyCountry
             bg="white"
             placeholder={t('location.select-country')}
@@ -230,8 +234,8 @@ export default function FormList({
             // ml={Platform.OS === 'android' ? 0 : 3}
             // w={Platform.OS === 'android' ? '80%' : undefined}
           />
-        </Center>
-        <Center>
+        </View>
+        <View style={[layout.center]}>
           <Language
             bg="white"
             placeholder={t('location.select-language')}
@@ -242,9 +246,9 @@ export default function FormList({
             my={Platform.OS === 'android' ? 1 : { md: 0, base: 2 }}
             w={Platform.OS === 'android' ? '80%' : undefined}
           />
-        </Center>
+        </View>
         {setFilterEnabled && (
-          <Center>
+          <View style={[layout.center]}>
             <Select
               size="medium"
               value={filterEnabled}
@@ -266,10 +270,18 @@ export default function FormList({
                 ))}
               </>
             </Select>
-          </Center>
+          </View>
         )}
-      </Stack>
-      <HStack py={2} w="100%" justifyContent="center" bg={'muted.50'}>
+      </View>
+      <View
+        style={[
+          layout.hStack,
+          layout.justifyCenter,
+          layout.width100percent,
+          spacing.py2,
+          backgrounds.bgMuted50,
+        ]}
+      >
         <DebouncedTextInput
           flex={{ md: undefined, lg: undefined, base: 1 }}
           w={{ md: '80%', lg: '80%', base: '50%' }}
@@ -312,18 +324,12 @@ export default function FormList({
           size="sm"
           style={[styleS.mr2]}
         />
-      </HStack>
-      <VStack
-        px={{ base: 4, md: 8 }}
-        py={{ base: 2, md: 8 }}
-        borderRadius={{ md: '8' }}
-        _light={{
-          borderColor: 'coolGray.200',
-          bg: { base: 'white' },
-        }}
-        borderWidth={{ md: '1' }}
-        borderBottomWidth="1"
-        space="4"
+      </View>
+      <View
+        style={[
+          styles.formListVStack,
+          isWider ? styles.formListVStackMd : styles.formListVStackBase,
+        ]}
       >
         <View>
           <ScrollView>
@@ -340,12 +346,7 @@ export default function FormList({
               })}
             </View>
             <View style={{ display: width > breakpoints.md ? 'flex' : 'none' }}>
-              <HStack
-                alignItems="center"
-                justifyContent="space-between"
-                borderBottomWidth={1}
-                _light={{ borderColor: 'coolGray.200' }}
-              >
+              <View style={styles.formListHStack}>
                 <Text
                   style={[
                     styleS.fontBold,
@@ -391,8 +392,8 @@ export default function FormList({
                 >
                   Enabled
                 </Text>
-              </HStack>
-              <VStack mt={3} space={3}>
+              </View>
+              <View style={[layout.vStackGap3, spacing.mt3]}>
                 {forms.map((item: FormMetadata, index: number) => {
                   return (
                     <ListItemDesktop
@@ -402,11 +403,11 @@ export default function FormList({
                     />
                   )
                 })}
-              </VStack>
+              </View>
             </View>
           </ScrollView>
         </View>
-      </VStack>
+      </View>
     </>
   )
 }

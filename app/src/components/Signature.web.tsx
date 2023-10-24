@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react'
 import { Image, Center, Modal } from 'native-base'
 import { disabledBackground } from 'utils/formRendering/utils'
 import { View } from 'react-native'
-import styles from './styles'
+import styles, { layout } from './styles'
 // https://www.npmjs.com/package/react-signature-pad-wrapper
 import SignatureCanvas from 'react-signature-pad-wrapper'
 import { Button, useStyleSheet } from '@ui-kitten/components'
@@ -54,7 +54,12 @@ function Signature({
 
   return (
     <>
-      <Center bg={isDisabled ? disabledBackground : undefined}>
+      <View
+        style={[
+          layout.center,
+          { backgroundColor: isDisabled ? disabledBackground : 'transparent' },
+        ]}
+      >
         {imageURI && (
           <Image
             resizeMode="contain"
@@ -74,7 +79,7 @@ function Signature({
         >
           {imageURI ? 'Clear and sign again' : 'Sign'}
         </Button>
-      </Center>
+      </View>
       <Modal isOpen={isOpen} onClose={internalClose}>
         <Modal.Content maxWidth="400px">
           <Modal.Header>Sign here</Modal.Header>

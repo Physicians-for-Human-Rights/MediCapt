@@ -1,13 +1,5 @@
 import React, { useState } from 'react'
-import {
-  Badge,
-  HStack,
-  VStack,
-  Select,
-  Tooltip,
-  Center,
-  Heading,
-} from 'native-base'
+import { Badge, Select, Tooltip, Heading } from 'native-base'
 import { userTypes, UserType } from 'utils/types/user'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 import NecessaryItem from 'components/NecessaryItem'
@@ -41,6 +33,7 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack'
 import { Button, useStyleSheet } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
+import { layout, spacing } from './styles'
 import {
   AlertIcon,
   PlusIcon,
@@ -49,6 +42,7 @@ import {
   LockIcon,
   CloseIcon,
 } from './Icons'
+import { View } from 'react-native'
 
 const styleS = useStyleSheet(themedStyles)
 
@@ -192,14 +186,14 @@ export default function UserEditor({
 
   return (
     <>
-      <VStack>
+      <View style={[layout.vStack]}>
         <FloatingLabelInput
           label={t('user.full-official-name')}
           value={user.formal_name}
           setValue={v => setUser({ ...user, formal_name: v })}
           mt={10}
         />
-        <HStack alignItems="center" justifyContent="space-between">
+        <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
             label={
               t('user.username') +
@@ -243,10 +237,10 @@ export default function UserEditor({
               placeholder={t('user.' + user.userType)}
             />
           )}
-        </HStack>
+        </View>
         {user.userType === 'Manager' && (
-          <Center>
-            <HStack py={2} space={5}>
+          <View style={[layout.center]}>
+            <View style={[layout.hStackGap5, spacing.py2]}>
               {_.includes(user.allowed_locations, 'admin') && (
                 <Badge
                   colorScheme="red"
@@ -290,12 +284,12 @@ export default function UserEditor({
                     Make user an admin
                   </Button>
                 ))}
-            </HStack>
-          </Center>
+            </View>
+          </View>
         )}
         {!_.includes(user.allowed_locations, 'admin') && (
-          <VStack py={2}>
-            <Center pb={2}>
+          <View style={[layout.vStack, spacing.py2]}>
+            <View style={[layout.center, spacing.pb2]}>
               <Button
                 status="info"
                 accessoryLeft={PlusIcon}
@@ -323,7 +317,7 @@ export default function UserEditor({
               >
                 Add allowed location
               </Button>
-            </Center>
+            </View>
             {splitLocations(user.allowed_locations) !== ['admin'] &&
             !_.isEmpty(splitLocations(user.allowed_locations)) ? (
               <LocationListStatic
@@ -346,15 +340,15 @@ export default function UserEditor({
                 }}
               />
             ) : (
-              <Center>
+              <View style={[layout.center]}>
                 <Heading size="md" color="red.600">
                   Add permissions for at least one location
                 </Heading>
-              </Center>
+              </View>
             )}
-          </VStack>
+          </View>
         )}
-        <Center>
+        <View style={[layout.center]}>
           <DateTimePicker
             isDisabled={false}
             title={t('user.expiry-date')}
@@ -364,23 +358,23 @@ export default function UserEditor({
             close={() => false}
             setDate={(date: Date) => setUser({ ...user, expiry_date: date })}
           />
-        </Center>
+        </View>
         {!createMode && (
-          <Center>
+          <View style={[layout.center]}>
             <NecessaryItem
               isDone={user.enabled || false}
               todoText="User is disabled"
               doneText="User is enabled"
               size="tiny"
             />
-          </Center>
+          </View>
         )}
-        <Center pt={4} pb={2}>
+        <View style={[layout.center, spacing.pt4, spacing.pb2]}>
           <Heading size="md" fontWeight="normal" px={2}>
             {t('user.heading.bio')}
           </Heading>
-        </Center>
-        <HStack alignItems="center" justifyContent="space-between">
+        </View>
+        <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
             label={t('user.short-name')}
             w="100%"
@@ -395,8 +389,8 @@ export default function UserEditor({
             value={user.nickname}
             setValue={v => setUser({ ...user, nickname: v })}
           />
-        </HStack>
-        <HStack alignItems="center" justifyContent="space-between">
+        </View>
+        <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
             label={t('user.email')}
             w="100%"
@@ -411,13 +405,13 @@ export default function UserEditor({
             value={user.phone_number}
             setValue={v => setUser({ ...user, phone_number: v })}
           />
-        </HStack>
+        </View>
         <FloatingLabelInput
           label={t('user.address')}
           value={user.address}
           setValue={v => setUser({ ...user, address: v })}
         />
-        <HStack alignItems="center" justifyContent="space-between">
+        <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
             label={t('user.gender')}
             w="100%"
@@ -434,8 +428,8 @@ export default function UserEditor({
             close={() => false}
             setDate={(date: Date) => setUser({ ...user, birthdate: date })}
           />
-        </HStack>
-        <HStack alignItems="center" justifyContent="space-between">
+        </View>
+        <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <AnyCountry
             placeholder={t('location.select-country')}
             value={user.country}
@@ -452,13 +446,13 @@ export default function UserEditor({
             mt={1}
             mb={3}
           />
-        </HStack>
-        <Center pt={4} pb={2}>
+        </View>
+        <View style={[layout.center, spacing.pt4, spacing.pb2]}>
           <Heading size={'md'} fontWeight={'normal'} px={2}>
             {t('user.heading.official-id')}
           </Heading>
-        </Center>
-        <HStack alignItems="center" justifyContent="space-between">
+        </View>
+        <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
             label={t('user.official_id_type')}
             w="100%"
@@ -478,13 +472,13 @@ export default function UserEditor({
               setUser({ ...user, official_id_expires: date })
             }
           />
-        </HStack>
+        </View>
         <FloatingLabelInput
           label={t('user.official_id_code')}
           value={user.official_id_code}
           setValue={v => setUser({ ...user, official_id_code: v })}
         />
-        <HStack alignItems="center" justifyContent="space-between">
+        <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <Photo
             photos={
               user.official_id_image && user.official_id_image !== 'none'
@@ -496,13 +490,13 @@ export default function UserEditor({
             isDisabled={false}
             onlyOne={true}
           />
-        </HStack>
-        <Center pt={4} pb={2}>
+        </View>
+        <View style={[layout.center, spacing.pt4, spacing.pb2]}>
           <Heading size={'md'} fontWeight={'normal'} px={2}>
             {t('user.heading.metadata')}
           </Heading>
-        </Center>
-        <HStack alignItems="center" justifyContent="space-between">
+        </View>
+        <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
             label={
               t('user.id') + ' (' + t('common.automatically-created') + ')'
@@ -528,8 +522,8 @@ export default function UserEditor({
             w="100%"
             containerW="45%"
           />
-        </HStack>
-        <HStack alignItems="center" justifyContent="space-between">
+        </View>
+        <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
             isReadOnly
             label={
@@ -546,9 +540,9 @@ export default function UserEditor({
             w="100%"
             containerW="45%"
           />
-        </HStack>
+        </View>
         {createMode ? (
-          <HStack my={5} justifyContent="center">
+          <View style={[layout.hStack, layout.justifyCenter, spacing.my5]}>
             <Button
               accessoryLeft={SaveIcon}
               status="success"
@@ -556,11 +550,11 @@ export default function UserEditor({
             >
               {t('user.create-user')}
             </Button>
-          </HStack>
+          </View>
         ) : (
-          <VStack>
-            <Center>
-              <HStack my={5} justifyContent="space-between">
+          <View style={[layout.vStack]}>
+            <View style={[layout.center]}>
+              <View style={[layout.hStack, layout.spaceBet, spacing.my5]}>
                 {user.status === 'FORCE_CHANGE_PASSWORD' &&
                   user.email_verified !== 'true' && (
                     <Button status="info" onPress={resendConfirmationEmail}>
@@ -576,9 +570,9 @@ export default function UserEditor({
                     {t('user.confirm-email')}
                   </Button>
                 )}
-              </HStack>
-            </Center>
-            <HStack my={5} justifyContent="space-between">
+              </View>
+            </View>
+            <View style={[layout.hStack, layout.spaceBet, spacing.my5]}>
               <Button
                 accessoryLeft={SaveIcon}
                 status="success"
@@ -606,10 +600,10 @@ export default function UserEditor({
                     : t('user.enable-user')}
                 </Button>
               </Tooltip>
-            </HStack>
-          </VStack>
+            </View>
+          </View>
         )}
-      </VStack>
+      </View>
       <Loading loading={waiting} />
     </>
   )

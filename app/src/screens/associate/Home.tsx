@@ -1,11 +1,15 @@
 import React from 'react'
-import { VStack, Center, FlatList, useBreakpointValue } from 'native-base'
+import { FlatList, useBreakpointValue } from 'native-base'
 import BigTileButton from 'components/BigTileButton'
 import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
 import { useUser } from 'utils/store'
-import { Platform } from 'react-native'
+import { Platform, View, SafeAreaView, Dimensions } from 'react-native'
+import styles, { layout, spacing } from 'components/styles'
+import { breakpoints } from 'components/nativeBaseSpec'
 
+const { width } = Dimensions.get('window')
+const isWider = width > breakpoints.md
 const options = [
   {
     icon: 'search',
@@ -47,18 +51,16 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
       navigation={navigation}
       showLogos
     >
-      <VStack
-        safeAreaBottom
-        height="90%"
-        borderRadius={{ md: '8' }}
-        borderColor="coolGray.200"
-        bg="white"
-        px={{
-          base: 4,
-          md: 32,
-        }}
+      <SafeAreaView
+        style={[
+          styles.formDesignerView,
+          {
+            borderRadius: isWider ? 8 : 0,
+            paddingHorizontal: isWider ? 32 : 4,
+          },
+        ]}
       >
-        <Center pt="5">
+        <View style={[layout.center, spacing.pt5]}>
           <FlatList
             numColumns={shape.columns}
             data={options}
@@ -79,8 +81,8 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
             key={shape.columns}
             keyExtractor={item => item.to}
           />
-        </Center>
-      </VStack>
+        </View>
+      </SafeAreaView>
     </DashboardLayout>
   )
 }

@@ -4,8 +4,8 @@ import React from 'react'
 import { t } from 'i18n-js'
 import uuid from 'react-native-uuid'
 
-import { Center, Divider, VStack, HStack, Text, Heading } from 'native-base'
-import { Icon } from '@ui-kitten/components'
+import { Divider, Heading } from 'native-base'
+import { Icon, Text } from '@ui-kitten/components'
 // @ts-ignore TODO TS doesn't understand .native.tsx and .web.tsx files
 import DateTimePicker from 'components/DateTimePicker'
 // @ts-ignore TODO TS doesn't understand .native.tsx and .web.tsx files
@@ -30,6 +30,11 @@ import { RecordMetadata } from 'utils/types/recordMetadata'
 import RecordListStaticComponent from 'components/RecordListStaticComponent'
 import ShareListStatic from 'components/ShareListStatic'
 import { View } from 'react-native'
+import { layout, spacing } from 'components/styles'
+
+export const Center = ({ children }: any) => {
+  return <View style={[layout.center]}>{children}</View>
+}
 
 const CDebouncedTextInput = wrapCommandMemo(DebouncedTextInput)
 const CButtonGroup = wrapCommandMemo(ButtonGroup)
@@ -76,22 +81,37 @@ export function renderCommand(
       )
     case 'description':
       return (
-        <Text bg={disabled(command, disabledBackground)} pb={2}>
+        <Text
+          style={[
+            spacing.pb2,
+            { backgroundColor: disabled(command, disabledBackground) },
+          ]}
+        >
           {command.description}
         </Text>
       )
     case 'divider':
       return (
-        <Center bg={disabled(command, disabledBackground)}>
+        <View
+          style={[
+            layout.center,
+            { backgroundColor: disabled(command, disabledBackground) },
+          ]}
+        >
           <Divider w={command.w} my={2} thickness={command.thickness} />
-        </Center>
+        </View>
       )
     case 'skip':
       // NB isDisabled={false} means we always allow toggling skipping. If we
       // don't do this, we would need to change this to work like divider so that
       // it doesn't get stuck
       return (
-        <Center bg={disabled(command, disabledBackground)}>
+        <View
+          style={[
+            layout.center,
+            { backgroundColor: disabled(command, disabledBackground) },
+          ]}
+        >
           <CSkipButton
             command={command}
             isDisabled={false}
@@ -106,11 +126,16 @@ export function renderCommand(
             }}
             direction={command.direction}
           />
-        </Center>
+        </View>
       )
     case 'address':
       return (
-        <Center bg={disabled(command, disabledBackground)}>
+        <View
+          style={[
+            layout.center,
+            { backgroundColor: disabled(command, disabledBackground) },
+          ]}
+        >
           <CDebouncedTextInput
             command={command}
             isDisabled={command.disable}
@@ -144,12 +169,12 @@ export function renderCommand(
             value={command.recordValue?.value}
             accessibilityLabel={t('form.enter-address')}
           />
-        </Center>
+        </View>
       )
     case 'body-image': {
       if (!command.image) {
         return (
-          <Text pb={2}>
+          <Text style={spacing.pb2}>
             You must select a gender or sex before this body image will appear
           </Text>
         )
@@ -299,7 +324,12 @@ export function renderCommand(
       )
     case 'email':
       return (
-        <Center bg={disabled(command, disabledBackground)}>
+        <View
+          style={[
+            layout.center,
+            { backgroundColor: disabled(command, disabledBackground) },
+          ]}
+        >
           <CDebouncedTextInput
             command={command}
             isDisabled={command.disable}
@@ -331,7 +361,7 @@ export function renderCommand(
             value={command.recordValue?.value || ''}
             accessibilityLabel={t('form.enter-email')}
           />
-        </Center>
+        </View>
       )
     case 'gender':
       return (
@@ -604,7 +634,12 @@ export function renderCommand(
     }
     case 'long-text':
       return (
-        <Center bg={disabled(command, disabledBackground)}>
+        <View
+          style={[
+            layout.center,
+            { backgroundColor: disabled(command, disabledBackground) },
+          ]}
+        >
           <CDebouncedTextInput
             command={command}
             isDisabled={command.disable}
@@ -626,11 +661,16 @@ export function renderCommand(
             value={command.recordValue?.value || ''}
             accessibilityLabel={t('form.enter-long-text')}
           />
-        </Center>
+        </View>
       )
     case 'number':
       return (
-        <Center bg={disabled(command, disabledBackground)}>
+        <View
+          style={[
+            layout.center,
+            { backgroundColor: disabled(command, disabledBackground) },
+          ]}
+        >
           <CDebouncedTextInput
             command={command}
             isDisabled={command.disable}
@@ -653,11 +693,16 @@ export function renderCommand(
             maxW={command.maxW}
             accessibilityLabel={t('form.enter-number')}
           />
-        </Center>
+        </View>
       )
     case 'phone-number':
       return (
-        <Center bg={disabled(command, disabledBackground)}>
+        <View
+          style={[
+            layout.center,
+            { backgroundColor: disabled(command, disabledBackground) },
+          ]}
+        >
           <CDebouncedTextInput
             command={command}
             isDisabled={command.disable}
@@ -680,7 +725,7 @@ export function renderCommand(
             maxW={command.maxW}
             accessibilityLabel={t('form.enter-phone-number')}
           />
-        </Center>
+        </View>
       )
     case 'photo': {
       const recordPhotos = command.recordValue?.value || []
@@ -770,7 +815,12 @@ export function renderCommand(
       )
     case 'text':
       return (
-        <Center bg={disabled(command, disabledBackground)}>
+        <View
+          style={[
+            layout.center,
+            { backgroundColor: disabled(command, disabledBackground) },
+          ]}
+        >
           <CDebouncedTextInput
             command={command}
             isDisabled={command.disable}
@@ -802,14 +852,19 @@ export function renderCommand(
             maxW={command.maxW}
             accessibilityLabel={t('form.enter-text')}
           />
-        </Center>
+        </View>
       )
     case 'add-repeat-button': {
       const repeatList =
         command.recordValue?.value ||
         (command.partRepeated === 'at-least-one' ? ['at-least-one'] : [])
       return (
-        <Center bg={disabled(command, disabledBackground)}>
+        <View
+          style={[
+            layout.center,
+            { backgroundColor: disabled(command, disabledBackground) },
+          ]}
+        >
           <CCustomButton
             command={command}
             isDisabled={command.disable}
@@ -827,7 +882,7 @@ export function renderCommand(
             icon={<Icon pack="material" name="add-box" size="small" />}
             maxW="80%"
           />
-        </Center>
+        </View>
       )
     }
     case 'remove-repeat-button': {
@@ -835,7 +890,12 @@ export function renderCommand(
         command.recordValue?.value ||
         (command.partRepeated === 'at-least-one' ? ['at-least-one'] : [])
       return (
-        <Center bg={disabled(command, disabledBackground)}>
+        <View
+          style={[
+            layout.center,
+            { backgroundColor: disabled(command, disabledBackground) },
+          ]}
+        >
           <CCustomButton
             command={command}
             isDisabled={command.disable}
@@ -853,7 +913,7 @@ export function renderCommand(
             icon={<Icon pack="material" name="delete" size="small" />}
             maxW="80%"
           />
-        </Center>
+        </View>
       )
     }
     case 'padding':
@@ -878,9 +938,12 @@ export function renderCommand(
       )
     case 'row':
       return (
-        <HStack
-          bg={disabled(command, disabledBackground)}
-          justifyContent="space-between"
+        <View
+          style={[
+            layout.hStack,
+            layout.spaceBet,
+            { backgroundColor: disabled(command, disabledBackground) },
+          ]}
         >
           {renderCommand(
             command.left,
@@ -902,14 +965,22 @@ export function renderCommand(
             addKeepAlive,
             removeKeepAlive
           )}
-        </HStack>
+        </View>
       )
     case 'row-with-description':
       return (
-        <VStack bg={disabled(command, disabledBackground)}>
-          <HStack
-            justifyContent="space-between"
-            bg={disabled(command, disabledBackground)}
+        <View
+          style={[
+            layout.vStack,
+            { backgroundColor: disabled(command, disabledBackground) },
+          ]}
+        >
+          <View
+            style={[
+              layout.hStack,
+              layout.spaceBet,
+              { backgroundColor: disabled(command, disabledBackground) },
+            ]}
           >
             {renderCommand(
               command.left,
@@ -931,7 +1002,7 @@ export function renderCommand(
               addKeepAlive,
               removeKeepAlive
             )}
-          </HStack>
+          </View>
           {renderCommand(
             command.description,
             setPath,
@@ -942,7 +1013,7 @@ export function renderCommand(
             addKeepAlive,
             removeKeepAlive
           )}
-        </VStack>
+        </View>
       )
     case 'record-list':
       return (

@@ -6,7 +6,7 @@ import { disabledBackground } from 'utils/formRendering/utils'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import { View } from 'react-native'
-import styles from '../styles'
+import styles, { layout } from '../styles'
 import { Button, useStyleSheet } from '@ui-kitten/components'
 import { EditIcon } from 'components/Icons'
 import themedStyles from 'themeStyled'
@@ -41,7 +41,12 @@ function BodyImage({
 
   return (
     <>
-      <Center bg={isDisabled ? disabledBackground : undefined}>
+      <View
+        style={[
+          layout.center,
+          { backgroundColor: isDisabled ? disabledBackground : 'transparent' },
+        ]}
+      >
         <View style={styles.userListContainer}>
           <BodyMarker
             baseImage={image}
@@ -60,13 +65,13 @@ function BodyImage({
         >
           {t('form.mark-diagram')}
         </Button>
-      </Center>
+      </View>
       <Modal isOpen={isOpen} onClose={internalClose} size="full">
         <Modal.Content>
           <Modal.CloseButton />
           <Modal.Header>{t('form.mark-diagram')}</Modal.Header>
           <Modal.Body>
-            <Center flex={1}>
+            <View style={[layout.center, layout.flex1]}>
               <View style={{ height: modalSize * 0.7, width: modalSize * 0.7 }}>
                 <BodyMarker
                   isDisabled={false}
@@ -76,7 +81,7 @@ function BodyImage({
                   onDeleteAnnotation={removeMarker}
                 />
               </View>
-            </Center>
+            </View>
           </Modal.Body>
           <Modal.Footer>
             <Button onPress={internalClose}>Save</Button>

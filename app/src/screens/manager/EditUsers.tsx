@@ -1,21 +1,16 @@
 import React, { useState, useRef } from 'react'
-import {
-  Box,
-  HStack,
-  Text,
-  VStack,
-  Pressable,
-  Divider,
-  Hidden,
-  Select,
-  CheckIcon,
-} from 'native-base'
 import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/manager/navigation'
 import UserEditor from 'components/UserEditor'
 import useMap from 'react-use/lib/useMap'
 import _ from 'lodash'
 import { UserType } from 'utils/types/user'
+import { SafeAreaView, Dimensions } from 'react-native'
+import { breakpoints } from 'components/nativeBaseSpec'
+import styles, { backgrounds } from 'components/styles'
+
+const { width } = Dimensions.get('window')
+const isWider = width > breakpoints.md
 
 export const defaultUser: Partial<UserType> = {
   'storage-version': '1.0.0',
@@ -80,16 +75,15 @@ export default function EditUser({
       route={route}
       reloadPrevious={reloadPrevious}
     >
-      <VStack
-        safeAreaBottom
-        height="95%"
-        borderRadius={{ md: '8' }}
-        borderColor="coolGray.200"
-        bg={'white'}
-        px={{
-          base: 4,
-          md: 32,
-        }}
+      <SafeAreaView
+        style={[
+          styles.formEditorDesignerView,
+          backgrounds.white,
+          {
+            borderRadius: isWider ? 8 : 0,
+            paddingHorizontal: isWider ? 32 : 4,
+          },
+        ]}
       >
         <UserEditor
           files={files}
@@ -99,7 +93,7 @@ export default function EditUser({
           navigation={navigation}
           reloadPrevious={reloadPrevious}
         />
-      </VStack>
+      </SafeAreaView>
     </DashboardLayout>
   )
 }

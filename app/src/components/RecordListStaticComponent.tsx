@@ -2,20 +2,18 @@ import React, { useState, useEffect } from 'react'
 import { HStack, VStack, ScrollView, Pressable } from 'native-base'
 import { Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
-import { AntDesign } from '@expo/vector-icons'
 // @ts-ignore Record some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import { RecordMetadata } from 'utils/types/recordMetadata'
 import { FormMetadata } from 'utils/types/formMetadata'
-import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
-import SelectLocation from 'components/SelectLocation'
 import { getFormCached, getUserByUUIDCached } from 'api/common'
 import { UserType } from 'utils/types/user'
 import { userFullName } from 'utils/userTypes'
 import { View, Dimensions } from 'react-native'
 import { breakpoints } from './nativeBaseSpec'
+import { layout, spacing } from './styles'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -39,9 +37,11 @@ export function ListItemMobile({
       _hover={{ bg: 'coolGray.100' }}
       onPress={() => selectItem(item)}
     >
-      <HStack justifyContent="space-between" w="100%">
-        <HStack alignItems="center" space={4} w="70%">
-          <VStack>
+      <View style={[layout.hStack, layout.spaceBet, layout.width100percent]}>
+        <View
+          style={[layout.hStackGap4, layout.alignCenter, layout.width70percent]}
+        >
+          <View style={[layout.vStack]}>
             <Text
               style={[
                 styleS.truncated,
@@ -118,10 +118,10 @@ export function ListItemMobile({
             ) : (
               <Text></Text>
             )}
-          </VStack>
-        </HStack>
+          </View>
+        </View>
 
-        <VStack w="30%">
+        <View style={[layout.vStack, layout.width30percent]}>
           <Text
             style={[
               styleS.truncated,
@@ -147,8 +147,8 @@ export function ListItemMobile({
             {item.recordID}
           </Text>
           {item.caseId ? <Text>item.caseId</Text> : <></>}
-        </VStack>
-      </HStack>
+        </View>
+      </View>
     </Pressable>
   )
 }
@@ -171,15 +171,22 @@ export function ListItemDesktop({
       _hover={{ bg: 'coolGray.100' }}
       onPress={() => selectItem(item)}
     >
-      <HStack alignItems="center" flex={1} justifyContent="space-between">
-        <VStack w="45%">
+      <View
+        style={[
+          layout.hStack,
+          layout.flex1,
+          layout.alignCenter,
+          layout.spaceBet,
+        ]}
+      >
+        <View style={[layout.vStack, layout.width45percent]}>
           <Text>
             {forms[item.formUUID] ? forms[item.formUUID].title : 'Unknown form'}
           </Text>
           <Text>{item.recordID}</Text>
-        </VStack>
+        </View>
 
-        <VStack w="20%">
+        <View style={[layout.vStack, layout.width20percent]}>
           <Text>
             {forms[item.formUUID]
               ? forms[item.formUUID]['official-name'] +
@@ -189,9 +196,9 @@ export function ListItemDesktop({
           </Text>
           <Text>{item.caseId ? item.caseId : ''}</Text>
           <Text>{item.formID}</Text>
-        </VStack>
+        </View>
 
-        <VStack w="20%">
+        <View style={[layout.vStack, layout.width20percent]}>
           <Text style={[styleS.truncated]}>
             {formatDate(item.lastChangedDate, 'PPP') as string}
           </Text>
@@ -201,16 +208,16 @@ export function ListItemDesktop({
               item.lastChangedByUUID
             )}
           </Text>
-        </VStack>
+        </View>
 
-        <VStack w="5%">
+        <View style={[layout.vStack, layout.width5percent]}>
           {item.sealed ? (
             <Icon fill="success" size="6" name="star" />
           ) : (
             <Icon fill="danger" size="6" name="star-outline" />
           )}
-        </VStack>
-      </HStack>
+        </View>
+      </View>
     </Pressable>
   )
 }
@@ -265,7 +272,8 @@ export default function RecordListStaticComponent({
   }, [records])
 
   return (
-    <VStack
+    <View
+      style={[layout.vStack]}
       px={{ base: 4, md: 8 }}
       py={{ base: 2, md: 8 }}
       borderRadius={{ md: '8' }}
@@ -295,7 +303,7 @@ export default function RecordListStaticComponent({
             })}
           </View>
           <View style={{ display: isWider ? 'flex' : 'none' }}>
-            <VStack mt={3} space={3}>
+            <View style={[layout.vStackGap3, spacing.mt3]}>
               {records.map((item: RecordMetadata, index: number) => {
                 return (
                   <ListItemDesktop
@@ -307,10 +315,10 @@ export default function RecordListStaticComponent({
                   />
                 )
               })}
-            </VStack>
+            </View>
           </View>
         </ScrollView>
       </View>
-    </VStack>
+    </View>
   )
 }
