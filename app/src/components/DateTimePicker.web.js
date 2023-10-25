@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { View } from 'react-native'
-import { Input, Modal } from 'native-base'
 import _ from 'lodash'
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
@@ -10,8 +9,18 @@ import FloatingLabelInput from 'components/FloatingLabelInput'
 import 'react-datepicker/dist/react-datepicker.css'
 import DatePicker from 'react-datepicker'
 import { parseDate } from 'chrono-node'
-import { Button } from '@ui-kitten/components'
+import {
+  Button,
+  Modal,
+  Card,
+  useStyleSheet,
+  Input,
+} from '@ui-kitten/components'
 import { layout } from './styles'
+import ModalHeader from './styledComponents/ModalHeader'
+import themedStyles from 'themeStyled'
+
+const styleS = useStyleSheet(themedStyles)
 
 export default function DateTimePicker({
   title,
@@ -93,12 +102,10 @@ export default function DateTimePicker({
             />
           ) : (
             <Input
-              isDisabled={isDisabled}
-              mx="3"
-              size="md"
+              disabled={isDisabled}
+              style={[styleS.mx3, styleS.width75Percent, styleS.maxWidth200]}
+              size="mdium"
               placeholder={t(time ? 'form.enter-date-time' : 'form.enter-date')}
-              w="75%"
-              maxWidth="200px"
               onChangeText={setDateString}
               value={dateString}
               onSubmitEditing={onSaveText}
@@ -122,22 +129,23 @@ export default function DateTimePicker({
           </View>
         </View>
       </View>
-      <Modal isOpen={modalVisible} onClose={onClose}>
-        <Modal.Content maxWidth="400px">
-          <Modal.CloseButton />
-          <Modal.Header>{title}</Modal.Header>
-          <Modal.Body>
-            <View style={layout.center}>
-              <DatePicker
-                selected={date}
-                onChange={onSave}
-                inline
-                fixedHeight
-                showYearDropdown={fancyLabel ? true : false}
-              />
-            </View>
-          </Modal.Body>
-        </Modal.Content>
+      <Modal
+        visible={modalVisible}
+        onBackdropPress={onClose}
+        style={{ maxWidth: 400 }}
+        backdropStyle={styleS.backdrop}
+      >
+        <Card header={props => <ModalHeader {...props} text={title} />}>
+          <View style={layout.center}>
+            <DatePicker
+              selected={date}
+              onChange={onSave}
+              inline
+              fixedHeight
+              showYearDropdown={fancyLabel ? true : false}
+            />
+          </View>
+        </Card>
       </Modal>
     </>
   )

@@ -1,5 +1,4 @@
 import React from 'react'
-import { Pressable } from 'native-base'
 import { Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
@@ -11,7 +10,7 @@ import styles, {
   shadows,
   spacing,
 } from 'components/styles'
-import { View, SafeAreaView, Dimensions } from 'react-native'
+import { View, SafeAreaView, Dimensions, Pressable } from 'react-native'
 import { breakpoints } from 'components/nativeBaseSpec'
 
 const { width } = Dimensions.get('window')

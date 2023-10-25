@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Pressable, Spinner } from 'native-base'
+import { Spinner } from 'native-base'
+import { Pressable } from 'react-native'
 import { Text, useStyleSheet } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
@@ -8,9 +9,9 @@ import { t } from 'i18n-js'
 import _ from 'lodash'
 import { UserType } from 'utils/types/user'
 import { LocationType } from 'utils/types/location'
-import { layout, spacing } from './styles'
+import { backgrounds, borders, layout, spacing } from './styles'
 import { View, Dimensions } from 'react-native'
-import { breakpoints } from './nativeBaseSpec'
+import { breakpoints, colors } from './nativeBaseSpec'
 
 const styleS = useStyleSheet(themedStyles)
 const { width } = Dimensions.get('window')
@@ -58,6 +59,7 @@ export default function paginateComponent(
     useEffect(() => {
       onMore()
     }, [])
+
     return (
       <>
         {cache[page] === undefined ? (
@@ -77,15 +79,20 @@ export default function paginateComponent(
         >
           {_.range(0, cache.length).map((n: number) => (
             <Pressable
-              height={8}
-              width={8}
-              borderRadius={4}
-              bg="white"
-              color="coolGray.500"
-              textAlign="center"
-              justifyContent="center"
-              borderColor={n === page ? 'primary.700' : undefined}
-              borderWidth={n === page ? 1 : undefined}
+              style={[
+                layout.alignCenter,
+                layout.justifyCenter,
+                backgrounds.white,
+                borders.roundedMd,
+                {
+                  height: 8,
+                  width: 8,
+                  borderColor: n === page ? 'primary.700' : undefined,
+                  borderWidth: n === page ? 1 : undefined,
+                  // color: colors.coolGray[500],
+                  borderRadius: 4,
+                },
+              ]}
               onPress={() => setPage(n)}
             >
               <Text style={[styleS.colorCoolGray500, styleS.fontSizeSm]}>
@@ -95,15 +102,18 @@ export default function paginateComponent(
           ))}
           {!finished && (
             <Pressable
-              height={8}
-              width={8}
-              borderRadius={4}
-              bg="white"
-              color="coolGray.500"
-              textAlign="center"
-              justifyContent="center"
-              borderColor={undefined}
-              borderWidth={undefined}
+              style={[
+                layout.alignCenter,
+                layout.justifyCenter,
+                backgrounds.white,
+                borders.roundedMd,
+                {
+                  height: 8,
+                  width: 8,
+                  // color: colors.coolGray[500],
+                  borderRadius: 4,
+                },
+              ]}
               onPress={() => {
                 setPage(page + 1)
                 onMore()

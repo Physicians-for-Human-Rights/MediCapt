@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ScrollView, Pressable, Select } from 'native-base'
+import { Select } from 'native-base'
 import { Button, Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { UserType } from 'utils/types/user'
@@ -10,7 +10,7 @@ import _ from 'lodash'
 import { Share } from 'utils/types/share'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import SelectLocation from 'components/SelectLocation'
-import { Dimensions, Platform, View } from 'react-native'
+import { Dimensions, Platform, View, ScrollView, Pressable } from 'react-native'
 import { getUserByUUIDCachedAnyPool } from 'api/common'
 import { userFullName } from 'utils/userTypes'
 import { breakpoints } from './nativeBaseSpec'
@@ -32,7 +32,7 @@ export function ListItem({
   users: Record<string, Partial<UserType>>
 }) {
   return (
-    <Pressable p={2} onPress={() => selectItem(item)}>
+    <Pressable style={spacing.p2} onPress={() => selectItem(item)}>
       <View style={[layout.hStack, layout.spaceBet, layout.width100percent]}>
         <View
           style={[layout.hStackGap4, layout.alignCenter, layout.width70percent]}
@@ -96,9 +96,8 @@ export function ListItemDesktop({
 }) {
   return (
     <Pressable
-      px={2}
-      flex={1}
-      _hover={{ bg: 'coolGray.100' }}
+      style={[spacing.px2, layout.flex1]}
+      // _hover={{ bg: 'coolGray.100' }}
       onPress={() => selectItem(item)}
     >
       <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>

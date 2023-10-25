@@ -1,12 +1,11 @@
 import React from 'react'
-import { Pressable, Badge, useBreakpointValue, FlatList } from 'native-base'
+import { Badge, useBreakpointValue } from 'native-base'
 import { Text } from '@ui-kitten/components'
-import { AntDesign } from '@expo/vector-icons'
 import _ from 'lodash'
 import { NamedFormSection } from 'utils/types/formHelpers'
 import FormButtons from 'components/FormButtons'
 import styles, { layout } from './styles'
-import { View } from 'react-native'
+import { View, FlatList, Pressable } from 'react-native'
 
 function Section({
   completed,

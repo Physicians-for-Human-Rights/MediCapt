@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ScrollView, Pressable } from 'native-base'
+import { ScrollView, Pressable } from 'react-native'
 import { Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { LocationType } from 'utils/types/location'
@@ -131,9 +131,8 @@ export function ListItemDesktop({
 }) {
   return (
     <Pressable
-      px={2}
-      flex={1}
-      _hover={{ bg: 'coolGray.100' }}
+      style={[spacing.px2, layout.flex1]}
+      // _hover={{ bg: 'coolGray.100' }}
       onPress={() => selectItem(item)}
     >
       <View

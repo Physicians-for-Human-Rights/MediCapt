@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { HStack, VStack, ScrollView, Pressable } from 'native-base'
 import { Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 // @ts-ignore Record some reason expo doesn't pick up this module without the extension
@@ -11,9 +10,9 @@ import { FormMetadata } from 'utils/types/formMetadata'
 import { getFormCached, getUserByUUIDCached } from 'api/common'
 import { UserType } from 'utils/types/user'
 import { userFullName } from 'utils/userTypes'
-import { View, Dimensions } from 'react-native'
+import { View, Dimensions, ScrollView, Pressable } from 'react-native'
 import { breakpoints } from './nativeBaseSpec'
-import { layout, spacing } from './styles'
+import styles, { layout, spacing } from './styles'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -32,9 +31,8 @@ export function ListItemMobile({
 }) {
   return (
     <Pressable
-      p={2}
-      flex={1}
-      _hover={{ bg: 'coolGray.100' }}
+      style={[spacing.p2, layout.flex1]}
+      // _hover={{ bg: 'coolGray.100' }}
       onPress={() => selectItem(item)}
     >
       <View style={[layout.hStack, layout.spaceBet, layout.width100percent]}>
@@ -166,9 +164,8 @@ export function ListItemDesktop({
 }) {
   return (
     <Pressable
-      px={2}
-      flex={1}
-      _hover={{ bg: 'coolGray.100' }}
+      style={[spacing.p2, layout.flex1]}
+      // _hover={{ bg: 'coolGray.100' }}
       onPress={() => selectItem(item)}
     >
       <View
@@ -273,17 +270,10 @@ export default function RecordListStaticComponent({
 
   return (
     <View
-      style={[layout.vStack]}
-      px={{ base: 4, md: 8 }}
-      py={{ base: 2, md: 8 }}
-      borderRadius={{ md: '8' }}
-      _light={{
-        borderColor: 'coolGray.200',
-        bg: { base: 'white' },
-      }}
-      borderWidth={{ md: '1' }}
-      borderBottomWidth="1"
-      space="4"
+      style={[
+        styles.locationListVStack,
+        isWider ? styles.locationListVStackMd : styles.locationListVStackBase,
+      ]}
     >
       <View>
         <ScrollView>

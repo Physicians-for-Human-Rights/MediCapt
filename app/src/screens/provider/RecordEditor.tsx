@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { Modal } from 'native-base'
-import { Button } from '@ui-kitten/components'
+import { Button, Modal, Card, useStyleSheet } from '@ui-kitten/components'
 import _ from 'lodash'
 import Form from 'components/Form'
 import DashboardLayout from 'components/DashboardLayout'
@@ -43,7 +42,10 @@ import { useUserLocations } from 'utils/store'
 import { backgrounds, borders, layout } from 'components/styles'
 import { breakpoints } from 'components/nativeBaseSpec'
 import { Dimensions, SafeAreaView } from 'react-native'
+import themedStyles from 'themeStyled'
+import ModalHeader from 'components/styledComponents/ModalHeader'
 
+const styleS = useStyleSheet(themedStyles)
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
 const FormMemo = React.memo(Form)
@@ -443,7 +445,15 @@ export default function RecordEditor({
 
   const recordMetadataRef = useRef(recordMetadata)
   recordMetadataRef.current = recordMetadata
-
+  const Footer = (
+    <Button
+      appearance="ghost"
+      status="blueGray"
+      onPress={() => setIsAssociatedModalOpen(false)}
+    >
+      Cancel
+    </Button>
+  )
   return (
     <DashboardLayout
       navigation={navigation}
@@ -506,59 +516,53 @@ export default function RecordEditor({
           )}
         </SafeAreaView>
         <Modal
-          isOpen={isAssociatedModalOpen}
-          onClose={() => setIsAssociatedModalOpen(false)}
-          size="lg"
+          visible={isAssociatedModalOpen}
+          onBackdropPress={() => setIsAssociatedModalOpen(false)}
+          backdropStyle={styleS.backdrop}
+          // size="lg"
         >
-          <Modal.Content>
-            <Modal.CloseButton />
-            <Modal.Header>
-              {t('record.overview.select-associated-record-to-add')}
-            </Modal.Header>
-            <Modal.Body>
-              <FormListStaticCompact
-                forms={associatedForms}
-                selectItem={e => {
-                  setIsAssociatedModalOpen(false)
-                  const { recordMetadata, ...newParams } = route.params
-                  navigation.push('RecordEditor', {
-                    ...newParams,
-                    formMetadata: e,
-                    displayPageAfterOverview: true,
-                    isAssociatedRecord: true,
-                    addAssociatedRecord: async r => {
-                      const newMetadata: RecordMetadata = {
-                        ...recordMetadataRef.current,
-                        associatedRecords: _.concat(
-                          recordMetadataRef.current.associatedRecords,
-                          [
-                            {
-                              recordUUID: r.recordUUID,
-                              recordID: r.recordID,
-                            },
-                          ]
-                        ),
-                      }
-                      reloadPrevious.current = true
-                      setRecordMetadata(
-                        await updateRecord(newMetadata, recordManifest)
-                      )
-                      setAssociatedRecords(l => _.concat(l, [r]))
-                    },
-                  })
-                }}
+          <Card
+            header={props => (
+              <ModalHeader
+                {...props}
+                text={t('record.overview.select-associated-record-to-add')}
               />
-            </Modal.Body>
-            <Modal.Footer>
-              <Button
-                appearance="ghost"
-                status="blueGray"
-                onPress={() => setIsAssociatedModalOpen(false)}
-              >
-                Cancel
-              </Button>
-            </Modal.Footer>
-          </Modal.Content>
+            )}
+            footer={Footer}
+          >
+            <FormListStaticCompact
+              forms={associatedForms}
+              selectItem={e => {
+                setIsAssociatedModalOpen(false)
+                const { recordMetadata, ...newParams } = route.params
+                navigation.push('RecordEditor', {
+                  ...newParams,
+                  formMetadata: e,
+                  displayPageAfterOverview: true,
+                  isAssociatedRecord: true,
+                  addAssociatedRecord: async r => {
+                    const newMetadata: RecordMetadata = {
+                      ...recordMetadataRef.current,
+                      associatedRecords: _.concat(
+                        recordMetadataRef.current.associatedRecords,
+                        [
+                          {
+                            recordUUID: r.recordUUID,
+                            recordID: r.recordID,
+                          },
+                        ]
+                      ),
+                    }
+                    reloadPrevious.current = true
+                    setRecordMetadata(
+                      await updateRecord(newMetadata, recordManifest)
+                    )
+                    setAssociatedRecords(l => _.concat(l, [r]))
+                  },
+                })
+              }}
+            />
+          </Card>
         </Modal>
         <Loading loading={waiting} />
       </>

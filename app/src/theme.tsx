@@ -1,4 +1,4 @@
-import { Heading, extendTheme } from 'native-base'
+import { extendTheme } from 'native-base'
 import { theme as defaultTheme } from 'native-base'
 import 'styling'
 

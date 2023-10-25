@@ -5,13 +5,14 @@ import useSet from 'react-use/lib/useSet'
 import useToggle from 'react-use/lib/useToggle'
 import {
   Keyboard,
+  View,
   // NB Don't use the native-base FlatList. It's buggy!
 } from 'react-native'
 import _ from 'lodash'
 import { ZodError } from 'zod'
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view'
 import { t } from 'i18n-js'
-import { View, useBreakpointValue } from 'native-base'
+import { useBreakpointValue } from 'native-base'
 import FormMenu from 'components/FormMenu'
 import FromTop from 'components/FormTop'
 import {
@@ -51,6 +52,7 @@ import { RenderCommand } from 'utils/formRendering/types'
 import confirmationDialog from 'utils/confirmationDialog'
 import { Share } from 'utils/types/share'
 import { disableRenderCommands } from 'utils/formRendering/utils'
+import { layout } from './styles'
 
 // FIXME Temproary hack before rewriting Form to invert control back to
 // RecordEditor and show error messages
@@ -540,7 +542,7 @@ export default function Form({
   if (form === undefined) return null
 
   return (
-    <View flex={1}>
+    <View style={layout.flex1}>
       <FromTop
         key="form-top"
         sectionOffset={setSectionOffset}

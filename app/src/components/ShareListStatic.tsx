@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { ScrollView, Pressable } from 'native-base'
 import { Text, useStyleSheet } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
@@ -7,7 +6,7 @@ import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import { Share } from 'utils/types/share'
-import { Platform, Dimensions, View } from 'react-native'
+import { ScrollView, Pressable, Dimensions, View } from 'react-native'
 import { UserType } from 'utils/types/user'
 import { getUserByUUIDCachedAnyPool } from 'api/common'
 import { userFullName, UserKindNames } from 'utils/userTypes'
@@ -28,7 +27,7 @@ export function ListItemMobile({
   users: Record<string, Partial<UserType>>
 }) {
   return (
-    <Pressable p={2} onPress={() => selectItem(item)}>
+    <Pressable style={spacing.p2} onPress={() => selectItem(item)}>
       <View style={[layout.hStack, layout.spaceBet, layout.width100percent]}>
         <View
           style={[layout.hStackGap4, layout.alignCenter, layout.width60percent]}
@@ -98,9 +97,8 @@ export function ListItemDesktop({
 }) {
   return (
     <Pressable
-      px={2}
-      flex={1}
-      _hover={{ bg: 'coolGray.100' }}
+      style={[spacing.p2, layout.flex1]}
+      // _hover={{ bg: 'coolGray.100' }}
       onPress={() => selectItem(item)}
     >
       <View style={[layout.hStack, layout.alignCenter, layout.flex1]}>

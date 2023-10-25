@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react'
-import { FlatList, Modal } from 'native-base'
-import { View, Dimensions } from 'react-native'
-import { Text, Button, useStyleSheet, Icon } from '@ui-kitten/components'
-import { readImage, stripFileExtension } from 'utils/forms'
+import { View, Dimensions, FlatList } from 'react-native'
+import {
+  Text,
+  Button,
+  useStyleSheet,
+  Icon,
+  Modal,
+  Card,
+} from '@ui-kitten/components'
+import { stripFileExtension } from 'utils/forms'
 import _ from 'lodash'
 import { t } from 'i18n-js'
-import { getFormCached, getUserByUUIDCached } from 'api/common'
+import { getFormCached } from 'api/common'
 // @ts-ignore TODO TS doesn't understand .native.js and .web.js files
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
@@ -16,9 +22,25 @@ import { breakpoints } from './nativeBaseSpec'
 import themedStyles from 'themeStyled'
 import { PlusIcon } from './Icons'
 import { layout } from './styles'
+import ModalHeader from '../components/styledComponents/ModalHeader'
 
 const { width } = Dimensions.get('window')
 const styleS = useStyleSheet(themedStyles)
+const isWider = width > breakpoints.md
+
+const Footer = (props: any) => {
+  const { setIsSearchModalOpen } = props
+  return (
+    <Button
+      appearance="ghost"
+      // colorScheme="blueGray"
+      status="info"
+      onPress={() => setIsSearchModalOpen(false)}
+    >
+      Cancel
+    </Button>
+  )
+}
 
 export default function FormEditorAssociations({
   formMetadata,
@@ -92,7 +114,10 @@ export default function FormEditorAssociations({
     } else {
     }
   }
-
+  const localStyle: any = {
+    marginBottom: isWider ? 20 : 0,
+    display: isWider ? 'flex' : undefined,
+  }
   return (
     <>
       <View style={[layout.vStackGap3, spacing.my2]}>
@@ -119,9 +144,7 @@ export default function FormEditorAssociations({
             ]}
           >
             <FlatList
-              mb={{ base: 0, md: 20 }}
-              mt={{ base: '2' }}
-              display={{ md: 'flex' }}
+              style={[localStyle, spacing.mt2]}
               horizontal={false}
               numColumns={1}
               data={formMetadata.associatedForms}
@@ -187,29 +210,24 @@ export default function FormEditorAssociations({
         </View>
       </View>
       <Modal
-        isOpen={isSearchModalOpen}
-        onClose={() => setIsSearchModalOpen(false)}
-        size="full"
+        visible={isSearchModalOpen}
+        onBackdropPress={() => setIsSearchModalOpen(false)}
+        backdropStyle={styleS.backdrop}
+        // size="full"
       >
-        <Modal.Content>
-          <Modal.CloseButton />
-          <Modal.Header>
-            {t('form-editor.associations.select-form')}
-          </Modal.Header>
-          <Modal.Body>
-            <FormSearch selectItem={addForm} />
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              appearance="ghost"
-              // colorScheme="blueGray"
-              status="info"
-              onPress={() => setIsSearchModalOpen(false)}
-            >
-              Cancel
-            </Button>
-          </Modal.Footer>
-        </Modal.Content>
+        <Card
+          header={props => (
+            <ModalHeader
+              {...props}
+              text={t('form-editor.associations.select-form')}
+            />
+          )}
+          footer={props => (
+            <Footer {...props} setIsSearchModalOpen={setIsSearchModalOpen} />
+          )}
+        >
+          <FormSearch selectItem={addForm} />
+        </Card>
       </Modal>
     </>
   )

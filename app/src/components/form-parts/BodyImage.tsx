@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Center, Modal } from 'native-base'
 import BodyMarker, { BodyMarkerAnnotation } from 'components/BodyMarker'
 import { useWindowDimensions } from 'react-native'
 import { disabledBackground } from 'utils/formRendering/utils'
@@ -7,9 +6,10 @@ import { t } from 'i18n-js'
 import _ from 'lodash'
 import { View } from 'react-native'
 import styles, { layout } from '../styles'
-import { Button, useStyleSheet } from '@ui-kitten/components'
+import { Button, useStyleSheet, Modal, Card } from '@ui-kitten/components'
 import { EditIcon } from 'components/Icons'
 import themedStyles from 'themeStyled'
+import ModalHeader from 'components/styledComponents/ModalHeader'
 
 const styleS = useStyleSheet(themedStyles)
 export type ImageAnnotation = BodyMarkerAnnotation
@@ -38,7 +38,7 @@ function BodyImage({
   const internalOpen = () => {
     setOpen(true)
   }
-
+  const Footer = <Button onPress={internalClose}>Save</Button>
   return (
     <>
       <View
@@ -66,27 +66,29 @@ function BodyImage({
           {t('form.mark-diagram')}
         </Button>
       </View>
-      <Modal isOpen={isOpen} onClose={internalClose} size="full">
-        <Modal.Content>
-          <Modal.CloseButton />
-          <Modal.Header>{t('form.mark-diagram')}</Modal.Header>
-          <Modal.Body>
-            <View style={[layout.center, layout.flex1]}>
-              <View style={{ height: modalSize * 0.7, width: modalSize * 0.7 }}>
-                <BodyMarker
-                  isDisabled={false}
-                  baseImage={image}
-                  annotations={annotations}
-                  onAnnotate={addMarker}
-                  onDeleteAnnotation={removeMarker}
-                />
-              </View>
+      <Modal
+        visible={isOpen}
+        onBackdropPress={internalClose}
+        backdropStyle={styleS.backdrop}
+      >
+        <Card
+          footer={Footer}
+          header={props => (
+            <ModalHeader {...props} text={t('form.mark-diagram')} />
+          )}
+        >
+          <View style={[layout.center, layout.flex1]}>
+            <View style={{ height: modalSize * 0.7, width: modalSize * 0.7 }}>
+              <BodyMarker
+                isDisabled={false}
+                baseImage={image}
+                annotations={annotations}
+                onAnnotate={addMarker}
+                onDeleteAnnotation={removeMarker}
+              />
             </View>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button onPress={internalClose}>Save</Button>
-          </Modal.Footer>
-        </Modal.Content>
+          </View>
+        </Card>
       </Modal>
     </>
   )

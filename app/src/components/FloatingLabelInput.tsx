@@ -1,7 +1,7 @@
 import React, { Component, useCallback, useEffect } from 'react'
 import useDebounce from 'react-use/lib/useDebounce'
 import { Platform, Animated, StyleSheet, View } from 'react-native'
-import { Input } from 'native-base'
+import { Input } from '@ui-kitten/components'
 import { spacing } from './styles'
 import _ from 'lodash'
 
@@ -96,11 +96,10 @@ export class RawFloatingLabelInput extends Component<any, any> {
         </Animated.View>
         <Input
           {...props}
-          mt={0}
+          style={{ padding: 12, marginTop: 0 }}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
-          padding="3"
-          _hover={{ bg: this.props.labelBGColor }}
+          // _hover={{ bg: this.props.labelBGColor }}
         />
       </View>
     )

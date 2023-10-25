@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ScrollView, Pressable, Select } from 'native-base'
+import { Select } from 'native-base'
 import { Text, useStyleSheet, Button, Icon } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 // @ts-ignore Record some reason expo doesn't pick up this module without the extension
@@ -13,7 +13,7 @@ import SelectLocation from 'components/SelectLocation'
 import { getFormCached, getUserByUUIDCached } from 'api/common'
 import { UserType } from 'utils/types/user'
 import { userFullName } from 'utils/userTypes'
-import { Platform, View, Dimensions } from 'react-native'
+import { Platform, View, Dimensions, ScrollView, Pressable } from 'react-native'
 import { breakpoints } from './nativeBaseSpec'
 import { CloseIcon, RefreshIcon } from './Icons'
 import { colors } from './nativeBaseSpec'
@@ -36,9 +36,8 @@ export function ListItemMobile({
 }) {
   return (
     <Pressable
-      p={2}
-      flex={1}
-      _hover={{ bg: 'coolGray.100' }}
+      style={[spacing.p2, layout.flex1]}
+      // _hover={{ bg: 'coolGray.100' }}
       onPress={() => selectItem(item)}
     >
       <View style={[layout.hStack, layout.spaceBet, layout.width100percent]}>
@@ -170,9 +169,8 @@ export function ListItemDesktop({
 }) {
   return (
     <Pressable
-      px={2}
-      flex={1}
-      _hover={{ bg: 'coolGray.100' }}
+      style={[spacing.px2, layout.flex1]}
+      // _hover={{ bg: 'coolGray.100' }}
       onPress={() => selectItem(item)}
     >
       <View
@@ -332,10 +330,14 @@ export default function RecordList({
 
   return (
     <>
-      <Stack
-        direction={{ md: 'row', base: 'column' }}
-        mb={{ md: 1, base: 0 }}
-        justifyContent="center"
+      <View
+        style={[
+          {
+            flexDirection: isWider ? 'row' : 'column',
+            marginBottom: isWider ? 4 : 0,
+          },
+          layout.justifyCenter,
+        ]}
       >
         <View style={layout.center}>
           <SelectLocation
@@ -376,7 +378,7 @@ export default function RecordList({
         ) : (
           <></>
         )}
-      </Stack>
+      </View>
       <View
         style={[
           styles.recordListStack,

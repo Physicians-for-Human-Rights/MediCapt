@@ -1,4 +1,3 @@
-import { colors } from 'components/nativeBaseSpec'
 import { StyleSheet } from 'react-native'
 import { colors, rounded } from './nativeBaseSpec'
 
@@ -8,6 +7,9 @@ export const spacing = StyleSheet.create({
   },
   px1: {
     paddingHorizontal: 4,
+  },
+  px2: {
+    paddingHorizontal: 8,
   },
   px4: {
     paddingHorizontal: 16,

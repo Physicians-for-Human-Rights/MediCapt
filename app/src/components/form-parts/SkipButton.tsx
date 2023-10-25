@@ -1,5 +1,6 @@
 import React from 'react'
-import { Stack, Pressable, Center, Checkbox } from 'native-base'
+import { Checkbox } from 'native-base'
+import { Pressable } from 'react-native'
 import { Text } from '@ui-kitten/components'
 import { StyleSheet, View } from 'react-native'
 import _ from 'lodash'
@@ -33,15 +34,17 @@ export default function SkipButton({
   }
   return (
     <Pressable
-      zIndex={absolutePositioning ? 100 : undefined}
-      position={absolutePositioning ? 'absolute' : undefined}
-      right={absolutePositioning ? '0' : undefined}
-      px={absolutePositioning ? '1' : undefined}
-      py={absolutePositioning ? '1' : undefined}
+      style={{
+        zIndex: absolutePositioning ? 100 : undefined,
+        // position: absolutePositioning ? 100 : undefined,
+        right: absolutePositioning ? '0' : undefined,
+        paddingHorizontal: absolutePositioning ? '1' : undefined,
+        paddingVertical: absolutePositioning ? '1' : undefined,
+      }}
       onPress={toggleSkip}
-      isDisabled={isDisabled}
+      disabled={isDisabled}
     >
-      <Stack direction={direction}>
+      <View style={{ flexDirection: direction }}>
         <View style={[layout.center]}>
           <Checkbox
             value="skip"
@@ -61,7 +64,7 @@ export default function SkipButton({
             SKIP
           </Text>
         </View>
-      </Stack>
+      </View>
     </Pressable>
   )
 }

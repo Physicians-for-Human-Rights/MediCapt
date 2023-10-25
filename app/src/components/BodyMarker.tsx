@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Text, Button, useStyleSheet, Modal, Card } from '@ui-kitten/components'
+import { Text, useStyleSheet, Modal, Card } from '@ui-kitten/components'
 import {
   StyleSheet,
   ImageBackground,
@@ -16,6 +16,7 @@ import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import themedStyles from 'themeStyled'
 import { spacing, layout } from './styles'
 import ModalFooter from './styledComponents/ModalFooter'
+import ModalHeader from './styledComponents/ModalHeader'
 
 const styleS = useStyleSheet(themedStyles)
 
@@ -271,7 +272,19 @@ function BodyMarker({
         // size="lg"
         backdropStyle={styleS.backdrop}
       >
-        <Card footer={ModalFooter}>
+        <Card
+          footer={props => (
+            <ModalFooter
+              {...props}
+              onDeleteMarker={onDeleteMarker}
+              onCancelMarker={onCancelMarker}
+              onSaveMarker={onSaveMarker}
+            />
+          )}
+          header={props => (
+            <ModalHeader {...props} text={t('form.mark-diagram')} />
+          )}
+        >
           <View style={layout.vStack}>
             <DebouncedTextInput
               value={currentAnnotation}
@@ -299,59 +312,6 @@ function BodyMarker({
             />
           </View>
         </Card>
-        <Modal.Content>
-          <Modal.CloseButton />
-          <Modal.Header>{t('form.mark-diagram')}</Modal.Header>
-          {/* <Modal.Body>
-            <View style={layout.vStack}>
-              <DebouncedTextInput
-                value={currentAnnotation}
-                onChangeText={setCurrentAnnotation}
-                debounceMs={500}
-                placeholder={'Describe the marker'}
-                multiline={true}
-                numberOfLines={5}
-                size="md"
-                bg="coolGray.100"
-                variant="filled"
-                w="100%"
-              />
-              <Photo
-                isDisabled={isDisabled}
-                photos={currentPhotos || []}
-                addPhoto={(toAdd: Photo) => {
-                  setCurrentPhotos(currentPhotos.concat(toAdd))
-                }}
-                removePhoto={(n: number) => {
-                  const r = _.cloneDeep(currentPhotos)
-                  _.pullAt(r, [n])
-                  setCurrentPhotos(r)
-                }}
-              />
-            </View>
-          </Modal.Body> */}
-          {/* <Modal.Footer>
-            <Button
-              style={[spacing.mr2]}
-              appearance="ghost"
-              status="danger"
-              onPress={onDeleteMarker}
-            >
-              Delete
-            </Button>
-            <Button
-              style={[spacing.mr2]}
-              appearance="ghost"
-              status="info"
-              onPress={onCancelMarker}
-            >
-              Cancel
-            </Button>
-            <Button status="info" onPress={onSaveMarker}>
-              Save
-            </Button>
-          </Modal.Footer> */}
-        </Modal.Content>
       </Modal>
     </>
   )

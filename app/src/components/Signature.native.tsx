@@ -1,8 +1,7 @@
 import React, { useState, useRef } from 'react'
-import { Image, Center, Modal } from 'native-base'
-import { Button, useStyleSheet } from '@ui-kitten/components'
+import { Button, useStyleSheet, Modal, Card } from '@ui-kitten/components'
 import { disabledBackground } from 'utils/formRendering/utils'
-import { View } from 'react-native'
+import { View, Image } from 'react-native'
 import styles, { layout } from './styles'
 // https://www.npmjs.com/package/react-native-signature-canvas
 import SignatureCanvas, {
@@ -10,6 +9,7 @@ import SignatureCanvas, {
 } from 'react-native-signature-canvas'
 import { EditIcon, CloseCircleIcon } from './Icons'
 import themedStyles from 'themeStyled'
+import ModalHeader from './styledComponents/ModalHeader'
 
 const styleS = useStyleSheet(themedStyles)
 
@@ -63,6 +63,21 @@ function Signature({
     setSignature(undefined)
     internalClose()
   }
+  const Footer = () => {
+    return (
+      <>
+        <Button
+          appearance="ghost"
+          status="blueGray"
+          onPress={onCancel}
+          style={[styleS.mr2]}
+        >
+          Cancel and clear
+        </Button>
+        <Button onPress={onSaveButton}>Save</Button>
+      </>
+    )
+  }
 
   return (
     <>
@@ -75,11 +90,11 @@ function Signature({
         {imageURI && (
           <Image
             resizeMode="contain"
-            size={150}
+            style={{ width: 150 }}
             source={{
               uri: imageURI,
             }}
-            alt="The recorded siganture"
+            accessibilityLabel="The recorded siganture"
           />
         )}
         <Button
@@ -92,35 +107,28 @@ function Signature({
           {imageURI ? 'Clear and sign again' : 'Sign'}
         </Button>
       </View>
-      <Modal isOpen={isOpen} onClose={internalClose}>
-        <Modal.Content maxWidth="400px">
-          <Modal.Header>Sign here</Modal.Header>
-          <Modal.Body>
-            <View style={styles.signatureNative}>
-              <SignatureCanvas
-                androidHardwareAccelerationDisabled={true}
-                webStyle={canvasWebStyle}
-                ref={ref}
-                onOK={onSave}
-                onEmpty={onEmpty}
-                // NB imageType={'image/jpeg'} is broken!
-                // You must get a png instead.
-                imageType={'image/png'}
-              />
-            </View>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              appearance="ghost"
-              status="blueGray"
-              onPress={onCancel}
-              style={[styleS.mr2]}
-            >
-              Cancel and clear
-            </Button>
-            <Button onPress={onSaveButton}>Save</Button>
-          </Modal.Footer>
-        </Modal.Content>
+      <Modal
+        visible={isOpen}
+        onBackdropPress={internalClose}
+        backdropStyle={styleS.backdrop}
+      >
+        <Card
+          header={props => <ModalHeader {...props} text="Sign here" />}
+          footer={Footer}
+        >
+          <View style={styles.signatureNative}>
+            <SignatureCanvas
+              androidHardwareAccelerationDisabled={true}
+              webStyle={canvasWebStyle}
+              ref={ref}
+              onOK={onSave}
+              onEmpty={onEmpty}
+              // NB imageType={'image/jpeg'} is broken!
+              // You must get a png instead.
+              imageType={'image/png'}
+            />
+          </View>
+        </Card>
       </Modal>
     </>
   )

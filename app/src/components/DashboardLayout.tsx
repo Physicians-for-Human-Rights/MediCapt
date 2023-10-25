@@ -1,15 +1,14 @@
 import React from 'react'
+import { Hidden, Menu } from 'native-base'
 import {
-  StatusBar,
-  ScrollView,
-  Pressable,
+  View,
+  Dimensions,
+  SafeAreaView,
   Image,
-  Hidden,
-  Divider,
-  Menu,
-  Input,
-} from 'native-base'
-import { View, Dimensions, SafeAreaView } from 'react-native'
+  Pressable,
+  ScrollView,
+  StatusBar,
+} from 'react-native'
 import { useSignOut } from 'utils/store'
 import _ from 'lodash'
 
@@ -23,6 +22,8 @@ import {
   Button,
   Icon,
   Avatar,
+  Input,
+  Divider,
 } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import styles, { spacing, layout } from './styles'
@@ -235,9 +236,8 @@ export function Header({
             {/* TODO What should the logo button do? It used to go back. */}
             <Pressable>
               <Image
-                h="10"
-                w={10}
-                alt="Medicapt Logo"
+                style={{ height: 10, width: 10 }}
+                accessibilityLabel="Medicapt Logo"
                 resizeMode="cover"
                 source={medicapt_logo}
               />
@@ -257,11 +257,10 @@ export function Header({
 
           {searchbar && (
             <Input
-              px="4"
-              w="30%"
-              size="sm"
+              style={[styleS.px4, styleS.width30Percent]}
+              size="small"
               placeholder="Search"
-              InputLeftElement={
+              accessoryLeft={
                 <Icon
                   px="2"
                   size="4"
@@ -308,7 +307,7 @@ export function Header({
                 <Menu.Item>Account</Menu.Item>
                 <Menu.Item>Settings</Menu.Item>
               </Menu.Group>
-              <Divider mt="3" w="100%" />
+              <Divider style={(styleS.mt3, styleS.width100Percent)} />
               <Menu.Group title="Shortcuts">
                 <Menu.Item>Lock</Menu.Item>
                 <Menu.Item onPress={signOut}>Log out</Menu.Item>
@@ -417,18 +416,14 @@ export function MobileHeader({
               ) : showLogos ? (
                 <View style={layout.hStack}>
                   <Image
-                    h="10"
-                    w={10}
-                    mx={4}
-                    alt="MediCapt logo"
+                    style={{ height: 10, width: 10, marginHorizontal: 16 }}
+                    accessibilityLabel="MediCapt logo"
                     resizeMode="cover"
                     source={medicapt_logo}
                   />
                   <Image
-                    h="10"
-                    w={10}
-                    mx={4}
-                    alt="PHR logo"
+                    style={{ height: 10, width: 10, marginHorizontal: 16 }}
+                    accessibilityLabel="PHR logo"
                     resizeMode="cover"
                     source={phr_logo}
                   />
@@ -479,7 +474,7 @@ export function MobileHeader({
               >
                 <Menu.Item>Account</Menu.Item>
                 <Menu.Item>Settings</Menu.Item>
-                <Divider mt="3" w="100%" />
+                <Divider style={[styleS.mt3, styleS.width100Percent]} />
                 <Menu.Item>Lock</Menu.Item>
                 <Menu.Item onPress={signOut}>Log out</Menu.Item>
               </Menu>

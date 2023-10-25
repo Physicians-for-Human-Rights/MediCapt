@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, Pressable } from 'native-base'
+import { ScrollView, Pressable } from 'react-native'
 import {
   Text,
   useStyleSheet,
@@ -63,7 +63,7 @@ export function ListItem({
             </Text>
           </View>
         </View>
-        <View style={[layout.vStack, layout.width30percent]} w="30%">
+        <View style={[layout.vStack, layout.width30percent]}>
           <Text
             style={[
               styleS.truncated,
@@ -97,9 +97,8 @@ export function ListItemDesktop({
 }) {
   return (
     <Pressable
-      px={2}
-      flex={1}
-      _hover={{ bg: 'coolGray.100' }}
+      style={[spacing.px2, layout.flex1]}
+      // _hover={{ bg: 'coolGray.100' }}
       onPress={() => selectItem(item)}
     >
       <View

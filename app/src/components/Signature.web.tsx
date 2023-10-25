@@ -1,13 +1,13 @@
 import React, { useState, useRef } from 'react'
-import { Image, Center, Modal } from 'native-base'
 import { disabledBackground } from 'utils/formRendering/utils'
-import { View } from 'react-native'
+import { View, Image } from 'react-native'
 import styles, { layout } from './styles'
 // https://www.npmjs.com/package/react-signature-pad-wrapper
 import SignatureCanvas from 'react-signature-pad-wrapper'
-import { Button, useStyleSheet } from '@ui-kitten/components'
+import { Button, useStyleSheet, Modal, Card } from '@ui-kitten/components'
 import { CloseCircleIcon, EditIcon } from './Icons'
 import themedStyles from 'themeStyled'
+import ModalHeader from './styledComponents/ModalHeader'
 
 const styleS = useStyleSheet(themedStyles)
 
@@ -51,6 +51,19 @@ function Signature({
     setSignature(undefined)
     internalClose()
   }
+  const Footer = (
+    <>
+      <Button
+        appearance="ghost"
+        status="blueGray"
+        onPress={onCancel}
+        style={[styleS.mr2]}
+      >
+        Cancel and clear
+      </Button>
+      <Button onPress={onSave}>Save</Button>
+    </>
+  )
 
   return (
     <>
@@ -63,11 +76,12 @@ function Signature({
         {imageURI && (
           <Image
             resizeMode="contain"
-            size={150}
+            style={{ width: 150 }}
+            // size={150}
             source={{
               uri: imageURI,
             }}
-            alt="The recorded siganture"
+            accessibilityLabel="The recorded siganture"
           />
         )}
         <Button
@@ -80,26 +94,20 @@ function Signature({
           {imageURI ? 'Clear and sign again' : 'Sign'}
         </Button>
       </View>
-      <Modal isOpen={isOpen} onClose={internalClose}>
-        <Modal.Content maxWidth="400px">
-          <Modal.Header>Sign here</Modal.Header>
-          <Modal.Body>
-            <View style={styles.signatureWeb}>
-              <SignatureCanvas height={200} width={400} ref={signatureRef} />
-            </View>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              appearance="ghost"
-              status="blueGray"
-              onPress={onCancel}
-              style={[styleS.mr2]}
-            >
-              Cancel and clear
-            </Button>
-            <Button onPress={onSave}>Save</Button>
-          </Modal.Footer>
-        </Modal.Content>
+      <Modal
+        visible={isOpen}
+        onBackdropPress={internalClose}
+        backdropStyle={styleS.backdrop}
+        style={{ maxWidth: 400 }}
+      >
+        <Card
+          header={props => <ModalHeader {...props} text="Sign here" />}
+          footer={Footer}
+        >
+          <View style={styles.signatureWeb}>
+            <SignatureCanvas height={200} width={400} ref={signatureRef} />
+          </View>
+        </Card>
       </Modal>
     </>
   )

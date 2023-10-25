@@ -24,6 +24,9 @@ const themedStyles = StyleService.create({
   px2: {
     paddingHorizontal: 8,
   },
+  px4: {
+    paddingHorizontal: 16,
+  },
   ml1: {
     marginLeft: 4,
   },
@@ -42,6 +45,9 @@ const themedStyles = StyleService.create({
   mt2: {
     marginTop: 8,
   },
+  mt3: {
+    marginTop: 12,
+  },
   mb2: {
     marginBottom: 8,
   },
@@ -56,6 +62,9 @@ const themedStyles = StyleService.create({
   },
   mx2: {
     marginHorizontal: 8,
+  },
+  mx3: {
+    marginHorizontal: 12,
   },
   mrMinus1: {
     marginRight: -4,
@@ -146,6 +155,9 @@ const themedStyles = StyleService.create({
   width100Percent: {
     width: '100%',
   },
+  width75Percent: {
+    width: '75%',
+  },
   width45Percent: {
     width: '45%',
   },
@@ -175,6 +187,9 @@ const themedStyles = StyleService.create({
   },
   maxWidth300: {
     maxWidth: 300,
+  },
+  maxWidth200: {
+    maxWidth: 200,
   },
   maxWidth100Percent: {
     maxWidth: '100%',

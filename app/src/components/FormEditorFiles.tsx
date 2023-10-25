@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { Divider, Badge, Image, FlatList } from 'native-base'
-import { View, Dimensions } from 'react-native'
+import { Divider, Badge } from 'native-base'
+import { View, Dimensions, Image, FlatList } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import * as DocumentPicker from 'expo-document-picker'
 import { readImage, stripFileExtension } from 'utils/forms'
@@ -19,7 +19,7 @@ import {
   generateZip,
 } from 'utils/manifests'
 import styles, { spacing, layout, borders } from './styles'
-import { breakpoints } from './nativeBaseSpec'
+import { breakpoints, colors } from './nativeBaseSpec'
 import {
   Button,
   useStyleSheet,
@@ -232,9 +232,13 @@ export default function FormEditorFiles({
           ]}
         >
           <FlatList
-            mb={{ base: 0, md: 20 }}
-            mt={{ base: '2' }}
-            display={{ md: 'flex' }}
+            style={[
+              {
+                marginBottom: isWider ? 20 : 0,
+                marginTop: 2,
+                display: isWider ? 'flex' : undefined,
+              },
+            ]}
             horizontal={false}
             numColumns={3}
             data={filterManifest(manifest, isImage).contents}
@@ -244,12 +248,15 @@ export default function FormEditorFiles({
                 key={item.filename}
               >
                 <Image
-                  borderWidth={1}
-                  borderColor="coolGray.200"
-                  width="200px"
-                  height="200px"
-                  rounded="lg"
-                  alt="Uploaded image"
+                  style={{
+                    borderWidth: 1,
+                    borderColor: colors.coolGray[200],
+                    width: 200,
+                    height: 200,
+                    borderRadius: 16,
+                  }}
+                  // rounded="lg"
+                  accessibilityLabel="Uploaded image"
                   // @ts-ignore TODO Fix this
                   source={item.data}
                   resizeMode="contain"

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Input, IInputProps } from 'native-base'
+import { Input, InputProps } from '@ui-kitten/components'
 import useDebounce from 'react-use/lib/useDebounce'
 
 // TODO Expand this input when multiline={true} as needed
@@ -8,7 +8,7 @@ export default function DebouncedTextInput(
   props: {
     debounceMs: number
     onChangeText: (value: string) => void
-  } & Partial<IInputProps>
+  } & Partial<InputProps>
 ) {
   const [rawContents, setRawContents] = React.useState(
     props.value === undefined || props.value === null ? '' : props.value
@@ -38,7 +38,7 @@ export default function DebouncedTextInput(
   return (
     <Input
       // TODO Why is this needed on tablets?
-      minW="30%"
+      style={{ minWidth: '30%' }}
       {...props}
       onChangeText={setRawContents}
       value={rawContents}

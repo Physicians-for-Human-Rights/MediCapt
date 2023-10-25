@@ -1,16 +1,28 @@
 import React, { useState } from 'react'
 import { Alert } from 'react-native'
-import { Pressable, Image, Divider, Modal, FlatList } from 'native-base'
 import * as ImagePicker from 'expo-image-picker'
 import { Camera } from 'expo-camera'
 import { disabledBackground } from 'utils/formRendering/utils'
 import { t } from 'i18n-js'
 import _ from 'lodash'
-import { useWindowDimensions, View } from 'react-native'
-import { Button, useStyleSheet } from '@ui-kitten/components'
+import {
+  Pressable,
+  Image,
+  FlatList,
+  useWindowDimensions,
+  View,
+} from 'react-native'
+import {
+  Button,
+  useStyleSheet,
+  Modal,
+  Card,
+  Divider,
+} from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { CameraIcon, DeleteIcon, UploadCloudIcon } from 'components/Icons'
-import { layout } from '../styles'
+import { layout, spacing } from '../styles'
+import ModalHeader from 'components/styledComponents/ModalHeader'
 
 const styleS = useStyleSheet(themedStyles)
 
@@ -104,7 +116,19 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
   const onCancel = () => {
     internalClose()
   }
-
+  const Footer = (
+    <>
+      <Button
+        style={[styleS.mr2]}
+        appearance="ghost"
+        status="blueGray"
+        onPress={onCancel}
+      >
+        {t('form.cancel-photo')}
+      </Button>
+      <Button onPress={onTakePhoto}>{t('form.save-photo')}</Button>
+    </>
+  )
   return (
     <>
       <FlatList
@@ -113,16 +137,18 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
         renderItem={({ item, index }) => (
           <View style={[layout.vStack]}>
             <Pressable
-              py={2}
-              w="100%"
-              isDisabled={isDisabled}
-              alignItems="center"
-              justifyContent="center"
+              style={[
+                spacing.py2,
+                layout.width100percent,
+                layout.alignCenter,
+                layout.justifyCenter,
+              ]}
+              disabled={isDisabled}
               onPress={() => console.error('TODO add an annotation modal')}
             >
               <Image
+                style={{ width: 150 }}
                 source={{ uri: item.uri }}
-                size={150}
                 resizeMode="contain"
               />
             </Pressable>
@@ -178,35 +204,29 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
           )
         }
       />
-      <Modal isOpen={isOpen} onClose={internalClose} size="full">
-        <Modal.Content>
-          <Modal.CloseButton />
-          <Modal.Header>{t('form.camera-viewer')}</Modal.Header>
-          <Modal.Body>
-            <View style={[layout.center, layout.flex1]}>
-              <View style={{ height: modalSize * 0.7, width: modalSize * 0.7 }}>
-                {isOpen && (
-                  <Camera
-                    ref={setCamera}
-                    type={Camera.Constants.Type.back}
-                    ratio={'1:1'}
-                  />
-                )}
-              </View>
+      <Modal
+        visible={isOpen}
+        onBackdropPress={internalClose}
+        backdropStyle={styleS.backdrop}
+      >
+        <Card
+          header={props => (
+            <ModalHeader {...props} text={t('form.camera-viewer')} />
+          )}
+          footer={Footer}
+        >
+          <View style={[layout.center, layout.flex1]}>
+            <View style={{ height: modalSize * 0.7, width: modalSize * 0.7 }}>
+              {isOpen && (
+                <Camera
+                  ref={setCamera}
+                  type={Camera.Constants.Type.back}
+                  ratio={'1:1'}
+                />
+              )}
             </View>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              style={[styleS.mr2]}
-              appearance="ghost"
-              status="blueGray"
-              onPress={onCancel}
-            >
-              {t('form.cancel-photo')}
-            </Button>
-            <Button onPress={onTakePhoto}>{t('form.save-photo')}</Button>
-          </Modal.Footer>
-        </Modal.Content>
+          </View>
+        </Card>
       </Modal>
     </>
   )
