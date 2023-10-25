@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Modal } from 'native-base'
-import { Text, Button, useStyleSheet } from '@ui-kitten/components'
+import { Text, Button, useStyleSheet, Modal, Card } from '@ui-kitten/components'
 import {
   StyleSheet,
   ImageBackground,
@@ -16,6 +15,7 @@ import _ from 'lodash'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import themedStyles from 'themeStyled'
 import { spacing, layout } from './styles'
+import ModalFooter from './styledComponents/ModalFooter'
 
 const styleS = useStyleSheet(themedStyles)
 
@@ -266,14 +266,43 @@ function BodyMarker({
         </TouchableWithoutFeedback>
       </View>
       <Modal
-        isOpen={isMarkerModalOpen}
-        onClose={() => setMarkerModalOpen(!isMarkerModalOpen)}
-        size="lg"
+        visible={isMarkerModalOpen}
+        onBackdropPress={() => setMarkerModalOpen(!isMarkerModalOpen)}
+        // size="lg"
+        backdropStyle={styleS.backdrop}
       >
+        <Card footer={ModalFooter}>
+          <View style={layout.vStack}>
+            <DebouncedTextInput
+              value={currentAnnotation}
+              onChangeText={setCurrentAnnotation}
+              debounceMs={500}
+              placeholder={'Describe the marker'}
+              multiline={true}
+              numberOfLines={5}
+              size="md"
+              bg="coolGray.100"
+              variant="filled"
+              w="100%"
+            />
+            <Photo
+              isDisabled={isDisabled}
+              photos={currentPhotos || []}
+              addPhoto={(toAdd: Photo) => {
+                setCurrentPhotos(currentPhotos.concat(toAdd))
+              }}
+              removePhoto={(n: number) => {
+                const r = _.cloneDeep(currentPhotos)
+                _.pullAt(r, [n])
+                setCurrentPhotos(r)
+              }}
+            />
+          </View>
+        </Card>
         <Modal.Content>
           <Modal.CloseButton />
           <Modal.Header>{t('form.mark-diagram')}</Modal.Header>
-          <Modal.Body>
+          {/* <Modal.Body>
             <View style={layout.vStack}>
               <DebouncedTextInput
                 value={currentAnnotation}
@@ -300,8 +329,8 @@ function BodyMarker({
                 }}
               />
             </View>
-          </Modal.Body>
-          <Modal.Footer>
+          </Modal.Body> */}
+          {/* <Modal.Footer>
             <Button
               style={[spacing.mr2]}
               appearance="ghost"
@@ -321,7 +350,7 @@ function BodyMarker({
             <Button status="info" onPress={onSaveMarker}>
               Save
             </Button>
-          </Modal.Footer>
+          </Modal.Footer> */}
         </Modal.Content>
       </Modal>
     </>

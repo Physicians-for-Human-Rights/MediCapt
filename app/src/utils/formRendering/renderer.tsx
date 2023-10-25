@@ -4,8 +4,7 @@ import React from 'react'
 import { t } from 'i18n-js'
 import uuid from 'react-native-uuid'
 
-import { Divider, Heading } from 'native-base'
-import { Icon, Text } from '@ui-kitten/components'
+import { Icon, Text, Divider } from '@ui-kitten/components'
 // @ts-ignore TODO TS doesn't understand .native.tsx and .web.tsx files
 import DateTimePicker from 'components/DateTimePicker'
 // @ts-ignore TODO TS doesn't understand .native.tsx and .web.tsx files
@@ -31,6 +30,7 @@ import RecordListStaticComponent from 'components/RecordListStaticComponent'
 import ShareListStatic from 'components/ShareListStatic'
 import { View } from 'react-native'
 import { layout, spacing } from 'components/styles'
+import { colors } from 'components/nativeBaseSpec'
 
 export const Center = ({ children }: any) => {
   return <View style={[layout.center]}>{children}</View>
@@ -67,16 +67,19 @@ export function renderCommand(
           pt={4}
           pb={2}
         >
-          <Heading
-            italic={command.italic}
-            size={command.size}
-            fontWeight={command.fontWeight}
-            maxW={command.maxW}
-            px={2}
-            color={disabled(command, 'coolGray.600') || command.color}
+          <Text
+            // italic={command.italic}
+            // size={command.size}
+            // fontWeight={command.fontWeight}
+            style={{
+              maxWidth: command.maxW,
+              paddingHorizontal: 8,
+              color: disabled(command, colors.coolGray[600]) || command.color,
+            }}
+            // maxW={command.maxW}
           >
             {command.title}
-          </Heading>
+          </Text>
         </CCenter>
       )
     case 'description':
@@ -98,7 +101,13 @@ export function renderCommand(
             { backgroundColor: disabled(command, disabledBackground) },
           ]}
         >
-          <Divider w={command.w} my={2} thickness={command.thickness} />
+          <Divider
+            style={{
+              width: command.w,
+              borderWidth: command.thickness,
+              marginVertical: 8,
+            }}
+          />
         </View>
       )
     case 'skip':

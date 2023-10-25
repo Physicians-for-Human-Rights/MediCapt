@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Badge, Select, Tooltip, Heading } from 'native-base'
+import { Badge, Select, Tooltip } from 'native-base'
 import { userTypes, UserType } from 'utils/types/user'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 import NecessaryItem from 'components/NecessaryItem'
@@ -26,12 +26,9 @@ import { useDeepCompareEffect } from 'react-use'
 import { getLocationCached } from 'api/common'
 import { LocationType } from 'utils/types/location'
 import LocationListStatic from 'components/LocationListStatic'
-import {
-  RootStackScreenProps,
-  RootStackParamList,
-} from 'utils/manager/navigation'
+import { RootStackParamList } from 'utils/manager/navigation'
 import { StackNavigationProp } from '@react-navigation/stack'
-import { Button, useStyleSheet } from '@ui-kitten/components'
+import { Button, useStyleSheet, Text } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { layout, spacing } from './styles'
 import {
@@ -341,9 +338,9 @@ export default function UserEditor({
               />
             ) : (
               <View style={[layout.center]}>
-                <Heading size="md" color="red.600">
+                <Text category="h5" status="danger">
                   Add permissions for at least one location
-                </Heading>
+                </Text>
               </View>
             )}
           </View>
@@ -370,9 +367,9 @@ export default function UserEditor({
           </View>
         )}
         <View style={[layout.center, spacing.pt4, spacing.pb2]}>
-          <Heading size="md" fontWeight="normal" px={2}>
+          <Text category="h5" style={[styleS.fontNormal, styleS.px2]}>
             {t('user.heading.bio')}
-          </Heading>
+          </Text>
         </View>
         <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
@@ -448,9 +445,9 @@ export default function UserEditor({
           />
         </View>
         <View style={[layout.center, spacing.pt4, spacing.pb2]}>
-          <Heading size={'md'} fontWeight={'normal'} px={2}>
+          <Text category="h5" style={[styleS.fontNormal, styleS.px2]}>
             {t('user.heading.official-id')}
-          </Heading>
+          </Text>
         </View>
         <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
@@ -492,9 +489,9 @@ export default function UserEditor({
           />
         </View>
         <View style={[layout.center, spacing.pt4, spacing.pb2]}>
-          <Heading size={'md'} fontWeight={'normal'} px={2}>
+          <Text category="h5" style={[styleS.px2, styleS.fontNormal]}>
             {t('user.heading.metadata')}
-          </Heading>
+          </Text>
         </View>
         <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput

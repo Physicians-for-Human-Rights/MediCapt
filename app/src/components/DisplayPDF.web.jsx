@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import { Switch } from 'native-base'
 import {
   Button,
   useStyleSheet,
   Icon,
   ButtonGroup,
   Text,
+  Toggle, // toggle may cause onchange not working properly as not sure what event object passes in
 } from '@ui-kitten/components'
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack'
 import themedStyles from 'themeStyled'
@@ -50,21 +50,20 @@ export default function DisplayPDF({
       <View style={[layout.hStack, layout.spaceBet, spacing.px10]}>
         <View style={layout.vStack}>
           <Text fontSize="md">Debug</Text>
-          <Switch size="md" mr={3} isChecked={debug} onToggle={toggleDebug} />
+          <Toggle style={styleS.mr3} checked={debug} onChange={toggleDebug} />
         </View>
         <View style={layout.vStack}>
           <Text style={[styleS.fontSizeMd]}>Mock</Text>
-          <Switch size="md" mr={3} isChecked={mock} onToggle={toggleMock} />
+          <Toggle style={styleS.mr3} checked={mock} onChange={toggleMock} />
         </View>
         <View style={layout.vStack}>
           <Text style={[styleS.fontSizeMd]}>
             {usPageSize ? 'Letter' : '  ' + 'A4'}
           </Text>
-          <Switch
-            size="md"
-            mr={3}
-            isChecked={usPageSize}
-            onToggle={toggleUsPageSize}
+          <Toggle
+            style={styleS.mr3}
+            checked={usPageSize}
+            onChange={toggleUsPageSize}
           />
         </View>
         <View style={[layout.center, spacing.py3]}>

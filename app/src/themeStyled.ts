@@ -21,6 +21,9 @@ const themedStyles = StyleService.create({
   pl3: {
     paddingLeft: 12,
   },
+  px2: {
+    paddingHorizontal: 8,
+  },
   ml1: {
     marginLeft: 4,
   },
@@ -65,6 +68,9 @@ const themedStyles = StyleService.create({
   },
   fontMedium: {
     fontWeight: '500',
+  },
+  fontNormal: {
+    fontWeight: 'normal',
   },
   fontLight: {
     fontWeight: '300',
@@ -187,6 +193,26 @@ const themedStyles = StyleService.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  backdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
 })
 
 export default themedStyles
+
+// Heading native base
+// xl: 36
+// lg: 30
+// md: 20
+// sm: 16
+// xs: 14
+
+// kitten
+// h1: 36
+// h2: 32
+// h3: 30
+// h4: 26
+// h5: 22
+// h6: 18
+// s1: 15
+// md is translated into h5

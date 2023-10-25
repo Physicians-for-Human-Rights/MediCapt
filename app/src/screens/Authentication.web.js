@@ -1,24 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import * as Linking from 'expo-linking'
-import {
-  Heading,
-  Flex,
-  View,
-  Image,
-  useTheme,
-  Authenticator,
-} from '@aws-amplify/ui-react'
+import { Flex, Image, useTheme, Authenticator } from '@aws-amplify/ui-react'
 import '@aws-amplify/ui-react/styles.css'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import ButtonGroup from 'components/form-parts/ButtonGroup'
 import { View } from 'react-native'
-import { Button } from '@ui-kitten/components'
+import { Button, Text, useStyleSheet } from '@ui-kitten/components'
 
 import indexOf from 'lodash/indexOf'
 import medicapt_logo from '../../assets/medicapt.png'
 import phr_logo from '../../assets/phr.png'
-import styles from '../styles'
 import './Authentication.css'
+import themedStyles from 'themeStyled'
+
+const styleS = useStyleSheet(themedStyles)
 
 import {
   UserKind,
@@ -48,9 +43,9 @@ function Header(userKind, setAccountType) {
         alignContent="center"
         wrap="nowrap"
       >
-        <Heading level={5} color="#d5001c" fontWeight="bold">
+        <Text style={[styleS.fontBold]} category="h5" status="primary">
           Log in as
-        </Heading>
+        </Text>
       </Flex>
       <ButtonGroup
         selected={userKind}

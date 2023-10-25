@@ -3,8 +3,7 @@ import * as Linking from 'expo-linking'
 import { Amplify, I18n, Logger } from 'aws-amplify'
 import { Auth } from 'aws-amplify'
 import { ActivityIndicator, Image, View } from 'react-native'
-import { Heading } from 'native-base'
-import { Button } from '@ui-kitten/components'
+import { Button, Text } from '@ui-kitten/components'
 import {
   Greetings,
   SignIn,
@@ -123,9 +122,9 @@ function Header(userKind, setAccountType) {
       }}
     >
       <View style={{ jusifyContent: 'center', alignItems: 'center' }}>
-        <Heading size="md" color="#d5001c">
+        <Text category="h5" color="#d5001c">
           Log in as
-        </Heading>
+        </Text>
         <ButtonGroup
           selected={userKind}
           options={{

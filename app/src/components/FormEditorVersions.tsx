@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Heading } from 'native-base'
 import { View } from 'react-native'
 import {
   Text,
@@ -191,7 +190,7 @@ export default function FormEditorVersions({
           </View>
         )}
         <View style={[layout.center, spacing.py5]}>
-          <Heading size="md">Form history browser</Heading>
+          <Text category="h5">Form history browser</Text>
         </View>
         <View style={[layout.center]}>
           <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>

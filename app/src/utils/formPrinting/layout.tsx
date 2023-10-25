@@ -1,39 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import _ from 'lodash'
-import { Text, VStack, View } from 'native-base'
-import { FormType } from 'utils/types/form'
 // @ts-ignore typescript doesn't do native/web modules
-import DisplayPDF from './DisplayPDF'
-import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
-import {
-  isImage,
-  isInManifest,
-  filterManifest,
-  mapManifest,
-  addFileToManifest,
-  makeManifestEntry,
-  changeFilenameInManifest,
-  lookupManifestByNameAndType,
-  addOrReplaceFileToManifestByFilename,
-  lookupManifest,
-  getRecordTypeFormManifest,
-  getFormTypeFromManifest,
-} from 'utils/manifests'
 import { tryConvertToJpeg } from 'utils/imageConverter.web'
 import { mapSectionWithPaths, nameFormSections } from 'utils/forms'
 import { allFormRenderCommands } from 'utils/formRendering/commands'
 import { RenderCommand } from 'utils/formRendering/types'
 import formatDate from 'utils/date.ts'
-import {
-  randBoolean,
-  randNumber,
-  randPastDate,
-  randSentence,
-  randText,
-  rand,
-  randAddress,
-  randPhoneNumber,
-} from '@ngneat/falso'
 import { t } from 'i18n-js'
 import { dataURItoBlob } from 'utils/data'
 import {

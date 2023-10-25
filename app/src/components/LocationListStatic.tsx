@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ScrollView, Pressable, Heading } from 'native-base'
+import { ScrollView, Pressable } from 'native-base'
 import { Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { LocationType } from 'utils/types/location'
@@ -218,7 +218,7 @@ export default function LocationListStatic({
       >
         <View>
           <View style={[layout.center]}>
-            <Heading size="md">Allowed locations</Heading>
+            <Text category="h5">Allowed locations</Text>
           </View>
           <ScrollView>
             <View
