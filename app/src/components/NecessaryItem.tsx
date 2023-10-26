@@ -1,10 +1,17 @@
 import React from 'react'
-import { Popover } from 'native-base'
-import { Button, Text, useStyleSheet, Icon } from '@ui-kitten/components'
+import {
+  Button,
+  Text,
+  useStyleSheet,
+  Icon,
+  Popover,
+  Card,
+} from '@ui-kitten/components'
 import _ from 'lodash'
 import themedStyles from 'themeStyled'
 import { layout } from './styles'
 import { View } from 'react-native'
+import ModalHeader from './styledComponents/ModalHeader'
 
 const styleS = useStyleSheet(themedStyles)
 
@@ -53,7 +60,7 @@ export default function NecessaryItem({
         <Text status={optional ? 'warning' : 'error'}>{todoText}</Text>
         {help && (
           <Popover
-            trigger={triggerProps => {
+            anchor={triggerProps => {
               return (
                 <Button
                   {...triggerProps}
@@ -67,14 +74,18 @@ export default function NecessaryItem({
               )
             }}
           >
-            <Popover.Content accessibilityLabel={'help for' + todoText} w="64">
-              <Popover.Arrow />
-              <Popover.CloseButton />
-              <Popover.Header>
-                {helpHeader ? helpHeader : 'Help'}
-              </Popover.Header>
-              <Popover.Body>{help}</Popover.Body>
-            </Popover.Content>
+            <Card
+              style={{ width: 64 }}
+              accessibilityLabel={'help for' + todoText}
+              header={props => (
+                <ModalHeader
+                  {...props}
+                  text={helpHeader ? helpHeader : 'Help'}
+                />
+              )}
+            >
+              {help}
+            </Card>
           </Popover>
         )}
       </View>

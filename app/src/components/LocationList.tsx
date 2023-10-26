@@ -1,8 +1,15 @@
 import React, { useState } from 'react'
-import { ScrollView, Pressable, Select } from 'native-base'
-import { Text, useStyleSheet, Button, Icon } from '@ui-kitten/components'
+import {
+  Text,
+  useStyleSheet,
+  Button,
+  Icon,
+  Select,
+  SelectItem,
+  IndexPath,
+} from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
-import { Platform } from 'react-native'
+import { ScrollView, Pressable, Platform } from 'react-native'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
@@ -22,7 +29,9 @@ const isWider = width > breakpoints.md
 
 export function ListItem({ item }: { item: LocationType }) {
   return (
-    <Pressable p={2} borderBottomWidth={0.8} borderBottomColor="coolGray.300">
+    <Pressable
+      style={[spacing.p2, borders.borderColorCG200, { borderBottomWidth: 0.8 }]}
+    >
       <View style={[layout.spaceBet, layout.hStack, layout.width100percent]}>
         <View
           style={[layout.hStackGap4, layout.alignCenter, layout.width55percent]}
@@ -134,9 +143,8 @@ export function ListItemDesktop({
 }) {
   return (
     <Pressable
-      px={2}
-      flex={1}
-      _hover={{ bg: 'coolGray.100' }}
+      style={[spacing.px2, layout.flex1]}
+      // _hover={{ bg: 'coolGray.100' }}
       onPress={() => selectItem(item)}
     >
       <View
@@ -223,6 +231,14 @@ export default function LocationList({
   doSearch: () => any
   selectItem: (location: LocationType) => any
 }) {
+  const [selectedIndex, setSelectedIndex] = useState<IndexPath>()
+  const onSelect = (index: IndexPath | IndexPath[]) => {
+    if (!IndexPath.length) {
+      const obj = index as IndexPath
+      setSelectedIndex(obj)
+      setFilterEntityType(locationEntityTypes[obj.row])
+    }
+  }
   return (
     <>
       <View
@@ -259,22 +275,24 @@ export default function LocationList({
         </View>
         <View style={layout.center}>
           <Select
-            size="md"
-            bg="white"
-            selectedValue={filterEntityType}
-            onValueChange={setFilterEntityType}
+            size="medium"
+            selectedIndex={selectedIndex}
+            onSelect={onSelect}
+            // selectedValue={filterEntityType}
+            // onValueChange={setFilterEntityType}
             placeholder={t('location.select-entity-type')}
+            style={{ backgroundColor: 'white' }}
           >
-            <Select.Item
+            {/* <SelectItem
               key={'__any__'}
-              label={t('location.any-entity-type')}
-              value={''}
-            />
+              title={t('location.any-entity-type')}
+              // value={''}
+            /> */}
             {locationEntityTypes.map(e => (
-              <Select.Item
+              <SelectItem
                 key={e}
-                label={t('location.entity.' + e)}
-                value={e}
+                title={t('location.entity.' + e)}
+                // value={e}
               />
             ))}
           </Select>

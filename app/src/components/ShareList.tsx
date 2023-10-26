@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react'
-import { Select } from 'native-base'
-import { Button, Text, useStyleSheet, Icon } from '@ui-kitten/components'
+import {
+  Button,
+  Text,
+  useStyleSheet,
+  Icon,
+  Select,
+  SelectItem,
+  IndexPath,
+} from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { UserType } from 'utils/types/user'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
@@ -179,7 +186,7 @@ export default function ShareList({
   selectItem: (f: Share) => any
 }) {
   const [users, setUsers] = useState({} as Record<string, Partial<UserType>>)
-
+  const [selectedIndex, setSelectedIndex] = useState<IndexPath>()
   useEffect(() => {
     async function usersFn() {
       const loadedUsers = {} as Record<string, Partial<UserType>>
@@ -206,7 +213,13 @@ export default function ShareList({
     }
     usersFn()
   }, [shares])
-
+  const items = ['enabled', 'disabled']
+  const onSelect = (index: IndexPath) => {
+    setSelectedIndex(index)
+    if (setFilterEnabled) {
+      setFilterEnabled(items[index.row])
+    }
+  }
   return (
     <>
       <View
@@ -233,21 +246,19 @@ export default function ShareList({
         {setFilterEnabled && (
           <View style={[layout.center]}>
             <Select
-              size="md"
-              bg="white"
-              selectedValue={filterEnabled}
-              onValueChange={setFilterEnabled}
+              size="medium"
+              style={{ backgroundColor: 'white', marginLeft: isWider ? 8 : 0 }}
+              selectedIndex={selectedIndex}
+              onSelect={index => onSelect(index as IndexPath)}
+              // selectedValue={filterEnabled}
+              // onValueChange={setFilterEnabled}
               placeholder={t('form.filter.select-form-enabled')}
-              ml={{ base: 0, md: 2 }}
             >
-              <Select.Item
-                key={'__any__'}
-                label={t('form.filter.any-is-form-enabled')}
-                value={''}
-              />
-              {['enabled', 'disabled'].map(e => (
-                <Select.Item key={e} label={t('form.filter.' + e)} value={e} />
-              ))}
+              <>
+                {items.map(e => (
+                  <SelectItem key={e} title={t('form.filter.' + e)} />
+                ))}
+              </>
             </Select>
           </View>
         )}

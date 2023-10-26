@@ -1,15 +1,12 @@
 import React from 'react'
-import { FlatList, useBreakpointValue } from 'native-base'
+import { useBreakpointValue } from '../../hooks/useBreakpointValue'
 import BigTileButton from 'components/BigTileButton'
 import DashboardLayout from 'components/DashboardLayout'
-import {
-  RootStackScreenProps,
-  RootStackParamList,
-} from 'utils/formDesigner/navigation'
+import { RootStackScreenProps } from 'utils/formDesigner/navigation'
 import { useUser } from 'utils/store'
 import styles, { layout, spacing } from 'components/styles'
 import { breakpoints } from 'components/nativeBaseSpec'
-import { View, SafeAreaView, Dimensions } from 'react-native'
+import { View, SafeAreaView, Dimensions, FlatList } from 'react-native'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -75,6 +72,7 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
       >
         <View style={[layout.center, spacing.pt5]}>
           <FlatList
+            horizontal={false}
             numColumns={shape.columns}
             data={options}
             renderItem={({ item }) => (

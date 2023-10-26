@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react'
-import { Select } from 'native-base'
-import { Text, useStyleSheet, Button, Icon } from '@ui-kitten/components'
+import {
+  Text,
+  useStyleSheet,
+  Button,
+  Icon,
+  Select,
+  SelectItem,
+  IndexPath,
+} from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 // @ts-ignore Record some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
@@ -288,7 +295,8 @@ export default function RecordList({
 }) {
   const [forms, setForms] = useState({} as Record<string, FormMetadata>)
   const [users, setUsers] = useState({} as Record<string, Partial<UserType>>)
-
+  const [selectedIndex, setSelectedIndex] = useState<IndexPath>()
+  const [selectedIndexType, setSelectedIndexType] = useState<IndexPath>()
   useEffect(() => {
     async function recordsFn() {
       const loadedForms = {} as Record<string, FormMetadata>
@@ -327,6 +335,20 @@ export default function RecordList({
     recordsFn()
     usersFn()
   }, [records])
+  const items = ['enabled', 'disabled']
+  const onSelect = (index: IndexPath) => {
+    setSelectedIndex(index)
+    const num: number = index.row
+    if (setFilterSealed) {
+      setFilterSealed(items[num])
+    }
+  }
+  const types = ['record-id', 'patient-name']
+  const onSelectType = (index: IndexPath) => {
+    // TODO:
+    setSelectedIndexType(index)
+    setFilterSearchType(types[index.row])
+  }
 
   return (
     <>
@@ -354,23 +376,28 @@ export default function RecordList({
         {setFilterSealed ? (
           <View style={layout.center}>
             <Select
-              size="md"
-              bg="white"
-              selectedValue={filterSealed}
-              onValueChange={setFilterSealed}
+              selectedIndex={selectedIndex}
+              size="medium"
+              style={{
+                backgroundColor: 'white',
+                marginLeft: Platform.OS === 'android' ? 0 : isWider ? 8 : 0,
+              }}
+              onSelect={index => onSelect(index as IndexPath)}
+              // selectedValue={filterSealed}
+              // onValueChange={setFilterSealed}
               placeholder={t('record.filter.select-record-sealed')}
-              ml={Platform.OS === 'android' ? 0 : { base: 0, md: 2 }}
+              // ml={Platform.OS === 'android' ? 0 : { base: 0, md: 2 }}
             >
-              <Select.Item
+              {/* <Select.Item
                 key={'__any__'}
                 label={t('record.filter.any-is-sealed')}
                 value={''}
-              />
-              {['enabled', 'disabled'].map(e => (
-                <Select.Item
+              /> */}
+              {items.map(e => (
+                <SelectItem
                   key={e}
-                  label={t('record.filter.' + e)}
-                  value={e}
+                  title={t('record.filter.' + e)}
+                  // value={e}
                 />
               ))}
             </Select>
@@ -387,20 +414,23 @@ export default function RecordList({
       >
         <View style={layout.center}>
           <Select
-            size="md"
-            bg="white"
-            selectedValue={filterSearchType}
-            onValueChange={setFilterSearchType}
+            size="medium"
+            style={{
+              backgroundColor: 'white',
+              marginLeft: Platform.OS === 'android' ? 0 : isWider ? 8 : 0,
+              width: Platform.OS === 'android' ? '90%' : '100%',
+            }}
+            selectedIndex={selectedIndexType}
+            onSelect={index => onSelectType(index as IndexPath)}
+            // selectedValue={filterSearchType}
+            // onValueChange={setFilterSearchType}
             placeholder={t('record.search-by.select')}
-            // TODO props causing crashes on Android
-            ml={Platform.OS === 'android' ? 0 : { base: 0, md: 2 }}
-            w={Platform.OS === 'android' ? '90%' : '100%'}
           >
-            {['record-id', 'patient-name'].map(e => (
-              <Select.Item
+            {types.map(e => (
+              <SelectItem
                 key={e}
-                label={t('record.search-by.' + e)}
-                value={e}
+                title={t('record.search-by.' + e)}
+                // value={e}
               />
             ))}
           </Select>

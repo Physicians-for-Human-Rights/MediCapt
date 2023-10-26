@@ -1,6 +1,5 @@
 import React from 'react'
-import { Spinner } from 'native-base'
-import { Text } from '@ui-kitten/components'
+import { Text, Spinner } from '@ui-kitten/components'
 import { View, StyleSheet } from 'react-native'
 import { t } from 'i18n-js'
 import { layout } from './styles'
@@ -25,7 +24,8 @@ const Loading = ({ loading }: { loading: string | null }) => {
     <View style={style.spinner}>
       <View style={layout.center}>
         <View style={[layout.hStackGap5, layout.justifyCenter]}>
-          <Spinner size="lg" />
+          <Spinner accessibilityLabel="Loading" size="large" />
+
           <Text category="h3" style={{ color: 'white' }}>
             Loading...
           </Text>

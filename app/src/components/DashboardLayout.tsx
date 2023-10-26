@@ -1,5 +1,4 @@
 import React from 'react'
-import { Hidden, Menu } from 'native-base'
 import {
   View,
   Dimensions,
@@ -24,6 +23,9 @@ import {
   Avatar,
   Input,
   Divider,
+  MenuItem,
+  OverflowMenu,
+  MenuGroup,
 } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import styles, { spacing, layout } from './styles'
@@ -32,6 +34,7 @@ import { MenuIcon } from './Icons'
 
 const styleS = useStyleSheet(themedStyles)
 const { width } = Dimensions.get('window')
+const isWider = width > breakpoints.md
 
 export function Sidebar(signOut: any) {
   const list = [
@@ -74,10 +77,7 @@ export function Sidebar(signOut: any) {
     <View style={styles.dashboardWrapper}>
       <ScrollView>
         <View style={styles.dashboardLayoutBox}>
-          <Avatar
-            source={medicapt_logo}
-            size={width > breakpoints.md ? 'medium' : 'tiny'}
-          />
+          <Avatar source={medicapt_logo} size={isWider ? 'medium' : 'tiny'} />
           <View style={layout.hStackCenterGap2}>
             <Text
               style={[
@@ -196,8 +196,7 @@ export function Header({
         spacing.px6,
         spacing.py3,
         {
-          backgroundColor:
-            width > breakpoints.md ? 'white' : colors.primary[900],
+          backgroundColor: isWider ? 'white' : colors.primary[900],
         },
       ]}
     >
@@ -288,11 +287,15 @@ export function Header({
                 />
               }
             />
-            <Menu
-              closeOnSelect={false}
-              w="200"
+            <OverflowMenu
+              // closeOnSelect={false}
+              style={{ width: 200 }}
               placement="bottom right"
-              trigger={triggerProps => {
+              // visible={visible}
+              // selectedIndex={selectedIndex}
+              // onSelect={onItemSelect}
+              // onBackdropPress={() => setVisible(false)}
+              anchor={triggerProps => {
                 return (
                   <Button
                     {...triggerProps}
@@ -303,16 +306,16 @@ export function Header({
                 )
               }}
             >
-              <Menu.Group title="Profile">
-                <Menu.Item>Account</Menu.Item>
-                <Menu.Item>Settings</Menu.Item>
-              </Menu.Group>
+              <MenuGroup title="Profile">
+                <MenuItem title="Account" />
+                <MenuItem title="Settings" />
+              </MenuGroup>
               <Divider style={(styleS.mt3, styleS.width100Percent)} />
-              <Menu.Group title="Shortcuts">
-                <Menu.Item>Lock</Menu.Item>
-                <Menu.Item onPress={signOut}>Log out</Menu.Item>
-              </Menu.Group>
-            </Menu>
+              <MenuGroup title="Shortcuts">
+                <MenuItem title="Lock" />
+                <MenuItem onPress={signOut} title="Log out" />
+              </MenuGroup>
+            </OverflowMenu>
           </View>
         </View>
       </View>
@@ -340,7 +343,7 @@ function MainContent({
       ]}
     >
       {displayScreenTitle && (
-        <Hidden till="md">
+        <View style={{ display: isWider ? 'flex' : 'none' }}>
           <View style={[layout.hStackGap2, layout.alignCenter, spacing.mb4]}>
             <Pressable>
               <Icon
@@ -354,7 +357,7 @@ function MainContent({
               {title}
             </Text>
           </View>
-        </Hidden>
+        </View>
       )}
       {children}
     </View>
@@ -382,7 +385,7 @@ export function MobileHeader({
 }) {
   const localStyle = {
     borderColor: colors.coolGray[200],
-    backgroundColor: width > breakpoints.md ? 'white' : colors.primary[900],
+    backgroundColor: isWider ? 'white' : colors.primary[900],
   }
   return (
     <View style={[spacing.px1, spacing.py4, localStyle]}>
@@ -449,9 +452,9 @@ export function MobileHeader({
                   />
                 }
               />
-              <Menu
-                w="150"
-                trigger={triggerProps => {
+              <OverflowMenu
+                style={{ width: 150 }}
+                anchor={triggerProps => {
                   return (
                     <Button
                       variant="ghost"
@@ -472,12 +475,12 @@ export function MobileHeader({
                 }}
                 placement="bottom right"
               >
-                <Menu.Item>Account</Menu.Item>
-                <Menu.Item>Settings</Menu.Item>
+                <MenuItem title="Account" />
+                <MenuItem title="Settings" />
                 <Divider style={[styleS.mt3, styleS.width100Percent]} />
-                <Menu.Item>Lock</Menu.Item>
-                <Menu.Item onPress={signOut}>Log out</Menu.Item>
-              </Menu>
+                <MenuItem title="Lock" />
+                <MenuItem onPress={signOut} title="Log out" />
+              </OverflowMenu>
             </View>
           </>
         </View>
@@ -542,7 +545,7 @@ export default function DashboardLayout({
         ]}
       >
         {displayHeader && (
-          <Hidden from="md">
+          <View style={{ display: isWider ? 'none' : 'flex' }}>
             <MobileHeader
               title={title}
               backButton={backButton}
@@ -553,10 +556,10 @@ export default function DashboardLayout({
               route={route}
               reloadPrevious={reloadPrevious}
             />
-          </Hidden>
+          </View>
         )}
         {displayHeader && (
-          <Hidden till="md">
+          <View style={{ display: isWider ? 'flex' : 'none' }}>
             <Header
               toggleSidebar={toggleSidebar}
               title={title}
@@ -572,26 +575,29 @@ export default function DashboardLayout({
               mobileMiddlebar={mobileMiddlebar}
               showLogos={showLogos}
             />
-          </Hidden>
+          </View>
         )}
 
         <SafeAreaView
           style={[
             styles.dashbordContainer,
-            { flexDirection: width > breakpoints.md ? 'row' : 'column' },
+            { flexDirection: isWider ? 'row' : 'column' },
           ]}
         >
           {isSidebarVisible && displaySidebar && (
-            <Hidden till="md">
+            <View style={{ display: isWider ? 'flex' : 'none' }}>
               <Sidebar signOut={signOut} />
-            </Hidden>
+            </View>
           )}
 
-          <Hidden till="md">
+          <View style={{ display: isWider ? 'flex' : 'none' }}>
             <ScrollView
-              flex={1}
-              p={{ md: fullWidth ? 0 : 8 }}
-              contentContainerStyle={{ alignItems: 'center', flexGrow: 1 }}
+              style={[
+                layout.flex1,
+                { padding: isWider ? (fullWidth ? 0 : 8) : 0 },
+                { alignItems: 'center', flexGrow: 1 },
+              ]}
+              // contentContainerStyle={{ alignItems: 'center', flexGrow: 1 }}
             >
               <MainContent
                 fullWidth={fullWidth}
@@ -600,16 +606,16 @@ export default function DashboardLayout({
                 children={children}
               />
             </ScrollView>
-          </Hidden>
+          </View>
 
-          <Hidden from="md">
+          <View style={{ display: isWider ? 'none' : 'flex' }}>
             <MainContent
               fullWidth={fullWidth}
               title={title}
               displayScreenTitle={displayScreenTitle}
               children={children}
             />
-          </Hidden>
+          </View>
         </SafeAreaView>
       </View>
     </View>

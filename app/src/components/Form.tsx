@@ -12,7 +12,7 @@ import _ from 'lodash'
 import { ZodError } from 'zod'
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view'
 import { t } from 'i18n-js'
-import { useBreakpointValue } from 'native-base'
+import { useBreakpointValue } from '../../hooks/useBreakpointValue'
 import FormMenu from 'components/FormMenu'
 import FromTop from 'components/FormTop'
 import {

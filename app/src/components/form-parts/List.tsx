@@ -1,5 +1,12 @@
-import React, { useRef } from 'react'
-import { Input, Select, Checkbox } from 'native-base'
+import React, { useRef, useState } from 'react'
+import {
+  Input,
+  useStyleSheet,
+  CheckBox,
+  Select,
+  SelectItem,
+  IndexPath,
+} from '@ui-kitten/components'
 import useDebounce from 'react-use/lib/useDebounce'
 import _ from 'lodash'
 import { MultipleFormValueTypes, FormKVRawType } from 'utils/types/form'
@@ -9,6 +16,9 @@ import { disabledBackground } from 'utils/formRendering/utils'
 import uuid from 'react-native-uuid'
 import { View } from 'react-native'
 import { layout } from 'components/styles'
+import themedStyles from 'themeStyled'
+
+const styleS = useStyleSheet(themedStyles)
 
 export function isPrimitiveType(x: any) {
   return _.isString(x) || _.isBoolean(x) || _.isNumber(x)
@@ -52,39 +62,39 @@ export function ListSelectMultiple({
   const items = options
     ? options.map((option, index) => {
         return (
-          <Checkbox
+          <CheckBox
             // forces React to re-render component as opposed
             // to using an old one (with outdated togglePathValue)
             key={uuid.v4() as string}
-            colorScheme="blue"
-            isChecked={values[index]}
+            status="info"
+            style={[styleS.my2]}
+            checked={values[index]}
             value={_.toString(index)}
-            my={2}
             onChange={() => togglePathValue(index)}
             accessibilityLabel={t('form.select-the-option') + ' ' + option}
-            isDisabled={isDisabled}
+            disabled={isDisabled}
           >
             {option}
-          </Checkbox>
+          </CheckBox>
         )
       })
     : []
   if (other && otherChecked !== undefined) {
     items.push(
-      <Checkbox
+      <CheckBox
         // forces React to re-render component as opposed
         // to using an old one (with outdated togglePathValue)
         key={uuid.v4() as string}
-        isChecked={otherChecked}
-        value="other"
+        checked={otherChecked}
+        // value="other"
         onChange={toggleOtherChecked}
-        colorScheme="blue"
-        my={2}
+        status="info"
+        style={[styleS.my2]}
         accessibilityLabel={t('form.select-other-option')}
-        isDisabled={isDisabled}
+        disabled={isDisabled}
       >
         Other
-      </Checkbox>
+      </CheckBox>
     )
   }
   return (
@@ -147,6 +157,25 @@ export function List({
       ? ''
       : otherValue) as string
   )
+  const [selectedIndex, setSelectedIndex] = useState<IndexPath>()
+  const onSelectLocal = (index: IndexPath) => {
+    setSelectedIndex(index)
+    let arr: any[] | null = options
+    if (other && withLabels) {
+      const obj = { key: '', value: '__other__' }
+      arr?.push(obj)
+    } else {
+      arr?.push('__other__')
+    }
+    if (arr?.length) {
+      const item = arr[index.row]
+      if (withLabels) {
+        onSelect(item.value)
+      } else {
+        onSelect(item)
+      }
+    }
+  }
   // NB useDebouce fires on start. We don't want that here, it modifies records
   const firstDebounce = useRef(true)
   useDebounce(
@@ -166,60 +195,61 @@ export function List({
       ]}
     >
       <Select
-        isDisabled={isDisabled}
-        size="md"
-        selectedValue={
-          value === undefined || value === null ? '' : _.toString(value)
-        }
+        disabled={isDisabled}
+        size="medium"
+        // selectedValue={
+        //   value === undefined || value === null ? '' : _.toString(value)
+        // }
+        selectedIndex={selectedIndex}
+        style={{ minWidth: 200 }}
         placeholder={t('form.select-value')}
-        minWidth="200"
-        onValueChange={itemValue => {
-          if (itemValue != null) {
-            onSelect(itemValue)
-          }
-        }}
+        onSelect={index => onSelectLocal(index as IndexPath)}
+        // onValueChange={itemValue => {
+        //   if (itemValue != null) {
+        //     onSelect(itemValue)
+        //   }
+        // }}
       >
-        {options &&
-          options
-            .map((e, i) => {
-              if (withLabels) {
-                return (
-                  <Select.Item
-                    size="md"
-                    key={i}
-                    label={e.key + ' (' + e.value + ')'}
-                    value={_.toString(e.value)}
-                  />
-                )
-              } else {
-                return (
-                  <Select.Item
-                    size="md"
-                    label={_.toString(e)}
-                    value={_.toString(e)}
-                  />
-                )
-              }
-            })
-            .concat(
-              other
-                ? [
-                    <Select.Item
-                      key={-1}
-                      size="md"
-                      label="Other"
-                      value="__other__"
-                    />,
-                  ]
-                : []
-            )}
+        <>
+          {options &&
+            options
+              .map((e, i) => {
+                if (withLabels) {
+                  return (
+                    <SelectItem
+                      key={i}
+                      title={e.key + ' (' + e.value + ')'}
+                      // value={_.toString(e.value)}
+                    />
+                  )
+                } else {
+                  return (
+                    <SelectItem
+                      key={`second-select`}
+                      title={_.toString(e)}
+                      // value={_.toString(e)}
+                    />
+                  )
+                }
+              })
+              .concat(
+                other
+                  ? [
+                      <SelectItem
+                        key={-1}
+                        title="Other"
+                        // value="__other__"
+                      />,
+                    ]
+                  : []
+              )}
+        </>
       </Select>
       {other && onOtherValue && value === '__other__' && (
         <Input
-          isDisabled={isDisabled}
-          mt={2}
-          w="80%"
-          size="md"
+          disabled={isDisabled}
+          style={[styleS.mt2, styleS.width80Percent]}
+          size="mdium"
           placeholder={t('form.other-details')}
           multiline={true}
           numberOfLines={5}

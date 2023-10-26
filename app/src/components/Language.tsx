@@ -1,8 +1,13 @@
-import React from 'react'
-import { Select, ISelectProps, ISelectItemProps } from 'native-base'
+import React, { useState } from 'react'
 import { t } from 'i18n-js'
 import _ from 'lodash'
-
+import {
+  Select,
+  SelectItem,
+  SelectItemProps,
+  SelectProps,
+  IndexPath,
+} from '@ui-kitten/components'
 export const languages = ['en', 'fr']
 
 export default function Language({
@@ -19,33 +24,38 @@ export default function Language({
   setValue: (val: string) => any
   bg?: string
   any?: string
-  itemProps?: ISelectItemProps
-} & ISelectProps) {
+  itemProps?: SelectItemProps
+} & SelectProps) {
+  const [selectedIndex, setSelectedIndex] = useState<IndexPath>(
+    new IndexPath(0)
+  )
+  const onSelect = (index: IndexPath) => {
+    setSelectedIndex(index)
+    if (any) {
+      setValue('')
+    }
+    setValue(languages[index.row])
+  }
   return (
     <Select
-      bg={bg}
-      size="md"
-      selectedValue={value}
+      style={{ backgroundColor: bg }}
+      size="medium"
+      selectedIndex={selectedIndex}
+      onSelect={index => onSelect(index as IndexPath)}
+      // selectedValue={value}
       placeholder={placeholder}
-      onValueChange={setValue}
+      // onValueChange={setValue}
       {...props}
     >
       {_.concat(
         any
-          ? [
-              <Select.Item
-                key={'__any__'}
-                label={t(any)}
-                value={''}
-                {...itemProps}
-              />,
-            ]
+          ? [<SelectItem key={'__any__'} title={t(any)} {...itemProps} />]
           : [],
         languages.map(e => (
-          <Select.Item
+          <SelectItem
             key={e}
-            label={t('languages.' + e)}
-            value={e}
+            title={t('languages.' + e)}
+            // value={e}
             {...itemProps}
           />
         ))

@@ -1,41 +1,47 @@
 import React from 'react'
-import { useToast } from 'native-base'
+import { useToast } from 'react-native-toast-notifications'
 import _ from 'lodash'
 import { z } from 'zod'
-
+// toast.show("Task finished successfully", {
+//   type: "normal | success | warning | danger | custom",
+//   placement: "top | bottom",
+//   duration: 4000,
+//   offset: 30,
+//   animationType: "slide-in | zoom-in",
+// });
 export const useInfo = () => {
   const toast = useToast()
   return [
     (error: string, description?: string | undefined, otherData?: any) => {
       console.error(error, otherData)
-      toast.show({
-        title: error,
-        status: 'error',
+      const str = error + ' ' + description
+      toast.show(str, {
+        type: 'danger',
         placement: 'bottom',
         duration: 5000,
-        isClosable: true,
-        description,
-        accessibilityAnnouncement: 'Encountered error ' + error,
+        // isClosable: true,
+        // description,
+        // accessibilityAnnouncement: 'Encountered error ' + error,
       })
     },
     (warning: string, description?: string | undefined, otherData?: any) => {
-      toast.show({
-        title: warning,
-        status: 'warning',
+      const str = warning + ' ' + description
+      toast.show(str, {
+        type: 'warning',
         placement: 'bottom',
         duration: 5000,
-        isClosable: true,
-        description,
+        // isClosable: true,
+        // description,
       })
     },
     (success: string, description?: string | undefined, otherData?: any) => {
-      toast.show({
-        title: success,
-        status: 'success',
+      const str = success + ' ' + description
+      toast.show(str, {
+        type: 'success',
         placement: 'bottom',
         duration: 5000,
-        isClosable: true,
-        description,
+        // isClosable: true,
+        // description,
       })
     },
   ] as const

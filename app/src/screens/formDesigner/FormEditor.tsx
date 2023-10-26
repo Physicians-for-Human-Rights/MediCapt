@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react'
-import { Select, CheckIcon } from 'native-base'
+import { Select, SelectItem, IndexPath } from '@ui-kitten/components'
 import { FormType } from 'utils/types/form'
 import { lookupManifestByNameAndType } from 'utils/manifests'
 import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
@@ -13,7 +13,6 @@ import FormEditorVersions from 'components/FormEditorVersions'
 import FormEditorOverview from 'components/FormEditorOverview'
 import _ from 'lodash'
 import { readFile } from 'utils/forms'
-import { useInfo, handleStandardErrors } from 'utils/errors'
 import Loading from 'components/Loading'
 import { getForm } from 'api/formdesigner'
 import {
@@ -27,6 +26,7 @@ import { dataURItoBlob } from 'utils/data'
 import { Dimensions, View, SafeAreaView } from 'react-native'
 import styles from '../../components/styles'
 import { breakpoints, colors } from 'components/nativeBaseSpec'
+import { CheckIcon } from 'components/Icons'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -38,6 +38,22 @@ function Tabs({
   tabName: string
   setTabName: React.Dispatch<React.SetStateAction<string>>
 }) {
+  const items = [
+    { label: 'Overview', val: 'Overview' },
+    { label: 'Files', val: 'Files' },
+    { label: 'Associations', val: 'Associations' },
+    { label: 'Editor', val: 'Editor' },
+    { label: 'Print preview', val: 'Printed' },
+    { label: 'Versions', val: 'Versions' },
+  ]
+  const foundIndex = items.findIndex(item => item.val === tabName)
+  const [selectedIndex, setSelectedIndex] = useState<IndexPath>(
+    new IndexPath(foundIndex)
+  )
+  const onSelect = (index: IndexPath) => {
+    setSelectedIndex(index)
+    setTabName(items[index.row].val)
+  }
   return (
     <View
       style={{
@@ -47,24 +63,22 @@ function Tabs({
     >
       <View style={styles.formEditorFormdesigner}>
         <Select
-          selectedValue={tabName}
-          minWidth="100"
+          // selectedValue={tabName}
+          selectedIndex={selectedIndex}
+          style={{ minWidth: 100, backgroundColor: 'white', marginTop: 4 }}
           accessibilityLabel="Select page"
           placeholder="Select page"
-          bg="white"
-          _selectedItem={{
-            bg: 'teal.600',
-            endIcon: <CheckIcon size="5" />,
-          }}
-          mt={1}
-          onValueChange={itemValue => setTabName(itemValue)}
+          // _selectedItem={{
+          //   bg: 'teal.600',
+          //   endIcon: <CheckIcon size="5" />,
+          // }}
+          accessoryLeft={CheckIcon}
+          onSelect={index => onSelect(index as IndexPath)}
+          // onValueChange={itemValue => setTabName(itemValue)}
         >
-          <Select.Item label="Overview" value="Overview" />
-          <Select.Item label="Files" value="Files" />
-          <Select.Item label="Associations" value="Associations" />
-          <Select.Item label="Editor" value="Editor" />
-          <Select.Item label="Print preview" value="Printed" />
-          <Select.Item label="Versions" value="Versions" />
+          {items.map(item => {
+            return <SelectItem key={item.val} title={item.label} />
+          })}
         </Select>
       </View>
     </View>

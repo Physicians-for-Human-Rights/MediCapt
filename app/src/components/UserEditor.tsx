@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Badge, Select, Tooltip } from 'native-base'
 import { userTypes, UserType } from 'utils/types/user'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 import NecessaryItem from 'components/NecessaryItem'
@@ -28,7 +27,14 @@ import { LocationType } from 'utils/types/location'
 import LocationListStatic from 'components/LocationListStatic'
 import { RootStackParamList } from 'utils/manager/navigation'
 import { StackNavigationProp } from '@react-navigation/stack'
-import { Button, useStyleSheet, Text } from '@ui-kitten/components'
+import {
+  Button,
+  useStyleSheet,
+  Text,
+  Select,
+  SelectItem,
+  IndexPath,
+} from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { layout, spacing } from './styles'
 import {
@@ -80,6 +86,10 @@ export default function UserEditor({
 }) {
   const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
+  // const foundIndex = userTypes.findIndex(user => user === user.userType)
+  const [selectedIndex, setSelectedIndex] = useState<IndexPath>(
+    new IndexPath(0)
+  )
   const standardReporters = { setWaiting, error, warning, success }
 
   const createMode = !(user.userUUID && user.userUUID !== '')
@@ -180,7 +190,10 @@ export default function UserEditor({
     )
 
   const editorAllowedLocationIDs = useUserLocationIDs()
-
+  const onSelect = (index: IndexPath) => {
+    setSelectedIndex(index)
+    setUser({ ...user, userType: userTypes[index.row] })
+  }
   return (
     <>
       <View style={[layout.vStack]}>
@@ -205,23 +218,24 @@ export default function UserEditor({
           />
           {createMode ? (
             <Select
-              size="md"
-              selectedValue={user.userType}
+              size="medium"
+              selectedIndex={selectedIndex}
+              // selectedValue={user.userType}
               placeholder={t('user.user-type')}
-              w="95%"
-              onValueChange={itemValue => {
-                if (itemValue != null) {
-                  // @ts-ignore this value comes from user.entityType, which is correct
-                  setUser({ ...user, userType: itemValue })
-                }
-              }}
+              style={{ width: '95%' }}
+              onSelect={index => onSelect(index as IndexPath)}
+              // onValueChange={itemValue => {
+              //   if (itemValue != null) {
+              //     // @ts-ignore this value comes from user.entityType, which is correct
+              //     setUser({ ...user, userType: itemValue })
+              //   }
+              // }}
             >
               {userTypes.map((e, i) => (
-                <Select.Item
-                  size="md"
+                <SelectItem
                   key={e}
-                  label={t('user.' + e)}
-                  value={e}
+                  title={t('user.' + e)}
+                  // value={e}
                 />
               ))}
             </Select>
@@ -239,17 +253,19 @@ export default function UserEditor({
           <View style={[layout.center]}>
             <View style={[layout.hStackGap5, spacing.py2]}>
               {_.includes(user.allowed_locations, 'admin') && (
-                <Badge
-                  colorScheme="red"
-                  _text={{
-                    fontSize: 16,
-                  }}
-                  alignSelf="center"
-                  variant="subtle"
-                  mt={-1}
+                <Button
+                  size="tiny"
+                  status="danger"
+                  appearance="outline"
+                  style={{ marginTop: -4, borderWidth: 0 }}
+                  // _text={{
+                  //   fontSize: 16,
+                  // }}
+                  // alignSelf="center"
+                  // variant="subtle"
                 >
                   User is an administrator
-                </Badge>
+                </Button>
               )}
               {_.includes(editorAllowedLocationIDs, 'admin') &&
                 (_.includes(user.allowed_locations, 'admin') ? (
@@ -586,17 +602,15 @@ export default function UserEditor({
                   {t('user.reset-password')}
                 </Button>
               )}
-              <Tooltip openDelay={0} label="Submit first" isDisabled={!changed}>
-                <Button
-                  accessoryLeft={user.enabled ? CloseIcon : CheckIcon}
-                  status={user.enabled ? 'danger' : 'success'}
-                  onPress={toggleUser}
-                >
-                  {user.enabled
-                    ? t('user.disable-user')
-                    : t('user.enable-user')}
-                </Button>
-              </Tooltip>
+              {changed && <Text category="p1">Submit first</Text>}
+
+              <Button
+                accessoryLeft={user.enabled ? CloseIcon : CheckIcon}
+                status={user.enabled ? 'danger' : 'success'}
+                onPress={toggleUser}
+              >
+                {user.enabled ? t('user.disable-user') : t('user.enable-user')}
+              </Button>
             </View>
           </View>
         )}

@@ -1,11 +1,14 @@
 import React from 'react'
-import { Badge, useBreakpointValue } from 'native-base'
-import { Text } from '@ui-kitten/components'
+import { useBreakpointValue } from '../../hooks/useBreakpointValue'
+import { Text, Button, useStyleSheet } from '@ui-kitten/components'
 import _ from 'lodash'
 import { NamedFormSection } from 'utils/types/formHelpers'
 import FormButtons from 'components/FormButtons'
 import styles, { layout } from './styles'
 import { View, FlatList, Pressable } from 'react-native'
+import themedStyles from 'themeStyled'
+
+const styleS = useStyleSheet(themedStyles)
 
 function Section({
   completed,
@@ -29,9 +32,9 @@ function Section({
     >
       <View style={styles.formMenuContainer}>
         <View style={[layout.justifyStart, layout.hStackGap3]}>
-          <Badge px={2} colorScheme={completed ? 'success' : 'red'}>
+          <Button status={completed ? 'success' : 'danger'} style={styleS.px2}>
             {sectionIndex + 1}
-          </Badge>
+          </Button>
           <Text status={completed ? 'success' : 'primary'} selectable={false}>
             {title}
           </Text>

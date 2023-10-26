@@ -1,7 +1,6 @@
 import React from 'react'
-import { Checkbox } from 'native-base'
 import { Pressable } from 'react-native'
-import { Text } from '@ui-kitten/components'
+import { Text, CheckBox } from '@ui-kitten/components'
 import { StyleSheet, View } from 'react-native'
 import _ from 'lodash'
 import { t } from 'i18n-js'
@@ -46,11 +45,11 @@ export default function SkipButton({
     >
       <View style={{ flexDirection: direction }}>
         <View style={[layout.center]}>
-          <Checkbox
-            value="skip"
-            isChecked={skipped}
+          <CheckBox
+            // value="skip"
+            checked={skipped}
             style={styles.checkbox}
-            size="sm"
+            // size="small"
             accessibilityLabel={t('form.skip-question')}
           />
         </View>

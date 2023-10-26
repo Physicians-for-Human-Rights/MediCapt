@@ -3,7 +3,6 @@ import React, { useEffect } from 'react'
 // https://github.com/microsoft/TypeScript/issues/21926
 import withAuthenticator from 'screens/Authentication'
 import { StoreProvider, useUser, useSignOut } from 'utils/store'
-import { theme } from 'theme'
 import { UserKind } from 'utils/userTypes'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { default as ProviderApp } from 'screens/provider/App'
@@ -11,7 +10,6 @@ import { default as AssociateApp } from 'screens/associate/App'
 import { default as ManagerApp } from 'screens/manager/App'
 import { default as FormDesignerApp } from 'screens/formDesigner/App'
 import { default as ResearcherApp } from 'screens/researcher/App'
-import { NativeBaseProvider } from 'native-base'
 import * as Localization from 'expo-localization'
 import i18n from 'i18n-js'
 import en from 'localization/en'
@@ -22,6 +20,7 @@ import { default as themeKitten } from './custom-theme.json'
 import * as eva from '@eva-design/eva'
 import { EvaIconsPack } from '@ui-kitten/eva-icons'
 import { MaterialIconsPack } from './MaterialIcons' // <-- Import Material icons
+import { ToastProvider } from 'react-native-toast-notifications'
 
 Sentry.init({
   dsn: 'https://6fa825c71abb485092554ccb55e4cf67@o1300636.ingest.sentry.io/6535444',
@@ -90,10 +89,7 @@ function LoginScreen() {
     <React.StrictMode>
       <SafeAreaProvider>
         <StoreProvider>
-          <NativeBaseProvider
-            theme={theme}
-            config={{ suppressColorAccessibilityWarning: true }}
-          >
+          <ToastProvider swipeEnabled={true}>
             <IconRegistry icons={[EvaIconsPack, MaterialIconsPack]} />
             <ApplicationProvider
               {...eva}
@@ -101,7 +97,7 @@ function LoginScreen() {
             >
               <AuthApp />
             </ApplicationProvider>
-          </NativeBaseProvider>
+          </ToastProvider>
         </StoreProvider>
       </SafeAreaProvider>
     </React.StrictMode>

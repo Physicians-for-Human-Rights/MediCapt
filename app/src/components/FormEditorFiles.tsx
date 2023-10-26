@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Divider, Badge } from 'native-base'
 import { View, Dimensions, Image, FlatList } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import * as DocumentPicker from 'expo-document-picker'
@@ -26,6 +25,7 @@ import {
   Icon,
   Text,
   Popover,
+  Divider,
 } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 import { DownloadCloudIcon, UploadCloudIcon, CloseCircleIcon } from './Icons'
@@ -126,18 +126,19 @@ export default function FormEditorFiles({
       <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
         <View style={styles.formEditorFileView}>
           <View style={layout.center}>
-            <Badge
-              variant="solid"
-              bg="red.400"
-              alignSelf="flex-start"
-              _text={{
-                color: 'coolGray.50',
-                fontWeight: 'bold',
-                fontSize: 'xs',
-              }}
+            <Button
+              // variant="solid"
+              status="danger" //make this is no onhover effect
+              size="tiny"
+              // alignSelf="flex-start"
+              // _text={{
+              //   color: 'coolGray.50',
+              //   fontWeight: 'bold',
+              //   fontSize: 'xs',
+              // }}
             >
               FORM PDF
-            </Badge>
+            </Button>
           </View>
           {isInManifest(manifest, e => e.filename == 'form.pdf') ? (
             <IconGrayButton
@@ -201,22 +202,24 @@ export default function FormEditorFiles({
           </Text>
         )}
       </View>
-      <Divider py="0.1" bg="coolGray.200" />
+      <Divider
+        style={{ paddingVertical: 0.1, backgroundColor: colors.coolGray[200] }}
+      />
       <View style={[layout.vStack, spacing.my2]}>
         <View style={layout.hStackGap3}>
           <View style={layout.center}>
-            <Badge
-              variant="solid"
-              bg="red.400"
-              alignSelf="flex-start"
-              _text={{
-                color: 'coolGray.50',
-                fontWeight: 'bold',
-                fontSize: 'xs',
-              }}
+            <Button
+              status="danger"
+              size="tiny" // make this no onhover effect
+              // alignSelf="flex-start"
+              // _text={{
+              //   color: 'coolGray.50',
+              //   fontWeight: 'bold',
+              //   fontSize: 'xs',
+              // }}
             >
               IMAGES
-            </Badge>
+            </Button>
           </View>
           <IconGrayButton
             text="Upload an image"

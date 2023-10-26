@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { Badge, Tooltip } from 'native-base'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 import NecessaryItem from 'components/NecessaryItem'
 import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
@@ -12,7 +11,7 @@ import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import SelectLocation from 'components/SelectLocation'
 import { isInManifest, lookupManifest } from 'utils/manifests'
-import { Button } from '@ui-kitten/components'
+import { Button, Text } from '@ui-kitten/components'
 import { SaveIcon, CloseIcon, CheckIcon } from './Icons'
 import { layout, spacing } from './styles'
 import { View } from 'react-native'
@@ -92,7 +91,7 @@ export default function FormEditorOverview({
 }) {
   const [error, warning, success] = useInfo()
   const standardReporters = { setWaiting, error, warning, success }
-
+  const [tooltipVisible, setTooltipVisible] = useState<boolean>(false)
   const createMode = !(formMetadata.formUUID && formMetadata.formUUID !== '')
 
   const [duplicatePaths, setDuplicatePaths] = useState([] as string[])
@@ -271,18 +270,19 @@ export default function FormEditorOverview({
         />
       </View>
       <View style={[layout.vStackGap3, spacing.mt10, spacing.mb5]}>
-        <Badge
-          variant="solid"
-          bg="coolGray.400"
-          alignSelf="flex-start"
-          _text={{
-            color: 'coolGray.50',
-            fontWeight: 'bold',
-            fontSize: 'xs',
-          }}
+        <Button
+          size="tiny"
+          status="coolGray" // make this no onhover effect
+          // bg="coolGray.400"
+          // alignSelf="flex-start"
+          // _text={{
+          //   color: 'coolGray.50',
+          //   fontWeight: 'bold',
+          //   fontSize: 'xs',
+          // }}
         >
           FORM CHECKLIST
-        </Badge>
+        </Button>
         <NecessaryItem
           isDone={isInManifest(manifest, e => e.filename == 'form.yaml')}
           todoText="No form body filled out"
@@ -350,17 +350,18 @@ export default function FormEditorOverview({
           >
             {t('form-editor.submit-form')}
           </Button>
-          <Tooltip openDelay={0} label="Submit first" isDisabled={!changed}>
-            <Button
-              accessoryLeft={formMetadata.enabled ? CloseIcon : CheckIcon}
-              status={formMetadata.enabled ? 'danger' : 'success'}
-              onPress={toggleForm}
-            >
-              {formMetadata.enabled
-                ? t('form-editor.disable-form')
-                : t('form-editor.enable-form')}
-            </Button>
-          </Tooltip>
+
+          {changed && <Text category="p1">*Submit first</Text>}
+
+          <Button
+            accessoryLeft={formMetadata.enabled ? CloseIcon : CheckIcon}
+            status={formMetadata.enabled ? 'danger' : 'success'}
+            onPress={toggleForm}
+          >
+            {formMetadata.enabled
+              ? t('form-editor.disable-form')
+              : t('form-editor.enable-form')}
+          </Button>
         </View>
       )}
     </View>

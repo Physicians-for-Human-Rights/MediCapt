@@ -1,6 +1,14 @@
 import React, { useState } from 'react'
-import { Select, Tooltip, Popover } from 'native-base'
-import { Button, useStyleSheet } from '@ui-kitten/components'
+import {
+  Button,
+  useStyleSheet,
+  Text,
+  Popover,
+  Card,
+  Select,
+  SelectItem,
+  IndexPath,
+} from '@ui-kitten/components'
 import type { LocationType } from 'utils/types/location'
 import { locationEntityTypes } from 'utils/types/location'
 import FloatingLabelInput from 'components/FloatingLabelInput'
@@ -17,6 +25,7 @@ import themedStyles from 'themeStyled'
 import { DeleteIcon, SaveIcon, CheckIcon, CloseIcon } from './Icons'
 import { layout, spacing } from './styles'
 import { View } from 'react-native'
+import ModalHeader from './styledComponents/ModalHeader'
 
 const styleS = useStyleSheet(themedStyles)
 
@@ -35,7 +44,9 @@ export default function LocationEditor({
 }) {
   const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
-
+  const [selectedIndex, setSelectedIndex] = useState<IndexPath>(
+    new IndexPath(0)
+  )
   const createMode = !(location.locationUUID && location.locationUUID !== '')
 
   const standardReporters = { setWaiting, error, warning, success }
@@ -112,23 +123,27 @@ export default function LocationEditor({
             setValue={v => setLocation({ ...location, shortName: v })}
           />
           <Select
-            size="md"
-            selectedValue={location.entityType}
+            size="medium"
+            style={[styleS.width95Percent]}
+            selectedIndex={selectedIndex}
+            // selectedValue={location.entityType}
             placeholder={t('location.entity-type')}
-            w="95%"
-            onValueChange={itemValue => {
-              if (itemValue != null) {
+            onSelect={index => {
+              if (index != null) {
                 // @ts-ignore this value comes from location.entityType, which is correct
-                setLocation({ ...location, entityType: itemValue })
+                const num: number = index.row
+                setLocation({
+                  ...location,
+                  entityType: locationEntityTypes[num],
+                })
               }
             }}
           >
             {locationEntityTypes.map((e, i) => (
-              <Select.Item
-                size="md"
+              <SelectItem
                 key={e}
-                label={t('location.entity.' + e)}
-                value={e}
+                title={t('location.entity.' + e)}
+                // value={e}
               />
             ))}
           </Select>
@@ -186,25 +201,22 @@ export default function LocationEditor({
             setValue={v => setLocation({ ...location, coordinates: v })}
           />
           <Popover
-            trigger={triggerProps => {
+            anchor={triggerProps => {
               return (
                 <Button {...triggerProps} status="warning" m={4}>
                   Help
                 </Button>
               )
             }}
+            accessibilityLabel="How to get GPS coordinates"
           >
-            <Popover.Content
-              accessibilityLabel="How to get GPS coordinates"
-              w="56"
+            <Card
+              header={props => (
+                <ModalHeader {...props} text="Getting coordinates" />
+              )}
             >
-              <Popover.Arrow />
-              <Popover.CloseButton />
-              <Popover.Header>Getting coordinates</Popover.Header>
-              <Popover.Body>
-                {t('location.coordinates-instructions')}
-              </Popover.Body>
-            </Popover.Content>
+              {t('location.coordinates-instructions')}
+            </Card>
           </Popover>
         </View>
         <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
@@ -307,17 +319,16 @@ export default function LocationEditor({
                 {t('location.delete-location')}
               </Button>
             )}
-            <Tooltip openDelay={0} label="Submit first" isDisabled={!changed}>
-              <Button
-                accessoryLeft={location.enabled ? CloseIcon : CheckIcon}
-                status={location.enabled ? 'danger' : 'success'}
-                onPress={toggleLocation}
-              >
-                {location.enabled
-                  ? t('location.disable-location')
-                  : t('location.enable-location')}
-              </Button>
-            </Tooltip>
+            {changed && <Text category="p1">*Submit first</Text>}
+            <Button
+              accessoryLeft={location.enabled ? CloseIcon : CheckIcon}
+              status={location.enabled ? 'danger' : 'success'}
+              onPress={toggleLocation}
+            >
+              {location.enabled
+                ? t('location.disable-location')
+                : t('location.enable-location')}
+            </Button>
           </View>
         )}
       </View>

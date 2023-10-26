@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Spinner } from 'native-base'
 import { Pressable } from 'react-native'
-import { Text, useStyleSheet } from '@ui-kitten/components'
+import { Text, useStyleSheet, Spinner } from '@ui-kitten/components'
 import themedStyles from 'themeStyled'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'

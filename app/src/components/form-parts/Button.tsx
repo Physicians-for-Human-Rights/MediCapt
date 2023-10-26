@@ -1,7 +1,13 @@
 import React from 'react'
-import { Button as NButton, IButtonProps } from 'native-base'
+import {
+  Button as NButton,
+  ButtonProps,
+  useStyleSheet,
+} from '@ui-kitten/components'
 import _ from 'lodash'
+import themedStyles from 'themeStyled'
 
+const styleS = useStyleSheet(themedStyles)
 export default function Button({
   key,
   text,
@@ -17,15 +23,13 @@ export default function Button({
   colorScheme?: string
   maxW?: string
   icon?: JSX.Element
-} & Partial<IButtonProps>) {
+} & Partial<ButtonProps>) {
   return (
     <NButton
       key={key}
-      flex={1}
-      _text={{ bold: true }}
-      maxW={maxW}
+      style={[styleS.flex1, styleS.fontBold, { maxWidth: maxW }]}
       onPress={onPress}
-      leftIcon={icon}
+      accessoryLeft={icon}
       {...props}
     >
       {text}

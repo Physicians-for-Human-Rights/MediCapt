@@ -1,7 +1,14 @@
 import React, { useState } from 'react'
 import { Dimensions, Platform, ScrollView, Pressable } from 'react-native'
-import { Select } from 'native-base'
-import { Text, useStyleSheet, Button, Icon } from '@ui-kitten/components'
+import {
+  Text,
+  useStyleSheet,
+  Button,
+  Icon,
+  Select,
+  SelectItem,
+  IndexPath,
+} from '@ui-kitten/components'
 import { View } from 'react-native'
 import themedStyles from 'themeStyled'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
@@ -228,6 +235,30 @@ export default function UserList({
   allowedUserTypes?: string[]
   onlyEnabledUsers?: boolean
 }) {
+  const [selectedIndexUser, setSelectedIndexUser] = useState<IndexPath>()
+  const [selectedIndexEnabled, setSelectedIndexEnabled] = useState<IndexPath>()
+  const [selectedIndexTerm, setSelectedIndexTerm] = useState<IndexPath>()
+  const onSelectUser = (index: IndexPath) => {
+    setSelectedIndexUser(index)
+    const arr = allowedUserTypes ? allowedUserTypes : UserKindList
+    setFilterUserType(arr[index.row])
+  }
+  const enabledUsers = ['enabled', 'disabled']
+  const onSelect = (index: IndexPath) => {
+    setSelectedIndexEnabled(index)
+    setFilterEnabledOrDisabled(enabledUsers[index.row])
+  }
+  const searchTerms = [
+    'username',
+    'email',
+    'phone-number',
+    'name',
+    'user-id-code',
+  ]
+  const onSelectTerms = (index: IndexPath) => {
+    setSelectedIndexTerm(index)
+    setFilterSearchType(searchTerms[index.row])
+  }
   return (
     <>
       <View
@@ -241,34 +272,37 @@ export default function UserList({
       >
         <View style={[layout.center]}>
           <Select
-            size="md"
-            bg="white"
-            selectedValue={filterUserType}
-            onValueChange={setFilterUserType}
+            size="medium"
+            style={{ backgroundColor: 'white' }}
+            selectedIndex={selectedIndexUser}
+            onSelect={index => onSelectUser(index as IndexPath)}
+            // selectedValue={filterUserType}
+            // onValueChange={setFilterUserType}
             placeholder={t('user.select-user-type')}
           >
             {(allowedUserTypes ? allowedUserTypes : UserKindList).map(e => (
-              <Select.Item key={e} label={t('user.' + e)} value={e} />
+              <SelectItem key={e} title={t('user.' + e)} />
             ))}
           </Select>
         </View>
         {onlyEnabledUsers && (
           <View style={[layout.center]}>
             <Select
-              size="md"
-              bg="white"
-              selectedValue={filterEnabledOrDisabled}
-              onValueChange={setFilterEnabledOrDisabled}
+              size="medium"
+              style={{ backgroundColor: 'white', marginLeft: isWider ? 8 : 0 }}
+              selectedIndex={selectedIndexEnabled}
+              onSelect={index => onSelect(index as IndexPath)}
+              // selectedValue={filterEnabledOrDisabled}
+              // onValueChange={setFilterEnabledOrDisabled}
               placeholder={t('user.filter.select-user-enabled')}
-              ml={{ base: 0, md: 2 }}
             >
-              <Select.Item
+              {/* <Select.Item
                 key={'__any__'}
                 label={t('user.filter.any-is-user-enabled')}
                 value={''}
-              />
-              {['enabled', 'disabled'].map(e => (
-                <Select.Item key={e} label={t('user.filter.' + e)} value={e} />
+              /> */}
+              {enabledUsers.map(e => (
+                <SelectItem key={e} title={t('user.filter.' + e)} />
               ))}
             </Select>
           </View>
@@ -318,23 +352,24 @@ export default function UserList({
       >
         <View style={[layout.center]}>
           <Select
-            size="md"
-            bg="white"
-            selectedValue={filterSearchType}
-            onValueChange={setFilterSearchType}
+            size="medium"
+            style={{
+              backgroundColor: 'white',
+              width: '80%',
+              marginLeft: isWider ? 8 : 0,
+            }}
+            selectedIndex={selectedIndexTerm}
+            onSelect={index => onSelectTerms(index as IndexPath)}
+            // onValueChange={setFilterSearchType}
             placeholder={t('user.search-by.select')}
-            ml={{ base: 0, md: 2 }}
-            w={{ md: '80%', lg: '80%', base: '80%' }}
           >
-            {['username', 'email', 'phone-number', 'name', 'user-id-code'].map(
-              e => (
-                <Select.Item
-                  key={e}
-                  label={t('user.search-by.' + e)}
-                  value={e}
-                />
-              )
-            )}
+            {searchTerms.map(e => (
+              <SelectItem
+                key={e}
+                title={t('user.search-by.' + e)}
+                // value={e}
+              />
+            ))}
           </Select>
         </View>
         <DebouncedTextInput

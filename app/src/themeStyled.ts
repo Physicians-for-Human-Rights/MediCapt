@@ -155,6 +155,12 @@ const themedStyles = StyleService.create({
   width100Percent: {
     width: '100%',
   },
+  width95Percent: {
+    width: '95%',
+  },
+  width80Percent: {
+    width: '80%',
+  },
   width75Percent: {
     width: '75%',
   },
@@ -202,6 +208,9 @@ const themedStyles = StyleService.create({
   },
   bgWhite: {
     backgroundColor: 'white',
+  },
+  flex1: {
+    flex: 1,
   },
   center: {
     display: 'flex',
