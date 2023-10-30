@@ -39,13 +39,12 @@ import { goBackMaybeRefreshing } from 'utils/navigation'
 import { createShareForRecord, getSharesForRecord } from 'api/provider'
 import { Share } from 'utils/types/share'
 import { useUserLocations } from 'utils/store'
-import { backgrounds, borders, layout } from 'components/styles'
-import { breakpoints } from 'components/nativeBaseSpec'
+import { backgrounds, borders, layout } from '../../components/styles'
+import { breakpoints } from '../../components/nativeBaseSpec'
 import { Dimensions, SafeAreaView } from 'react-native'
-import themedStyles from 'themeStyled'
+import themedStyles from '../../themeStyled'
 import ModalHeader from 'components/styledComponents/ModalHeader'
 
-const styleS = useStyleSheet(themedStyles)
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
 const FormMemo = React.memo(Form)
@@ -54,6 +53,7 @@ export default function RecordEditor({
   route,
   navigation,
 }: RootStackScreenProps<'RecordEditor'>) {
+  const styleS = useStyleSheet(themedStyles)
   const [changed, setChanged] = useState(false)
   const [waiting, setWaiting] = useState('Loading' as null | string)
   const [error, warning, success] = useInfo()

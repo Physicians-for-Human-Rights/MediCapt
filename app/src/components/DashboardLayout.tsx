@@ -27,16 +27,16 @@ import {
   OverflowMenu,
   MenuGroup,
 } from '@ui-kitten/components'
-import themedStyles from 'themeStyled'
+import themedStyles from '../themeStyled'
 import styles, { spacing, layout } from './styles'
 import { colors, breakpoints } from './nativeBaseSpec'
 import { MenuIcon } from './Icons'
 
-const styleS = useStyleSheet(themedStyles)
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
 
 export function Sidebar(signOut: any) {
+  const styleS = useStyleSheet(themedStyles)
   const list = [
     {
       iconName: 'person-outline',
@@ -335,6 +335,7 @@ function MainContent({
   children: JSX.Element
   fullWidth: boolean
 }) {
+  const styleS = useStyleSheet(themedStyles)
   return (
     <View
       style={[
@@ -387,6 +388,7 @@ export function MobileHeader({
     borderColor: colors.coolGray[200],
     backgroundColor: isWider ? 'white' : colors.primary[900],
   }
+  const styleS = useStyleSheet(themedStyles)
   return (
     <View style={[spacing.px1, spacing.py4, localStyle]}>
       <View style={[layout.hStackGap2, layout.spaceBet]}>
@@ -524,6 +526,7 @@ export default function DashboardLayout({
   showLogos?: boolean
   reloadPrevious?: React.RefObject<boolean>
 }) {
+  const styleS = useStyleSheet(themedStyles)
   const [signOut] = useSignOut()
   const [isSidebarVisible, setIsSidebarVisible] = React.useState(true)
   function toggleSidebar() {

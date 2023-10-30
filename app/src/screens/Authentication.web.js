@@ -11,9 +11,7 @@ import indexOf from 'lodash/indexOf'
 import medicapt_logo from '../../assets/medicapt.png'
 import phr_logo from '../../assets/phr.png'
 import './Authentication.css'
-import themedStyles from 'themeStyled'
-
-const styleS = useStyleSheet(themedStyles)
+import themedStyles from '../themeStyled'
 
 import {
   UserKind,
@@ -23,9 +21,10 @@ import {
 } from 'utils/userTypes'
 
 function Header(userKind, setAccountType) {
+  const styleS = useStyleSheet(themedStyles)
   const { tokens } = useTheme()
   return () => (
-    <View>
+    <View style={{ backgroundColor: 'white' }}>
       <Flex
         direction="row"
         justifyContent="space-around"

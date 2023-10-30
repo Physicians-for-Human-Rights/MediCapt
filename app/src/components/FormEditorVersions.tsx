@@ -8,7 +8,7 @@ import {
   SelectItem,
   IndexPath,
 } from '@ui-kitten/components'
-import themedStyles from 'themeStyled'
+import themedStyles from '../themeStyled'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 // @ts-ignore typescript doesn't do native/web modules
 import {
@@ -28,8 +28,6 @@ import { RootStackParamList } from 'utils/formDesigner/navigation'
 import { StackNavigationProp } from '@react-navigation/stack'
 import styles, { layout, spacing } from './styles'
 import { AlertIcon } from './Icons'
-
-const styleS = useStyleSheet(themedStyles)
 
 export default function FormEditorVersions({
   formMetadata,
@@ -54,6 +52,7 @@ export default function FormEditorVersions({
   latestVersion: React.MutableRefObject<string | undefined>
   navigation: StackNavigationProp<RootStackParamList, 'FormEditor'>
 }) {
+  const styleS = useStyleSheet(themedStyles)
   const [selectedVersion, setSelectedVersionRaw] = useState(
     formMetadata.version
   )

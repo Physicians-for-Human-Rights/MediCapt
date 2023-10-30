@@ -8,10 +8,9 @@ import { View } from 'react-native'
 import styles, { layout } from '../styles'
 import { Button, useStyleSheet, Modal, Card } from '@ui-kitten/components'
 import { EditIcon } from 'components/Icons'
-import themedStyles from 'themeStyled'
+import themedStyles from '../../themeStyled'
 import ModalHeader from 'components/styledComponents/ModalHeader'
 
-const styleS = useStyleSheet(themedStyles)
 export type ImageAnnotation = BodyMarkerAnnotation
 
 function BodyImage({
@@ -27,6 +26,7 @@ function BodyImage({
   removeAnnotation: (n: number) => any
   isDisabled: boolean
 }) {
+  const styleS = useStyleSheet(themedStyles)
   const window = useWindowDimensions()
   const modalSize = Math.min(window.height, window.width)
 

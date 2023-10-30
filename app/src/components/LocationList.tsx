@@ -8,7 +8,7 @@ import {
   SelectItem,
   IndexPath,
 } from '@ui-kitten/components'
-import themedStyles from 'themeStyled'
+import themedStyles from '../themeStyled'
 import { ScrollView, Pressable, Platform } from 'react-native'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
@@ -24,10 +24,10 @@ import styles, { backgrounds, borders, layout, spacing } from './styles'
 import { CloseIcon, RefreshIcon } from './Icons'
 
 const { width } = Dimensions.get('window')
-const styleS = useStyleSheet(themedStyles)
 const isWider = width > breakpoints.md
 
 export function ListItem({ item }: { item: LocationType }) {
+  const styleS = useStyleSheet(themedStyles)
   return (
     <Pressable
       style={[spacing.p2, borders.borderColorCG200, { borderBottomWidth: 0.8 }]}

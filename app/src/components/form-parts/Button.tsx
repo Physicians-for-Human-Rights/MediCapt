@@ -5,9 +5,8 @@ import {
   useStyleSheet,
 } from '@ui-kitten/components'
 import _ from 'lodash'
-import themedStyles from 'themeStyled'
+import themedStyles from '../../themeStyled'
 
-const styleS = useStyleSheet(themedStyles)
 export default function Button({
   key,
   text,
@@ -24,6 +23,7 @@ export default function Button({
   maxW?: string
   icon?: JSX.Element
 } & Partial<ButtonProps>) {
+  const styleS = useStyleSheet(themedStyles)
   return (
     <NButton
       key={key}

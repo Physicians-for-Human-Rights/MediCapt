@@ -35,7 +35,7 @@ import {
   SelectItem,
   IndexPath,
 } from '@ui-kitten/components'
-import themedStyles from 'themeStyled'
+import themedStyles from '../themeStyled'
 import { layout, spacing } from './styles'
 import {
   AlertIcon,
@@ -46,8 +46,6 @@ import {
   CloseIcon,
 } from './Icons'
 import { View } from 'react-native'
-
-const styleS = useStyleSheet(themedStyles)
 
 const dummyDate = new Date()
 
@@ -84,6 +82,7 @@ export default function UserEditor({
   navigation: StackNavigationProp<RootStackParamList, 'EditUser'>
   reloadPrevious: React.MutableRefObject<boolean>
 }) {
+  const styleS = useStyleSheet(themedStyles)
   const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
   // const foundIndex = userTypes.findIndex(user => user === user.userType)

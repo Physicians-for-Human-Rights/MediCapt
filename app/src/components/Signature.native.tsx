@@ -8,10 +8,8 @@ import SignatureCanvas, {
   SignatureViewRef,
 } from 'react-native-signature-canvas'
 import { EditIcon, CloseCircleIcon } from './Icons'
-import themedStyles from 'themeStyled'
+import themedStyles from '../themeStyled'
 import ModalHeader from './styledComponents/ModalHeader'
-
-const styleS = useStyleSheet(themedStyles)
 
 const canvasWebStyle = `.m-signature-pad {box-shadow: none; border: none; }
                             .m-signature-pad--body {border: none;}
@@ -33,6 +31,7 @@ function Signature({
   close,
   setSignature,
 }: SignatureProps) {
+  const styleS = useStyleSheet(themedStyles)
   const [isOpen, setOpen] = useState(false)
   const internalClose = () => {
     setOpen(false)

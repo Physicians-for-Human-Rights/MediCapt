@@ -6,9 +6,7 @@ import {
   ButtonGroup as ButtonGroupKitten,
   useStyleSheet,
 } from '@ui-kitten/components'
-import themedStyles from 'themeStyled'
-
-const styleS = useStyleSheet(themedStyles)
+import themedStyles from '../../themeStyled'
 
 export default function ButtonGroup<T>({
   selected,
@@ -30,6 +28,7 @@ export default function ButtonGroup<T>({
   isDisabled?: boolean
   justifyContent?: any
 } & Partial<any>) {
+  const styleS = useStyleSheet(themedStyles)
   return (
     <ButtonGroupKitten
       size="medium"
@@ -47,11 +46,11 @@ export default function ButtonGroup<T>({
           <Button
             key={k}
             disabled={isDisabled}
-            style={{
-              flex: fullwidth ? 1 : undefined,
-              maxWidth: maxW,
-              paddingHorizontal: 20,
-            }}
+            // style={{
+            //   flex: fullwidth ? 1 : undefined,
+            //   maxWidth: maxW,
+            //   paddingHorizontal: 20,
+            // }}
             // _text={{ bold: true }}
             onPress={() => onPress(v)}
             appearance={selected === v ? 'filled' : 'outline'}

@@ -26,8 +26,8 @@ import UserSearch from 'components/UserSearch'
 import { useUserLocations } from 'utils/store'
 import { getRecordShare } from 'api/associate'
 import { SafeAreaView, Dimensions } from 'react-native'
-import styles, { layout } from 'components/styles'
-import { breakpoints } from 'components/nativeBaseSpec'
+import styles, { layout } from '../../components/styles'
+import { breakpoints } from '../../components/nativeBaseSpec'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md

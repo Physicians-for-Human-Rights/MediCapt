@@ -18,9 +18,7 @@ import {
 } from '@ui-kitten/components'
 import { layout } from './styles'
 import ModalHeader from './styledComponents/ModalHeader'
-import themedStyles from 'themeStyled'
-
-const styleS = useStyleSheet(themedStyles)
+import themedStyles from '../themeStyled'
 
 export default function DateTimePicker({
   title,
@@ -32,6 +30,7 @@ export default function DateTimePicker({
   isDisabled,
   fancyLabel = undefined,
 }) {
+  const styleS = useStyleSheet(themedStyles)
   const formatString = time ? 'yyyy-MM-dd h:mm a' : 'yyyy-MM-dd'
   const [modalVisible, setModalVisible] = useState(false)
   const [dateString, setDateString] = useState(

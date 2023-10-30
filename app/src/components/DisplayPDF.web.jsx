@@ -8,11 +8,10 @@ import {
   Toggle, // toggle may cause onchange not working properly as not sure what event object passes in
 } from '@ui-kitten/components'
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack'
-import themedStyles from 'themeStyled'
+import themedStyles from '../themeStyled'
 import { View } from 'react-native'
 import { layout, spacing } from './styles'
 
-const styleS = useStyleSheet(themedStyles)
 const DownloadIcon = props => <Icon name="download" {...props} />
 export default function DisplayPDF({
   file,
@@ -27,6 +26,7 @@ export default function DisplayPDF({
 }) {
   const [numPages, setNumPages] = useState(null)
   const [pageNumber, setPageNumber] = useState(1)
+  const styleS = useStyleSheet(themedStyles)
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages)

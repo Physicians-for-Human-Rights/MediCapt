@@ -8,7 +8,7 @@ import {
   SelectItem,
   IndexPath,
 } from '@ui-kitten/components'
-import themedStyles from 'themeStyled'
+import themedStyles from '../themeStyled'
 // @ts-ignore Record some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
@@ -28,7 +28,6 @@ import styles, { borders, layout, spacing } from './styles'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
-const styleS = useStyleSheet(themedStyles)
 
 export function ListItemMobile({
   item,
@@ -41,6 +40,7 @@ export function ListItemMobile({
   forms: Record<string, FormMetadata>
   users: Record<string, Partial<UserType>>
 }) {
+  const styleS = useStyleSheet(themedStyles)
   return (
     <Pressable
       style={[spacing.p2, layout.flex1]}
@@ -174,6 +174,7 @@ export function ListItemDesktop({
   forms: Record<string, FormMetadata>
   users: Record<string, Partial<UserType>>
 }) {
+  const styleS = useStyleSheet(themedStyles)
   return (
     <Pressable
       style={[spacing.px2, layout.flex1]}
@@ -293,6 +294,7 @@ export default function RecordList({
   selectItem: (r: RecordMetadata) => any
   filter: (r: RecordMetadata) => boolean
 }) {
+  const styleS = useStyleSheet(themedStyles)
   const [forms, setForms] = useState({} as Record<string, FormMetadata>)
   const [users, setUsers] = useState({} as Record<string, Partial<UserType>>)
   const [selectedIndex, setSelectedIndex] = useState<IndexPath>()

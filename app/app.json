@@ -37,7 +37,8 @@
         {
           "photosPermission": "Medicapt uses your camera to allow you to add photographic records to your forms."
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "hooks": {
       "postPublish": [
@@ -46,7 +47,8 @@
           "config": {
             "organization": "andrei-92",
             "project": "react-native",
-            "authToken": "f2d6766322c14bd4b385b29bb074db509ed7af7aa8d848e9ab3b7111ccef0ca1"
+            "SENTRY_AUTH_TOKEN": "f2d6766322c14bd4b385b29bb074db509ed7af7aa8d848e9ab3b7111ccef0ca1",
+            "_comment": "SENTRY_AUTH_TOKEN changed from authToken"
           }
         }
       ]

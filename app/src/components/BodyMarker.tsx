@@ -13,12 +13,10 @@ import Photo from 'components/form-parts/Photo'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
-import themedStyles from 'themeStyled'
+import themedStyles from '../themeStyled'
 import { spacing, layout } from './styles'
 import ModalFooter from './styledComponents/ModalFooter'
 import ModalHeader from './styledComponents/ModalHeader'
-
-const styleS = useStyleSheet(themedStyles)
 
 function squareToImageCoordinates(
   p: {
@@ -193,7 +191,7 @@ function BodyMarker({
   }
 
   const markerSize = 10
-
+  const styleS = useStyleSheet(themedStyles)
   return (
     <>
       <View

@@ -7,8 +7,8 @@ import useMap from 'react-use/lib/useMap'
 import _ from 'lodash'
 import { LocationType } from 'utils/types/location'
 import { View, Dimensions, SafeAreaView } from 'react-native'
-import styles, { backgrounds, layout } from 'components/styles'
-import { breakpoints } from 'components/nativeBaseSpec'
+import styles, { backgrounds, layout } from '../../components/styles'
+import { breakpoints } from '../../components/nativeBaseSpec'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md

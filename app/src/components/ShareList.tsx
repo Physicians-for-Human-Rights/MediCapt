@@ -8,7 +8,7 @@ import {
   SelectItem,
   IndexPath,
 } from '@ui-kitten/components'
-import themedStyles from 'themeStyled'
+import themedStyles from '../themeStyled'
 import { UserType } from 'utils/types/user'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
@@ -27,7 +27,6 @@ import styles, { backgrounds, borders, layout, spacing } from './styles'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
-const styleS = useStyleSheet(themedStyles)
 
 export function ListItem({
   item,
@@ -38,6 +37,7 @@ export function ListItem({
   selectItem: (i: Share) => any
   users: Record<string, Partial<UserType>>
 }) {
+  const styleS = useStyleSheet(themedStyles)
   return (
     <Pressable style={spacing.p2} onPress={() => selectItem(item)}>
       <View style={[layout.hStack, layout.spaceBet, layout.width100percent]}>

@@ -4,7 +4,7 @@ import {
   hasValidBreakpointFormat,
   findLastValidBreakpoint,
 } from './tools/util'
-import { breakpoints } from 'components/nativeBaseSpec'
+import { breakpoints } from '../components/nativeBaseSpec'
 // import type { ITheme } from '../theme/index'
 // export const breakpoints = {
 //   base: 0,

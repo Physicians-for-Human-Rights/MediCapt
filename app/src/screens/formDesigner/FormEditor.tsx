@@ -25,8 +25,8 @@ import useLeave from 'utils/useLeave'
 import { dataURItoBlob } from 'utils/data'
 import { Dimensions, View, SafeAreaView } from 'react-native'
 import styles from '../../components/styles'
-import { breakpoints, colors } from 'components/nativeBaseSpec'
-import { CheckIcon } from 'components/Icons'
+import { breakpoints, colors } from '../../components/nativeBaseSpec'
+import { CheckIcon } from '../../components/Icons'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md

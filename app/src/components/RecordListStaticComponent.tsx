@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Text, useStyleSheet, Icon } from '@ui-kitten/components'
-import themedStyles from 'themeStyled'
+import themedStyles from '../themeStyled'
 // @ts-ignore Record some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
@@ -16,7 +16,6 @@ import styles, { layout, spacing } from './styles'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
-const styleS = useStyleSheet(themedStyles)
 
 export function ListItemMobile({
   item,
@@ -29,6 +28,7 @@ export function ListItemMobile({
   forms: Record<string, FormMetadata>
   users: Record<string, Partial<UserType>>
 }) {
+  const styleS = useStyleSheet(themedStyles)
   return (
     <Pressable
       style={[spacing.p2, layout.flex1]}

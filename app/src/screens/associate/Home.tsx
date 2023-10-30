@@ -11,8 +11,8 @@ import {
   Dimensions,
   FlatList,
 } from 'react-native'
-import styles, { layout, spacing } from 'components/styles'
-import { breakpoints } from 'components/nativeBaseSpec'
+import styles, { layout, spacing } from '../../components/styles'
+import { breakpoints } from '../../components/nativeBaseSpec'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md

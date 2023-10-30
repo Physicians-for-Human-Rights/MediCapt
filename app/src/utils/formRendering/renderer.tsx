@@ -29,8 +29,8 @@ import { RecordMetadata } from 'utils/types/recordMetadata'
 import RecordListStaticComponent from 'components/RecordListStaticComponent'
 import ShareListStatic from 'components/ShareListStatic'
 import { View } from 'react-native'
-import { layout, spacing } from 'components/styles'
-import { colors } from 'components/nativeBaseSpec'
+import { layout, spacing } from '../../components/styles'
+import { colors } from '../../components/nativeBaseSpec'
 
 export const Center = ({ children }: any) => {
   return <View style={[layout.center]}>{children}</View>

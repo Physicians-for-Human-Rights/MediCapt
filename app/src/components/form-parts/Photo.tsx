@@ -19,12 +19,10 @@ import {
   Card,
   Divider,
 } from '@ui-kitten/components'
-import themedStyles from 'themeStyled'
+import themedStyles from '../../themeStyled'
 import { CameraIcon, DeleteIcon, UploadCloudIcon } from 'components/Icons'
 import { layout, spacing } from '../styles'
 import ModalHeader from 'components/styledComponents/ModalHeader'
-
-const styleS = useStyleSheet(themedStyles)
 
 type PhotoSelectorProps = {
   photos: Photo[]
@@ -48,6 +46,7 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
   isDisabled,
   onlyOne = false,
 }) => {
+  const styleS = useStyleSheet(themedStyles)
   const window = useWindowDimensions()
   const modalSize = Math.min(window.height, window.width)
   const [isOpen, setOpen] = useState(false)

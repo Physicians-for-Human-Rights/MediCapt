@@ -8,12 +8,10 @@ import {
   Card,
 } from '@ui-kitten/components'
 import _ from 'lodash'
-import themedStyles from 'themeStyled'
+import themedStyles from '../themeStyled'
 import { layout } from './styles'
 import { View } from 'react-native'
 import ModalHeader from './styledComponents/ModalHeader'
-
-const styleS = useStyleSheet(themedStyles)
 
 export default function NecessaryItem({
   todoText,
@@ -34,6 +32,7 @@ export default function NecessaryItem({
   helpHeader?: string
   help?: string
 }) {
+  const styleS = useStyleSheet(themedStyles)
   if (isDone) {
     return (
       <View style={[layout.hStack, layout.alignCenter]}>

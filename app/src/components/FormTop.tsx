@@ -4,9 +4,7 @@ import { colors } from './nativeBaseSpec'
 import { Text, Icon, Button, useStyleSheet } from '@ui-kitten/components'
 import { spacing, layout } from './styles'
 
-import themedStyles from 'themeStyled'
-
-const styleS = useStyleSheet(themedStyles)
+import themedStyles from '../themeStyled'
 
 const FormTop = ({
   sectionOffset,
@@ -27,6 +25,7 @@ const FormTop = ({
   isSectionCompleted: boolean
   overrideTitle?: string
 }) => {
+  const styleS = useStyleSheet(themedStyles)
   return (
     <View
       style={[

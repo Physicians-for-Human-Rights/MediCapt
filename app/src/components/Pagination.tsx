@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Pressable } from 'react-native'
 import { Text, useStyleSheet, Spinner } from '@ui-kitten/components'
-import themedStyles from 'themeStyled'
+import themedStyles from '../themeStyled'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
@@ -12,7 +12,6 @@ import { backgrounds, borders, layout, spacing } from './styles'
 import { View, Dimensions } from 'react-native'
 import { breakpoints, colors } from './nativeBaseSpec'
 
-const styleS = useStyleSheet(themedStyles)
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
 
@@ -28,6 +27,7 @@ export default function paginateComponent(
   >
 ) {
   return function PaginatedComponent() {
+    const styleS = useStyleSheet(themedStyles)
     const [page, setPage] = useState(0)
     const [lastPageToken, setLastPageToken] = useState(null as null | string)
     const [finished, setFinished] = useState(false)

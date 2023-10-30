@@ -19,16 +19,17 @@ import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
 import FormSearch from 'components/FormSearch'
 import styles, { borders, spacing } from './styles'
 import { breakpoints } from './nativeBaseSpec'
-import themedStyles from 'themeStyled'
+import themedStyles from '../themeStyled'
 import { PlusIcon } from './Icons'
 import { layout } from './styles'
 import ModalHeader from '../components/styledComponents/ModalHeader'
 
 const { width } = Dimensions.get('window')
-const styleS = useStyleSheet(themedStyles)
+
 const isWider = width > breakpoints.md
 
 const Footer = (props: any) => {
+  const styleS = useStyleSheet(themedStyles)
   const { setIsSearchModalOpen } = props
   return (
     <Button

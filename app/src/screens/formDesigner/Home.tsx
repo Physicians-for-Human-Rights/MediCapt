@@ -2,22 +2,23 @@ import React from 'react'
 import { Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
-import themedStyles from 'themeStyled'
+import themedStyles from '../../themeStyled'
 import styles, {
   backgrounds,
   borders,
   layout,
   shadows,
   spacing,
-} from 'components/styles'
+} from '../../components/styles'
 import { View, SafeAreaView, Dimensions, Pressable } from 'react-native'
-import { breakpoints } from 'components/nativeBaseSpec'
+import { breakpoints } from '../../components/nativeBaseSpec'
 
 const { width } = Dimensions.get('window')
-const styleS = useStyleSheet(themedStyles)
+
 const isWider = width > breakpoints.md
 
 export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
+  const styleS = useStyleSheet(themedStyles)
   return (
     <DashboardLayout
       title={'Home'}

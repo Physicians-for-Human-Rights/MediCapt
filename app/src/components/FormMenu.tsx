@@ -1,14 +1,12 @@
 import React from 'react'
-import { useBreakpointValue } from '../../hooks/useBreakpointValue'
+import { useBreakpointValue } from '../hooks/useBreakpointValue'
 import { Text, Button, useStyleSheet } from '@ui-kitten/components'
 import _ from 'lodash'
 import { NamedFormSection } from 'utils/types/formHelpers'
 import FormButtons from 'components/FormButtons'
 import styles, { layout } from './styles'
 import { View, FlatList, Pressable } from 'react-native'
-import themedStyles from 'themeStyled'
-
-const styleS = useStyleSheet(themedStyles)
+import themedStyles from '../themeStyled'
 
 function Section({
   completed,
@@ -23,6 +21,7 @@ function Section({
   sectionIndex: number
   title: string
 }) {
+  const styleS = useStyleSheet(themedStyles)
   return (
     <Pressable
       onPress={() => {

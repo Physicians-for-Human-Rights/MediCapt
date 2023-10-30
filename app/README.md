@@ -2,6 +2,8 @@
 
 You will need to install some global tools:
 
+global expo is deprecated
+
 ```
 npm install -g expo-cli
 yarn install
@@ -13,7 +15,8 @@ someone with access to the backend for the `config.json` file.
 
 ## Run
 
-The website with `expo web`
+Use Node JS 16+ to run - (expo start is deprecated. Now we need to run npx expo)
+The website with `npx expo web`
 
 On the phone with `expo start` Note that you also need to install the expo app.
 

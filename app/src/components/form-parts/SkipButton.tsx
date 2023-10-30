@@ -4,7 +4,7 @@ import { Text, CheckBox } from '@ui-kitten/components'
 import { StyleSheet, View } from 'react-native'
 import _ from 'lodash'
 import { t } from 'i18n-js'
-import { layout } from 'components/styles'
+import { layout } from '../styles'
 
 const styles = StyleSheet.create({
   checkbox: {

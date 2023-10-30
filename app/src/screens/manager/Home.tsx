@@ -4,8 +4,8 @@ import BigTileButton from 'components/BigTileButton'
 import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
 import { useUser } from 'utils/store'
-import styles, { layout, spacing } from 'components/styles'
-import { breakpoints } from 'components/nativeBaseSpec'
+import styles, { layout, spacing } from '../../components/styles'
+import { breakpoints } from '../../components/nativeBaseSpec'
 import { View, SafeAreaView, Dimensions, FlatList } from 'react-native'
 
 const { width } = Dimensions.get('window')

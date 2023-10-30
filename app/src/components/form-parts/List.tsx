@@ -15,10 +15,8 @@ import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import { disabledBackground } from 'utils/formRendering/utils'
 import uuid from 'react-native-uuid'
 import { View } from 'react-native'
-import { layout } from 'components/styles'
-import themedStyles from 'themeStyled'
-
-const styleS = useStyleSheet(themedStyles)
+import { layout } from '../styles'
+import themedStyles from '../../themeStyled'
 
 export function isPrimitiveType(x: any) {
   return _.isString(x) || _.isBoolean(x) || _.isNumber(x)
@@ -47,6 +45,7 @@ export function ListSelectMultiple({
   setOtherText: (s: string | undefined) => void
   isDisabled: boolean
 }) {
+  const styleS = useStyleSheet(themedStyles)
   const [rawContents, setRawContents] = React.useState(otherText)
   // NB useDebouce fires on start. We don't want that here, it modifies records
   const firstDebounce = useRef(true)
@@ -152,6 +151,7 @@ export function List({
       options: string[] | boolean[] | number[] | null
     }
 )) {
+  const styleS = useStyleSheet(themedStyles)
   const [rawContents, setRawContents] = React.useState(
     (otherValue === null || otherValue === undefined
       ? ''

@@ -2,10 +2,7 @@ import { JSXElementConstructor } from 'react'
 import styles, { spacing } from '../styles'
 import { breakpoints } from '../nativeBaseSpec'
 import { Button, useStyleSheet, Icon, IconElement } from '@ui-kitten/components'
-import themedStyles from 'themeStyled'
-import { ReactElement } from 'react'
-
-const styleS = useStyleSheet(themedStyles)
+import themedStyles from '../../themeStyled'
 
 interface IProps {
   text: string
@@ -16,6 +13,7 @@ interface IProps {
 }
 
 export const IconGrayButton = (props: IProps) => {
+  const styleS = useStyleSheet(themedStyles)
   const { text, onPress, isDisabled, leftIcon, status } = props
   return (
     <Button

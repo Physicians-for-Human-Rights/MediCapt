@@ -1,6 +1,6 @@
 import { View } from 'react-native'
 import { Button } from '@ui-kitten/components'
-import themedStyles from 'themeStyled'
+import themedStyles from '../../themeStyled'
 import { spacing, layout } from '../styles'
 
 const ModalFooter = (props: any) => {

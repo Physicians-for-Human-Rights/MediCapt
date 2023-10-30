@@ -10,7 +10,7 @@ import {
   IndexPath,
 } from '@ui-kitten/components'
 import { View } from 'react-native'
-import themedStyles from 'themeStyled'
+import themedStyles from '../themeStyled'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
@@ -27,9 +27,9 @@ import { layout } from './styles'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
-const styleS = useStyleSheet(themedStyles)
 
 export function ListItem({ item }: { item: UserType }) {
+  const styleS = useStyleSheet(themedStyles)
   return (
     <Pressable
       style={[

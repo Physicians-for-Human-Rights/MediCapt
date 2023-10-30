@@ -90,12 +90,12 @@ function LoginScreen() {
       <SafeAreaProvider>
         <StoreProvider>
           <ToastProvider swipeEnabled={true}>
-            <IconRegistry icons={[EvaIconsPack, MaterialIconsPack]} />
+            <IconRegistry icons={[MaterialIconsPack]} />
             <ApplicationProvider
               {...eva}
               theme={{ ...eva.light, ...themeKitten }}
             >
-              <AuthApp />
+              <ProviderApp />
             </ApplicationProvider>
           </ToastProvider>
         </StoreProvider>

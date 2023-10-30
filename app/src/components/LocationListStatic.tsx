@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { ScrollView, Pressable } from 'react-native'
 import { Text, useStyleSheet, Icon } from '@ui-kitten/components'
-import themedStyles from 'themeStyled'
+import themedStyles from '../themeStyled'
 import { LocationType } from 'utils/types/location'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
@@ -12,10 +12,10 @@ import { breakpoints } from './nativeBaseSpec'
 import styles, { layout, spacing } from './styles'
 
 const { width } = Dimensions.get('window')
-const styleS = useStyleSheet(themedStyles)
 const isWider = width > breakpoints.md
 
 export function ListItem({ item }: { item: LocationType }) {
+  const styleS = useStyleSheet(themedStyles)
   return (
     <Pressable p={2} borderBottomWidth={0.8} borderBottomColor="coolGray.300">
       <View style={[layout.hStack, layout.spaceBet, layout.width100percent]}>

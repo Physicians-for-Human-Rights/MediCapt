@@ -27,12 +27,11 @@ import {
   Popover,
   Divider,
 } from '@ui-kitten/components'
-import themedStyles from 'themeStyled'
+import themedStyles from '../themeStyled'
 import { DownloadCloudIcon, UploadCloudIcon, CloseCircleIcon } from './Icons'
 import { IconGrayButton } from './styledComponents/IconButtons'
 import PopoverContent from './PopOverContent'
 
-const styleS = useStyleSheet(themedStyles)
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
 
@@ -47,6 +46,7 @@ export default function FormEditorFiles({
   manifest: FormManifestWithData
   setManifest: React.Dispatch<React.SetStateAction<FormManifestWithData>>
 }) {
+  const styleS = useStyleSheet(themedStyles)
   const [visible, setVisible] = useState<boolean>(false)
   const pickPdf = async () => {
     const result = await DocumentPicker.getDocumentAsync({

@@ -6,10 +6,8 @@ import styles, { layout } from './styles'
 import SignatureCanvas from 'react-signature-pad-wrapper'
 import { Button, useStyleSheet, Modal, Card } from '@ui-kitten/components'
 import { CloseCircleIcon, EditIcon } from './Icons'
-import themedStyles from 'themeStyled'
+import themedStyles from '../themeStyled'
 import ModalHeader from './styledComponents/ModalHeader'
-
-const styleS = useStyleSheet(themedStyles)
 
 export type SignatureProps = {
   isDisabled: boolean
@@ -25,6 +23,7 @@ function Signature({
   close,
   setSignature,
 }: SignatureProps) {
+  const styleS = useStyleSheet(themedStyles)
   const [isOpen, setOpen] = useState(false)
   const internalClose = () => {
     setOpen(false)

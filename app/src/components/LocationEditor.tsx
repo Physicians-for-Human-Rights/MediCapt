@@ -21,13 +21,11 @@ import Loading from 'components/Loading'
 import { useInfo } from 'utils/errors'
 import { createLocation, updateLocation, deleteLocation } from 'api/manager'
 import { standardHandler } from 'api/utils'
-import themedStyles from 'themeStyled'
+import themedStyles from '../themeStyled'
 import { DeleteIcon, SaveIcon, CheckIcon, CloseIcon } from './Icons'
 import { layout, spacing } from './styles'
 import { View } from 'react-native'
 import ModalHeader from './styledComponents/ModalHeader'
-
-const styleS = useStyleSheet(themedStyles)
 
 export default function LocationEditor({
   files,
@@ -42,6 +40,7 @@ export default function LocationEditor({
   changed: boolean
   reloadPrevious: React.MutableRefObject<boolean>
 }) {
+  const styleS = useStyleSheet(themedStyles)
   const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
   const [selectedIndex, setSelectedIndex] = useState<IndexPath>(

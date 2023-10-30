@@ -9,7 +9,7 @@ import {
   IndexPath,
   Icon,
 } from '@ui-kitten/components'
-import themedStyles from 'themeStyled'
+import themedStyles from '../themeStyled'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
@@ -23,8 +23,8 @@ import { Platform, View, Dimensions } from 'react-native'
 import { breakpoints, colors } from './nativeBaseSpec'
 import { CloseIcon, RefreshIcon } from './Icons'
 import styles, { layout, spacing, backgrounds } from './styles'
+
 const { width } = Dimensions.get('window')
-const styleS = useStyleSheet(themedStyles)
 const isWider = width > breakpoints.md
 
 export function ListItem({
@@ -34,8 +34,9 @@ export function ListItem({
   item: FormMetadata
   selectItem: (i: FormMetadata) => any
 }) {
+  const styleS = useStyleSheet(themedStyles)
   return (
-    <Pressable p={2} onPress={() => selectItem(item)}>
+    <Pressable style={{ padding: 8 }} onPress={() => selectItem(item)}>
       <View style={[layout.hStack, layout.spaceBet, layout.width100percent]}>
         <View
           style={[layout.hStackGap4, layout.alignCenter, layout.width70percent]}
