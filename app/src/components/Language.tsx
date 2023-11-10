@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import {
@@ -29,37 +29,35 @@ export default function Language({
   const [selectedIndex, setSelectedIndex] = useState<IndexPath>(
     new IndexPath(0)
   )
+
+  console.log({ any })
+  const itemsArr: string[] = [t('languages.' + 'en'), t('languages.' + 'fr')]
+  if (!!any) {
+    itemsArr.unshift(t(any))
+  }
+  const [displayVal, setDisplayVal] = useState<string>(itemsArr[0])
   const onSelect = (index: IndexPath) => {
     setSelectedIndex(index)
-    if (any) {
+    if (any && index.row === 0) {
       setValue('')
+    } else {
+      const i = index.row - 1
+      setValue(languages[i])
     }
-    setValue(languages[index.row])
+
+    setDisplayVal(itemsArr[index.row])
   }
+
   return (
     <Select
-      style={{ backgroundColor: bg }}
-      size="medium"
+      // style={{ backgroundColor: bg }}
       selectedIndex={selectedIndex}
       onSelect={index => onSelect(index as IndexPath)}
-      // selectedValue={value}
-      placeholder={placeholder}
-      // onValueChange={setValue}
-      {...props}
+      value={displayVal || itemsArr[0]}
     >
-      {_.concat(
-        any
-          ? [<SelectItem key={'__any__'} title={t(any)} {...itemProps} />]
-          : [],
-        languages.map(e => (
-          <SelectItem
-            key={e}
-            title={t('languages.' + e)}
-            // value={e}
-            {...itemProps}
-          />
-        ))
-      )}
+      {itemsArr?.map(item => {
+        return <SelectItem key={item} title={item} />
+      })}
     </Select>
   )
 }

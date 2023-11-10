@@ -9,10 +9,10 @@ export default function BigTileButton({
   navigation,
   route,
   icon,
-  h = '200px',
-  w = '200px',
+  h = 200,
+  w = 200,
   label,
-  size = 16,
+  size = 64,
   fontSize = 'lg',
   pack = 'material',
 }: {
@@ -20,8 +20,8 @@ export default function BigTileButton({
   navigation: any
   route: any
   icon: string
-  h?: string
-  w?: string
+  h?: number
+  w?: number
   label: string
   size?: number
   fontSize?: string
@@ -34,6 +34,7 @@ export default function BigTileButton({
       fontSize: +fontSize,
     },
   })
+  console.log('icon size', size)
   return (
     <Pressable
       // m={2}
@@ -45,8 +46,9 @@ export default function BigTileButton({
           {
             height: h,
             width: w,
-            backgroundColor: colors.primary[600],
+            backgroundColor: colors.primary[500],
             borderRadius: rounded.md,
+            margin: 8,
           },
           shadow[3],
         ]}
@@ -55,10 +57,10 @@ export default function BigTileButton({
         <View style={layout.vStackGap3}>
           <View style={[layout.center]}>
             <Icon
-              style={{ width: size, height: 'auto' }}
-              fill="white"
+              style={{ width: size, height: size, color: 'white' }}
+              fill="#ffffff"
               name={icon}
-              pack={pack && pack}
+              pack={pack}
             />
           </View>
           <div style={styles.bigTileButton}>{label}</div>

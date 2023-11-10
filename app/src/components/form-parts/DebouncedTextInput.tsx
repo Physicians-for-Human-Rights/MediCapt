@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Input, InputProps } from '@ui-kitten/components'
+import { Input, InputProps, Icon } from '@ui-kitten/components'
 import useDebounce from 'react-use/lib/useDebounce'
 
 // TODO Expand this input when multiline={true} as needed
@@ -38,10 +38,12 @@ export default function DebouncedTextInput(
   return (
     <Input
       // TODO Why is this needed on tablets?
-      style={{ minWidth: '30%' }}
+      style={{ minWidth: '30%', flexGrow: 1, marginRight: 24 }}
       {...props}
       onChangeText={setRawContents}
       value={rawContents}
+      size="large"
+      accessoryLeft={<Icon name="search" />}
     />
   )
 }

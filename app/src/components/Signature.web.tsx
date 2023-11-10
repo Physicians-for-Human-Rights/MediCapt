@@ -80,7 +80,7 @@ function Signature({
             source={{
               uri: imageURI,
             }}
-            accessibilityLabel="The recorded siganture"
+            aria-label="The recorded siganture"
           />
         )}
         <Button

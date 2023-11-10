@@ -62,7 +62,7 @@ export default function paginateComponent(
     return (
       <>
         {cache[page] === undefined ? (
-          <Spinner accessibilityLabel="Loading data..." />
+          <Spinner aria-label="Loading data..." />
         ) : (
           <Component data={cache[page]} {...props} />
         )}

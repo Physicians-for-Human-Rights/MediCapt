@@ -70,7 +70,7 @@ export function ListSelectMultiple({
             checked={values[index]}
             value={_.toString(index)}
             onChange={() => togglePathValue(index)}
-            accessibilityLabel={t('form.select-the-option') + ' ' + option}
+            aria-label={t('form.select-the-option') + ' ' + option}
             disabled={isDisabled}
           >
             {option}
@@ -89,7 +89,7 @@ export function ListSelectMultiple({
         onChange={toggleOtherChecked}
         status="info"
         style={[styleS.my2]}
-        accessibilityLabel={t('form.select-other-option')}
+        aria-label={t('form.select-other-option')}
         disabled={isDisabled}
       >
         Other
@@ -116,7 +116,7 @@ export function ListSelectMultiple({
           numberOfLines={5}
           onChangeText={setRawContents}
           value={rawContents}
-          accessibilityLabel={t('form.other-details')}
+          aria-label={t('form.other-details')}
         />
       )}
     </View>

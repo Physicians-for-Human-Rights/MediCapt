@@ -75,7 +75,7 @@ const FormTop = ({
               <Icon
                 size="6"
                 pack="material"
-                name="keyboard_backspace"
+                name="west"
                 // fill={currentSection !== 0 ? 'coolGray.50' : 'trueGray.300'}
                 fill={
                   currentSection !== 0
@@ -122,7 +122,7 @@ const FormTop = ({
                 size="6"
                 // as={AntDesign}
                 pack="material"
-                name="keyboard_backspace"
+                name="west"
                 fill={
                   currentSection !== 0
                     ? colors.coolGray[50]

@@ -20,7 +20,7 @@ export const SaveIcon = (props: any): IconElement => (
   <Icon {...props} name="save" />
 )
 export const CloseIcon = (props: any): IconElement => (
-  <Icon {...props} name="close" />
+  <Icon {...props} name="close" pack="material" />
 )
 export const ArrowLeftIcon = (props: any): IconElement => (
   <Icon {...props} name="arrow-back" />

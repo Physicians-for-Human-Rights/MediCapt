@@ -3,10 +3,11 @@ import DashboardLayout from 'components/DashboardLayout'
 import _ from 'lodash'
 import { default as FormListComponent } from 'components/FormList'
 import { FormMetadata } from 'utils/types/formMetadata'
-import { useInfo, handleStandardErrors } from 'utils/errors'
+import { formatErrorMsg } from 'utils/errors'
 import Loading from 'components/Loading'
 import { RootStackScreenProps } from 'utils/provider/navigation'
 import { getForms } from '../../utils/localStore/store'
+import { useToast } from 'react-native-toast-notifications'
 
 export default function FindForm({
   route,
@@ -21,9 +22,9 @@ export default function FindForm({
   const [filterText, setFilterText] = useState(undefined as undefined | string)
   const [filterSearchType, setFilterSearchType] = useState('')
 
-  const [error, warning, success] = useInfo()
+  // const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
-
+  const toast = useToast()
   const doSearch = async () => {
     setWaiting('Searching')
     try {
@@ -37,13 +38,25 @@ export default function FindForm({
       setForms(forms)
       setNextKey(nextKey)
     } catch (e) {
-      handleStandardErrors(error, warning, success, e)
+      // handleStandardErrors(e)
+      const res = formatErrorMsg(e)
+      const msg = res.join(' ')
+      toast.show(msg, {
+        type: 'danger',
+        placement: 'bottom',
+        duration: 5000,
+        // isClosable: true,
+        // description,
+        // accessibilityAnnouncement: 'Encountered error ' + error,
+      })
     }
     setWaiting(null)
   }
 
   useEffect(() => {
-    doSearch()
+    if (Object.keys(toast).length !== 0) {
+      doSearch()
+    }
   }, [
     filterCountry,
     filterLanguage,

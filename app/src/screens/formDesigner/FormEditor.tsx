@@ -66,7 +66,7 @@ function Tabs({
           // selectedValue={tabName}
           selectedIndex={selectedIndex}
           style={{ minWidth: 100, backgroundColor: 'white', marginTop: 4 }}
-          accessibilityLabel="Select page"
+          aria-label="Select page"
           placeholder="Select page"
           // _selectedItem={{
           //   bg: 'teal.600',

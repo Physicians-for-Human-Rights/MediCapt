@@ -109,9 +109,7 @@ export default function DateTimePicker({
               value={dateString}
               onSubmitEditing={onSaveText}
               onEndEditing={onSaveText}
-              accessibilityLabel={t(
-                time ? 'form.enter-date-time' : 'form.enter-date'
-              )}
+              aria-label={t(time ? 'form.enter-date-time' : 'form.enter-date')}
             />
           )}
           <View style={layout.center}>
@@ -123,7 +121,7 @@ export default function DateTimePicker({
               status="indigo"
               appearance="filled"
               accessoryLeft={CalenderIcon}
-              accessibilityLabel={'Open calendar'}
+              aria-label={'Open calendar'}
             />
           </View>
         </View>

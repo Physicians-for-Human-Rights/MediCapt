@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   View,
   Dimensions,
@@ -189,6 +189,17 @@ export function Header({
   middlebar: JSX.Element | null
   searchbar: boolean
 }) {
+  const styleS = useStyleSheet(themedStyles)
+
+  const [visible, setVisible] = useState<boolean>(false)
+  const toggleMenuVisiblity = () => {
+    setVisible(!visible)
+  }
+  const renderButton = (): React.ReactElement => (
+    <Button appearance="ghost" onPress={toggleMenuVisiblity}>
+      <Avatar size="small" source={phr_logo} />
+    </Button>
+  )
   return (
     <View
       style={[
@@ -200,15 +211,14 @@ export function Header({
         },
       ]}
     >
-      <View
-        style={[styles.headerBox, { maxWidth: menuButton ? 'none' : 1016 }]}
-      >
+      <View style={[styles.headerBox, { maxWidth: menuButton ? 0 : 1016 }]}>
         <View style={[layout.hStack, layout.spaceBet, layout.alignCenter]}>
           <View style={[layout.hStackGap4, layout.alignCenter]}>
             {menuButton && (
               <Button
                 appearance="ghost"
-                status="coolGray"
+                status="basic"
+                // status="coolGray"
                 onPress={toggleSidebar}
                 accessoryLeft={
                   <MenuIcon size="6" fill={colors.coolGray[800]} />
@@ -224,7 +234,7 @@ export function Header({
                   <Icon
                     size="6"
                     pack="material"
-                    name="keyboard_backspace"
+                    name="west"
                     fill={colors.coolGray[500]}
                   />
                 }
@@ -235,8 +245,8 @@ export function Header({
             {/* TODO What should the logo button do? It used to go back. */}
             <Pressable>
               <Image
-                style={{ height: 10, width: 10 }}
-                accessibilityLabel="Medicapt Logo"
+                style={{ height: 40, width: 40 }}
+                aria-label="Medicapt Logo"
                 resizeMode="cover"
                 source={medicapt_logo}
               />
@@ -274,44 +284,36 @@ export function Header({
 
           {middlebar}
 
-          <View style={[layout.hStackGap2, layout.alignCenter]}>
+          <View style={[layout.hStack, layout.alignCenter]}>
             <Button
               appearance="ghost"
-              status="blueGray"
+              status="basic"
+              size="large"
+              style={{ padding: 0, margin: 0 }}
               accessoryLeft={
                 <Icon
-                  size="6"
+                  style={{ width: 24, height: 24, fontSize: 24, padding: 0 }}
                   name="lock"
                   pack="material"
-                  fill={colors.coolGray[400]}
+                  fill={colors.coolGray[500]}
                 />
               }
             />
             <OverflowMenu
               // closeOnSelect={false}
-              style={{ width: 200 }}
-              placement="bottom right"
-              // visible={visible}
+              // style={{ width: 200 }}
+              placement="bottom end"
+              visible={visible}
               // selectedIndex={selectedIndex}
               // onSelect={onItemSelect}
-              // onBackdropPress={() => setVisible(false)}
-              anchor={triggerProps => {
-                return (
-                  <Button
-                    {...triggerProps}
-                    appearance="ghost"
-                    status="blueGray"
-                    icon={<Avatar size="tiny" source={phr_logo} />}
-                  />
-                )
-              }}
+              onBackdropPress={() => setVisible(false)}
+              anchor={renderButton}
             >
-              <MenuGroup title="Profile">
+              <MenuGroup title="Profile" initiallyExpanded>
                 <MenuItem title="Account" />
                 <MenuItem title="Settings" />
               </MenuGroup>
-              <Divider style={(styleS.mt3, styleS.width100Percent)} />
-              <MenuGroup title="Shortcuts">
+              <MenuGroup title="Shortcuts" initiallyExpanded>
                 <MenuItem title="Lock" />
                 <MenuItem onPress={signOut} title="Log out" />
               </MenuGroup>
@@ -340,7 +342,7 @@ function MainContent({
     <View
       style={[
         layout.vStack,
-        { flex: 1, maxWidth: fullWidth ? undefined : '1016px', width: '100%' },
+        { flex: 1, maxWidth: fullWidth ? undefined : 1016, width: '100%' },
       ]}
     >
       {displayScreenTitle && (
@@ -350,7 +352,7 @@ function MainContent({
               <Icon
                 size="6"
                 pack="material"
-                name="keyboard_backspace"
+                name="west"
                 fill={colors.coolGray[800]}
               />
             </Pressable>
@@ -413,7 +415,7 @@ export function MobileHeader({
                     <Icon
                       size="6"
                       pack="material"
-                      name="keyboard_backspace"
+                      name="west"
                       fill={colors.coolGray[50]}
                     />
                   }
@@ -422,13 +424,13 @@ export function MobileHeader({
                 <View style={layout.hStack}>
                   <Image
                     style={{ height: 10, width: 10, marginHorizontal: 16 }}
-                    accessibilityLabel="MediCapt logo"
+                    aria-label="MediCapt logo"
                     resizeMode="cover"
                     source={medicapt_logo}
                   />
                   <Image
                     style={{ height: 10, width: 10, marginHorizontal: 16 }}
-                    accessibilityLabel="PHR logo"
+                    aria-label="PHR logo"
                     resizeMode="cover"
                     source={phr_logo}
                   />
@@ -461,7 +463,7 @@ export function MobileHeader({
                     <Button
                       variant="ghost"
                       colorScheme="light"
-                      accessibilityLabel="More options menu"
+                      aria-label="More options menu"
                       {...triggerProps}
                       icon={
                         <Icon
@@ -547,7 +549,7 @@ export default function DashboardLayout({
           { backgroundColor: colors.muted[50] },
         ]}
       >
-        {displayHeader && (
+        {/* {displayHeader && (
           <View style={{ display: isWider ? 'none' : 'flex' }}>
             <MobileHeader
               title={title}
@@ -560,7 +562,7 @@ export default function DashboardLayout({
               reloadPrevious={reloadPrevious}
             />
           </View>
-        )}
+        )} */}
         {displayHeader && (
           <View style={{ display: isWider ? 'flex' : 'none' }}>
             <Header
@@ -593,14 +595,20 @@ export default function DashboardLayout({
             </View>
           )}
 
-          <View style={{ display: isWider ? 'flex' : 'none' }}>
+          <View
+            style={{
+              display: isWider ? 'flex' : 'none',
+              marginHorizontal: 'auto',
+              width: '100%',
+            }}
+          >
             <ScrollView
               style={[
                 layout.flex1,
-                { padding: isWider ? (fullWidth ? 0 : 8) : 0 },
-                { alignItems: 'center', flexGrow: 1 },
+                { padding: isWider ? (fullWidth ? 0 : 32) : 0 },
+                // { alignItems: 'center', flexGrow: 1 },
               ]}
-              // contentContainerStyle={{ alignItems: 'center', flexGrow: 1 }}
+              contentContainerStyle={{ alignItems: 'center', flexGrow: 1 }}
             >
               <MainContent
                 fullWidth={fullWidth}

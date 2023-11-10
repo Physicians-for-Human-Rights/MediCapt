@@ -31,6 +31,12 @@ export default function SelectLocation({
 } & SelectProps) {
   const locations = useUserLocations()
   const [selectedIndex, setSelectedIndex] = useState<IndexPath>()
+  const itemsArr = locations.map(location =>
+    _.isString(location) ? location : location.shortName
+  )
+  if (any) {
+    itemsArr.unshift(t(any))
+  }
   const onSelect = (index: IndexPath) => {
     let i
     setSelectedIndex(index)
@@ -97,6 +103,7 @@ export default function SelectLocation({
         debounceMs={1000}
         value={value}
         onChangeText={setValue}
+        // onChangeText={setValue}
         {...props}
       />
     )

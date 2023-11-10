@@ -3508,6 +3508,11 @@
   resolved "https://registry.yarnpkg.com/@eva-design/eva/-/eva-2.2.0.tgz#59da30f650992a066df090e4aa6a3b2201762fe7"
   integrity sha512-Wh98ex5cCK+YYSQNpthX1bT4CA3zDRR1WnJv0YlyvULAkmjaEvqtoGMCXzu5DH8v1fGIggu/OpAokLS7UVPe+A==
 
+"@eva-design/material@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@eva-design/material/-/material-2.2.0.tgz#53130102d431396dbd39b0a0b9070be050c4771e"
+  integrity sha512-ajYNOhDac5fTggTt7Yz9Q+l7gwQSh2e/3EfCuP5IhUGUTz35+NyRsWZlmqS1kmWYV9zVifNAvO7SEnb+0u8tAQ==
+
 "@eva-design/processor@^2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@eva-design/processor/-/processor-2.2.0.tgz#038c20f682bc71fe0c7e17e06372416c88d023be"

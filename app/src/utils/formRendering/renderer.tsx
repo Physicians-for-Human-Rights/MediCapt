@@ -176,7 +176,7 @@ export function renderCommand(
             numberOfLines={3}
             placeholder={command.placeholder}
             value={command.recordValue?.value}
-            accessibilityLabel={t('form.enter-address')}
+            aria-label={t('form.enter-address')}
           />
         </View>
       )
@@ -271,7 +271,7 @@ export function renderCommand(
           fullwidth={command.fullwidth}
           maxW={command.maxW}
           py={1}
-          accessibilityLabel="yes-no buttons"
+          aria-label="yes-no buttons"
         />
       )
     case 'date':
@@ -368,7 +368,7 @@ export function renderCommand(
             keyboardType="email-address"
             placeholder={command.placeholder}
             value={command.recordValue?.value || ''}
-            accessibilityLabel={t('form.enter-email')}
+            aria-label={t('form.enter-email')}
           />
         </View>
       )
@@ -668,7 +668,7 @@ export function renderCommand(
             multiline={true}
             numberOfLines={command.numberOfLines}
             value={command.recordValue?.value || ''}
-            accessibilityLabel={t('form.enter-long-text')}
+            aria-label={t('form.enter-long-text')}
           />
         </View>
       )
@@ -700,7 +700,7 @@ export function renderCommand(
             keyboardType="numeric"
             value={command.recordValue?.value || ''}
             maxW={command.maxW}
-            accessibilityLabel={t('form.enter-number')}
+            aria-label={t('form.enter-number')}
           />
         </View>
       )
@@ -732,7 +732,7 @@ export function renderCommand(
             keyboardType="phone-pad"
             value={command.recordValue?.value || ''}
             maxW={command.maxW}
-            accessibilityLabel={t('form.enter-phone-number')}
+            aria-label={t('form.enter-phone-number')}
           />
         </View>
       )
@@ -859,7 +859,7 @@ export function renderCommand(
             textAlign="center"
             value={command.recordValue?.value || ''}
             maxW={command.maxW}
-            accessibilityLabel={t('form.enter-text')}
+            aria-label={t('form.enter-text')}
           />
         </View>
       )

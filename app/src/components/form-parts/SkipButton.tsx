@@ -50,7 +50,7 @@ export default function SkipButton({
             checked={skipped}
             style={styles.checkbox}
             // size="small"
-            accessibilityLabel={t('form.skip-question')}
+            aria-label={t('form.skip-question')}
           />
         </View>
         <View style={[layout.center]}>

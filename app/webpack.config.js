@@ -5,12 +5,13 @@ const path = require('path')
 
 module.exports = async function (env, argv) {
   let config = await createExpoWebpackConfigAsync(
-    {
-      ...env,
-      babel: {
-        dangerouslyAddModulePathsToTranspile: ['@ui-kitten/components'],
-      },
-    },
+    env,
+    // {
+    //   ...env,
+    //   babel: {
+    //     dangerouslyAddModulePathsToTranspile: ['@ui-kitten/components'],
+    //   },
+    // },
     argv
   )
   // let config = await createExpoWebpackConfigAsync(env, argv)

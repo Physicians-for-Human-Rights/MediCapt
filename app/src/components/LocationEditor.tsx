@@ -3,7 +3,7 @@ import {
   Button,
   useStyleSheet,
   Text,
-  Popover,
+  // Popover,
   Card,
   Select,
   SelectItem,
@@ -199,7 +199,7 @@ export default function LocationEditor({
             value={location.coordinates}
             setValue={v => setLocation({ ...location, coordinates: v })}
           />
-          <Popover
+          {/* <Popover
             anchor={triggerProps => {
               return (
                 <Button {...triggerProps} status="warning" m={4}>
@@ -207,7 +207,7 @@ export default function LocationEditor({
                 </Button>
               )
             }}
-            accessibilityLabel="How to get GPS coordinates"
+            aria-label="How to get GPS coordinates"
           >
             <Card
               header={props => (
@@ -216,7 +216,7 @@ export default function LocationEditor({
             >
               {t('location.coordinates-instructions')}
             </Card>
-          </Popover>
+          </Popover> */}
         </View>
         <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput

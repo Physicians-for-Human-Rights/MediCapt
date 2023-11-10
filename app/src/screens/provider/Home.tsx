@@ -10,7 +10,6 @@ import {
   Dimensions,
   FlatList,
   View,
-  Text,
 } from 'react-native'
 import styles, { spacing, layout } from '../../components/styles'
 import { breakpoints } from '../../components/nativeBaseSpec'
@@ -53,17 +52,22 @@ const options = [
 
 export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
   const shape = useBreakpointValue({
-    base: { columns: 2, w: '160px', h: '160px', size: 8, fontSize: 'md' },
-    sm: { columns: 2, w: '190px', h: '190px', size: 16, fontSize: 'lg' },
+    base: { columns: 2, w: 160, h: 160, size: 32, fontSize: 'md' },
+    sm: { columns: 2, w: 190, h: 190, size: 64, fontSize: 'lg' },
     md: {
       columns: Platform.OS === 'web' ? 3 : 2,
-      w: '200px',
-      h: '200px',
-      size: 16,
+      w: 200,
+      h: 200,
+      size: 64,
       fontSize: 'lg',
     },
   })
-  const [user] = useUser()
+  const user = {
+    attributes: {
+      nickname: 'nickname',
+    },
+  }
+  // const [user] = useUser()
   if (!user || !user.attributes) return <></>
   return (
     <DashboardLayout

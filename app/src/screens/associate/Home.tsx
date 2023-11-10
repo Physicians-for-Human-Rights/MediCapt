@@ -46,7 +46,12 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
       fontSize: 'lg',
     },
   })
-  const [user] = useUser()
+  const user = {
+    attributes: {
+      nickname: 'nickname',
+    },
+  }
+  // const [user] = useUser()
   if (!user || !user.attributes) return <></>
   return (
     <DashboardLayout

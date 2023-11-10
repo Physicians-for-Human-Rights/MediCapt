@@ -4,7 +4,7 @@ import {
   Text,
   useStyleSheet,
   Icon,
-  Popover,
+  // Popover,
   Card,
 } from '@ui-kitten/components'
 import _ from 'lodash'
@@ -58,34 +58,35 @@ export default function NecessaryItem({
         />
         <Text status={optional ? 'warning' : 'error'}>{todoText}</Text>
         {help && (
-          <Popover
-            anchor={triggerProps => {
-              return (
-                <Button
-                  {...triggerProps}
-                  appearance="ghost"
-                  status="secondary"
-                  style={[styleS.ml5, styleS.p0]}
-                  size="sm"
-                >
-                  Tell me more
-                </Button>
-              )
-            }}
-          >
-            <Card
-              style={{ width: 64 }}
-              accessibilityLabel={'help for' + todoText}
-              header={props => (
-                <ModalHeader
-                  {...props}
-                  text={helpHeader ? helpHeader : 'Help'}
-                />
-              )}
-            >
-              {help}
-            </Card>
-          </Popover>
+          <>test</>
+          // <Popover
+          //   anchor={triggerProps => {
+          //     return (
+          //       <Button
+          //         {...triggerProps}
+          //         appearance="ghost"
+          //         status="secondary"
+          //         style={[styleS.ml5, styleS.p0]}
+          //         size="sm"
+          //       >
+          //         Tell me more
+          //       </Button>
+          //     )
+          //   }}
+          // >
+          //   <Card
+          //     style={{ width: 64 }}
+          //     aria-label={'help for' + todoText}
+          //     header={props => (
+          //       <ModalHeader
+          //         {...props}
+          //         text={helpHeader ? helpHeader : 'Help'}
+          //       />
+          //     )}
+          //   >
+          //     {help}
+          //   </Card>
+          // </Popover>
         )}
       </View>
     )

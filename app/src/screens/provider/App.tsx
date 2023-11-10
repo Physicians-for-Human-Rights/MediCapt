@@ -8,19 +8,25 @@ import FindForm from 'screens/provider/FindForm'
 import FindUser from 'screens/provider/FindUser'
 import { RootStackParamList } from 'utils/provider/navigation'
 import { useUserLocations } from 'utils/store'
-
+import Mock from './Mock'
 const RootStack = createStackNavigator<RootStackParamList>()
 
 export default function App({}: {}) {
   useUserLocations()
   return (
     <NavigationContainer>
-      <RootStack.Navigator initialRouteName="Home">
+      <RootStack.Navigator initialRouteName="FindForm">
+        <RootStack.Screen
+          name="Mock"
+          component={Mock}
+          options={{ headerShown: false }}
+        />
         <RootStack.Screen
           name="Home"
           component={Home}
           options={{ headerShown: false }}
         />
+
         <RootStack.Screen
           name="RecordEditor"
           component={RecordEditor}

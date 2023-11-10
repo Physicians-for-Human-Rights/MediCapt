@@ -157,7 +157,7 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
               appearance="info"
               accessoryLeft={DeleteIcon}
               onPress={() => removePhoto(index)}
-              accessibilityLabel={t('form.delete-photo')}
+              aria-label={t('form.delete-photo')}
             >
               {t('form.delete-photo')}
             </Button>
@@ -180,7 +180,7 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
                 disabled={isDisabled}
                 accessoryLeft={UploadCloudIcon}
                 onPress={onAddPhoto}
-                accessibilityLabel={t('form.add-photo')}
+                aria-label={t('form.add-photo')}
               >
                 {t('form.add-photo')}
               </Button>
@@ -195,7 +195,7 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
                 disabled={isDisabled}
                 accessoryLeft={CameraIcon}
                 onPress={onTakePhotoOpenModal}
-                accessibilityLabel={t('form.take-photo')}
+                aria-label={t('form.take-photo')}
               >
                 {t('form.take-photo')}
               </Button>

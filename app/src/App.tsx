@@ -18,6 +18,7 @@ import * as Sentry from 'sentry-expo'
 import { ApplicationProvider, IconRegistry } from '@ui-kitten/components'
 import { default as themeKitten } from './custom-theme.json'
 import * as eva from '@eva-design/eva'
+import * as material from '@eva-design/material'
 import { EvaIconsPack } from '@ui-kitten/eva-icons'
 import { MaterialIconsPack } from './MaterialIcons' // <-- Import Material icons
 import { ToastProvider } from 'react-native-toast-notifications'
@@ -61,9 +62,15 @@ function App({
 }) {
   const [storeUser, setStoreUser] = useUser()
   const [storeSignOut, setStoreSignOut] = useSignOut()
+  const mockUser = {
+    username: 'test user',
+    email: 'test@gmail.com',
+  }
+  let userKindMock: string = 'Provider'
 
   useEffect(() => {
-    setStoreUser(user)
+    // setStoreUser(user)
+    setStoreUser(mockUser)
     setStoreSignOut(signOut)
   }, [user, signOut])
 
@@ -92,8 +99,8 @@ function LoginScreen() {
           <ToastProvider swipeEnabled={true}>
             <IconRegistry icons={[MaterialIconsPack]} />
             <ApplicationProvider
-              {...eva}
-              theme={{ ...eva.light, ...themeKitten }}
+              {...material}
+              theme={{ ...material.light, ...themeKitten }}
             >
               <ProviderApp />
             </ApplicationProvider>

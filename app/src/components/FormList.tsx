@@ -3,7 +3,6 @@ import { ScrollView, Pressable } from 'react-native'
 import {
   Text,
   useStyleSheet,
-  Button,
   Select,
   SelectItem,
   IndexPath,
@@ -11,7 +10,6 @@ import {
 } from '@ui-kitten/components'
 import themedStyles from '../themeStyled'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
-import formatDate from 'utils/date.ts'
 import { t } from 'i18n-js'
 import _ from 'lodash'
 import { FormMetadata } from 'utils/types/formMetadata'
@@ -21,138 +19,13 @@ import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
 import { Platform, View, Dimensions } from 'react-native'
 import { breakpoints, colors } from './nativeBaseSpec'
-import { CloseIcon, RefreshIcon } from './Icons'
 import styles, { layout, spacing, backgrounds } from './styles'
+import IconButtonLg from './IconButtonLg'
+import FormListItem from './FormListItem'
+import FormListItemDesktop from './FormListItemDesktop'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
-
-export function ListItem({
-  item,
-  selectItem,
-}: {
-  item: FormMetadata
-  selectItem: (i: FormMetadata) => any
-}) {
-  const styleS = useStyleSheet(themedStyles)
-  return (
-    <Pressable style={{ padding: 8 }} onPress={() => selectItem(item)}>
-      <View style={[layout.hStack, layout.spaceBet, layout.width100percent]}>
-        <View
-          style={[layout.hStackGap4, layout.alignCenter, layout.width70percent]}
-        >
-          <View style={layout.vStack}>
-            <Text
-              style={[
-                styleS.truncated,
-                styleS.fontBold,
-                styleS.fontSizeSm,
-                styleS.colorCoolGray900,
-              ]}
-            >
-              {item.title}
-            </Text>
-            <Text
-              style={[
-                styleS.truncated,
-                styleS.fontSizeSm,
-                styleS.colorCoolGray900,
-                styleS.pl3,
-              ]}
-            >
-              {item.subtitle}
-            </Text>
-          </View>
-        </View>
-        <View style={[layout.vStack, layout.width30percent]}>
-          <Text
-            style={[
-              styleS.truncated,
-              styleS.fontSizeSm,
-              styleS.colorCoolGray900,
-            ]}
-          >
-            {formatDate(item.createdDate, 'PPP') as string}
-          </Text>
-          <Text
-            style={[
-              styleS.truncated,
-              styleS.fontSizeSm,
-              styleS.colorCoolGray900,
-            ]}
-          >
-            {item.formID}
-          </Text>
-        </View>
-      </View>
-    </Pressable>
-  )
-}
-
-export function ListItemDesktop({
-  item,
-  selectItem,
-}: {
-  item: FormMetadata
-  selectItem: (i: FormMetadata) => any
-}) {
-  return (
-    <Pressable
-      style={[spacing.px2, layout.flex1]}
-      // _hover={{ bg: 'coolGray.100' }}
-      onPress={() => selectItem(item)}
-    >
-      <View
-        style={[
-          layout.hStack,
-          layout.alignCenter,
-          layout.flex1,
-          layout.spaceBet,
-        ]}
-      >
-        <View style={[layout.vStack, layout.width45percent]}>
-          <Text style={[styleS.fontBold, styleS.truncated]}>{item.title}</Text>
-          <Text style={[styleS.ml2, styleS.truncated]}>{item.subtitle}</Text>
-        </View>
-
-        <View style={[layout.vStack, layout.width20percent]}>
-          {_.split(item.tags, ',').map((s: string, n: number) => (
-            <Text style={[styleS.truncated]} key={n}>
-              {t('tag.' + s)}
-            </Text>
-          ))}
-          <Text>{item.formID}</Text>
-        </View>
-
-        <View style={[layout.vStack, layout.width20percent]}>
-          <Text style={[styleS.truncated]}>
-            {formatDate(item.lastChangedDate, 'PPP') as string}
-          </Text>
-        </View>
-
-        <View style={[layout.hStack, layout.width5percent]} w="5%">
-          {item.enabled ? (
-            <Icon
-              fill="success"
-              // color="success.400"
-              size="6"
-              name="check-circle"
-              pack="material"
-            />
-          ) : (
-            <Icon
-              // color="error.700"
-              fill="error"
-              size="6"
-              name="cancel"
-              pack="material"
-            />
-          )}
-        </View>
-      </View>
-    </Pressable>
-  )
-}
 
 export default function FormList({
   forms,
@@ -202,6 +75,14 @@ export default function FormList({
       setFilterEnabled(selectList[path.row])
     }
   }
+  const resetValues = () => {
+    setFilterCountry('')
+    setFilterLanguage('')
+    setFilterLocationID('')
+    setFilterSearchType('')
+    setFilterText('')
+  }
+  const styleS = useStyleSheet(themedStyles)
   return (
     <>
       <View
@@ -223,7 +104,7 @@ export default function FormList({
             w={Platform.OS === 'android' ? '80%' : undefined}
           />
         </View>
-        <View style={[layout.center]}>
+        <View style={[layout.center, spacing.mr2]}>
           <AnyCountry
             bg="white"
             placeholder={t('location.select-country')}
@@ -306,23 +187,17 @@ export default function FormList({
           value={filterText}
           onChangeText={setFilterText}
         />
-        <Button
-          onPress={() => {
-            setFilterCountry('')
-            setFilterLanguage('')
-            setFilterLocationID('')
-            setFilterSearchType('')
-            setFilterText('')
-          }}
-          accessoryLeft={CloseIcon}
-          size="sm"
-          style={[styleS.mr2]}
+        <IconButtonLg
+          name="close"
+          size={32}
+          onPress={resetValues}
+          color={colors.primary[500]}
         />
-        <Button
+        <IconButtonLg
+          name="refresh"
+          size={32}
           onPress={doSearch}
-          accessoryLeft={RefreshIcon}
-          size="sm"
-          style={[styleS.mr2]}
+          color={colors.primary[500]}
         />
       </View>
       <View
@@ -341,7 +216,11 @@ export default function FormList({
             >
               {forms.map((item: FormMetadata, index: number) => {
                 return (
-                  <ListItem item={item} key={index} selectItem={selectItem} />
+                  <FormListItem
+                    item={item}
+                    key={index}
+                    selectItem={selectItem}
+                  />
                 )
               })}
             </View>
@@ -396,7 +275,7 @@ export default function FormList({
               <View style={[layout.vStackGap3, spacing.mt3]}>
                 {forms.map((item: FormMetadata, index: number) => {
                   return (
-                    <ListItemDesktop
+                    <FormListItemDesktop
                       item={item}
                       key={index}
                       selectItem={selectItem}

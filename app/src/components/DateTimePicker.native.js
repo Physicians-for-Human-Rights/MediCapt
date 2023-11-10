@@ -43,9 +43,7 @@ export default function DateTimePicker({
             ? colors.success[600]
             : colors.primary[800],
         }}
-        accessibilityLabel={t(
-          time ? 'form.enter-date-time' : 'form.enter-date'
-        )}
+        aria-label={t(time ? 'form.enter-date-time' : 'form.enter-date')}
       >
         {date
           ? time

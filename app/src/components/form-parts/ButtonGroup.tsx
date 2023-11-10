@@ -54,7 +54,7 @@ export default function ButtonGroup<T>({
             // _text={{ bold: true }}
             onPress={() => onPress(v)}
             appearance={selected === v ? 'filled' : 'outline'}
-            accessibilityLabel={'button ' + k}
+            aria-label={'button ' + k}
           >
             {k}
           </Button>

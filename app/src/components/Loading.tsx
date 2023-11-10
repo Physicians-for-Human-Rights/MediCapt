@@ -24,7 +24,7 @@ const Loading = ({ loading }: { loading: string | null }) => {
     <View style={style.spinner}>
       <View style={layout.center}>
         <View style={[layout.hStackGap5, layout.justifyCenter]}>
-          <Spinner accessibilityLabel="Loading" size="large" />
+          <Spinner aria-label="Loading" size="large" />
 
           <Text category="h3" style={{ color: 'white' }}>
             Loading...

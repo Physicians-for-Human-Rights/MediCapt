@@ -212,7 +212,7 @@ export default function FormEditorVersions({
               </View>
               <Select
                 value={selectedVersion}
-                accessibilityLabel="Select version"
+                aria-label="Select version"
                 onSelect={setSelectedVersion}
                 style={[styleS.minWidth100, styleS.bgWhite, styleS.mt1]}
               >

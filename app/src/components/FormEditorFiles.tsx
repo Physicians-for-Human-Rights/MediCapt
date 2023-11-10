@@ -24,13 +24,13 @@ import {
   useStyleSheet,
   Icon,
   Text,
-  Popover,
+  // Popover,
   Divider,
 } from '@ui-kitten/components'
 import themedStyles from '../themeStyled'
 import { DownloadCloudIcon, UploadCloudIcon, CloseCircleIcon } from './Icons'
 import { IconGrayButton } from './styledComponents/IconButtons'
-import PopoverContent from './PopOverContent'
+// import PopoverContent from './PopOverContent'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -178,7 +178,7 @@ export default function FormEditorFiles({
                 size="tiny"
                 optional={false}
               />
-              <Popover
+              {/* <Popover
                 visible={visible}
                 anchor={renderToggleButton}
                 onBackdropPress={() => setVisible(false)}
@@ -190,7 +190,7 @@ export default function FormEditorFiles({
                   button1text="Close"
                   funcButton1={() => setVisible(false)}
                 />
-              </Popover>
+              </Popover> */}
             </View>
           </View>
         ) : (
@@ -259,7 +259,7 @@ export default function FormEditorFiles({
                     borderRadius: 16,
                   }}
                   // rounded="lg"
-                  accessibilityLabel="Uploaded image"
+                  aria-label="Uploaded image"
                   // @ts-ignore TODO Fix this
                   source={item.data}
                   resizeMode="contain"

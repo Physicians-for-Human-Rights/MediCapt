@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Select,
   SelectItem,
@@ -25,40 +25,43 @@ export default function AnyCountry({
   any?: string
   itemProps?: SelectItemProps
 } & SelectProps) {
+  const [visibleVal, setVisibleVal] = useState<string>()
+  const [selectedIndex, setSelectedIndex] = React.useState<
+    IndexPath | IndexPath[]
+  >(new IndexPath(0))
+
+  const itemsArr = coutries.map(coutry => t('country.' + coutry))
+  if (any) {
+    itemsArr.unshift(t(any))
+  }
   const assignValue = (path: IndexPath | IndexPath[]) => {
     if (!Array.isArray(path)) {
-      setValue(coutries[path.row])
+      if (any) {
+        if (path.row === 0) {
+          setValue('')
+        }
+        const index = path.row - 1
+        setValue(coutries[index])
+        console.log('correct?', coutries[index])
+      } else {
+        setValue(coutries[path.row])
+      }
+      setVisibleVal(itemsArr[path.row])
     }
+    setSelectedIndex(path)
   }
   return (
     <Select
       style={{ backgroundColor: bg, marginLeft: 12 }}
       size="medium"
-      value={value}
+      value={visibleVal || itemsArr[0]}
       placeholder={placeholder}
       onSelect={assignValue}
-      {...props}
+      selectedIndex={selectedIndex}
     >
-      {_.concat(
-        any
-          ? [
-              <SelectItem
-                key={'__any__'}
-                title={t(any)}
-                // value={''}
-                {...itemProps}
-              />,
-            ]
-          : [],
-        _.map(coutries, e => (
-          <SelectItem
-            key={e}
-            title={t('country.' + e)}
-            // value={e}
-            {...itemProps}
-          />
-        ))
-      )}
+      {itemsArr.map(item => (
+        <SelectItem key={item} title={item} />
+      ))}
     </Select>
   )
 }
