@@ -15,7 +15,7 @@ export default function App({}: {}) {
   useUserLocations()
   return (
     <NavigationContainer>
-      <RootStack.Navigator initialRouteName="FindForm">
+      <RootStack.Navigator initialRouteName="Home">
         <RootStack.Screen
           name="Mock"
           component={Mock}

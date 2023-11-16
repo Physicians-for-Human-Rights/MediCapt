@@ -15,6 +15,7 @@ export default function RecordList({
   route,
   navigation,
 }: RootStackScreenProps<'FindRecord'>) {
+  console.log({ route, navigation })
   const [records, setRecords] = useState([] as RecordMetadata[])
   const [nextKey, setNextKey] = useState(undefined as undefined | string)
 
@@ -22,7 +23,7 @@ export default function RecordList({
   const [filterSearchType, setFilterSearchType] = useState('')
   const [filterText, setFilterText] = useState(undefined as undefined | string)
 
-  const [error, warning, success] = useInfo()
+  // const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
 
   const [user] = useUser()
@@ -42,7 +43,8 @@ export default function RecordList({
       setRecords(records)
       setNextKey(nextKey)
     } catch (e) {
-      handleStandardErrors(error, warning, success, e)
+      console.log('handle error')
+      // handleStandardErrors(error, warning, success, e)
     }
     setWaiting(null)
   }

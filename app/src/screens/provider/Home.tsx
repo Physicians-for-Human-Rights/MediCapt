@@ -1,23 +1,13 @@
 import React from 'react'
 import { useBreakpointValue } from '../../hooks/useBreakpointValue'
-import BigTileButton from 'components/BigTileButton'
 import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
 import { useUser } from 'utils/store'
-import {
-  Platform,
-  SafeAreaView,
-  Dimensions,
-  FlatList,
-  View,
-} from 'react-native'
-import styles, { spacing, layout } from '../../components/styles'
-import { breakpoints } from '../../components/nativeBaseSpec'
+import { Platform } from 'react-native'
+import { HomeOption } from 'utils/types/home'
+import HomeIndex from 'components/HomeIndex'
 
-const { width } = Dimensions.get('window')
-const isWider = width > breakpoints.md
-
-const options = [
+const options: HomeOption[] = [
   {
     icon: 'add-box',
     label: 'Create a new record',
@@ -52,8 +42,8 @@ const options = [
 
 export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
   const shape = useBreakpointValue({
-    base: { columns: 2, w: 160, h: 160, size: 32, fontSize: 'md' },
-    sm: { columns: 2, w: 190, h: 190, size: 64, fontSize: 'lg' },
+    base: { columns: 2, w: 160, h: 160, size: 32, fontSize: 'medium' },
+    sm: { columns: 2, w: 190, h: 190, size: 64, fontSize: 'large' },
     md: {
       columns: Platform.OS === 'web' ? 3 : 2,
       w: 200,
@@ -78,38 +68,12 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
       navigation={navigation}
       showLogos
     >
-      <SafeAreaView
-        style={[
-          styles.formDesignerView,
-          {
-            borderRadius: isWider ? 8 : 0,
-            paddingHorizontal: isWider ? 32 : 4,
-          },
-        ]}
-      >
-        <View style={[layout.center, spacing.pt5]}>
-          <FlatList
-            numColumns={shape.columns}
-            data={options}
-            renderItem={({ item }) => (
-              <BigTileButton
-                icon={item.icon}
-                label={item.label}
-                navigation={navigation}
-                route={route}
-                navigateTo={item.to}
-                w={shape.w}
-                h={shape.h}
-                size={shape.size}
-                fontSize={shape.fontSize}
-                pack="material"
-              />
-            )}
-            key={shape.columns}
-            keyExtractor={item => item.to}
-          />
-        </View>
-      </SafeAreaView>
+      <HomeIndex
+        shape={shape}
+        options={options}
+        navigation={navigation}
+        route={route}
+      />
     </DashboardLayout>
   )
 }

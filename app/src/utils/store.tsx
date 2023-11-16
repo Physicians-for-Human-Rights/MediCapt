@@ -17,12 +17,17 @@ function authSignOut() {
 }
 
 export type StateType = {
-  user: string | null
+  // user: string | null
+  user: any
   signOut: (() => any) | null
 }
 
 const initialState: StateType = {
-  user: null,
+  // user: null,
+  user: {
+    username: 'testuser',
+    userType: 'provider',
+  },
   signOut: authSignOut,
 }
 
