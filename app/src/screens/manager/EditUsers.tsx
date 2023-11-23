@@ -8,7 +8,7 @@ import { UserType } from 'utils/types/user'
 import { SafeAreaView, Dimensions } from 'react-native'
 import { breakpoints } from '../../components/nativeBaseSpec'
 import styles, { backgrounds } from '../../components/styles'
-
+import i18n from 'i18n'
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
 
@@ -64,7 +64,7 @@ export default function EditUser({
 
   return (
     <DashboardLayout
-      title={'User Editor'}
+      title={i18n.t('user.user-editor')}
       displaySidebar={false}
       displayScreenTitle={false}
       backButton={true}

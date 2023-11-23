@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, Pressable } from 'react-native'
+import { ScrollView } from 'react-native'
 import {
   Text,
   useStyleSheet,
@@ -10,7 +10,7 @@ import {
 } from '@ui-kitten/components'
 import themedStyles from '../themeStyled'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import _ from 'lodash'
 import { FormMetadata } from 'utils/types/formMetadata'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
@@ -66,7 +66,7 @@ export default function FormList({
   selectItem: (f: FormMetadata) => any
 }) {
   const selectList: string[] = [
-    t('form.filter.any-is-form-enabled'),
+    i18n.t('form.filter.any-is-form-enabled'),
     'enabled',
     'disabled',
   ]
@@ -95,19 +95,19 @@ export default function FormList({
         <View style={[layout.center]}>
           <SelectLocation
             bg="white"
-            placeholder={t('user.enter-location')}
+            placeholder={i18n.t('user.enter-location')}
             any={'user.any-location'}
             value={filterLocationID}
             setValue={(id, _uuid) => setFilterLocationID(id)}
-            mx={Platform.OS === 'android' ? 0 : { md: 2, base: 0 }}
-            my={Platform.OS === 'android' ? 1 : { md: 0, base: 2 }}
-            w={Platform.OS === 'android' ? '80%' : undefined}
+            // mx={Platform.OS === 'android' ? 0 : { md: 2, base: 0 }}
+            // my={Platform.OS === 'android' ? 1 : { md: 0, base: 2 }}
+            // w={Platform.OS === 'android' ? '80%' : undefined}
           />
         </View>
         <View style={[layout.center, spacing.mr2]}>
           <AnyCountry
             bg="white"
-            placeholder={t('location.select-country')}
+            placeholder={i18n.t('location.select-country')}
             value={filterCountry}
             setValue={setFilterCountry}
             any={'location.any-country'}
@@ -119,7 +119,7 @@ export default function FormList({
         <View style={[layout.center]}>
           <Language
             bg="white"
-            placeholder={t('location.select-language')}
+            placeholder={i18n.t('location.select-language')}
             value={filterLanguage}
             setValue={setFilterLanguage}
             any={'location.any-language'}
@@ -134,7 +134,7 @@ export default function FormList({
               size="medium"
               value={filterEnabled}
               onSelect={onChangeSelect}
-              placeholder={t('form.filter.select-form-enabled')}
+              placeholder={i18n.t('form.filter.select-form-enabled')}
               style={[
                 styleS.bgWhite,
                 { marginLeft: width > breakpoints.md ? 4 : 0 },
@@ -143,11 +143,11 @@ export default function FormList({
               <>
                 <SelectItem
                   key={'__any__'}
-                  title={t('form.filter.any-is-form-enabled')}
+                  title={i18n.t('form.filter.any-is-form-enabled')}
                   // value={''}
                 />
                 {['enabled', 'disabled'].map(e => (
-                  <SelectItem key={e} title={t('form.filter.' + e)} />
+                  <SelectItem key={e} title={i18n.t('form.filter.' + e)} />
                 ))}
               </>
             </Select>
@@ -182,7 +182,7 @@ export default function FormList({
           }
           size="lg"
           color="black"
-          placeholder={t('user.search.form-names-and-tags')}
+          placeholder={i18n.t('user.search.form-names-and-tags')}
           debounceMs={1000}
           value={filterText}
           onChangeText={setFilterText}
@@ -235,7 +235,7 @@ export default function FormList({
                     styleS.colorCoolGray800,
                   ]}
                 >
-                  Title
+                  {i18n.t('common.title')}
                 </Text>
                 <Text
                   style={[
@@ -246,7 +246,7 @@ export default function FormList({
                     styleS.colorCoolGray900,
                   ]}
                 >
-                  Tags / Form ID
+                  {i18n.t('form.tags-id')}
                 </Text>
                 <Text
                   style={[
@@ -257,7 +257,7 @@ export default function FormList({
                     styleS.colorCoolGray900,
                   ]}
                 >
-                  Date changed
+                  {i18n.t('common.dataChanged')}
                 </Text>
                 <Text
                   style={[
@@ -269,7 +269,7 @@ export default function FormList({
                     styleS.mrMinus1,
                   ]}
                 >
-                  Enabled
+                  {i18n.t('heading.enabled')}
                 </Text>
               </View>
               <View style={[layout.vStackGap3, spacing.mt3]}>

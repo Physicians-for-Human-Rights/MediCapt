@@ -57,7 +57,7 @@
     "expo-status-bar": "~1.6.0",
     "expo-updates": "~0.18.17",
     "graphql": "^14.0.0",
-    "i18n-js": "^3.8.0",
+    "i18n-js": "^4.3.2",
     "js-yaml": "^4.1.0",
     "jszip": "^3.10.0",
     "lodash": "^4.17.21",

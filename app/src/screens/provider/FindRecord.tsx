@@ -3,11 +3,13 @@ import DashboardLayout from 'components/DashboardLayout'
 import _ from 'lodash'
 import { default as RecordListComponent } from 'components/RecordList'
 import { RecordMetadata } from 'utils/types/recordMetadata'
-import { useInfo, handleStandardErrors } from 'utils/errors'
+import { formatErrorMsg } from 'utils/errors'
 import Loading from 'components/Loading'
 import { RootStackScreenProps } from 'utils/provider/navigation'
 import { getRecords } from '../../utils/localStore/store'
 import { useUser } from 'utils/store'
+import { useToast } from 'react-native-toast-notifications'
+import i18n from 'i18n'
 
 const filterAssociatedOut = (r: RecordMetadata) => !r.isAssociatedRecord
 
@@ -16,6 +18,7 @@ export default function RecordList({
   navigation,
 }: RootStackScreenProps<'FindRecord'>) {
   console.log({ route, navigation })
+
   const [records, setRecords] = useState([] as RecordMetadata[])
   const [nextKey, setNextKey] = useState(undefined as undefined | string)
 
@@ -23,10 +26,9 @@ export default function RecordList({
   const [filterSearchType, setFilterSearchType] = useState('')
   const [filterText, setFilterText] = useState(undefined as undefined | string)
 
-  // const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
-
   const [user] = useUser()
+  const toast = useToast()
 
   const doSearch = async () => {
     setWaiting('Searching')
@@ -44,7 +46,13 @@ export default function RecordList({
       setNextKey(nextKey)
     } catch (e) {
       console.log('handle error')
-      // handleStandardErrors(error, warning, success, e)
+      const res: string[] = formatErrorMsg(e)
+      const msg: string = res.join(' ')
+      toast.show(msg, {
+        type: 'danger',
+        placement: 'bottom',
+        duration: 5000,
+      })
     }
     setWaiting(null)
   }
@@ -60,7 +68,7 @@ export default function RecordList({
       navigation={navigation}
       displaySidebar={false}
       displayScreenTitle={false}
-      title="Select a record"
+      title={i18n.t('form.select-record')}
     >
       <>
         <RecordListComponent

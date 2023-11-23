@@ -10,16 +10,14 @@ import { default as AssociateApp } from 'screens/associate/App'
 import { default as ManagerApp } from 'screens/manager/App'
 import { default as FormDesignerApp } from 'screens/formDesigner/App'
 import { default as ResearcherApp } from 'screens/researcher/App'
-import * as Localization from 'expo-localization'
-import i18n from 'i18n-js'
-import en from 'localization/en'
-import fr from 'localization/fr'
+// import * as Localization from 'expo-localization'
+// import i18n from 'i18n-js'
+// import en from 'localization/en'
+// import fr from 'localization/fr'
 import * as Sentry from 'sentry-expo'
 import { ApplicationProvider, IconRegistry } from '@ui-kitten/components'
 import { default as themeKitten } from './custom-theme.json'
-import * as eva from '@eva-design/eva'
 import * as material from '@eva-design/material'
-import { EvaIconsPack } from '@ui-kitten/eva-icons'
 import { MaterialIconsPack } from './MaterialIcons' // <-- Import Material icons
 import { ToastProvider } from 'react-native-toast-notifications'
 
@@ -30,14 +28,14 @@ Sentry.init({
   debug: true,
 })
 
-i18n.translations = {
-  en,
-  fr,
-}
+// i18n.translations = {
+//   en,
+//   fr,
+// }
 
-i18n.locale = Localization.locale
-i18n.fallbacks = true
-i18n.defaultLocale = 'en'
+// i18n.locale = Localization.locale
+// i18n.fallbacks = true
+// i18n.defaultLocale = 'en'
 
 // This is missing in some environments like Android
 // @ts-ignore doesn't have types
@@ -93,21 +91,21 @@ const AuthApp = withAuthenticator(App)
 function LoginScreen() {
   return (
     // TODO Remove SafeAreaProvider after the native base switch
-    <React.StrictMode>
-      <SafeAreaProvider>
-        <StoreProvider>
-          <ToastProvider swipeEnabled={true}>
-            <IconRegistry icons={[MaterialIconsPack]} />
-            <ApplicationProvider
-              {...material}
-              theme={{ ...material.light, ...themeKitten }}
-            >
-              <ProviderApp />
-            </ApplicationProvider>
-          </ToastProvider>
-        </StoreProvider>
-      </SafeAreaProvider>
-    </React.StrictMode>
+    // <React.StrictMode>
+    <SafeAreaProvider>
+      <StoreProvider>
+        <ToastProvider swipeEnabled={true}>
+          <IconRegistry icons={[MaterialIconsPack]} />
+          <ApplicationProvider
+            {...material}
+            theme={{ ...material.light, ...themeKitten }}
+          >
+            <ProviderApp />
+          </ApplicationProvider>
+        </ToastProvider>
+      </StoreProvider>
+    </SafeAreaProvider>
+    // </React.StrictMode>
   )
 }
 

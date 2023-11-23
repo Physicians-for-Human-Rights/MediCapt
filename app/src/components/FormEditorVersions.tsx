@@ -28,6 +28,8 @@ import { RootStackParamList } from 'utils/formDesigner/navigation'
 import { StackNavigationProp } from '@react-navigation/stack'
 import styles, { layout, spacing } from './styles'
 import { AlertIcon } from './Icons'
+import { useToast } from 'react-native-toast-notifications'
+import i18n from 'i18n'
 
 export default function FormEditorVersions({
   formMetadata,
@@ -59,6 +61,7 @@ export default function FormEditorVersions({
   const [waiting, setWaiting] = useState(null as null | string)
   const [error, warning, success] = useInfo()
   const standardReporters = { setWaiting, error, warning, success }
+  const toast = useToast()
 
   if (
     !formMetadata.formUUID ||
@@ -68,29 +71,25 @@ export default function FormEditorVersions({
   )
     return (
       <Text style={[styleS.py10]}>
-        These features are only available after you create the form for the
-        first time.
+        {i18n.t('form-editor.system.features-not-available-yet')}
       </Text>
     )
 
   if (changed && !historyMode)
     return (
       <Text style={[styleS.py10]}>
-        History browsing is only enabled when the form is unchanged.
+        {i18n.t('form-editor.system.history-disabled')}
       </Text>
     )
 
   async function revertFormToVersion() {
+    const params = {
+      currentVersion: latestVersion.current,
+      oldVersion: formMetadata.version,
+      newVersion: parseInt(latestVersion.current!) + 1,
+    }
     const ok = window.confirm(
-      'Reverting to a previous version will create a copy of that previous version. Now, the Form is at version ' +
-        latestVersion.current +
-        '. We will revert to version ' +
-        formMetadata.version +
-        ' by creating a new version, ' +
-        (parseInt(latestVersion.current!) + 1) +
-        ' that is a copy of of ' +
-        formMetadata.version +
-        '. Are you sure you want to do this?'
+      i18n.t('form-editor.system.reverting-old-version', params)
     )
     if (!ok) return
     // NB The server will reject our update to the form if we submit the
@@ -129,12 +128,24 @@ export default function FormEditorVersions({
           contents,
         })
       } catch (e) {
-        error('Could not load form version ' + version)
+        const msg = i18n.t('form-editor.system.enableToLoadVersion', {
+          version,
+        })
+        toast.show(msg, {
+          type: 'danger',
+          placement: 'bottom',
+          duration: 5000,
+        })
       } finally {
         setWaiting(null)
       }
     } else {
-      error('This form has not been saved on the server yet')
+      const msg = i18n.t('form-editor.notSavedYet')
+      toast.show(msg, {
+        type: 'danger',
+        placement: 'bottom',
+        duration: 5000,
+      })
     }
   }
 
@@ -150,28 +161,33 @@ export default function FormEditorVersions({
       }
     }
   }
-
+  const params = {
+    version: formMetadata.version,
+    lastChanged: formatDate(formMetadata.lastChangedDate, 'PPP') as string,
+  }
   return (
     <>
       <View style={[layout.vStack, spacing.py5]}>
         {historyMode && (
           <View style={styles.formEditorVersionBox}>
             <View style={[layout.center, spacing.py2]}>
-              <Text style={[styleS.fontBold]}>History mode</Text>
+              <Text style={[styleS.fontBold]}>
+                {i18n.t('form-editor.historyMode')}
+              </Text>
               <Text style={[styleS.fontMedium]}>
-                Showing Version {formMetadata.version} created on{' '}
-                {formatDate(formMetadata.lastChangedDate, 'PPP') as string}
+                {i18n.t('form-editor.system.showingVersionCreatedOn', {
+                  params,
+                })}
               </Text>
               <Text style={[styleS.fontLight, styleS.pb2]}>
-                You cannot make changes, but you can browse the form. Leave the
-                from an come back to reset.
+                {i18n.t('form-editor.system.browsFormChangeDisabled')}
               </Text>
               <Button
                 style={
                   (styleS.fontBold, styleS.colorCoolGray800, styleS.fontSizeSm)
                 }
                 status="danger"
-                size="sm"
+                size="small"
                 onPress={() =>
                   revertFormToVersion(
                     formMetadata,
@@ -183,19 +199,19 @@ export default function FormEditorVersions({
                 }
                 accessoryLeft={AlertIcon}
               >
-                Make this the latest version
+                {i18n.t('form-editor.makeThisLatestV')}
               </Button>
             </View>
           </View>
         )}
         <View style={[layout.center, spacing.py5]}>
-          <Text category="h5">Form history browser</Text>
+          <Text category="h5">{i18n.t('form-editor.formHistoryBrowser')}</Text>
         </View>
         <View style={[layout.center]}>
           <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
             <FloatingLabelInput
               isReadOnly
-              label={'Latest version'}
+              label={i18n.t('form-editor.latestVersion')}
               placeholder={latestVersion.current}
               w="300px"
               containerW="45%"
@@ -207,7 +223,7 @@ export default function FormEditorVersions({
             <View style={[layout.hStackGap10]}>
               <View style={[layout.center]}>
                 <Text style={[styleS.pt1]}>
-                  Select a version of the form to load
+                  {i18n.t('form-editor.selectFormVersion')}
                 </Text>
               </View>
               <Select

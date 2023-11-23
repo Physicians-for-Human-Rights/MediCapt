@@ -9,7 +9,7 @@ import { LocationType } from 'utils/types/location'
 import { View, Dimensions, SafeAreaView } from 'react-native'
 import styles, { backgrounds, layout } from '../../components/styles'
 import { breakpoints } from '../../components/nativeBaseSpec'
-
+import i18n from 'i18n'
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
 
@@ -59,7 +59,7 @@ export default function EditLocation({
 
   return (
     <DashboardLayout
-      title={'Location Editor'}
+      title={i18n.t('location.editor')}
       displaySidebar={false}
       displayScreenTitle={false}
       backButton={true}

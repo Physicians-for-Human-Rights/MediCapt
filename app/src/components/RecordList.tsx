@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import {
   Text,
   useStyleSheet,
-  Button,
   Icon,
   Select,
   SelectItem,
@@ -11,7 +10,7 @@ import {
 import themedStyles from '../themeStyled'
 // @ts-ignore Record some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import _ from 'lodash'
 import { RecordMetadata } from 'utils/types/recordMetadata'
 import { FormMetadata } from 'utils/types/formMetadata'
@@ -22,9 +21,9 @@ import { UserType } from 'utils/types/user'
 import { userFullName } from 'utils/userTypes'
 import { Platform, View, Dimensions, ScrollView, Pressable } from 'react-native'
 import { breakpoints } from './nativeBaseSpec'
-import { CloseIcon, RefreshIcon } from './Icons'
 import { colors } from './nativeBaseSpec'
 import styles, { borders, layout, spacing } from './styles'
+import IconButtonLg from './IconButtonLg'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -60,9 +59,9 @@ export function ListItemMobile({
                 styleS.colorCoolGray900,
               ]}
             >
-              {item.patientName || t('record.missing-patient-name')}
+              {item.patientName || i18n.t('record.missing-patient-name')}
             </Text>
-            {item.patientGender ? (
+            {item.patientGender && (
               <Text
                 style={[
                   styleS.truncated,
@@ -71,12 +70,10 @@ export function ListItemMobile({
                   styleS.colorCoolGray900,
                 ]}
               >
-                {t('gender.' + item.patientGender)}
+                {i18n.t('gender.' + item.patientGender)}
               </Text>
-            ) : (
-              <></>
             )}
-            {item.patientDateOfBirth > new Date('January 01 1500') ? (
+            {item.patientDateOfBirth > new Date('January 01 1500') && (
               <Text
                 style={[
                   styleS.truncated,
@@ -87,10 +84,8 @@ export function ListItemMobile({
               >
                 {formatDate(item.patientDateOfBirth, 'PPP') as string}
               </Text>
-            ) : (
-              <></>
             )}
-            {item.patientAddress ? (
+            {item.patientAddress && (
               <Text
                 style={[
                   styleS.truncated,
@@ -101,8 +96,6 @@ export function ListItemMobile({
               >
                 {item.patientAddress}
               </Text>
-            ) : (
-              <></>
             )}
             <Text
               style={[
@@ -116,18 +109,15 @@ export function ListItemMobile({
                 ? forms[item.formUUID].title
                 : 'Unknown form'}
             </Text>
-            {forms[item.formUUID] ? (
+            {forms[item.formUUID] &&
               _.filter(
                 _.split(forms[item.formUUID].tags, ','),
                 e => e !== ''
               ).map((s: string, n: number) => (
                 <Text style={[styleS.truncated, styleS.pl3]} key={n}>
-                  {t('tag.' + s)}
+                  {i18n.t('tag.' + s)}
                 </Text>
-              ))
-            ) : (
-              <Text></Text>
-            )}
+              ))}
           </View>
         </View>
 
@@ -156,7 +146,7 @@ export function ListItemMobile({
           >
             {item.recordID}
           </Text>
-          {item.caseId ? <Text>item.caseId</Text> : <></>}
+          {item.caseId && <Text>item.caseId</Text>}
         </View>
       </View>
     </Pressable>
@@ -175,6 +165,10 @@ export function ListItemDesktop({
   users: Record<string, Partial<UserType>>
 }) {
   const styleS = useStyleSheet(themedStyles)
+  const patientDateOfBirth = formatDate(
+    item.patientDateOfBirth,
+    'PPP'
+  ) as string
   return (
     <Pressable
       style={[spacing.px2, layout.flex1]}
@@ -191,16 +185,17 @@ export function ListItemDesktop({
       >
         <View style={[layout.vStack, layout.width45percent]}>
           <Text style={[styleS.truncated, styleS.fontBold]}>
-            {item.patientName || t('record.missing-patient-name')}
+            {item.patientName || i18n.t('record.missing-patient-name')}
           </Text>
           <Text style={[styleS.truncated, styleS.ml2]}>
-            {item.patientGender ? t('gender.' + item.patientGender) : ''}
+            {item.patientGender ? i18n.t('gender.' + item.patientGender) : ''}
           </Text>
-          <Text style={[styleS.truncated, styleS.ml2]}>
-            {item.patientDateOfBirth > new Date('January 01 1500')
-              ? (formatDate(item.patientDateOfBirth, 'PPP') as string)
-              : ''}
-          </Text>
+          {patientDateOfBirth &&
+            item.patientDateOfBirth > new Date('January 01 1500') && (
+              <Text style={[styleS.truncated, styleS.ml2]}>
+                {patientDateOfBirth}
+              </Text>
+            )}
           <Text style={[styleS.truncated, styleS.ml2]}>
             {item.patientAddress ? item.patientAddress : ''}
           </Text>
@@ -208,18 +203,16 @@ export function ListItemDesktop({
         </View>
 
         <View style={[layout.vStack, layout.width20percent]}>
-          {forms && forms[item.formUUID] ? (
+          {forms &&
+            forms[item.formUUID] &&
             _.filter(
               _.split(forms[item.formUUID].tags, ','),
               e => e !== ''
             ).map((s: string, n: number) => (
               <Text style={[styleS.truncated]} key={n}>
-                {t('tag.' + s)}
+                {i18n.t('tag.' + s)}
               </Text>
-            ))
-          ) : (
-            <Text></Text>
-          )}
+            ))}
           <Text>
             {forms[item.formUUID] ? forms[item.formUUID].title : 'Unknown form'}
           </Text>
@@ -337,7 +330,7 @@ export default function RecordList({
     recordsFn()
     usersFn()
   }, [records])
-  const items = ['enabled', 'disabled']
+  const items = [i18n.t('record.filter.any-is-sealed'), 'enabled', 'disabled']
   const onSelect = (index: IndexPath) => {
     setSelectedIndex(index)
     const num: number = index.row
@@ -366,7 +359,7 @@ export default function RecordList({
         <View style={layout.center}>
           <SelectLocation
             bg="white"
-            placeholder={t('user.enter-location')}
+            placeholder={i18n.t('user.enter-location')}
             any={'user.any-location'}
             value={filterLocationID}
             setValue={(id, _uuid) => setFilterLocationID(id)}
@@ -375,7 +368,7 @@ export default function RecordList({
             w={Platform.OS === 'android' ? '80%' : undefined}
           />
         </View>
-        {setFilterSealed ? (
+        {setFilterSealed && (
           <View style={layout.center}>
             <Select
               selectedIndex={selectedIndex}
@@ -387,33 +380,24 @@ export default function RecordList({
               onSelect={index => onSelect(index as IndexPath)}
               // selectedValue={filterSealed}
               // onValueChange={setFilterSealed}
-              placeholder={t('record.filter.select-record-sealed')}
+              placeholder={i18n.t('record.filter.select-record-sealed')}
               // ml={Platform.OS === 'android' ? 0 : { base: 0, md: 2 }}
             >
               {/* <Select.Item
                 key={'__any__'}
-                label={t('record.filter.any-is-sealed')}
+                label={i18n.t('record.filter.any-is-sealed')}
                 value={''}
               /> */}
               {items.map(e => (
                 <SelectItem
                   key={e}
-                  title={t('record.filter.' + e)}
+                  title={i18n.t('record.filter.' + e)}
                   // value={e}
                 />
               ))}
             </Select>
           </View>
-        ) : (
-          <></>
         )}
-      </View>
-      <View
-        style={[
-          styles.recordListStack,
-          { flexDirection: isWider ? 'row' : 'column' },
-        ]}
-      >
         <View style={layout.center}>
           <Select
             size="medium"
@@ -426,17 +410,24 @@ export default function RecordList({
             onSelect={index => onSelectType(index as IndexPath)}
             // selectedValue={filterSearchType}
             // onValueChange={setFilterSearchType}
-            placeholder={t('record.search-by.select')}
+            placeholder={i18n.t('record.search-by.select')}
           >
             {types.map(e => (
               <SelectItem
                 key={e}
-                title={t('record.search-by.' + e)}
+                title={i18n.t('record.search-by.' + e)}
                 // value={e}
               />
             ))}
           </Select>
         </View>
+      </View>
+      <View
+        style={[
+          styles.recordListStack,
+          { flexDirection: isWider ? 'row' : 'column' },
+        ]}
+      >
         <View style={[layout.hStack, layout.justifyCenter]}>
           <DebouncedTextInput
             flex={{ md: undefined, lg: undefined, base: 1 }}
@@ -463,26 +454,26 @@ export default function RecordList({
             }
             size="lg"
             color="black"
-            placeholder={t('user.search.form-names-and-tags')}
+            placeholder={i18n.t('user.search.form-names-and-tags')}
             debounceMs={1000}
             value={filterText}
             onChangeText={setFilterText}
           />
-          <Button
+          <IconButtonLg
+            name="close"
+            size={32}
+            color={colors.primary[500]}
             onPress={() => {
               setFilterLocationID('')
               setFilterSearchType('')
               setFilterText('')
             }}
-            accessoryLeft={CloseIcon}
-            size="sm"
-            style={[styleS.mr2]}
           />
-          <Button
+          <IconButtonLg
+            name="refresh"
+            size={32}
             onPress={doSearch}
-            accessoryLeft={RefreshIcon}
-            size="sm"
-            style={[styleS.mr2]}
+            color={colors.primary[500]}
           />
         </View>
       </View>
@@ -533,7 +524,7 @@ export default function RecordList({
                     styleS.colorCoolGray800,
                   ]}
                 >
-                  {t('record.heading.patient')}
+                  {i18n.t('record.heading.patient')}
                 </Text>
                 <Text
                   style={[
@@ -544,7 +535,7 @@ export default function RecordList({
                     styleS.colorCoolGray900,
                   ]}
                 >
-                  {t('record.heading.form')}
+                  {i18n.t('record.heading.form')}
                 </Text>
                 <Text
                   style={[
@@ -555,7 +546,7 @@ export default function RecordList({
                     styleS.colorCoolGray900,
                   ]}
                 >
-                  {t('record.heading.changed-created')}
+                  {i18n.t('record.heading.changed-created')}
                 </Text>
                 <Text
                   style={[
@@ -567,7 +558,7 @@ export default function RecordList({
                     styleS.mrMinus1,
                   ]}
                 >
-                  {t('record.heading.sealed')}
+                  {i18n.t('record.heading.sealed')}
                 </Text>
               </View>
               <View style={[layout.vStackGap3, spacing.mt3]}>

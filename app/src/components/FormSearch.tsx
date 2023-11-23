@@ -9,9 +9,10 @@ import DashboardLayout from 'components/DashboardLayout'
 import _ from 'lodash'
 import { default as FormListComponent } from 'components/FormList'
 import { FormMetadata } from 'utils/types/formMetadata'
-import { useInfo, handleStandardErrors } from 'utils/errors'
+import { formatErrorMsg } from 'utils/errors'
 import { findForms } from 'api/formdesigner'
 import Loading from 'components/Loading'
+import { useToast } from 'react-native-toast-notifications'
 
 export default function FormSearch({
   selectItem,
@@ -26,9 +27,18 @@ export default function FormSearch({
   const [filterEnabled, setFilterEnabled] = useState('')
   const [filterSearchType, setFilterSearchType] = useState('')
   const [filterText, setFilterText] = useState(undefined as undefined | string)
-  const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
+  const toast = useToast()
 
+  const handleErrors = (e: any) => {
+    const res: string[] = formatErrorMsg(e)
+    const msg: string = res.join(' ')
+    toast.show(msg, {
+      type: 'danger',
+      placement: 'bottom',
+      duration: 5000,
+    })
+  }
   const doSearch = async () => {
     findForms(
       () => setWaiting('Searching'),
@@ -39,7 +49,7 @@ export default function FormSearch({
       filterEnabled,
       filterSearchType,
       filterText,
-      e => handleStandardErrors(error, warning, success, e),
+      e => handleErrors(e),
       setForms,
       setNextKey
     )

@@ -21,16 +21,15 @@ import {
   Button,
   Icon,
   Avatar,
-  Input,
   Divider,
   MenuItem,
   OverflowMenu,
-  MenuGroup,
 } from '@ui-kitten/components'
 import themedStyles from '../themeStyled'
 import styles, { spacing, layout } from './styles'
 import { colors, breakpoints } from './nativeBaseSpec'
-import { MenuIcon } from './Icons'
+import Header from './Header'
+import i18n from 'i18n'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -160,171 +159,6 @@ export function Sidebar(signOut: any) {
   )
 }
 
-export function Header({
-  title,
-  backButton,
-  navigation,
-  route,
-  signOut,
-  mobileMiddlebar,
-  showLogos,
-  reloadPrevious,
-  menuButton,
-  toggleSidebar,
-  displayHeaderTitle,
-  middlebar,
-  searchbar,
-}: {
-  title: string
-  backButton: boolean
-  navigation: any
-  route: any
-  signOut: () => any
-  mobileMiddlebar: JSX.Element | null
-  showLogos: boolean
-  reloadPrevious: React.RefObject<boolean> | undefined
-  menuButton: boolean
-  toggleSidebar: () => any
-  displayHeaderTitle: boolean
-  middlebar: JSX.Element | null
-  searchbar: boolean
-}) {
-  const styleS = useStyleSheet(themedStyles)
-
-  const [visible, setVisible] = useState<boolean>(false)
-  const toggleMenuVisiblity = () => {
-    setVisible(!visible)
-  }
-  const renderButton = (): React.ReactElement => (
-    <Button appearance="ghost" onPress={toggleMenuVisiblity}>
-      <Avatar size="small" source={phr_logo} />
-    </Button>
-  )
-  return (
-    <View
-      style={[
-        styles.headerWrapper,
-        spacing.px6,
-        spacing.py3,
-        {
-          backgroundColor: isWider ? 'white' : colors.primary[900],
-        },
-      ]}
-    >
-      <View style={[styles.headerBox, { maxWidth: menuButton ? 0 : 1016 }]}>
-        <View style={[layout.hStack, layout.spaceBet, layout.alignCenter]}>
-          <View style={[layout.hStackGap4, layout.alignCenter]}>
-            {menuButton && (
-              <Button
-                appearance="ghost"
-                status="basic"
-                // status="coolGray"
-                onPress={toggleSidebar}
-                accessoryLeft={
-                  <MenuIcon size="6" fill={colors.coolGray[800]} />
-                }
-              />
-            )}
-            {backButton ? (
-              <Button
-                onPress={() =>
-                  goBackMaybeRefreshing(route, navigation, reloadPrevious)
-                }
-                accessoryLeft={
-                  <Icon
-                    size="6"
-                    pack="material"
-                    name="west"
-                    fill={colors.coolGray[500]}
-                  />
-                }
-              />
-            ) : (
-              <View style={{ width: 40 }} />
-            )}
-            {/* TODO What should the logo button do? It used to go back. */}
-            <Pressable>
-              <Image
-                style={{ height: 40, width: 40 }}
-                aria-label="Medicapt Logo"
-                resizeMode="cover"
-                source={medicapt_logo}
-              />
-            </Pressable>
-            {displayHeaderTitle && (
-              <Text
-                style={[
-                  styleS.fontSize3xl,
-                  styleS.fontLight,
-                  styleS.colorCoolGray500,
-                ]}
-              >
-                {title}
-              </Text>
-            )}
-          </View>
-
-          {searchbar && (
-            <Input
-              style={[styleS.px4, styleS.width30Percent]}
-              size="small"
-              placeholder="Search"
-              accessoryLeft={
-                <Icon
-                  px="2"
-                  size="4"
-                  name="search"
-                  pack="material"
-                  // as={FontAwesome}
-                  fill={colors.coolGray[400]}
-                />
-              }
-            />
-          )}
-
-          {middlebar}
-
-          <View style={[layout.hStack, layout.alignCenter]}>
-            <Button
-              appearance="ghost"
-              status="basic"
-              size="large"
-              style={{ padding: 0, margin: 0 }}
-              accessoryLeft={
-                <Icon
-                  style={{ width: 24, height: 24, fontSize: 24, padding: 0 }}
-                  name="lock"
-                  pack="material"
-                  fill={colors.coolGray[500]}
-                />
-              }
-            />
-            <OverflowMenu
-              // closeOnSelect={false}
-              // style={{ width: 200 }}
-              placement="bottom end"
-              visible={visible}
-              // selectedIndex={selectedIndex}
-              // onSelect={onItemSelect}
-              onBackdropPress={() => setVisible(false)}
-              anchor={renderButton}
-            >
-              <MenuGroup title="Profile" initiallyExpanded>
-                <MenuItem title="Account" />
-                <MenuItem title="Settings" />
-              </MenuGroup>
-              <MenuGroup title="Shortcuts" initiallyExpanded>
-                <MenuItem title="Lock" />
-                <MenuItem onPress={signOut} title="Log out" />
-              </MenuGroup>
-            </OverflowMenu>
-          </View>
-        </View>
-      </View>
-    </View>
-  )
-}
-
 // TODO Type this
 function MainContent({
   displayScreenTitle,
@@ -424,13 +258,13 @@ export function MobileHeader({
                 <View style={layout.hStack}>
                   <Image
                     style={{ height: 10, width: 10, marginHorizontal: 16 }}
-                    aria-label="MediCapt logo"
+                    aria-label={i18n.t('imagesAlt.logoMedicapt')}
                     resizeMode="cover"
                     source={medicapt_logo}
                   />
                   <Image
                     style={{ height: 10, width: 10, marginHorizontal: 16 }}
-                    aria-label="PHR logo"
+                    aria-label={i18n.t('imagesAlt.logoPHR')}
                     resizeMode="cover"
                     source={phr_logo}
                   />
@@ -463,7 +297,7 @@ export function MobileHeader({
                     <Button
                       variant="ghost"
                       colorScheme="light"
-                      aria-label="More options menu"
+                      aria-label={i18n.t('general.moreOptionsMenu')}
                       {...triggerProps}
                       icon={
                         <Icon
@@ -479,11 +313,11 @@ export function MobileHeader({
                 }}
                 placement="bottom right"
               >
-                <MenuItem title="Account" />
-                <MenuItem title="Settings" />
+                <MenuItem title={i18n.t('general.account')} />
+                <MenuItem title={i18n.t('general.settings')} />
                 <Divider style={[styleS.mt3, styleS.width100Percent]} />
-                <MenuItem title="Lock" />
-                <MenuItem onPress={signOut} title="Log out" />
+                <MenuItem title={i18n.t('general.lock')} />
+                <MenuItem onPress={signOut} title={i18n.t('general.logOut')} />
               </OverflowMenu>
             </View>
           </>
@@ -528,7 +362,6 @@ export default function DashboardLayout({
   showLogos?: boolean
   reloadPrevious?: React.RefObject<boolean>
 }) {
-  const styleS = useStyleSheet(themedStyles)
   const [signOut] = useSignOut()
   const [isSidebarVisible, setIsSidebarVisible] = React.useState(true)
   function toggleSidebar() {

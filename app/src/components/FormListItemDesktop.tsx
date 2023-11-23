@@ -4,7 +4,7 @@ import { Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import themedStyles from '../themeStyled'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import _ from 'lodash'
 import { FormMetadata } from 'utils/types/formMetadata'
 import { View } from 'react-native'
@@ -40,7 +40,7 @@ const FormListItemDesktop = ({
         <View style={[layout.vStack, layout.width20percent]}>
           {_.split(item.tags, ',').map((s: string, n: number) => (
             <Text style={[styleS.truncated]} key={n}>
-              {t('tag.' + s)}
+              {i18n.t('tag.' + s)}
             </Text>
           ))}
           <Text>{item.formID}</Text>

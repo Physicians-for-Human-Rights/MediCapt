@@ -3,10 +3,12 @@ import DashboardLayout from 'components/DashboardLayout'
 import _ from 'lodash'
 import { default as ShareListComponent } from 'components/ShareList'
 import { Share } from 'utils/types/share'
-import { useInfo, handleStandardErrors } from 'utils/errors'
+import { formatErrorMsg } from 'utils/errors'
 import Loading from 'components/Loading'
 import { RootStackScreenProps } from 'utils/associate/navigation'
 import { getRecordShares } from 'api/associate'
+import { useToast } from 'react-native-toast-notifications'
+import i18n from 'i18n'
 
 export default function FindShare({
   route,
@@ -18,10 +20,18 @@ export default function FindShare({
   const [filterLocationID, setFilterLocationID] = useState('')
   const [filterText, setFilterText] = useState(undefined as undefined | string)
   const [filterSearchType, setFilterSearchType] = useState('')
-
-  const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
+  const toast = useToast()
 
+  const handleErrors = (e: any) => {
+    const res: string[] = formatErrorMsg(e)
+    const msg: string = res.join(' ')
+    toast.show(msg, {
+      type: 'danger',
+      placement: 'bottom',
+      duration: 5000,
+    })
+  }
   const doSearch = async () => {
     setWaiting('Searching')
     try {
@@ -33,7 +43,7 @@ export default function FindShare({
       setShares(shares)
       setNextKey(nextKey)
     } catch (e) {
-      handleStandardErrors(error, warning, success, e)
+      handleErrors(e)
     }
     setWaiting(null)
   }
@@ -47,7 +57,7 @@ export default function FindShare({
       navigation={navigation}
       displaySidebar={false}
       displayScreenTitle={false}
-      title="Select a form"
+      title={i18n.t('form.select-form')}
     >
       <>
         <ShareListComponent

@@ -3,10 +3,12 @@ import DashboardLayout from 'components/DashboardLayout'
 import _ from 'lodash'
 import { default as LocationListComponent } from 'components/LocationList'
 import { LocationType } from 'utils/types/location'
-import { useInfo, handleStandardErrors } from 'utils/errors'
+import { formatErrorMsg } from 'utils/errors'
 import Loading from 'components/Loading'
 import { findLocations } from 'api/manager'
 import { RootStackScreenProps } from 'utils/manager/navigation'
+import { useToast } from 'react-native-toast-notifications'
+import i18n from 'i18n'
 
 export default function FormList({
   route,
@@ -18,9 +20,18 @@ export default function FormList({
   const [filterLanguage, setFilterLanguage] = useState('')
   const [filterEntityType, setFilterEntityType] = useState('')
   const [filterText, setFilterText] = useState(undefined as undefined | string)
-  const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
+  const toast = useToast()
 
+  const handleErrors = (e: any) => {
+    const res: string[] = formatErrorMsg(e)
+    const msg: string = res.join(' ')
+    toast.show(msg, {
+      type: 'danger',
+      placement: 'bottom',
+      duration: 5000,
+    })
+  }
   const doSearch = async () => {
     findLocations(
       () => setWaiting('Searching'),
@@ -29,7 +40,7 @@ export default function FormList({
       filterLanguage,
       filterEntityType,
       filterText,
-      e => handleStandardErrors(error, warning, success, e),
+      e => handleErrors(e),
       setLocations,
       setNextKey
     )
@@ -46,7 +57,7 @@ export default function FormList({
       navigation={navigation}
       displaySidebar={false}
       displayScreenTitle={false}
-      title="Find a location"
+      title={i18n.t('location.find-location')}
     >
       <>
         <LocationListComponent

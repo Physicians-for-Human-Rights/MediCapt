@@ -1,20 +1,37 @@
 import React from 'react'
 import BigTileButton from 'components/BigTileButton'
-import { Dimensions, SafeAreaView, FlatList, View } from 'react-native'
+import {
+  Dimensions,
+  SafeAreaView,
+  FlatList,
+  View,
+  Platform,
+} from 'react-native'
 import styles, { spacing, layout } from './styles'
 import { breakpoints } from './nativeBaseSpec'
 import { HomeOption } from 'utils/types/home'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
+import { useBreakpointValue } from '../hooks/useBreakpointValue'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
 
 interface Props extends RootStackScreenProps<'Home'> {
-  shape: any
   options: HomeOption[]
 }
 const HomeIndex = (props: Props) => {
-  const { shape, options, navigation, route } = props
+  const { options, navigation, route } = props
+  const shape = useBreakpointValue({
+    base: { columns: 2, w: 160, h: 160, size: 32, fontSize: 16 },
+    sm: { columns: 2, w: 190, h: 190, size: 64, fontSize: 18 },
+    md: {
+      columns: Platform.OS === 'web' ? 3 : 2,
+      w: 200,
+      h: 200,
+      size: 64,
+      fontSize: 18,
+    },
+  })
   return (
     <SafeAreaView
       style={[

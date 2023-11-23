@@ -3,7 +3,7 @@ import { Alert } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import { Camera } from 'expo-camera'
 import { disabledBackground } from 'utils/formRendering/utils'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import _ from 'lodash'
 import {
   Pressable,
@@ -56,7 +56,11 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
     // TODO Should this be? getMediaLibraryPermissionsAsync
     const imagePermission = await ImagePicker.requestCameraPermissionsAsync()
     if (!imagePermission.granted) {
-      Alert.alert('Insufficient Permissions', 'TODO', [{ text: 'Okay' }])
+      Alert.alert(
+        i18n.t('system.insufficientPermissions'),
+        i18n.t('general.todo'),
+        [{ text: i18n.t('general.ok') }]
+      )
       console.error('TODO could not get permissions', imagePermission)
       return false
     }
@@ -76,7 +80,11 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
   const onTakePhotoOpenModal = async () => {
     const cameraPermissions = await Camera.requestCameraPermissionsAsync()
     if (!cameraPermissions.granted) {
-      Alert.alert('Insufficient Permissions', 'TODO', [{ text: 'Okay' }])
+      Alert.alert(
+        i18n.t('system.insufficientPermissions'),
+        i18n.t('general.todo'),
+        [{ text: i18n.t('general.ok') }]
+      )
       console.error('TODO could not get permissions', cameraPermissions)
       return
     }
@@ -123,9 +131,9 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
         status="blueGray"
         onPress={onCancel}
       >
-        {t('form.cancel-photo')}
+        {i18n.t('buttons.cancel')}
       </Button>
-      <Button onPress={onTakePhoto}>{t('form.save-photo')}</Button>
+      <Button onPress={onTakePhoto}>{i18n.t('buttons.save')}</Button>
     </>
   )
   return (
@@ -157,9 +165,9 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
               appearance="info"
               accessoryLeft={DeleteIcon}
               onPress={() => removePhoto(index)}
-              aria-label={t('form.delete-photo')}
+              aria-label={i18n.t('form.delete-photo')}
             >
-              {t('form.delete-photo')}
+              {i18n.t('form.delete-photo')}
             </Button>
           </View>
         )}
@@ -180,9 +188,9 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
                 disabled={isDisabled}
                 accessoryLeft={UploadCloudIcon}
                 onPress={onAddPhoto}
-                aria-label={t('form.add-photo')}
+                aria-label={i18n.t('form.add-photo')}
               >
-                {t('form.add-photo')}
+                {i18n.t('form.add-photo')}
               </Button>
               <Button
                 style={[
@@ -195,9 +203,9 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
                 disabled={isDisabled}
                 accessoryLeft={CameraIcon}
                 onPress={onTakePhotoOpenModal}
-                aria-label={t('form.take-photo')}
+                aria-label={i18n.t('form.take-photo')}
               >
-                {t('form.take-photo')}
+                {i18n.t('form.take-photo')}
               </Button>
             </View>
           )
@@ -210,7 +218,7 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
       >
         <Card
           header={props => (
-            <ModalHeader {...props} text={t('form.camera-viewer')} />
+            <ModalHeader {...props} text={i18n.t('form.camera-viewer')} />
           )}
           footer={Footer}
         >

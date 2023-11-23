@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native'
 import { colors } from './nativeBaseSpec'
 import { Text, Icon, Button, useStyleSheet } from '@ui-kitten/components'
 import { spacing, layout } from './styles'
+import i18n from 'i18n'
 
 import themedStyles from '../themeStyled'
 
@@ -96,7 +97,7 @@ const FormTop = ({
             ]}
             // selectable={false}
           >
-            Section {currentSection + 1}
+            {i18n.t('general.section') + currentSection + 1}
           </Text>
           <Text
             style={[

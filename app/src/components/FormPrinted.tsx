@@ -24,7 +24,7 @@ import { mapSectionWithPaths, nameFormSections } from 'utils/forms'
 import { allFormRenderCommands } from 'utils/formRendering/commands'
 import { RenderCommand } from 'utils/formRendering/types'
 import formatDate from 'utils/date.ts'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import { dataURItoBlob } from 'utils/data'
 import { PageInfo, Row, rowSizeByType } from 'utils/formPrinting/types'
 import { mkPageInfo } from 'utils/formPrinting/layout'
@@ -160,7 +160,7 @@ export default function FormPrinted({
             pis,
             manifest,
             mock,
-            t('form.not-filled'),
+            i18n.t('form.not-filled'),
             _.filter(commands, c => c.type !== 'description'),
             position,
             skipTitles,
@@ -239,7 +239,7 @@ export default function FormPrinted({
   }
   return (
     <View style={layout.vStack}>
-      <Text>PDF is not uploaded</Text>
+      <Text>{i18n.t('form.pdfNotUploaded')}</Text>
     </View>
   )
 }

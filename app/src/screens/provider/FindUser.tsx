@@ -3,6 +3,7 @@ import DashboardLayout from 'components/DashboardLayout'
 import _ from 'lodash'
 import UserSearch from 'components/UserSearch'
 import { RootStackScreenProps } from 'utils/provider/navigation'
+import i18n from 'i18n'
 
 export default function FindUser({
   route,
@@ -13,7 +14,7 @@ export default function FindUser({
       navigation={navigation}
       displaySidebar={false}
       displayScreenTitle={false}
-      title="Find a user"
+      title={i18n.t('user.find-user')}
     >
       <UserSearch
         selectItem={user => {

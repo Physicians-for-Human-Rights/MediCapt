@@ -6,7 +6,7 @@ import {
   SelectItemProps,
   IndexPath,
 } from '@ui-kitten/components'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import _ from 'lodash'
 import { useUserLocations } from 'utils/store'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
@@ -37,7 +37,7 @@ export default function SelectLocation({
   )
   console.log({ itemsArr })
   if (any) {
-    itemsArr.unshift(t(any))
+    itemsArr.unshift(i18n.t(any))
   }
   const onSelect = (index: IndexPath) => {
     let i

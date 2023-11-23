@@ -3,7 +3,7 @@ import { Text, useStyleSheet } from '@ui-kitten/components'
 import themedStyles from '../themeStyled'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import _ from 'lodash'
 import { Share } from 'utils/types/share'
 import { ScrollView, Pressable, Dimensions, View } from 'react-native'
@@ -95,6 +95,7 @@ export function ListItemDesktop({
   selectItem: (i: Share) => any
   users: Record<string, Partial<UserType>>
 }) {
+  const styleS = useStyleSheet(themedStyles)
   return (
     <Pressable
       style={[spacing.p2, layout.flex1]}
@@ -107,7 +108,7 @@ export function ListItemDesktop({
             {userFullName(users[item.sharedWithUUID], item.sharedWithUUID)}
           </Text>
           <Text style={[styleS.ml2, styleS.truncated]}>
-            {t('user.' + item.sharedWithUUIDUserType)}
+            {i18n.t('user.' + item.sharedWithUUIDUserType)}
           </Text>
           <Text style={[styleS.ml2, styleS.truncated]}>
             {users[item.sharedWithUUID]

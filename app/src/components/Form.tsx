@@ -11,7 +11,7 @@ import {
 import _ from 'lodash'
 import { ZodError } from 'zod'
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import { useBreakpointValue } from '../hooks/useBreakpointValue'
 import FormMenu from 'components/FormMenu'
 import FromTop from 'components/FormTop'
@@ -81,9 +81,13 @@ function recordOverviewPage(
   return _.concat(
     isSealed
       ? _.concat(
-          mkTitle(t('record.overview.record-is-sealed'), 'stitle', '#d5001c'),
+          mkTitle(
+            i18n.t('record.overview.record-is-sealed'),
+            'stitle',
+            '#d5001c'
+          ),
           mkText(
-            t('record.overview.sealed-by'),
+            i18n.t('record.overview.sealed-by'),
             recordMetadataRef.current && recordMetadataRef.current.sealedByUUID
               ? userFullName(
                   users[recordMetadataRef.current.sealedByUUID],
@@ -93,7 +97,7 @@ function recordOverviewPage(
             'scby'
           ),
           mkText(
-            t('record.overview.sealed-date'),
+            i18n.t('record.overview.sealed-date'),
             recordMetadataRef.current &&
               recordMetadataRef.current.sealedDate &&
               recordMetadataRef.current.sealedDate > new Date('January 01 1500')
@@ -114,33 +118,33 @@ function recordOverviewPage(
     _.isArray(shares) && shares.length > 0
       ? mkShareList('Record shared with', 'shtitle', shares, selectShare)
       : [],
-    mkTitle(t('record.overview.titles.patient'), 'ptitle'),
+    mkTitle(i18n.t('record.overview.titles.patient'), 'ptitle'),
     [
       {
         type: 'description',
         // @ts-ignore TODO
-        description: t('record.overview.automatically-filled'),
+        description: i18n.t('record.overview.automatically-filled'),
         key: 'D',
         valuePath: [],
         disable: false,
       },
     ],
     mkText(
-      t('heading.name'),
+      i18n.t('heading.name'),
       recordMetadataRef.current && recordMetadataRef.current.patientName
         ? recordMetadataRef.current.patientName
         : 'N/A',
       'pname'
     ),
     mkText(
-      t('user.gender'),
+      i18n.t('user.gender'),
       recordMetadataRef.current && recordMetadataRef.current.patientGender
-        ? t('gender.' + recordMetadataRef.current.patientGender)
+        ? i18n.t('gender.' + recordMetadataRef.current.patientGender)
         : 'N/A',
       'pgender'
     ),
     mkLongText(
-      t('user.address'),
+      i18n.t('user.address'),
       recordMetadataRef.current && recordMetadataRef.current.patientAddress
         ? recordMetadataRef.current.patientAddress
         : 'N/A',
@@ -148,7 +152,7 @@ function recordOverviewPage(
       2
     ),
     mkText(
-      t('user.date-of-birth'),
+      i18n.t('user.date-of-birth'),
       recordMetadataRef.current &&
         recordMetadataRef.current.patientDateOfBirth >
           new Date('January 01 1500')
@@ -160,64 +164,68 @@ function recordOverviewPage(
       'pdob'
     ),
     mkText(
-      t('user.phone-number'),
+      i18n.t('user.phone-number'),
       recordMetadataRef.current && recordMetadataRef.current.patientPhoneNumber
         ? recordMetadataRef.current.patientPhoneNumber
         : 'N/A',
       'pnumber'
     ),
     mkText(
-      t('user.email'),
+      i18n.t('user.email'),
       recordMetadataRef.current && recordMetadataRef.current.patientEmail
         ? recordMetadataRef.current.patientEmail
         : 'N/A',
       'pemail'
     ),
     mkText(
-      t('record.incident-date'),
+      i18n.t('record.incident-date'),
       recordMetadataRef.current &&
         recordMetadataRef.current.incidentDate > new Date('January 01 1500')
         ? (formatDate(recordMetadataRef.current.incidentDate, 'PPP') as string)
         : 'N/A',
       'pincidentdate'
     ),
-    mkTitle(t('record.overview.titles.administrative'), 'atitle'),
+    mkTitle(i18n.t('record.overview.titles.administrative'), 'atitle'),
     mkText(
-      t('record.overview.record-id'),
+      i18n.t('record.overview.record-id'),
       recordMetadataRef.current
         ? recordMetadataRef.current.recordID
         : 'Automatic',
       'recordID'
     ),
     mkText(
-      t('record.overview.case-id'),
+      i18n.t('record.overview.case-id'),
       recordMetadataRef.current && recordMetadataRef.current.caseId
         ? recordMetadataRef.current.caseId
         : 'N/A',
       'caseID'
     ),
-    mkText(t('record.overview.form-title'), formMetadata.title, 'formTitle'),
-    mkText(t('record.overview.form-id'), formMetadata.formID, 'formID'),
     mkText(
-      t('record.overview.form-version'),
+      i18n.t('record.overview.form-title'),
+      formMetadata.title,
+      'formTitle'
+    ),
+    mkText(i18n.t('record.overview.form-id'), formMetadata.formID, 'formID'),
+    mkText(
+      i18n.t('record.overview.form-version'),
       formMetadata.version,
       'formVersion'
     ),
     mkText(
-      t('record.overview.form-name-and-code'),
+      i18n.t('record.overview.form-name-and-code'),
       formMetadata['official-name'] + '-' + formMetadata['official-code'],
       'formCode'
     ),
-    mkTitle(t('record.overview.titles.timeline'), 'ttitle'),
+    mkTitle(i18n.t('record.overview.titles.timeline'), 'ttitle'),
     mkText(
-      t('record.overview.record-version'),
+      i18n.t('record.overview.record-version'),
       recordMetadataRef.current
         ? recordMetadataRef.current.version
         : 'Automatic',
       'recordVersion'
     ),
     mkText(
-      t('record.overview.created-date'),
+      i18n.t('record.overview.created-date'),
       recordMetadataRef.current &&
         recordMetadataRef.current.createdDate > new Date('January 01 1500')
         ? (formatDate(recordMetadataRef.current.createdDate, 'PPP') as string)
@@ -225,7 +233,7 @@ function recordOverviewPage(
       'cdate'
     ),
     mkText(
-      t('record.overview.created-by'),
+      i18n.t('record.overview.created-by'),
       recordMetadataRef.current && recordMetadataRef.current.createdByUUID
         ? userFullName(
             users[recordMetadataRef.current.createdByUUID],
@@ -235,7 +243,7 @@ function recordOverviewPage(
       'cby'
     ),
     mkText(
-      t('record.overview.last-changed-date'),
+      i18n.t('record.overview.last-changed-date'),
       recordMetadataRef.current &&
         recordMetadataRef.current.lastChangedDate > new Date('January 01 1500')
         ? (formatDate(
@@ -246,7 +254,7 @@ function recordOverviewPage(
       'ldate'
     ),
     mkText(
-      t('record.overview.last-changed-by'),
+      i18n.t('record.overview.last-changed-by'),
       recordMetadataRef.current && recordMetadataRef.current.lastChangedByUUID
         ? userFullName(
             users[recordMetadataRef.current.lastChangedByUUID],
@@ -328,8 +336,8 @@ export default function Form({
     overviewSection
       ? [
           {
-            name: t('record.overview.record-overview'),
-            title: t('record.overview.section-title'),
+            name: i18n.t('record.overview.record-overview'),
+            title: i18n.t('record.overview.section-title'),
             parts: [],
           },
         ]
@@ -382,8 +390,8 @@ export default function Form({
     confirmationDialog(
       'Sealing records',
       _.every(isSectionCompleteList)
-        ? t('record.overview.seal-complete-warning')
-        : t('record.overview.seal-incomplete-warning'),
+        ? i18n.t('record.overview.seal-complete-warning')
+        : i18n.t('record.overview.seal-incomplete-warning'),
       async () => {
         onComplete(flatRecordToRecordType(flatRecord))
         reloadPrevious.current = true

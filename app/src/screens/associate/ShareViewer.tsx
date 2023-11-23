@@ -9,25 +9,19 @@ import {
   RecordMetadata,
   RecordManifestWithData,
 } from 'utils/types/recordMetadata'
-import { useInfo, handleStandardErrors } from 'utils/errors'
+import { formatErrorMsg } from 'utils/errors'
 import {
-  createRecord,
-  getForm,
-  getFormVersion,
   getFormManifestContents,
   getRecord,
   getRecordManifestContents,
-  updateRecord,
-  sealRecord,
-  getRecordMetadata,
 } from '../../utils/localStore/store'
 import { Share } from 'utils/types/share'
-import UserSearch from 'components/UserSearch'
-import { useUserLocations } from 'utils/store'
 import { getRecordShare } from 'api/associate'
 import { SafeAreaView, Dimensions } from 'react-native'
 import styles, { layout } from '../../components/styles'
 import { breakpoints } from '../../components/nativeBaseSpec'
+import { useToast } from 'react-native-toast-notifications'
+import i18n from 'i18n'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -38,10 +32,9 @@ export default function ShareViewer({
   navigation,
 }: RootStackScreenProps<'ShareViewer'>) {
   const [waiting, setWaiting] = useState('Loading' as null | string)
-  const [error, warning, success] = useInfo()
 
   const [share, setShare] = useState(route.params.share as Share)
-
+  const toast = useToast()
   // Either formMetadata or recordMetadata passed to the RecordEditor as route params
   const [formMetadata, setFormMetadata] = useState(
     undefined as FormMetadata | undefined
@@ -117,7 +110,13 @@ export default function ShareViewer({
         //     }
         //   }
       } catch (e) {
-        handleStandardErrors(error, warning, success, e)
+        const res: string[] = formatErrorMsg(e)
+        const msg: string = res.join(' ')
+        toast.show(msg, {
+          type: 'danger',
+          placement: 'bottom',
+          duration: 5000,
+        })
       } finally {
         setWaiting(null)
       }
@@ -137,7 +136,7 @@ export default function ShareViewer({
       navigation={navigation}
       displaySidebar={false}
       displayScreenTitle={false}
-      title="Fill out a record"
+      title={i18n.t('record.fill-out')}
       displayHeader={false}
       fullWidth={true}
       route={route}

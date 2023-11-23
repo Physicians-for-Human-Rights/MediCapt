@@ -1,7 +1,7 @@
 import React from 'react'
 import { Text, Spinner } from '@ui-kitten/components'
 import { View, StyleSheet } from 'react-native'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import { layout } from './styles'
 
 const style = StyleSheet.create({
@@ -27,7 +27,7 @@ const Loading = ({ loading }: { loading: string | null }) => {
           <Spinner aria-label="Loading" size="large" />
 
           <Text category="h3" style={{ color: 'white' }}>
-            Loading...
+            {i18n.t('system.loading')}
           </Text>
         </View>
       </View>

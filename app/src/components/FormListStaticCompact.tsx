@@ -4,7 +4,6 @@ import { Text, useStyleSheet } from '@ui-kitten/components'
 import themedStyles from '../themeStyled'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
-import { t } from 'i18n-js'
 import _ from 'lodash'
 import { FormMetadata } from 'utils/types/formMetadata'
 import { Dimensions, View } from 'react-native'

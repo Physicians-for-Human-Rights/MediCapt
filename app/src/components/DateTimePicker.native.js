@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Picker from 'react-native-modal-datetime-picker'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 
 import { Button } from '@ui-kitten/components'
 import _ from 'lodash'
@@ -43,13 +43,13 @@ export default function DateTimePicker({
             ? colors.success[600]
             : colors.primary[800],
         }}
-        aria-label={t(time ? 'form.enter-date-time' : 'form.enter-date')}
+        aria-label={i18n.t(time ? 'form.enter-date-time' : 'form.enter-date')}
       >
         {date
           ? time
             ? date.toLocaleString()
             : date.toLocaleDateString()
-          : t(time ? 'form.enter-date-time' : 'form.enter-date')}
+          : i18n.t(time ? 'form.enter-date-time' : 'form.enter-date')}
       </Button>
       {modalVisible && (
         <Picker

@@ -1,6 +1,6 @@
 import React from 'react'
 import _ from 'lodash'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import { Button } from '@ui-kitten/components'
 import { breakpoints, colors } from './nativeBaseSpec'
 import {
@@ -77,13 +77,13 @@ export default function FormButtons({
               accessoryLeft={SaveIcon}
               onPress={onSaveAndExit}
             >
-              {t('record.buttons.save-and-exit')}
+              {i18n.t('record.buttons.save-and-exit')}
             </Button>
             <Button status="info" accessoryLeft={SaveIcon} onPress={onSave}>
-              {t('record.buttons.save')}
+              {i18n.t('buttons.save')}
             </Button>
             <Button accessoryLeft={CloseIcon} status="info" onPress={onExit}>
-              {t('record.buttons.cancel')}
+              {i18n.t('buttons.cancel')}
             </Button>
           </View>
         ) : (
@@ -93,7 +93,7 @@ export default function FormButtons({
             onPress={onExit}
             // _text={{ selectable: false }}
           >
-            {t('record.buttons.exit')}
+            {i18n.t('record.buttons.exit')}
           </Button>
         )}
         {!changed && (
@@ -104,7 +104,7 @@ export default function FormButtons({
               onPress={onPrint}
               // _text={{ selectable: false }}
             >
-              {t('record.buttons.print')}
+              {i18n.t('record.buttons.print')}
             </Button>
             {!isSealed && !readOnly && (
               <Button
@@ -121,7 +121,7 @@ export default function FormButtons({
                 onPress={onCompleteRecord}
                 // _text={{ selectable: false }}
               >
-                {t('record.buttons.complete-record')}
+                {i18n.t('record.buttons.complete-record')}
               </Button>
             )}
           </View>
@@ -135,7 +135,7 @@ export default function FormButtons({
             onPress={onUpgrade}
             // _text={{ selectable: false }}
           >
-            {t('record.buttons.upgrade-form')}
+            {i18n.t('record.buttons.upgrade-form')}
           </Button>
         </View>
       )}
@@ -153,8 +153,8 @@ export default function FormButtons({
             disabled={!hasAssociatedForms}
           >
             {hasAssociatedForms
-              ? t('record.buttons.fill-associated-form')
-              : t('record.buttons.no-associated-form')}
+              ? i18n.t('record.buttons.fill-associated-form')
+              : i18n.t('record.buttons.no-associated-form')}
           </Button>
           <Button
             status="info"
@@ -162,7 +162,7 @@ export default function FormButtons({
             onPress={onShareRecord}
             // _text={{ selectable: false }}
           >
-            {t('record.buttons.share-record')}
+            {i18n.t('record.buttons.share-record')}
           </Button>
         </View>
       ) : (

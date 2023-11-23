@@ -13,7 +13,7 @@ import { View } from 'react-native'
 import themedStyles from '../themeStyled'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import _ from 'lodash'
 import { UserType } from 'utils/types/user'
 import { UserKindList } from 'utils/userTypes'
@@ -30,6 +30,7 @@ const isWider = width > breakpoints.md
 
 export function ListItem({ item }: { item: UserType }) {
   const styleS = useStyleSheet(themedStyles)
+
   return (
     <Pressable
       style={[
@@ -62,12 +63,12 @@ export function ListItem({ item }: { item: UserType }) {
                   styleS.colorCoolGray600,
                 ]}
               >
-                {t('user.user.' + item.userType)}
+                {i18n.t('user.user.' + item.userType)}
               </Text>
               <Text
                 style={[styleS.truncated, styleS.ml2, styleS.colorCoolGray600]}
               >
-                {t('country.' + item.country)}
+                {i18n.t('country.' + item.country)}
               </Text>
             </View>
             <Text
@@ -142,6 +143,7 @@ export function ListItemDesktop({
   item: UserType
   selectItem: (user: UserType) => any
 }) {
+  const styleS = useStyleSheet(themedStyles)
   return (
     <Pressable
       style={[spacing.px2, layout.flex1]}
@@ -235,6 +237,7 @@ export default function UserList({
   allowedUserTypes?: string[]
   onlyEnabledUsers?: boolean
 }) {
+  const styleS = useStyleSheet(themedStyles)
   const [selectedIndexUser, setSelectedIndexUser] = useState<IndexPath>()
   const [selectedIndexEnabled, setSelectedIndexEnabled] = useState<IndexPath>()
   const [selectedIndexTerm, setSelectedIndexTerm] = useState<IndexPath>()
@@ -278,10 +281,10 @@ export default function UserList({
             onSelect={index => onSelectUser(index as IndexPath)}
             // selectedValue={filterUserType}
             // onValueChange={setFilterUserType}
-            placeholder={t('user.select-user-type')}
+            placeholder={i18n.t('user.select-user-type')}
           >
             {(allowedUserTypes ? allowedUserTypes : UserKindList).map(e => (
-              <SelectItem key={e} title={t('user.' + e)} />
+              <SelectItem key={e} title={i18n.t('user.' + e)} />
             ))}
           </Select>
         </View>
@@ -294,15 +297,15 @@ export default function UserList({
               onSelect={index => onSelect(index as IndexPath)}
               // selectedValue={filterEnabledOrDisabled}
               // onValueChange={setFilterEnabledOrDisabled}
-              placeholder={t('user.filter.select-user-enabled')}
+              placeholder={i18n.t('user.filter.select-user-enabled')}
             >
               {/* <Select.Item
                 key={'__any__'}
-                label={t('user.filter.any-is-user-enabled')}
+                label={i18n.t('user.filter.any-is-user-enabled')}
                 value={''}
               /> */}
               {enabledUsers.map(e => (
-                <SelectItem key={e} title={t('user.filter.' + e)} />
+                <SelectItem key={e} title={i18n.t('user.filter.' + e)} />
               ))}
             </Select>
           </View>
@@ -310,7 +313,7 @@ export default function UserList({
         <View style={[layout.center]}>
           <SelectLocation
             bg="white"
-            placeholder={t('user.enter-location')}
+            placeholder={i18n.t('user.enter-location')}
             any={'user.any-location'}
             value={filterLocation}
             setValue={(_id, uuid) => setFilterLocation(uuid)}
@@ -361,12 +364,12 @@ export default function UserList({
             selectedIndex={selectedIndexTerm}
             onSelect={index => onSelectTerms(index as IndexPath)}
             // onValueChange={setFilterSearchType}
-            placeholder={t('user.search-by.select')}
+            placeholder={i18n.t('user.search-by.select')}
           >
             {searchTerms.map(e => (
               <SelectItem
                 key={e}
-                title={t('user.search-by.' + e)}
+                title={i18n.t('user.search-by.' + e)}
                 // value={e}
               />
             ))}
@@ -390,7 +393,7 @@ export default function UserList({
           }
           size="lg"
           color="black"
-          placeholder={t('user.search-enter')}
+          placeholder={i18n.t('user.search-enter')}
           debounceMs={1000}
           value={filterText}
           onChangeText={setFilterText}
@@ -438,7 +441,7 @@ export default function UserList({
                     styleS.colorCoolGray800,
                   ]}
                 >
-                  {t('heading.name')}
+                  {i18n.t('heading.name')}
                 </Text>
                 <Text
                   style={[
@@ -449,7 +452,7 @@ export default function UserList({
                     spacing.mb3,
                   ]}
                 >
-                  {t('heading.usernameAndEmail')}
+                  {i18n.t('heading.usernameAndEmail')}
                 </Text>
                 <Text
                   style={[
@@ -460,7 +463,7 @@ export default function UserList({
                     spacing.mb3,
                   ]}
                 >
-                  {t('heading.lastChangedAndId')}
+                  {i18n.t('heading.lastChangedAndId')}
                 </Text>
                 <Text
                   style={[
@@ -472,7 +475,7 @@ export default function UserList({
                     styleS.mrMinus1,
                   ]}
                 >
-                  {t('heading.enabled')}
+                  {i18n.t('heading.enabled')}
                 </Text>
               </View>
               <View style={[layout.vStackGap3, spacing.mt3]}>

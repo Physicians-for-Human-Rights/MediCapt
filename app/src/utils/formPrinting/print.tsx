@@ -46,7 +46,7 @@ import {
   randAddress,
   randPhoneNumber,
 } from '@ngneat/falso'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import { dataURItoBlob } from 'utils/data'
 import { PageInfo, Row, rowSizeByType } from 'utils/formPrinting/types'
 import {
@@ -300,12 +300,12 @@ export async function handleCellCommand(
         pi,
         command.recordValue
           ? command.recordValue?.value
-            ? t('form.Yes')
-            : t('form.No')
+            ? i18n.t('form.Yes')
+            : i18n.t('form.No')
           : mock
           ? randBoolean()
-            ? t('form.Yes')
-            : t('form.No')
+            ? i18n.t('form.Yes')
+            : i18n.t('form.No')
           : notFilled,
         command,
         npos,
@@ -318,9 +318,9 @@ export async function handleCellCommand(
       return mkText(
         pi,
         command.recordValue
-          ? t('gender.' + command.recordValue?.value)
+          ? i18n.t('gender.' + command.recordValue?.value)
           : mock
-          ? t('gender.' + command.options[rand(_.keys(command.options))])
+          ? i18n.t('gender.' + command.options[rand(_.keys(command.options))])
           : notFilled,
         command,
         npos,

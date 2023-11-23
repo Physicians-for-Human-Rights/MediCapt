@@ -12,7 +12,7 @@ import themedStyles from '../themeStyled'
 import { ScrollView, Pressable, Platform } from 'react-native'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import _ from 'lodash'
 import { LocationType, locationEntityTypes } from 'utils/types/location'
 import AnyCountry from 'components/AnyCountry'
@@ -57,12 +57,12 @@ export function ListItem({ item }: { item: LocationType }) {
                   styleS.pl3,
                 ]}
               >
-                {t('location.entity.' + item.entityType)}
+                {i18n.t('location.entity.' + item.entityType)}
               </Text>
               <Text
                 style={[styleS.truncated, styleS.colorCoolGray600, styleS.ml2]}
               >
-                {t('country.' + item.country)}
+                {i18n.t('country.' + item.country)}
               </Text>
             </View>
             <Text
@@ -141,6 +141,7 @@ export function ListItemDesktop({
   item: LocationType
   selectItem: (location: LocationType) => any
 }) {
+  const styleS = useStyleSheet(themedStyles)
   return (
     <Pressable
       style={[spacing.px2, layout.flex1]}
@@ -172,14 +173,16 @@ export function ListItemDesktop({
             </Text>
           </View>
           <Text style={[styleS.truncated, spacing.ml2]}>
-            {t('location.entity.' + item.entityType)}
+            {i18n.t('location.entity.' + item.entityType)}
           </Text>
         </View>
 
         <View style={[layout.width20percent, layout.vStack]}>
-          <Text style={[styleS.truncated]}>{t('country.' + item.country)}</Text>
           <Text style={[styleS.truncated]}>
-            {t('languages.' + item.language)}
+            {i18n.t('country.' + item.country)}
+          </Text>
+          <Text style={[styleS.truncated]}>
+            {i18n.t('languages.' + item.language)}
           </Text>
         </View>
 
@@ -231,6 +234,7 @@ export default function LocationList({
   doSearch: () => any
   selectItem: (location: LocationType) => any
 }) {
+  const styleS = useStyleSheet(themedStyles)
   const [selectedIndex, setSelectedIndex] = useState<IndexPath>()
   const onSelect = (index: IndexPath | IndexPath[]) => {
     if (!IndexPath.length) {
@@ -253,7 +257,7 @@ export default function LocationList({
         <View style={layout.center}>
           <AnyCountry
             bg="white"
-            placeholder={t('location.select-country')}
+            placeholder={i18n.t('location.select-country')}
             value={filterCountry}
             setValue={setFilterCountry}
             any={'location.any-country'}
@@ -264,7 +268,7 @@ export default function LocationList({
         <View style={layout.center}>
           <Language
             bg="white"
-            placeholder={t('location.select-language')}
+            placeholder={i18n.t('location.select-language')}
             value={filterLanguage}
             setValue={setFilterLanguage}
             any={'location.any-language'}
@@ -280,18 +284,18 @@ export default function LocationList({
             onSelect={onSelect}
             // selectedValue={filterEntityType}
             // onValueChange={setFilterEntityType}
-            placeholder={t('location.select-entity-type')}
+            placeholder={i18n.t('location.select-entity-type')}
             style={{ backgroundColor: 'white' }}
           >
             {/* <SelectItem
               key={'__any__'}
-              title={t('location.any-entity-type')}
+              title={i18n.t('location.any-entity-type')}
               // value={''}
             /> */}
             {locationEntityTypes.map(e => (
               <SelectItem
                 key={e}
-                title={t('location.entity.' + e)}
+                title={i18n.t('location.entity.' + e)}
                 // value={e}
               />
             ))}
@@ -345,7 +349,7 @@ export default function LocationList({
           }
           size="lg"
           color="black"
-          placeholder={t('location.search')}
+          placeholder={i18n.t('location.search')}
           debounceMs={1000}
           value={filterText}
           onChangeText={setFilterText}
@@ -389,7 +393,7 @@ export default function LocationList({
                     spacing.mb3,
                   ]}
                 >
-                  {t('heading.name')}
+                  {i18n.t('heading.name')}
                 </Text>
                 <Text
                   style={[
@@ -400,7 +404,7 @@ export default function LocationList({
                     styleS.colorCoolGray900,
                   ]}
                 >
-                  {t('heading.countryAndLanguage')}
+                  {i18n.t('heading.countryAndLanguage')}
                 </Text>
                 <Text
                   style={[
@@ -411,7 +415,7 @@ export default function LocationList({
                     styleS.colorCoolGray900,
                   ]}
                 >
-                  {t('heading.lastChangedAndId')}
+                  {i18n.t('heading.lastChangedAndId')}
                 </Text>
                 <Text
                   style={[
@@ -423,7 +427,7 @@ export default function LocationList({
                     styleS.mrMinus1,
                   ]}
                 >
-                  {t('heading.enabled')}
+                  {i18n.t('heading.enabled')}
                 </Text>
               </View>
               <View style={[layout.vStackGap3, spacing.mt3]}>

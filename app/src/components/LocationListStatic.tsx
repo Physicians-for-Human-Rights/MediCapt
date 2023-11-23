@@ -5,7 +5,7 @@ import themedStyles from '../themeStyled'
 import { LocationType } from 'utils/types/location'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import _ from 'lodash'
 import { View, Dimensions } from 'react-native'
 import { breakpoints } from './nativeBaseSpec'
@@ -16,6 +16,7 @@ const isWider = width > breakpoints.md
 
 export function ListItem({ item }: { item: LocationType }) {
   const styleS = useStyleSheet(themedStyles)
+
   return (
     <Pressable p={2} borderBottomWidth={0.8} borderBottomColor="coolGray.300">
       <View style={[layout.hStack, layout.spaceBet, layout.width100percent]}>
@@ -44,12 +45,12 @@ export function ListItem({ item }: { item: LocationType }) {
                   styleS.colorCoolGray600,
                 ]}
               >
-                {t('location.entity.' + item.entityType)}
+                {i18n.t('location.entity.' + item.entityType)}
               </Text>
               <Text
                 style={[styleS.truncated, styleS.ml2, styleS.colorCoolGray600]}
               >
-                {t('country.' + item.country)}
+                {i18n.t('country.' + item.country)}
               </Text>
             </View>
             <Text
@@ -129,6 +130,7 @@ export function ListItemDesktop({
   item: LocationType | string
   selectItem: (location: LocationType) => any
 }) {
+  const styleS = useStyleSheet(themedStyles)
   return (
     <Pressable
       style={[spacing.px2, layout.flex1]}
@@ -163,7 +165,7 @@ export function ListItemDesktop({
           )}
           {!_.isString(item) && (
             <Text style={[styleS.ml2, styleS.truncated]}>
-              {t('location.entity.' + item.entityType)}
+              {i18n.t('location.entity.' + item.entityType)}
             </Text>
           )}
         </View>
@@ -171,12 +173,12 @@ export function ListItemDesktop({
         <View style={[layout.vStack, layout.width20percent]}>
           {!_.isString(item) && (
             <Text style={[styleS.truncated]}>
-              {t('country.' + item.country)}
+              {i18n.t('country.' + item.country)}
             </Text>
           )}
           {!_.isString(item) && (
             <Text style={[styleS.truncated]}>
-              {t('languages.' + item.language)}
+              {i18n.t('languages.' + item.language)}
             </Text>
           )}
         </View>
@@ -217,7 +219,7 @@ export default function LocationListStatic({
       >
         <View>
           <View style={[layout.center]}>
-            <Text category="h5">Allowed locations</Text>
+            <Text category="h5">{i18n.t('user.allowed-locations')}</Text>
           </View>
           <ScrollView>
             <View

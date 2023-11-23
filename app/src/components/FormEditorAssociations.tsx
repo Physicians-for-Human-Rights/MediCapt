@@ -10,7 +10,7 @@ import {
 } from '@ui-kitten/components'
 import { stripFileExtension } from 'utils/forms'
 import _ from 'lodash'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import { getFormCached } from 'api/common'
 // @ts-ignore TODO TS doesn't understand .native.js and .web.js files
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
@@ -29,7 +29,6 @@ const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
 
 const Footer = (props: any) => {
-  const styleS = useStyleSheet(themedStyles)
   const { setIsSearchModalOpen } = props
   return (
     <Button
@@ -38,7 +37,7 @@ const Footer = (props: any) => {
       status="info"
       onPress={() => setIsSearchModalOpen(false)}
     >
-      Cancel
+      {i18n.t('buttons.cancel')}
     </Button>
   )
 }
@@ -54,6 +53,7 @@ export default function FormEditorAssociations({
   manifest: FormManifestWithData
   setManifest: React.Dispatch<React.SetStateAction<FormManifestWithData>>
 }) {
+  const styleS = useStyleSheet(themedStyles)
   const [forms, setForms] = useState({} as Record<string, FormMetadata>)
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
 
@@ -93,7 +93,7 @@ export default function FormEditorAssociations({
           {
             formUUID: associatedFormMetadata.formUUID,
             formID: associatedFormMetadata.formID,
-            title: 'Associated form',
+            title: i18n.t('form-editor.associatedForm'),
           },
         ]),
       })
@@ -220,7 +220,7 @@ export default function FormEditorAssociations({
           header={props => (
             <ModalHeader
               {...props}
-              text={t('form-editor.associations.select-form')}
+              text={i18n.t('form-editor.associations.select-form')}
             />
           )}
           footer={props => (

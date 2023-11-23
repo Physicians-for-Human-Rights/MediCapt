@@ -3,7 +3,7 @@ import { Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import themedStyles from '../themeStyled'
 // @ts-ignore Record some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import _ from 'lodash'
 import { RecordMetadata } from 'utils/types/recordMetadata'
 import { FormMetadata } from 'utils/types/formMetadata'
@@ -48,7 +48,7 @@ export function ListItemMobile({
                 styleS.colorCoolGray900,
               ]}
             >
-              {item.patientName || t('record.missing-patient-name')}
+              {item.patientName || i18n.t('record.missing-patient-name')}
             </Text>
             {item.patientGender ? (
               <Text
@@ -59,7 +59,7 @@ export function ListItemMobile({
                   styleS.colorCoolGray900,
                 ]}
               >
-                {t('gender.' + item.patientGender)}
+                {i18n.t('gender.' + item.patientGender)}
               </Text>
             ) : (
               <></>
@@ -110,7 +110,7 @@ export function ListItemMobile({
                 e => e !== ''
               ).map((s: string, n: number) => (
                 <Text style={[styleS.truncated, styleS.pl3]} key={n}>
-                  {t('tag.' + s)}
+                  {i18n.t('tag.' + s)}
                 </Text>
               ))
             ) : (
@@ -162,6 +162,7 @@ export function ListItemDesktop({
   forms: Record<string, FormMetadata>
   users: Record<string, Partial<UserType>>
 }) {
+  const styleS = useStyleSheet(themedStyles)
   return (
     <Pressable
       style={[spacing.p2, layout.flex1]}

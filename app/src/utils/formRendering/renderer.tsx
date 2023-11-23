@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { RecordValuePath, RecordValue } from 'utils/types/record'
 import React from 'react'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import uuid from 'react-native-uuid'
 
 import { Icon, Text, Divider } from '@ui-kitten/components'
@@ -176,7 +176,7 @@ export function renderCommand(
             numberOfLines={3}
             placeholder={command.placeholder}
             value={command.recordValue?.value}
-            aria-label={t('form.enter-address')}
+            aria-label={i18n.t('form.enter-address')}
           />
         </View>
       )
@@ -260,7 +260,7 @@ export function renderCommand(
           bg={disabled(command, disabledBackground)}
           isDisabled={command.disable}
           selected={command.recordValue?.value}
-          options={{ [t('form.Yes')]: true, [t('form.No')]: false }}
+          options={{ [i18n.t('form.Yes')]: true, [i18n.t('form.No')]: false }}
           onPress={v =>
             setPath(command.valuePath, {
               ...command.recordValue,
@@ -368,7 +368,7 @@ export function renderCommand(
             keyboardType="email-address"
             placeholder={command.placeholder}
             value={command.recordValue?.value || ''}
-            aria-label={t('form.enter-email')}
+            aria-label={i18n.t('form.enter-email')}
           />
         </View>
       )
@@ -668,7 +668,7 @@ export function renderCommand(
             multiline={true}
             numberOfLines={command.numberOfLines}
             value={command.recordValue?.value || ''}
-            aria-label={t('form.enter-long-text')}
+            aria-label={i18n.t('form.enter-long-text')}
           />
         </View>
       )
@@ -700,7 +700,7 @@ export function renderCommand(
             keyboardType="numeric"
             value={command.recordValue?.value || ''}
             maxW={command.maxW}
-            aria-label={t('form.enter-number')}
+            aria-label={i18n.t('form.enter-number')}
           />
         </View>
       )
@@ -732,7 +732,7 @@ export function renderCommand(
             keyboardType="phone-pad"
             value={command.recordValue?.value || ''}
             maxW={command.maxW}
-            aria-label={t('form.enter-phone-number')}
+            aria-label={i18n.t('form.enter-phone-number')}
           />
         </View>
       )
@@ -859,7 +859,7 @@ export function renderCommand(
             textAlign="center"
             value={command.recordValue?.value || ''}
             maxW={command.maxW}
-            aria-label={t('form.enter-text')}
+            aria-label={i18n.t('form.enter-text')}
           />
         </View>
       )

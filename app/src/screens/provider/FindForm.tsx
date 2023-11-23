@@ -8,6 +8,7 @@ import Loading from 'components/Loading'
 import { RootStackScreenProps } from 'utils/provider/navigation'
 import { getForms } from '../../utils/localStore/store'
 import { useToast } from 'react-native-toast-notifications'
+import i18n from '../../i18n'
 
 export default function FindForm({
   route,
@@ -22,7 +23,6 @@ export default function FindForm({
   const [filterText, setFilterText] = useState(undefined as undefined | string)
   const [filterSearchType, setFilterSearchType] = useState('')
 
-  // const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
   const toast = useToast()
   const doSearch = async () => {
@@ -39,15 +39,12 @@ export default function FindForm({
       setNextKey(nextKey)
     } catch (e) {
       // handleStandardErrors(e)
-      const res = formatErrorMsg(e)
-      const msg = res.join(' ')
+      const res: string[] = formatErrorMsg(e)
+      const msg: string = res.join(' ')
       toast.show(msg, {
         type: 'danger',
         placement: 'bottom',
         duration: 5000,
-        // isClosable: true,
-        // description,
-        // accessibilityAnnouncement: 'Encountered error ' + error,
       })
     }
     setWaiting(null)
@@ -70,7 +67,7 @@ export default function FindForm({
       navigation={navigation}
       displaySidebar={false}
       displayScreenTitle={false}
-      title="Select a form"
+      title={i18n.t('form.select-form')}
     >
       <>
         <FormListComponent

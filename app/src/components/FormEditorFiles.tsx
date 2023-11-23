@@ -24,13 +24,14 @@ import {
   useStyleSheet,
   Icon,
   Text,
-  // Popover,
+  Popover,
   Divider,
 } from '@ui-kitten/components'
 import themedStyles from '../themeStyled'
 import { DownloadCloudIcon, UploadCloudIcon, CloseCircleIcon } from './Icons'
 import { IconGrayButton } from './styledComponents/IconButtons'
-// import PopoverContent from './PopOverContent'
+import i18n from 'i18n'
+import PopoverContent from './PopOverContent'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -109,7 +110,7 @@ export default function FormEditorFiles({
       appearance="ghost"
       onPress={() => setVisible(true)}
     >
-      Tell me more
+      {i18n.t('general.tellMeMore')}
     </Button>
   )
 
@@ -117,7 +118,7 @@ export default function FormEditorFiles({
     <View style={[layout.vStackGap3, spacing.my2]}>
       <View style={[layout.center, spacing.py3]}>
         <IconGrayButton
-          text="Download all files"
+          text={i18n.t('common.downloadAllFiles')}
           status="info"
           leftIcon={DownloadCloudIcon}
           onPress={() => generateZip(formMetadata, manifest)}
@@ -137,19 +138,19 @@ export default function FormEditorFiles({
               //   fontSize: 'xs',
               // }}
             >
-              FORM PDF
+              {i18n.t('form-editor.formPdf')}
             </Button>
           </View>
           {isInManifest(manifest, e => e.filename == 'form.pdf') ? (
             <IconGrayButton
-              text="Remove pdf"
+              text={i18n.t('form-editor.removePdf')}
               status="danger"
               leftIcon={CloseCircleIcon}
               onPress={removePdf}
             />
           ) : (
             <IconGrayButton
-              text="Upload an annotated pdf"
+              text={i18n.t('form-editor.uploadAnnotatedPdf')}
               status="info"
               leftIcon={UploadCloudIcon}
               onPress={pickPdf}
@@ -173,12 +174,12 @@ export default function FormEditorFiles({
             >
               <NecessaryItem
                 isDone={pdfHasAnnotations}
-                todoText="PDF has no annotations!"
-                doneText="PDF has annotations"
+                todoText={i18n.t('form-editor.system.pdfHasNoAnnotations')}
+                doneText={i18n.t('form-editor.system.pdfHasAnnotations')}
                 size="tiny"
                 optional={false}
               />
-              {/* <Popover
+              <Popover
                 visible={visible}
                 anchor={renderToggleButton}
                 onBackdropPress={() => setVisible(false)}
@@ -190,7 +191,7 @@ export default function FormEditorFiles({
                   button1text="Close"
                   funcButton1={() => setVisible(false)}
                 />
-              </Popover> */}
+              </Popover>
             </View>
           </View>
         ) : (
@@ -218,11 +219,11 @@ export default function FormEditorFiles({
               //   fontSize: 'xs',
               // }}
             >
-              IMAGES
+              {i18n.t('common.images')}
             </Button>
           </View>
           <IconGrayButton
-            text="Upload an image"
+            text={i18n.t('form-editor.uploadImage')}
             status="info"
             leftIcon={UploadCloudIcon}
             onPress={pickImage}
@@ -259,7 +260,7 @@ export default function FormEditorFiles({
                     borderRadius: 16,
                   }}
                   // rounded="lg"
-                  aria-label="Uploaded image"
+                  aria-label={i18n.t('common.uploadedImage')}
                   // @ts-ignore TODO Fix this
                   source={item.data}
                   resizeMode="contain"

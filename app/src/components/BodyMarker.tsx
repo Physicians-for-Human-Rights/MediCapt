@@ -10,7 +10,7 @@ import {
   Image,
 } from 'react-native'
 import Photo from 'components/form-parts/Photo'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import _ from 'lodash'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import themedStyles from '../themeStyled'
@@ -192,6 +192,7 @@ function BodyMarker({
 
   const markerSize = 10
   const styleS = useStyleSheet(themedStyles)
+
   return (
     <>
       <View
@@ -280,7 +281,7 @@ function BodyMarker({
             />
           )}
           header={props => (
-            <ModalHeader {...props} text={t('form.mark-diagram')} />
+            <ModalHeader {...props} text={i18n.t('form.mark-diagram')} />
           )}
         >
           <View style={layout.vStack}>

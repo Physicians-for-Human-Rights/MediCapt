@@ -10,6 +10,7 @@ import SignatureCanvas, {
 import { EditIcon, CloseCircleIcon } from './Icons'
 import themedStyles from '../themeStyled'
 import ModalHeader from './styledComponents/ModalHeader'
+import i18n from 'i18n'
 
 const canvasWebStyle = `.m-signature-pad {box-shadow: none; border: none; }
                             .m-signature-pad--body {border: none;}
@@ -32,7 +33,7 @@ function Signature({
   setSignature,
 }: SignatureProps) {
   const styleS = useStyleSheet(themedStyles)
-  const [isOpen, setOpen] = useState(false)
+  const [isOpen, setOpen] = useState<boolean>(false)
   const internalClose = () => {
     setOpen(false)
     close()
@@ -62,21 +63,19 @@ function Signature({
     setSignature(undefined)
     internalClose()
   }
-  const Footer = () => {
-    return (
-      <>
-        <Button
-          appearance="ghost"
-          status="blueGray"
-          onPress={onCancel}
-          style={[styleS.mr2]}
-        >
-          Cancel and clear
-        </Button>
-        <Button onPress={onSaveButton}>Save</Button>
-      </>
-    )
-  }
+  const Footer = (
+    <>
+      <Button
+        appearance="ghost"
+        status="blueGray"
+        onPress={onCancel}
+        style={[styleS.mr2]}
+      >
+        {i18n.t('buttons.cancel-clear')}
+      </Button>
+      <Button onPress={onSaveButton}>{i18n.t('buttons.save')}</Button>
+    </>
+  )
 
   return (
     <>
@@ -93,7 +92,7 @@ function Signature({
             source={{
               uri: imageURI,
             }}
-            aria-label="The recorded siganture"
+            aria-label={i18n.t('sign.recorded-signature')}
           />
         )}
         <Button
@@ -103,7 +102,7 @@ function Signature({
           accessoryLeft={imageURI ? CloseCircleIcon : EditIcon}
           onPress={internalOpen}
         >
-          {imageURI ? 'Clear and sign again' : 'Sign'}
+          {imageURI ? i18n.t('sign.clear-and-sign') : i18n.t('sign.sign')}
         </Button>
       </View>
       <Modal
@@ -112,7 +111,9 @@ function Signature({
         backdropStyle={styleS.backdrop}
       >
         <Card
-          header={props => <ModalHeader {...props} text="Sign here" />}
+          header={props => (
+            <ModalHeader {...props} text={i18n.t('sign.sign-here')} />
+          )}
           footer={Footer}
         >
           <View style={styles.signatureNative}>

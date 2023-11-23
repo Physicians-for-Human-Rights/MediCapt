@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react'
 
 import _ from 'lodash'
 import { default as UserListComponent } from 'components/UserList'
-import { useInfo, handleStandardErrors } from 'utils/errors'
+import { formatErrorMsg } from 'utils/errors'
 import Loading from 'components/Loading'
 import { UserType, userSchema } from 'utils/types/user'
 import { findUsers } from 'api/common'
+import { useToast } from 'react-native-toast-notifications'
 
 export default function UserSearch({
   selectItem,
@@ -30,11 +31,19 @@ export default function UserSearch({
   const [filterLocation, setFilterLocation] = useState(defaultLocationUUID)
   const [filterSearchType, setFilterSearchType] = useState('')
   const [filterText, setFilterText] = useState(undefined as undefined | string)
-  const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
-
   const [refresh, setRefresh] = useState(new Date())
+  const toast = useToast()
 
+  const handleErrors = (e: any) => {
+    const res: string[] = formatErrorMsg(e)
+    const msg: string = res.join(' ')
+    toast.show(msg, {
+      type: 'danger',
+      placement: 'bottom',
+      duration: 5000,
+    })
+  }
   const doSearch = async () => {
     findUsers(
       () => setWaiting('Searching'),
@@ -44,7 +53,7 @@ export default function UserSearch({
       filterSearchType,
       filterText,
       filterUserType,
-      e => handleStandardErrors(error, warning, success, e),
+      e => handleErrors(e),
       setUsers,
       setNextKey
     )

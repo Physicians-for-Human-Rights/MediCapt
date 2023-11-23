@@ -12,8 +12,8 @@ import {
   lookupManifest,
   addOrReplaceFileToManifestByFilename,
 } from 'utils/manifests'
-import { useInfo } from 'utils/errors'
 import { getFormTypeFromManifest } from 'utils/manifests'
+import i18n from 'i18n'
 
 const FormMemo = React.memo(Form)
 
@@ -23,27 +23,26 @@ const defaultForm: FormType = {
   'storage-version': '1.0.0',
   common: {
     gender: [
-      { key: 'male', value: 'Male' },
-      { key: 'female', value: 'Female' },
-      { key: 'transgender', value: 'Transgender' },
+      { key: 'male', value: i18n.t('gender.male') as string },
+      { key: 'female', value: i18n.t('gender.female') as string },
+      { key: 'transgender', value: i18n.t('gender.transgender') as string },
     ],
   },
   sections: [
     {
       consent: {
-        title: 'Consent',
+        title: i18n.t('general.consent'),
         parts: [
           {
             'medical-exam': {
-              title: 'Authorizing medical exam',
-              description:
-                'I AUTHORIZE the clinician to conduct a medical examination including a pelvic exam.',
+              title: i18n.t('form-editor.authorizingMedicalExam'),
+              description: i18n.t('form-editor.iAuthorizeMedicalExam'),
               type: 'bool',
             },
           },
           {
             signature: {
-              title: 'Authorizing medical exam',
+              title: i18n.t('form-editor.authorizingMedicalExam'),
               type: 'signature',
             },
           },

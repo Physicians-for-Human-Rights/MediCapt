@@ -1,33 +1,34 @@
 import React from 'react'
-import { Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
-import themedStyles from '../../themeStyled'
-import styles, {
-  backgrounds,
-  borders,
-  layout,
-  shadows,
-  spacing,
-} from '../../components/styles'
-import { View, SafeAreaView, Dimensions, Pressable } from 'react-native'
-import { breakpoints } from '../../components/nativeBaseSpec'
+import { HomeOption } from 'utils/types/home'
+import HomeIndex from 'components/HomeIndex'
+import i18n from 'i18n'
 
-const { width } = Dimensions.get('window')
-
-const isWider = width > breakpoints.md
+const options: HomeOption[] = [
+  {
+    icon: 'add-box',
+    label: i18n.t('form.create-new'),
+    to: 'FormEditor',
+  },
+  {
+    icon: 'edit',
+    label: i18n.t('form.edit-existing'),
+    to: 'FormList',
+  },
+]
 
 export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
-  const styleS = useStyleSheet(themedStyles)
   return (
     <DashboardLayout
-      title={'Home'}
+      title={i18n.t('general.home')}
       displaySidebar={false}
       displayScreenTitle={false}
       backButton={false}
       navigation={navigation}
     >
-      <SafeAreaView
+      <HomeIndex options={options} navigation={navigation} route={route} />
+      {/* <SafeAreaView
         style={[
           styles.formDesignerView,
           { paddingHorizontal: isWider ? 32 : 4 },
@@ -95,7 +96,7 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
             </View>
           </Pressable>
         </View>
-      </SafeAreaView>
+      </SafeAreaView> */}
     </DashboardLayout>
   )
 }

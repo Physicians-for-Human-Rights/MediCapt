@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { userTypes, UserType } from 'utils/types/user'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 import NecessaryItem from 'components/NecessaryItem'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import _ from 'lodash'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
@@ -46,6 +46,7 @@ import {
   CloseIcon,
 } from './Icons'
 import { View } from 'react-native'
+import { useToast } from 'react-native-toast-notifications'
 
 const dummyDate = new Date()
 
@@ -82,6 +83,7 @@ export default function UserEditor({
   navigation: StackNavigationProp<RootStackParamList, 'EditUser'>
   reloadPrevious: React.MutableRefObject<boolean>
 }) {
+  const toast = useToast()
   const styleS = useStyleSheet(themedStyles)
   const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
@@ -116,8 +118,8 @@ export default function UserEditor({
   ) =>
     standardHandler(
       standardReporters,
-      inProgressMessage || t('user.submitting-user'),
-      message || t('user.submitted-user'),
+      inProgressMessage || i18n.t('user.submitting-user'),
+      message || i18n.t('user.submitted-user'),
       async () => {
         const r = await updateUser(
           //@ts-ignore We validate this before the call
@@ -141,7 +143,12 @@ export default function UserEditor({
         }
         setLocations(l)
       } catch (e) {
-        error('Failed to locations')
+        const msg = i18n.t('location.failed-locations')
+        toast.show(msg, {
+          type: 'danger',
+          placement: 'bottom',
+          duration: 5000,
+        })
       } finally {
         setWaiting(null)
       }
@@ -160,8 +167,8 @@ export default function UserEditor({
   const resetPassword = async () =>
     standardHandler(
       standardReporters,
-      t('user.password-resetting'),
-      t('user.password-reset'),
+      i18n.t('user.password-resetting'),
+      i18n.t('user.password-reset'),
       async () => {
         await resetUserPassword(user)
       }
@@ -170,8 +177,8 @@ export default function UserEditor({
   const confirmEmail = async () =>
     standardHandler(
       standardReporters,
-      t('user.confirming-email'),
-      t('user.email-confirmed'),
+      i18n.t('user.confirming-email'),
+      i18n.t('user.email-confirmed'),
       async () => {
         await confirmUserEmail(user)
         user.email_verified = 'true'
@@ -181,8 +188,8 @@ export default function UserEditor({
   const resendConfirmationEmail = async () =>
     standardHandler(
       standardReporters,
-      t('user.resending-confirmation-email'),
-      t('user.resent-confirmation-email'),
+      i18n.t('user.resending-confirmation-email'),
+      i18n.t('user.resent-confirmation-email'),
       async () => {
         await resendUserConfirmationEmail(user)
       }
@@ -197,7 +204,7 @@ export default function UserEditor({
     <>
       <View style={[layout.vStack]}>
         <FloatingLabelInput
-          label={t('user.full-official-name')}
+          label={i18n.t('user.full-official-name')}
           value={user.formal_name}
           setValue={v => setUser({ ...user, formal_name: v })}
           mt={10}
@@ -205,8 +212,8 @@ export default function UserEditor({
         <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
             label={
-              t('user.username') +
-              (createMode ? '' : ' (' + t('common.read-only') + ')')
+              i18n.t('user.username') +
+              (createMode ? '' : ' (' + i18n.t('common.read-only') + ')')
             }
             w="100%"
             containerW="45%"
@@ -220,7 +227,7 @@ export default function UserEditor({
               size="medium"
               selectedIndex={selectedIndex}
               // selectedValue={user.userType}
-              placeholder={t('user.user-type')}
+              placeholder={i18n.t('user.user-type')}
               style={{ width: '95%' }}
               onSelect={index => onSelect(index as IndexPath)}
               // onValueChange={itemValue => {
@@ -233,18 +240,23 @@ export default function UserEditor({
               {userTypes.map((e, i) => (
                 <SelectItem
                   key={e}
-                  title={t('user.' + e)}
+                  title={i18n.t('user.' + e)}
                   // value={e}
                 />
               ))}
             </Select>
           ) : (
             <FloatingLabelInput
-              label={t('user.user-type') + ' (' + t('common.read-only') + ')'}
+              label={
+                i18n.t('user.user-type') +
+                ' (' +
+                i18n.t('common.read-only') +
+                ')'
+              }
               w="100%"
               containerW="45%"
               isReadOnly
-              placeholder={t('user.' + user.userType)}
+              placeholder={i18n.t('user.' + user.userType)}
             />
           )}
         </View>
@@ -263,7 +275,7 @@ export default function UserEditor({
                   // alignSelf="center"
                   // variant="subtle"
                 >
-                  User is an administrator
+                  {i18n.t('user.user-is-admin')}
                 </Button>
               )}
               {_.includes(editorAllowedLocationIDs, 'admin') &&
@@ -279,7 +291,7 @@ export default function UserEditor({
                     style={[styleS.mb2]}
                     // _text={{ selectable: false }}
                   >
-                    Revoke admin permissions
+                    {i18n.t('user.revoke-admin-permissions')}
                   </Button>
                 ) : (
                   <Button
@@ -293,7 +305,7 @@ export default function UserEditor({
                     // _text={{ selectable: false }}
                     style={[styleS.mb2]}
                   >
-                    Make user an admin
+                    {i18n.t('user.make-user-admin')}
                   </Button>
                 ))}
             </View>
@@ -327,7 +339,7 @@ export default function UserEditor({
                 }}
                 // _text={{ selectable: false }}
               >
-                Add allowed location
+                {i18n.t('user.add-location')}
               </Button>
             </View>
             {splitLocations(user.allowed_locations) !== ['admin'] &&
@@ -354,7 +366,7 @@ export default function UserEditor({
             ) : (
               <View style={[layout.center]}>
                 <Text category="h5" status="danger">
-                  Add permissions for at least one location
+                  {i18n.t('user.system.add-permission')}
                 </Text>
               </View>
             )}
@@ -363,8 +375,8 @@ export default function UserEditor({
         <View style={[layout.center]}>
           <DateTimePicker
             isDisabled={false}
-            title={t('user.expiry-date')}
-            fancyLabel={t('user.expiry-date')}
+            title={i18n.t('user.expiry-date')}
+            fancyLabel={i18n.t('user.expiry-date')}
             date={user.expiry_date}
             open={() => false}
             close={() => false}
@@ -375,27 +387,27 @@ export default function UserEditor({
           <View style={[layout.center]}>
             <NecessaryItem
               isDone={user.enabled || false}
-              todoText="User is disabled"
-              doneText="User is enabled"
+              todoText={i18n.t('user.disabled')}
+              doneText={i18n.t('user.enabled')}
               size="tiny"
             />
           </View>
         )}
         <View style={[layout.center, spacing.pt4, spacing.pb2]}>
           <Text category="h5" style={[styleS.fontNormal, styleS.px2]}>
-            {t('user.heading.bio')}
+            {i18n.t('user.heading.bio')}
           </Text>
         </View>
         <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
-            label={t('user.short-name')}
+            label={i18n.t('user.short-name')}
             w="100%"
             containerW="45%"
             value={user.name}
             setValue={v => setUser({ ...user, name: v })}
           />
           <FloatingLabelInput
-            label={t('user.nickname')}
+            label={i18n.t('user.nickname')}
             w="100%"
             containerW="45%"
             value={user.nickname}
@@ -404,14 +416,14 @@ export default function UserEditor({
         </View>
         <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
-            label={t('user.email')}
+            label={i18n.t('user.email')}
             w="100%"
             containerW="45%"
             value={user.email}
             setValue={v => setUser({ ...user, email: v })}
           />
           <FloatingLabelInput
-            label={t('user.phone-number-with-help')}
+            label={i18n.t('user.phone-number-with-help')}
             w="100%"
             containerW="45%"
             value={user.phone_number}
@@ -419,13 +431,13 @@ export default function UserEditor({
           />
         </View>
         <FloatingLabelInput
-          label={t('user.address')}
+          label={i18n.t('user.address')}
           value={user.address}
           setValue={v => setUser({ ...user, address: v })}
         />
         <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
-            label={t('user.gender')}
+            label={i18n.t('user.gender')}
             w="100%"
             containerW="45%"
             value={user.gender}
@@ -433,8 +445,8 @@ export default function UserEditor({
           />
           <DateTimePicker
             isDisabled={false}
-            title={t('user.birthday')}
-            fancyLabel={t('user.birthday')}
+            title={i18n.t('user.birthday')}
+            fancyLabel={i18n.t('user.birthday')}
             date={user.birthdate}
             open={() => false}
             close={() => false}
@@ -443,30 +455,30 @@ export default function UserEditor({
         </View>
         <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <AnyCountry
-            placeholder={t('location.select-country')}
+            placeholder={i18n.t('location.select-country')}
             value={user.country}
             setValue={v => setUser({ ...user, country: v })}
-            mx={3}
-            mt={1}
-            mb={3}
+            // mx={3}
+            // mt={1}
+            // mb={3}
           />
           <Language
-            placeholder={t('location.select-default-language')}
+            placeholder={i18n.t('location.select-default-language')}
             value={user.language}
             setValue={v => setUser({ ...user, language: v })}
-            mx={3}
-            mt={1}
-            mb={3}
+            // mx={3}
+            // mt={1}
+            // mb={3}
           />
         </View>
         <View style={[layout.center, spacing.pt4, spacing.pb2]}>
           <Text category="h5" style={[styleS.fontNormal, styleS.px2]}>
-            {t('user.heading.official-id')}
+            {i18n.t('user.heading.official-id')}
           </Text>
         </View>
         <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
-            label={t('user.official_id_type')}
+            label={i18n.t('user.official_id_type')}
             w="100%"
             containerW="45%"
             value={user.official_id_type}
@@ -475,8 +487,8 @@ export default function UserEditor({
           <DateTimePicker
             isDisabled={false}
             // @ts-ignore TODO Why not?
-            title={t('user.official_id_expires')}
-            fancyLabel={t('user.official_id_expires')}
+            title={i18n.t('user.official_id_expires')}
+            fancyLabel={i18n.t('user.official_id_expires')}
             date={user.official_id_expires}
             open={() => false}
             close={() => false}
@@ -486,7 +498,7 @@ export default function UserEditor({
           />
         </View>
         <FloatingLabelInput
-          label={t('user.official_id_code')}
+          label={i18n.t('user.official_id_code')}
           value={user.official_id_code}
           setValue={v => setUser({ ...user, official_id_code: v })}
         />
@@ -505,31 +517,36 @@ export default function UserEditor({
         </View>
         <View style={[layout.center, spacing.pt4, spacing.pb2]}>
           <Text category="h5" style={[styleS.px2, styleS.fontNormal]}>
-            {t('user.heading.metadata')}
+            {i18n.t('user.heading.metadata')}
           </Text>
         </View>
         <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
             label={
-              t('user.id') + ' (' + t('common.automatically-created') + ')'
+              i18n.t('user.id') +
+              ' (' +
+              i18n.t('common.automatically-created') +
+              ')'
             }
             w="100%"
             containerW="45%"
             isReadOnly
-            placeholder={user.userID ? user.userID : 'Not yet created'}
+            placeholder={
+              user.userID ? user.userID : i18n.t('user.not-yet-created')
+            }
           />
           <FloatingLabelInput
             isReadOnly
             label={
-              t('user.created-on') +
+              i18n.t('user.created-on') +
               ' (' +
-              t('common.automatically-created') +
+              i18n.t('common.automatically-created') +
               ')'
             }
             placeholder={
               user && user.created_time
                 ? user.created_time.toString()
-                : 'Not yet created'
+                : i18n.t('user.not-yet-created')
             }
             w="100%"
             containerW="45%"
@@ -539,15 +556,15 @@ export default function UserEditor({
           <FloatingLabelInput
             isReadOnly
             label={
-              t('user.last-changed') +
+              i18n.t('user.last-changed') +
               ' (' +
-              t('common.automatically-created') +
+              i18n.t('common.automatically-created') +
               ')'
             }
             placeholder={
               user.last_updated_time
                 ? user.last_updated_time.toString()
-                : 'Not yet created'
+                : i18n.t('user.not-yet-created')
             }
             w="100%"
             containerW="45%"
@@ -560,7 +577,7 @@ export default function UserEditor({
               status="success"
               onPress={handleCreateUser}
             >
-              {t('user.create-user')}
+              {i18n.t('user.create-user')}
             </Button>
           </View>
         ) : (
@@ -570,7 +587,7 @@ export default function UserEditor({
                 {user.status === 'FORCE_CHANGE_PASSWORD' &&
                   user.email_verified !== 'true' && (
                     <Button status="info" onPress={resendConfirmationEmail}>
-                      {t('user.resend-confirmation-email')}
+                      {i18n.t('user.resend-confirmation-email')}
                     </Button>
                   )}
                 {user.status === 'CONFIRMED' && user.email_verified !== 'true' && (
@@ -579,7 +596,7 @@ export default function UserEditor({
                     status="warning"
                     onPress={confirmEmail}
                   >
-                    {t('user.confirm-email')}
+                    {i18n.t('user.confirm-email')}
                   </Button>
                 )}
               </View>
@@ -590,7 +607,7 @@ export default function UserEditor({
                 status="success"
                 onPress={handleSubmitUser}
               >
-                {t('user.submit-user')}
+                {i18n.t('user.submit-user')}
               </Button>
               {user.email_verified === 'true' && (
                 <Button
@@ -598,7 +615,7 @@ export default function UserEditor({
                   status="warning"
                   onPress={resetPassword}
                 >
-                  {t('user.reset-password')}
+                  {i18n.t('user.reset-password')}
                 </Button>
               )}
               {changed && <Text category="p1">Submit first</Text>}
@@ -608,7 +625,9 @@ export default function UserEditor({
                 status={user.enabled ? 'danger' : 'success'}
                 onPress={toggleUser}
               >
-                {user.enabled ? t('user.disable-user') : t('user.enable-user')}
+                {user.enabled
+                  ? i18n.t('user.disable-user')
+                  : i18n.t('user.enable-user')}
               </Button>
             </View>
           </View>

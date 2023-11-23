@@ -4,7 +4,7 @@ import {
   Text,
   useStyleSheet,
   Icon,
-  // Popover,
+  Popover,
   Card,
 } from '@ui-kitten/components'
 import _ from 'lodash'
@@ -12,6 +12,7 @@ import themedStyles from '../themeStyled'
 import { layout } from './styles'
 import { View } from 'react-native'
 import ModalHeader from './styledComponents/ModalHeader'
+import i18n from 'i18n'
 
 export default function NecessaryItem({
   todoText,
@@ -58,35 +59,34 @@ export default function NecessaryItem({
         />
         <Text status={optional ? 'warning' : 'error'}>{todoText}</Text>
         {help && (
-          <>test</>
-          // <Popover
-          //   anchor={triggerProps => {
-          //     return (
-          //       <Button
-          //         {...triggerProps}
-          //         appearance="ghost"
-          //         status="secondary"
-          //         style={[styleS.ml5, styleS.p0]}
-          //         size="sm"
-          //       >
-          //         Tell me more
-          //       </Button>
-          //     )
-          //   }}
-          // >
-          //   <Card
-          //     style={{ width: 64 }}
-          //     aria-label={'help for' + todoText}
-          //     header={props => (
-          //       <ModalHeader
-          //         {...props}
-          //         text={helpHeader ? helpHeader : 'Help'}
-          //       />
-          //     )}
-          //   >
-          //     {help}
-          //   </Card>
-          // </Popover>
+          <Popover
+            anchor={triggerProps => {
+              return (
+                <Button
+                  {...triggerProps}
+                  appearance="ghost"
+                  status="secondary"
+                  style={[styleS.ml5, styleS.p0]}
+                  size="sm"
+                >
+                  {i18n.t('general.tellMeMore')}
+                </Button>
+              )
+            }}
+          >
+            <Card
+              style={{ width: 64 }}
+              aria-label={'help for' + todoText}
+              header={props => (
+                <ModalHeader
+                  {...props}
+                  text={helpHeader ? helpHeader : 'Help'}
+                />
+              )}
+            >
+              {help}
+            </Card>
+          </Popover>
         )}
       </View>
     )

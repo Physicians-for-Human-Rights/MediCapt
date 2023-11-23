@@ -1,0 +1,12 @@
+{
+  "languages": {
+    "en": "英語",
+    "fr": "フランス語"
+  },
+  "gender": {
+    "male": "男性",
+    "female": "女性",
+    "intersex": "インターセックス",
+    "transgender": "トランスジェンダー"
+  }
+}

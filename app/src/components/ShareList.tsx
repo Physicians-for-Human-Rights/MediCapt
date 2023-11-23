@@ -12,7 +12,7 @@ import themedStyles from '../themeStyled'
 import { UserType } from 'utils/types/user'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import _ from 'lodash'
 import { Share } from 'utils/types/share'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
@@ -110,10 +110,10 @@ export function ListItemDesktop({
       <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
         <View style={[layout.vStack, layout.width45percent]}>
           <Text style={[styleS.fontBold, styleS.truncated]}>
-            {item.patientName || t('record.missing-patient-name')}
+            {item.patientName || i18n.t('record.missing-patient-name')}
           </Text>
           <Text style={[styleS.ml2, styleS.truncated]}>
-            {item.patientGender ? t('gender.' + item.patientGender) : ''}
+            {item.patientGender ? i18n.t('gender.' + item.patientGender) : ''}
           </Text>
           <Text style={[styleS.ml2, styleS.truncated]}>
             {item.patientAddress ? item.patientAddress : ''}
@@ -130,7 +130,7 @@ export function ListItemDesktop({
           <Text>{item.caseId ? item.caseId : ''}</Text>
           {_.split(item.formTags, ',').map((s: string, n: number) => (
             <Text style={[styleS.truncated]} key={n}>
-              {t('tag.' + s)}
+              {i18n.t('tag.' + s)}
             </Text>
           ))}
           <Text>
@@ -214,6 +214,7 @@ export default function ShareList({
     usersFn()
   }, [shares])
   const items = ['enabled', 'disabled']
+
   const onSelect = (index: IndexPath) => {
     setSelectedIndex(index)
     if (setFilterEnabled) {
@@ -234,7 +235,7 @@ export default function ShareList({
         <View style={[layout.center]}>
           <SelectLocation
             bg="white"
-            placeholder={t('user.enter-location')}
+            placeholder={i18n.t('user.enter-location')}
             any={'user.any-location'}
             value={filterLocationID}
             setValue={(id, _uuid) => setFilterLocationID(id)}
@@ -252,11 +253,11 @@ export default function ShareList({
               onSelect={index => onSelect(index as IndexPath)}
               // selectedValue={filterEnabled}
               // onValueChange={setFilterEnabled}
-              placeholder={t('form.filter.select-form-enabled')}
+              placeholder={i18n.t('form.filter.select-form-enabled')}
             >
               <>
                 {items.map(e => (
-                  <SelectItem key={e} title={t('form.filter.' + e)} />
+                  <SelectItem key={e} title={i18n.t('form.filter.' + e)} />
                 ))}
               </>
             </Select>
@@ -290,7 +291,7 @@ export default function ShareList({
           }
           size="lg"
           color="black"
-          placeholder={t('user.search.form-names-and-tags')}
+          placeholder={i18n.t('user.search.form-names-and-tags')}
           debounceMs={1000}
           value={filterText}
           onChangeText={setFilterText}

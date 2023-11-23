@@ -3,7 +3,7 @@ import { Pressable } from 'react-native'
 import { Text, CheckBox } from '@ui-kitten/components'
 import { StyleSheet, View } from 'react-native'
 import _ from 'lodash'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import { layout } from '../styles'
 
 const styles = StyleSheet.create({
@@ -31,6 +31,7 @@ export default function SkipButton({
   if (!skippable) {
     return <></>
   }
+
   return (
     <Pressable
       style={{
@@ -50,7 +51,7 @@ export default function SkipButton({
             checked={skipped}
             style={styles.checkbox}
             // size="small"
-            aria-label={t('form.skip-question')}
+            aria-label={i18n.t('form.skip-question')}
           />
         </View>
         <View style={[layout.center]}>
@@ -60,7 +61,7 @@ export default function SkipButton({
               paddingTop: direction === 'column' ? 4 : 0,
             }}
           >
-            SKIP
+            {i18n.t('general.skip')}
           </Text>
         </View>
       </View>

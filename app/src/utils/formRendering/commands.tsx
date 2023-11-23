@@ -4,7 +4,7 @@ import { mapSectionWithPaths } from 'utils/forms'
 import { NamedFormSection } from 'utils/types/formHelpers'
 import { FlatRecord, RecordPhoto, RecordValuePath } from 'utils/types/record'
 import { getFlatRecordValue } from 'utils/records'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import { resolveRef } from 'utils/forms'
 import { RenderCommand } from 'utils/formRendering/types'
 import { bodyImage } from 'utils/formRendering/utils'
@@ -85,11 +85,11 @@ export function allFormRenderCommands(
                 (part.repeated === 'at-least-one' ? ['at-least-one'] : [])
               suffix =
                 ' (' +
-                t('form.repeat-number') +
+                i18n.t('form.repeat-number') +
                 ' ' +
                 (_.indexOf(repeatList, repeatId) + 1) +
                 ' ' +
-                t('form.repeat-out-of') +
+                i18n.t('form.repeat-out-of') +
                 ' ' +
                 repeatList.length +
                 ')'
@@ -268,9 +268,9 @@ export function allFormRenderCommands(
                 : [
                     // TODO This is a conservative approach if no gender key is specified
                     // Do we want something else?
-                    { key: 'male', value: t('gender.Male') },
-                    { key: 'female', value: t('gender.Female') },
-                    { key: 'transgender', value: t('gender.Transgender') },
+                    { key: 'male', value: i18n.t('gender.Male') },
+                    { key: 'female', value: i18n.t('gender.Female') },
+                    { key: 'transgender', value: i18n.t('gender.Transgender') },
                   ],
               o => [o.value, o.key]
             )
@@ -443,9 +443,9 @@ export function allFormRenderCommands(
                 : [
                     // TODO This is a conservative approach if no gender key is specified
                     // Do we want something else?
-                    { key: 'male', value: t('sex.Male') },
-                    { key: 'female', value: t('sex.Female') },
-                    { key: 'trans', value: t('sex.Trans') },
+                    { key: 'male', value: i18n.t('sex.Male') },
+                    { key: 'female', value: i18n.t('sex.Female') },
+                    { key: 'trans', value: i18n.t('sex.Trans') },
                   ],
               o => [o.value, o.key]
             )
@@ -507,18 +507,18 @@ export function allFormRenderCommands(
             (part.repeated === 'at-least-one' ? ['at-least-one'] : [])
           ).length
           if (numberOfRepeats === 1) {
-            suffix = ' (' + t('form.repeated-one-time-below') + ')'
+            suffix = ' (' + i18n.t('form.repeated-one-time-below') + ')'
           } else if (numberOfRepeats > 0) {
             suffix =
               ' (' +
-              t('form.repeated') +
+              i18n.t('form.repeated') +
               ' ' +
               numberOfRepeats +
               ' ' +
-              t('form.times-below') +
+              i18n.t('form.times-below') +
               ')'
           } else {
-            suffix = ' (' + t('form.can-repeat-below') + ')'
+            suffix = ' (' + i18n.t('form.can-repeat-below') + ')'
           }
         }
         renderCommands.push({

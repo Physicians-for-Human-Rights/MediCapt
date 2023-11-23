@@ -6,7 +6,7 @@ import {
   SelectProps,
   IndexPath,
 } from '@ui-kitten/components'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import _ from 'lodash'
 
 export default function AnyCountry({
@@ -30,9 +30,9 @@ export default function AnyCountry({
     IndexPath | IndexPath[]
   >(new IndexPath(0))
 
-  const itemsArr = coutries.map(coutry => t('country.' + coutry))
+  const itemsArr = coutries.map(coutry => i18n.t('country.' + coutry))
   if (any) {
-    itemsArr.unshift(t(any))
+    itemsArr.unshift(i18n.t(any))
   }
   const assignValue = (path: IndexPath | IndexPath[]) => {
     if (!Array.isArray(path)) {

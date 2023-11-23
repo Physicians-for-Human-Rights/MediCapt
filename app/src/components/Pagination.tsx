@@ -4,10 +4,9 @@ import { Text, useStyleSheet, Spinner } from '@ui-kitten/components'
 import themedStyles from '../themeStyled'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import _ from 'lodash'
 import { UserType } from 'utils/types/user'
-import { LocationType } from 'utils/types/location'
 import { backgrounds, borders, layout, spacing } from './styles'
 import { View, Dimensions } from 'react-native'
 import { breakpoints, colors } from './nativeBaseSpec'
@@ -119,7 +118,7 @@ export default function paginateComponent(
               }}
             >
               <Text style={[styleS.colorCoolGray500, styleS.fontSizeSm]}>
-                More
+                {i18n.t('general.more')}
               </Text>
             </Pressable>
           )}

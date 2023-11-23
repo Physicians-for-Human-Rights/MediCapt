@@ -10,7 +10,7 @@ import {
   RecordMetadata,
   RecordManifestWithData,
 } from 'utils/types/recordMetadata'
-import { useInfo, handleStandardErrors } from 'utils/errors'
+import { formatErrorMsg } from 'utils/errors'
 import {
   createRecord,
   getForm,
@@ -32,9 +32,8 @@ import {
 import uuid from 'react-native-uuid'
 import useLeave from 'utils/useLeave'
 import confirmationDialog from 'utils/confirmationDialog'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import FormListStaticCompact from 'components/FormListStaticCompact'
-import ShareListStatic from 'components/ShareListStatic'
 import { goBackMaybeRefreshing } from 'utils/navigation'
 import { createShareForRecord, getSharesForRecord } from 'api/provider'
 import { Share } from 'utils/types/share'
@@ -44,6 +43,7 @@ import { breakpoints } from '../../components/nativeBaseSpec'
 import { Dimensions, SafeAreaView } from 'react-native'
 import themedStyles from '../../themeStyled'
 import ModalHeader from 'components/styledComponents/ModalHeader'
+import { useToast } from 'react-native-toast-notifications'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -56,9 +56,8 @@ export default function RecordEditor({
   const styleS = useStyleSheet(themedStyles)
   const [changed, setChanged] = useState(false)
   const [waiting, setWaiting] = useState('Loading' as null | string)
-  const [error, warning, success] = useInfo()
   const [isAssociatedModalOpen, setIsAssociatedModalOpen] = useState(false)
-
+  const toast = useToast()
   const reloadPrevious = useRef(false)
 
   // Either formMetadata or recordMetadata passed to the RecordEditor as route params
@@ -131,8 +130,8 @@ export default function RecordEditor({
   useLeave(
     navigation,
     changed,
-    'Unsaved data',
-    'Are you sure you want to leave, unsaved data will be lost',
+    i18n.t('system.unsaved-data'),
+    i18n.t('system.confirm-leave'),
     () => {}
   )
 
@@ -171,13 +170,25 @@ export default function RecordEditor({
             }
             setAssociatedRecords(l)
           } catch (e) {
-            warning('Failed to load associated records')
+            console.error(e)
+            toast.show(i18n.t('record.system.failed-to-load-records'), {
+              type: 'warning',
+              placement: 'bottom',
+              duration: 4000,
+              animationType: 'slide-in',
+            })
           }
           // Look up shares
           try {
             setShares(await getSharesForRecord(newRecordMetadata.recordUUID))
           } catch (e) {
-            warning('Failed to load shares')
+            console.error(e)
+            toast.show(i18n.t('record.system.failed-to-load-shares'), {
+              type: 'warning',
+              placement: 'bottom',
+              duration: 4000,
+              animationType: 'slide-in',
+            })
           }
         }
         // The input record overrides any form information that may have been provided.
@@ -216,7 +227,17 @@ export default function RecordEditor({
           throw Error('Missing form')
         }
       } catch (e) {
-        handleStandardErrors(error, warning, success, e)
+        // handleStandardErrors(error, warning, success, e)
+        console.error(e)
+        const res: string[] = formatErrorMsg(e)
+        const msg: string = res.join(' ')
+        toast.show(msg, {
+          type: 'danger',
+          placement: 'bottom',
+          duration: 5000,
+          // description,
+          // accessibilityAnnouncement: 'Encountered error ' + error,
+        })
       } finally {
         setWaiting(null)
       }
@@ -286,7 +307,17 @@ export default function RecordEditor({
           setChanged(false)
           if (after) after()
         } catch (e) {
-          handleStandardErrors(error, warning, success, e)
+          // handleStandardErrors(error, warning, success, e)
+          const res: string[] = formatErrorMsg(e)
+          const msg: string = res.join(' ')
+          toast.show(msg, {
+            type: 'danger',
+            placement: 'bottom',
+            duration: 5000,
+            // isClosable: true,
+            // description,
+            // accessibilityAnnouncement: 'Encountered error ' + error,
+          })
         } finally {
           setWaiting(null)
         }
@@ -313,29 +344,46 @@ export default function RecordEditor({
   const onUpgrade = useCallback(() => {
     if (!recordMetadata || !recordMetadata.formUUID) return
     if (changed)
-      error(
-        'You cannot upgrade records that have changes. Save the record first.'
-      )
+      toast.show(i18n.t('record.system.save-record-first'), {
+        type: 'danger',
+        placement: 'bottom',
+        duration: 6000,
+        // isClosable: true,
+        // description,
+        // accessibilityAnnouncement: 'Encountered error ' + error,
+      })
     confirmationDialog(
-      "Upgrading the record's form",
-      'Records keep the form version they were created at. Sometimes, forms can have important changes or fixes you want to use. You can upgrade the record in that case. This should be done rarely and only for a clear reason. If the form is incorrectly changed, this can lead to data loss! After upgrading you must reopen the record.',
+      i18n.t('record.system.upgrading'),
+      i18n.t('record.system.data-loss-warning'),
       async () => {
         try {
           reloadPrevious.current = true
           setWaiting('Upgrading')
           const formResponse = await getForm(recordMetadata.formUUID)
           if (!formResponse) {
-            error('Could not upgrade the form')
+            toast.show(i18n.t('record.system.failed-to-upgrade'), {
+              type: 'danger',
+              placement: 'bottom',
+              duration: 6000,
+            })
             setWaiting(null)
             return
           }
           if (formResponse.metadata.version === recordMetadata.formVersion) {
-            error('Record is already at latest form version')
+            toast.show(i18n.t('record.system.already-latest'), {
+              type: 'danger',
+              placement: 'bottom',
+              duration: 6000,
+            })
             setWaiting(null)
             return
           }
           if (formResponse.metadata.version < recordMetadata.formVersion) {
-            error('You cannot downgrade form versions')
+            toast.show(i18n.t('record.system.unable-to-downgrade'), {
+              type: 'danger',
+              placement: 'bottom',
+              duration: 6000,
+            })
             setWaiting(null)
             return
           }
@@ -346,7 +394,12 @@ export default function RecordEditor({
           await updateRecord(newMetadata, recordManifest)
           goBackMaybeRefreshing(route, navigation, reloadPrevious)
         } catch (e) {
-          error('Failed to upgrade the form version')
+          toast.show(i18n.t('record.system.failed-to-upgrade-version'), {
+            type: 'danger',
+            placement: 'bottom',
+            duration: 6000,
+          })
+          console.error(e)
         } finally {
           setWaiting(null)
         }
@@ -363,7 +416,13 @@ export default function RecordEditor({
           reloadPrevious.current = true
           setRecordMetadata(await sealRecord(recordMetadata))
         } catch (e) {
-          handleStandardErrors(error, warning, success, e)
+          const res: string[] = formatErrorMsg(e)
+          const msg: string = res.join(' ')
+          toast.show(msg, {
+            type: 'danger',
+            placement: 'bottom',
+            duration: 5000,
+          })
         } finally {
           setWaiting(null)
         }
@@ -430,7 +489,16 @@ export default function RecordEditor({
             })
             setShares(await getSharesForRecord(recordMetadata.recordUUID))
           } catch (e) {
-            handleStandardErrors(error, warning, success, e)
+            const res: string[] = formatErrorMsg(e)
+            const msg: string = res.join(' ')
+            toast.show(msg, {
+              type: 'danger',
+              placement: 'bottom',
+              duration: 5000,
+              // isClosable: true,
+              // description,
+              // accessibilityAnnouncement: 'Encountered error ' + error,
+            })
           } finally {
             setWaiting(null)
           }
@@ -459,7 +527,7 @@ export default function RecordEditor({
       navigation={navigation}
       displaySidebar={false}
       displayScreenTitle={false}
-      title="Fill out a record"
+      title={i18n.t('record.fill-out')}
       displayHeader={false}
       fullWidth={true}
       route={route}
@@ -525,7 +593,7 @@ export default function RecordEditor({
             header={props => (
               <ModalHeader
                 {...props}
-                text={t('record.overview.select-associated-record-to-add')}
+                text={i18n.t('record.overview.select-associated-record-to-add')}
               />
             )}
             footer={Footer}

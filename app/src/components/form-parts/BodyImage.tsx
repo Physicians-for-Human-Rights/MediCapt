@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import BodyMarker, { BodyMarkerAnnotation } from 'components/BodyMarker'
 import { useWindowDimensions } from 'react-native'
 import { disabledBackground } from 'utils/formRendering/utils'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import _ from 'lodash'
 import { View } from 'react-native'
 import styles, { layout } from '../styles'
@@ -63,7 +63,7 @@ function BodyImage({
           accessoryLeft={EditIcon}
           onPress={internalOpen}
         >
-          {t('form.mark-diagram')}
+          {i18n.t('form.mark-diagram')}
         </Button>
       </View>
       <Modal
@@ -74,7 +74,7 @@ function BodyImage({
         <Card
           footer={Footer}
           header={props => (
-            <ModalHeader {...props} text={t('form.mark-diagram')} />
+            <ModalHeader {...props} text={i18n.t('form.mark-diagram')} />
           )}
         >
           <View style={[layout.center, layout.flex1]}>

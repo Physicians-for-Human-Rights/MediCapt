@@ -6,7 +6,7 @@ import { mapSectionWithPaths, nameFormSections } from 'utils/forms'
 import { allFormRenderCommands } from 'utils/formRendering/commands'
 import { RenderCommand } from 'utils/formRendering/types'
 import formatDate from 'utils/date.ts'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import { dataURItoBlob } from 'utils/data'
 import {
   PDFDocument,

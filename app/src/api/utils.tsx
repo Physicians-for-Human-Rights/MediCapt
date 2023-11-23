@@ -1,13 +1,5 @@
 import React, { useState } from 'react'
-import { t } from 'i18n-js'
 import _ from 'lodash'
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  Feather,
-  MaterialIcons,
-} from '@expo/vector-icons'
 import { handleStandardErrors } from 'utils/errors'
 import { UserType, userSchema } from 'utils/types/user'
 import { QueryFilterForType } from 'utils/types/url'

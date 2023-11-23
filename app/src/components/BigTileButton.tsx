@@ -34,7 +34,6 @@ export default function BigTileButton({
       fontSize: +fontSize,
     },
   })
-  console.log('icon size', size)
   return (
     <Pressable
       // m={2}
@@ -52,7 +51,6 @@ export default function BigTileButton({
           },
           shadow[3],
         ]}
-        // rounded="md"
       >
         <View style={layout.vStackGap3}>
           <View style={[layout.center]}>

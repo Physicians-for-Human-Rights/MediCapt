@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { View } from 'react-native'
 import _ from 'lodash'
 import formatDate from 'utils/date.ts'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import { disabledBackground } from 'utils/formRendering/utils'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 
@@ -104,12 +104,16 @@ export default function DateTimePicker({
               disabled={isDisabled}
               style={[styleS.mx3, styleS.width75Percent, styleS.maxWidth200]}
               size="mdium"
-              placeholder={t(time ? 'form.enter-date-time' : 'form.enter-date')}
+              placeholder={i18n.t(
+                time ? 'form.enter-date-time' : 'form.enter-date'
+              )}
               onChangeText={setDateString}
               value={dateString}
               onSubmitEditing={onSaveText}
               onEndEditing={onSaveText}
-              aria-label={t(time ? 'form.enter-date-time' : 'form.enter-date')}
+              aria-label={i18n.t(
+                time ? 'form.enter-date-time' : 'form.enter-date'
+              )}
             />
           )}
           <View style={layout.center}>
@@ -121,7 +125,7 @@ export default function DateTimePicker({
               status="indigo"
               appearance="filled"
               accessoryLeft={CalenderIcon}
-              aria-label={'Open calendar'}
+              aria-label={i18n.t('buttons.openCalendar')}
             />
           </View>
         </View>

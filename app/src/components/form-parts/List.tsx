@@ -10,7 +10,7 @@ import {
 import useDebounce from 'react-use/lib/useDebounce'
 import _ from 'lodash'
 import { MultipleFormValueTypes, FormKVRawType } from 'utils/types/form'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import { disabledBackground } from 'utils/formRendering/utils'
 import uuid from 'react-native-uuid'
@@ -70,7 +70,7 @@ export function ListSelectMultiple({
             checked={values[index]}
             value={_.toString(index)}
             onChange={() => togglePathValue(index)}
-            aria-label={t('form.select-the-option') + ' ' + option}
+            aria-label={i18n.t('form.select-the-option') + ' ' + option}
             disabled={isDisabled}
           >
             {option}
@@ -89,10 +89,10 @@ export function ListSelectMultiple({
         onChange={toggleOtherChecked}
         status="info"
         style={[styleS.my2]}
-        aria-label={t('form.select-other-option')}
+        aria-label={i18n.t('form.select-other-option')}
         disabled={isDisabled}
       >
-        Other
+        {i18n.t('general.other')}
       </CheckBox>
     )
   }
@@ -116,7 +116,7 @@ export function ListSelectMultiple({
           numberOfLines={5}
           onChangeText={setRawContents}
           value={rawContents}
-          aria-label={t('form.other-details')}
+          aria-label={i18n.t('form.other-details')}
         />
       )}
     </View>
@@ -202,7 +202,7 @@ export function List({
         // }
         selectedIndex={selectedIndex}
         style={{ minWidth: 200 }}
-        placeholder={t('form.select-value')}
+        placeholder={i18n.t('form.select-value')}
         onSelect={index => onSelectLocal(index as IndexPath)}
         // onValueChange={itemValue => {
         //   if (itemValue != null) {
@@ -250,7 +250,7 @@ export function List({
           disabled={isDisabled}
           style={[styleS.mt2, styleS.width80Percent]}
           size="mdium"
-          placeholder={t('form.other-details')}
+          placeholder={i18n.t('form.other-details')}
           multiline={true}
           numberOfLines={5}
           onChangeText={setRawContents}

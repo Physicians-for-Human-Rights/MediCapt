@@ -13,7 +13,7 @@ import type { LocationType } from 'utils/types/location'
 import { locationEntityTypes } from 'utils/types/location'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 import NecessaryItem from 'components/NecessaryItem'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import _ from 'lodash'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
@@ -52,8 +52,8 @@ export default function LocationEditor({
   const handleCreateLocation = () =>
     standardHandler(
       standardReporters,
-      'Creating location',
-      'Location created',
+      i18n.t('location.system.creating'),
+      i18n.t('location.system.created'),
       async () => {
         setLocation(
           await createLocation(
@@ -68,8 +68,8 @@ export default function LocationEditor({
   const submitLocation = (updatedLocation: Partial<LocationType>) =>
     standardHandler(
       standardReporters,
-      'Updating location',
-      'Location updated',
+      i18n.t('location.system.updating'),
+      i18n.t('location.system.updated'),
       async () => {
         setLocation(
           await updateLocation(
@@ -84,8 +84,8 @@ export default function LocationEditor({
   const handleDeleteLocation = () =>
     standardHandler(
       standardReporters,
-      'Deleting location',
-      'Location deleted',
+      i18n.t('location.system.deleting'),
+      i18n.t('location.system.deleted'),
       async () => {
         await deleteLocation(
           //@ts-ignore We validate this before the call
@@ -108,14 +108,14 @@ export default function LocationEditor({
     <>
       <View style={layout.vStack}>
         <FloatingLabelInput
-          label={t('location.full-official-name')}
+          label={i18n.t('location.full-official-name')}
           value={location.legalName}
           setValue={v => setLocation({ ...location, legalName: v })}
           mt={10}
         />
         <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
-            label={'Short name'}
+            label={i18n.t('common.shortName')}
             w="100%"
             containerW="45%"
             value={location.shortName}
@@ -126,7 +126,7 @@ export default function LocationEditor({
             style={[styleS.width95Percent]}
             selectedIndex={selectedIndex}
             // selectedValue={location.entityType}
-            placeholder={t('location.entity-type')}
+            placeholder={i18n.t('location.entity-type')}
             onSelect={index => {
               if (index != null) {
                 // @ts-ignore this value comes from location.entityType, which is correct
@@ -141,25 +141,25 @@ export default function LocationEditor({
             {locationEntityTypes.map((e, i) => (
               <SelectItem
                 key={e}
-                title={t('location.entity.' + e)}
+                title={i18n.t('location.entity.' + e)}
                 // value={e}
               />
             ))}
           </Select>
         </View>
         <FloatingLabelInput
-          label={t('location.address')}
+          label={i18n.t('location.address')}
           value={location.address}
           setValue={v => setLocation({ ...location, address: v })}
         />
         <FloatingLabelInput
-          label={t('location.mailing-address')}
+          label={i18n.t('location.mailing-address')}
           value={location.mailingAddress}
           setValue={v => setLocation({ ...location, mailingAddress: v })}
         />
         <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <AnyCountry
-            placeholder={t('location.select-country')}
+            placeholder={i18n.t('location.select-country')}
             value={location.country}
             setValue={v => setLocation({ ...location, country: v })}
             mx={3}
@@ -167,7 +167,7 @@ export default function LocationEditor({
             mb={3}
           />
           <Language
-            placeholder={t('location.select-default-language')}
+            placeholder={i18n.t('location.select-default-language')}
             value={location.language}
             setValue={v => setLocation({ ...location, language: v })}
             mx={3}
@@ -177,14 +177,14 @@ export default function LocationEditor({
         </View>
         <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
-            label={'Phone number'}
+            label={i18n.t('common.phoneNumber')}
             w="100%"
             containerW="45%"
             value={location.phoneNumber}
             setValue={v => setLocation({ ...location, phoneNumber: v })}
           />
           <FloatingLabelInput
-            label={'Email'}
+            label={i18n.t('common.email')}
             w="100%"
             containerW="45%"
             value={location.email}
@@ -193,7 +193,7 @@ export default function LocationEditor({
         </View>
         <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
-            label={'Coordinates'}
+            label={i18n.t('location.coordinates')}
             w="100%"
             containerW="80%"
             value={location.coordinates}
@@ -214,13 +214,13 @@ export default function LocationEditor({
                 <ModalHeader {...props} text="Getting coordinates" />
               )}
             >
-              {t('location.coordinates-instructions')}
+              {i18n.t('location.coordinates-instructions')}
             </Card>
           </Popover> */}
         </View>
         <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
-            label={'Tag (optional)'}
+            label={i18n.t('common.tagOptional')}
             w="100%"
             containerW="45%"
             value={location.tags ? _.join(Array.from(location.tags), ' ') : ''}
@@ -231,8 +231,8 @@ export default function LocationEditor({
           <View style={layout.width45percent}>
             <NecessaryItem
               isDone={location.enabled || false}
-              todoText="Location is disabled"
-              doneText="Location is enabled"
+              todoText={i18n.t('location.disabled')}
+              doneText={i18n.t('location.enabled')}
               size="tiny"
             />
           </View>
@@ -240,25 +240,27 @@ export default function LocationEditor({
         <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
             label={
-              t('location.id') +
+              i18n.t('location.id') +
               ' (' +
-              t('location.automatically-created') +
+              i18n.t('location.automatically-created') +
               ')'
             }
             w="100%"
             containerW="45%"
             isReadOnly
             placeholder={
-              location.locationID ? location.locationID : 'Not yet created'
+              location.locationID
+                ? location.locationID
+                : i18n.t('user.not-yet-created')
             }
           />
           <FloatingLabelInput
             isReadOnly
-            label={'Created on (automatic)'}
+            label={i18n.t('location.created-auto')}
             placeholder={
               location.createdDate
                 ? location.createdDate.toString()
-                : 'Not yet created'
+                : i18n.t('user.not-yet-created')
             }
             w="100%"
             containerW="45%"
@@ -267,20 +269,22 @@ export default function LocationEditor({
         <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
           <FloatingLabelInput
             isReadOnly
-            label={'Location version (automatic)'}
+            label={i18n.t('location.version-auto')}
             w="100%"
             containerW="45%"
             placeholder={
-              location.version ? location.version : 'Not yet created'
+              location.version
+                ? location.version
+                : i18n.t('user.not-yet-created')
             }
           />
           <FloatingLabelInput
             isReadOnly
-            label={'Last changed on (automatic)'}
+            label={i18n.t('location.changed-auto')}
             placeholder={
               location.lastChangedDate
                 ? location.lastChangedDate.toString()
-                : 'Not yet created'
+                : i18n.t('user.not-yet-created')
             }
             w="100%"
             containerW="45%"
@@ -300,7 +304,7 @@ export default function LocationEditor({
               status="success"
               onPress={handleCreateLocation}
             >
-              {t('location.create-location')}
+              {i18n.t('location.create-location')}
             </Button>
           </View>
         ) : (
@@ -310,12 +314,12 @@ export default function LocationEditor({
               status="success"
               onPress={handleSubmitLocation}
             >
-              {t('location.submit-location')}
+              {i18n.t('location.submit-location')}
             </Button>
             {false && (
               // TODO We don't allow location deletion anymore
               <Button accessoryLeft={DeleteIcon} onPress={handleDeleteLocation}>
-                {t('location.delete-location')}
+                {i18n.t('location.delete-location')}
               </Button>
             )}
             {changed && <Text category="p1">*Submit first</Text>}
@@ -325,8 +329,8 @@ export default function LocationEditor({
               onPress={toggleLocation}
             >
               {location.enabled
-                ? t('location.disable-location')
-                : t('location.enable-location')}
+                ? i18n.t('location.disable-location')
+                : i18n.t('location.enable-location')}
             </Button>
           </View>
         )}

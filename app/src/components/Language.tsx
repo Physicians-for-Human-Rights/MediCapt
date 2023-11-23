@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import _ from 'lodash'
 import {
   Select,
@@ -31,9 +31,12 @@ export default function Language({
   )
 
   console.log({ any })
-  const itemsArr: string[] = [t('languages.' + 'en'), t('languages.' + 'fr')]
+  const itemsArr: string[] = [
+    i18n.t('languages.' + 'en'),
+    i18n.t('languages.' + 'fr'),
+  ]
   if (!!any) {
-    itemsArr.unshift(t(any))
+    itemsArr.unshift(i18n.t(any))
   }
   const [displayVal, setDisplayVal] = useState<string>(itemsArr[0])
   const onSelect = (index: IndexPath) => {

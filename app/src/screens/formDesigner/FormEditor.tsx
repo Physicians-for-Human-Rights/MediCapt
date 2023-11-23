@@ -27,6 +27,7 @@ import { Dimensions, View, SafeAreaView } from 'react-native'
 import styles from '../../components/styles'
 import { breakpoints, colors } from '../../components/nativeBaseSpec'
 import { CheckIcon } from '../../components/Icons'
+import i18n from 'i18n'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -39,12 +40,12 @@ function Tabs({
   setTabName: React.Dispatch<React.SetStateAction<string>>
 }) {
   const items = [
-    { label: 'Overview', val: 'Overview' },
-    { label: 'Files', val: 'Files' },
-    { label: 'Associations', val: 'Associations' },
-    { label: 'Editor', val: 'Editor' },
-    { label: 'Print preview', val: 'Printed' },
-    { label: 'Versions', val: 'Versions' },
+    { label: i18n.t('general.overview'), val: 'Overview' },
+    { label: i18n.t('general.files'), val: 'Files' },
+    { label: i18n.t('general.associations'), val: 'Associations' },
+    { label: i18n.t('general.editor'), val: 'Editor' },
+    { label: i18n.t('form.print-preview'), val: 'Printed' },
+    { label: i18n.t('general.versions'), val: 'Versions' },
   ]
   const foundIndex = items.findIndex(item => item.val === tabName)
   const [selectedIndex, setSelectedIndex] = useState<IndexPath>(
@@ -66,8 +67,8 @@ function Tabs({
           // selectedValue={tabName}
           selectedIndex={selectedIndex}
           style={{ minWidth: 100, backgroundColor: 'white', marginTop: 4 }}
-          aria-label="Select page"
-          placeholder="Select page"
+          aria-label={i18n.t('common.select-page')}
+          placeholder={i18n.t('common.select-page')}
           // _selectedItem={{
           //   bg: 'teal.600',
           //   endIcon: <CheckIcon size="5" />,
@@ -174,7 +175,7 @@ export default function FormEditor({
     fn()
   }, [])
 
-  const [tabName, setTabName] = React.useState('Overview')
+  const [tabName, setTabName] = React.useState(i18n.t('general.overview'))
   const createMode = !(formMetadata.formUUID && formMetadata.formUUID !== '')
 
   const setForm = useCallback(
@@ -200,6 +201,7 @@ export default function FormEditor({
   )
 
   let page = null
+  // have to use enum here to avoid localization string may mismatch
   switch (tabName) {
     case 'Overview':
       page = (

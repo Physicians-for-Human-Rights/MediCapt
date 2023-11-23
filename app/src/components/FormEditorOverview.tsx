@@ -5,7 +5,7 @@ import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
 import { useInfo } from 'utils/errors'
 import { standardHandler } from 'api/utils'
 import { createForm, submitForm } from 'api/formdesigner'
-import { t } from 'i18n-js'
+import i18n from 'i18n'
 import _ from 'lodash'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
@@ -91,7 +91,6 @@ export default function FormEditorOverview({
 }) {
   const [error, warning, success] = useInfo()
   const standardReporters = { setWaiting, error, warning, success }
-  const [tooltipVisible, setTooltipVisible] = useState<boolean>(false)
   const createMode = !(formMetadata.formUUID && formMetadata.formUUID !== '')
 
   const [duplicatePaths, setDuplicatePaths] = useState([] as string[])
@@ -147,12 +146,12 @@ export default function FormEditorOverview({
   return (
     <View style={layout.vStack}>
       <FloatingLabelInput
-        label={t('form-editor.title')}
+        label={i18n.t('form-editor.title')}
         value={formMetadata.title}
         setValue={v => setFormMetadata({ ...formMetadata, title: v })}
       />
       <FloatingLabelInput
-        label={t('form-editor.subtitle-optional')}
+        label={i18n.t('form-editor.subtitle-optional')}
         value={formMetadata.subtitle}
         setValue={v => setFormMetadata({ ...formMetadata, subtitle: v })}
       />
@@ -160,15 +159,15 @@ export default function FormEditorOverview({
         <View style={[layout.center, spacing.my2]}>
           <NecessaryItem
             isDone={!!formMetadata.enabled}
-            todoText="Form is disabled"
-            doneText="Form is enabled"
+            todoText={i18n.t('form-editor.disabled')}
+            doneText={i18n.t('form-editor.enabled')}
             size="tiny"
           />
         </View>
       )}
       <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
         <FloatingLabelInput
-          label={t('form-editor.official-name')}
+          label={i18n.t('form-editor.official-name')}
           w="100%"
           containerW="45%"
           value={formMetadata['official-name']}
@@ -177,7 +176,7 @@ export default function FormEditorOverview({
           }
         />
         <FloatingLabelInput
-          label={t('form-editor.official-code')}
+          label={i18n.t('form-editor.official-code')}
           w="100%"
           containerW="45%"
           value={formMetadata['official-code']}
@@ -188,24 +187,24 @@ export default function FormEditorOverview({
       </View>
       <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
         <AnyCountry
-          placeholder={t('form-editor.select-country')}
+          placeholder={i18n.t('form-editor.select-country')}
           value={formMetadata.country}
           setValue={v => setFormMetadata({ ...formMetadata, country: v })}
           // mx={3}
           // mt={1}
         />
         <Language
-          placeholder={t('form-editor.select-language')}
+          placeholder={i18n.t('form-editor.select-language')}
           value={formMetadata.language}
           setValue={v => setFormMetadata({ ...formMetadata, language: v })}
-          mx={3}
-          mt={1}
+          // mx={3}
+          // mt={1}
         />
       </View>
       <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
         <SelectLocation
           bg="white"
-          placeholder={t('form-editor.select-location')}
+          placeholder={i18n.t('form-editor.select-location')}
           value={formMetadata.locationID}
           setValue={(id, uuid) =>
             setFormMetadata({
@@ -214,11 +213,11 @@ export default function FormEditorOverview({
               locationUUID: uuid,
             })
           }
-          mx={3}
-          mt={1}
+          // mx={3}
+          // mt={1}
         />
         <FloatingLabelInput
-          label={t('form-editor.priority')}
+          label={i18n.t('form-editor.priority')}
           w="100%"
           containerW="45%"
           value={formMetadata.priority}
@@ -227,23 +226,23 @@ export default function FormEditorOverview({
       </View>
       <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
         <FloatingLabelInput
-          label={t('form-editor.created-on')}
+          label={i18n.t('form-editor.created-on')}
           w="100%"
           containerW="45%"
           isReadOnly
           placeholder={
             formMetadata.createdDate
               ? formMetadata.createdDate.toString()
-              : 'Not yet created'
+              : i18n.t('user.not-yet-created')
           }
         />
         <FloatingLabelInput
           isReadOnly
-          label={t('form-editor.last-changed')}
+          label={i18n.t('form-editor.last-changed')}
           placeholder={
             formMetadata.lastChangedDate
               ? formMetadata.lastChangedDate.toString()
-              : 'Not yet created'
+              : i18n.t('user.not-yet-created')
           }
           w="100%"
           containerW="45%"
@@ -251,21 +250,25 @@ export default function FormEditorOverview({
       </View>
       <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
         <FloatingLabelInput
-          label={t('form-editor.version')}
+          label={i18n.t('form-editor.version')}
           w="100%"
           containerW="45%"
           isReadOnly
           placeholder={
-            formMetadata.version ? formMetadata.version : 'Not yet created'
+            formMetadata.version
+              ? formMetadata.version
+              : i18n.t('user.not-yet-created')
           }
         />
         <FloatingLabelInput
-          label={t('form-editor.id')}
+          label={i18n.t('form-editor.id')}
           w="100%"
           containerW="45%"
           isReadOnly
           placeholder={
-            formMetadata.formID ? formMetadata.formID : 'Not yet created'
+            formMetadata.formID
+              ? formMetadata.formID
+              : i18n.t('user.not-yet-created')
           }
         />
       </View>
@@ -281,51 +284,49 @@ export default function FormEditorOverview({
           //   fontSize: 'xs',
           // }}
         >
-          FORM CHECKLIST
+          {i18n.t('form-editor.formChecklist')}
         </Button>
         <NecessaryItem
           isDone={isInManifest(manifest, e => e.filename == 'form.yaml')}
-          todoText="No form body filled out"
-          doneText="Form body exists"
+          todoText={i18n.t('form-editor.system.noFormBodyFilled')}
+          doneText={i18n.t('form-editor.system.formBodyExists')}
           size="tiny"
           optional={false}
-          help="Click the editor tab and fill in the form body"
+          help={i18n.t('form-editor.system.clickEditorTabAndFillForm')}
         />
         <NecessaryItem
           isDone={_.isEmpty(pathsWithPeriods)}
-          todoText="Form has paths with periods in it"
-          doneText="From paths have no periods"
+          todoText={i18n.t('form-editor.system.formPathsHasPeriods')}
+          doneText={i18n.t('form-editor.system.formPathNoPeriod')}
           size="tiny"
-          helpHeader="Paths with periods"
-          help={
-            'Your form has a path with a period. Any text in a form that comes before a colon is part of a path and cannot have a period in it. The following paths have periods in them.' +
-            JSON.stringify(pathsWithPeriods)
-          }
+          helpHeader={i18n.t('form-editor.system.pathWithPeriods')}
+          help={i18n.t('form-editor.system.pathWithPeriods', {
+            path: JSON.stringify(pathsWithPeriods),
+          })}
         />
         <NecessaryItem
           isDone={_.isEmpty(duplicatePaths)}
-          todoText="From has duplicate paths"
-          doneText="Form paths are unique"
+          todoText={i18n.t('form-editor.system.pathNotUnique')}
+          doneText={i18n.t('form-editor.system.pathsUnique')}
           size="tiny"
-          helpHeader="Dupicate form paths"
-          help={
-            'Your form has duplicate paths in the definition. You must rename at least one these. ' +
-            duplicatePaths
-          }
+          helpHeader={i18n.t('form-editor.system.duplicateFormPath')}
+          help={i18n.t('form-editor.system.duplicateFormPath', {
+            path: duplicatePaths,
+          })}
         />
         <NecessaryItem
           isDone={isInManifest(manifest, e => e.filename == 'form.pdf')}
-          todoText="No PDF uploaded"
-          doneText="PDF uploaded"
+          todoText={i18n.t('form-editor.system.noPdfUploaded')}
+          doneText={i18n.t('form-editor.system.pdfUploaded')}
           size="tiny"
           optional={true}
-          help="Without a pdf form to fill out we will still generate a pdf with automatic formatting"
+          help={i18n.t('form-editor.system.pdfWillBeGenerated')}
         />
         {isInManifest(manifest, e => e.filename == 'form.pdf') && (
           <NecessaryItem
             isDone={false}
-            todoText="Some parts of the PDF not filled out"
-            doneText="All PDF fields covered"
+            todoText={i18n.t('form-editor.system.pdfNotFullyFilled')}
+            doneText={i18n.t('form-editor.system.pdfFullyFilled')}
             size="tiny"
             help="TODO implement this"
           />
@@ -338,7 +339,7 @@ export default function FormEditorOverview({
             status="success"
             onPress={handleCreateForm}
           >
-            {t('form-editor.create-form')}
+            {i18n.t('form-editor.create-form')}
           </Button>
         </View>
       ) : (
@@ -348,7 +349,7 @@ export default function FormEditorOverview({
             status="success"
             onPress={handleSubmitForm}
           >
-            {t('form-editor.submit-form')}
+            {i18n.t('form-editor.submit-form')}
           </Button>
 
           {changed && <Text category="p1">*Submit first</Text>}
@@ -359,8 +360,8 @@ export default function FormEditorOverview({
             onPress={toggleForm}
           >
             {formMetadata.enabled
-              ? t('form-editor.disable-form')
-              : t('form-editor.enable-form')}
+              ? i18n.t('form-editor.disable-form')
+              : i18n.t('form-editor.enable-form')}
           </Button>
         </View>
       )}
