@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import Picker from 'react-native-modal-datetime-picker'
-import i18n from 'i18n'
 
 import { Button } from '@ui-kitten/components'
 import _ from 'lodash'
 import { colors } from './nativeBaseSpec'
+import { useStoreState, useStoreDispatch } from '../utils/store'
 
 export default function DateTimePicker({
   title,
@@ -16,7 +16,8 @@ export default function DateTimePicker({
   isDisabled,
 }) {
   const [modalVisible, setModalVisible] = useState(false)
-
+  const state = useStoreState()
+  const i18n = state?.i18n
   const openInternal = () => {
     setModalVisible(true)
     open()

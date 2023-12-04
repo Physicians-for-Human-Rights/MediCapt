@@ -3,7 +3,7 @@ import { Pressable } from 'react-native'
 import { Text, CheckBox } from '@ui-kitten/components'
 import { StyleSheet, View } from 'react-native'
 import _ from 'lodash'
-import i18n from 'i18n'
+import { useStoreState } from 'utils/store'
 import { layout } from '../styles'
 
 const styles = StyleSheet.create({
@@ -31,7 +31,8 @@ export default function SkipButton({
   if (!skippable) {
     return <></>
   }
-
+  const state = useStoreState()
+  const i18n = state?.i18n
   return (
     <Pressable
       style={{

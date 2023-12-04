@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { View } from 'react-native'
 import _ from 'lodash'
 import formatDate from 'utils/date.ts'
-import i18n from 'i18n'
+
 import { disabledBackground } from 'utils/formRendering/utils'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 
@@ -19,6 +19,7 @@ import {
 import { layout } from './styles'
 import ModalHeader from './styledComponents/ModalHeader'
 import themedStyles from '../themeStyled'
+import { useStoreState } from '../utils/store'
 
 export default function DateTimePicker({
   title,
@@ -30,6 +31,8 @@ export default function DateTimePicker({
   isDisabled,
   fancyLabel = undefined,
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   const formatString = time ? 'yyyy-MM-dd h:mm a' : 'yyyy-MM-dd'
   const [modalVisible, setModalVisible] = useState(false)

@@ -5,7 +5,8 @@ import themedStyles from '../themeStyled'
 import { LocationType } from 'utils/types/location'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
+
 import _ from 'lodash'
 import { View, Dimensions } from 'react-native'
 import { breakpoints } from './nativeBaseSpec'
@@ -15,6 +16,8 @@ const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
 
 export function ListItem({ item }: { item: LocationType }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
 
   return (
@@ -130,6 +133,8 @@ export function ListItemDesktop({
   item: LocationType | string
   selectItem: (location: LocationType) => any
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   return (
     <Pressable
@@ -209,6 +214,8 @@ export default function LocationListStatic({
   locations: (LocationType | string)[]
   selectItem: (location: LocationType) => any
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   return (
     <>
       <View

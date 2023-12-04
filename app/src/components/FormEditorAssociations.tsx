@@ -10,7 +10,7 @@ import {
 } from '@ui-kitten/components'
 import { stripFileExtension } from 'utils/forms'
 import _ from 'lodash'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 import { getFormCached } from 'api/common'
 // @ts-ignore TODO TS doesn't understand .native.js and .web.js files
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
@@ -30,6 +30,8 @@ const isWider = width > breakpoints.md
 
 const Footer = (props: any) => {
   const { setIsSearchModalOpen } = props
+  const state = useStoreState()
+  const i18n = state?.i18n
   return (
     <Button
       appearance="ghost"
@@ -53,6 +55,8 @@ export default function FormEditorAssociations({
   manifest: FormManifestWithData
   setManifest: React.Dispatch<React.SetStateAction<FormManifestWithData>>
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   const [forms, setForms] = useState({} as Record<string, FormMetadata>)
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)

@@ -27,7 +27,7 @@ import { Dimensions, View, SafeAreaView } from 'react-native'
 import styles from '../../components/styles'
 import { breakpoints, colors } from '../../components/nativeBaseSpec'
 import { CheckIcon } from '../../components/Icons'
-import i18n from 'i18n'
+import { useStoreState } from 'utils/store'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -39,6 +39,8 @@ function Tabs({
   tabName: string
   setTabName: React.Dispatch<React.SetStateAction<string>>
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const items = [
     { label: i18n.t('general.overview'), val: 'Overview' },
     { label: i18n.t('general.files'), val: 'Files' },
@@ -128,6 +130,8 @@ export default function FormEditor({
   route,
   navigation,
 }: RootStackScreenProps<'FormEditor'>) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const [historyMode, setHistoryMode] = useState(false)
   const [changed, setChanged] = useState(false)
   const [waiting, setWaiting] = useState(null as null | string)

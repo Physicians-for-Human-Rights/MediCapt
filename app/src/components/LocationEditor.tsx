@@ -13,7 +13,7 @@ import type { LocationType } from 'utils/types/location'
 import { locationEntityTypes } from 'utils/types/location'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 import NecessaryItem from 'components/NecessaryItem'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 import _ from 'lodash'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
@@ -40,6 +40,8 @@ export default function LocationEditor({
   changed: boolean
   reloadPrevious: React.MutableRefObject<boolean>
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)

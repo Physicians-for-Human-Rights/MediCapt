@@ -30,7 +30,8 @@ import {
 import themedStyles from '../themeStyled'
 import { DownloadCloudIcon, UploadCloudIcon, CloseCircleIcon } from './Icons'
 import { IconGrayButton } from './styledComponents/IconButtons'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
+
 import PopoverContent from './PopOverContent'
 
 const { width } = Dimensions.get('window')
@@ -47,6 +48,8 @@ export default function FormEditorFiles({
   manifest: FormManifestWithData
   setManifest: React.Dispatch<React.SetStateAction<FormManifestWithData>>
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   const [visible, setVisible] = useState<boolean>(false)
   const pickPdf = async () => {

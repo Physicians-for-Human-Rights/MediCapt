@@ -8,7 +8,8 @@ import { UserType } from 'utils/types/user'
 import { SafeAreaView, Dimensions } from 'react-native'
 import { breakpoints } from '../../components/nativeBaseSpec'
 import styles, { backgrounds } from '../../components/styles'
-import i18n from 'i18n'
+import { useStoreState } from 'utils/store'
+
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
 
@@ -48,6 +49,8 @@ export default function EditUser({
   const [user, setUser] = useState(
     ((route.params && route.params.user) || defaultUser) as Partial<UserType>
   )
+  const state = useStoreState()
+  const i18n = state?.i18n
   const [lastSubmitted, setLastSubmitted] = useState(
     null as Partial<UserType> | null
   )

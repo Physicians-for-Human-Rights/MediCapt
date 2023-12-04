@@ -9,7 +9,7 @@ import { LocationType } from 'utils/types/location'
 import { View, Dimensions, SafeAreaView } from 'react-native'
 import styles, { backgrounds, layout } from '../../components/styles'
 import { breakpoints } from '../../components/nativeBaseSpec'
-import i18n from 'i18n'
+import { useStoreState } from 'utils/store'
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
 
@@ -43,6 +43,8 @@ export default function EditLocation({
     ((route.params && route.params.location) ||
       defaultLocation) as Partial<LocationType>
   )
+  const state = useStoreState()
+  const i18n = state?.i18n
   const [lastSubmitted, setLastSubmitted] = useState(
     null as Partial<LocationType> | null
   )

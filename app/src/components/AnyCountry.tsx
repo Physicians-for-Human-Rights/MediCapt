@@ -2,29 +2,29 @@ import React, { useState } from 'react'
 import {
   Select,
   SelectItem,
-  SelectItemProps,
   SelectProps,
   IndexPath,
 } from '@ui-kitten/components'
-import i18n from 'i18n'
 import _ from 'lodash'
+import { useStoreState } from '../utils/store'
 
 export default function AnyCountry({
   placeholder,
-  value,
+  // value,
   setValue,
   bg,
   any,
-  itemProps,
-  ...props
-}: {
+}: // itemProps,
+{
   placeholder: string
   value: string | undefined
   setValue: (val: string) => any
   bg?: string
   any?: string
-  itemProps?: SelectItemProps
+  // itemProps?: SelectItemProps
 } & SelectProps) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const [visibleVal, setVisibleVal] = useState<string>()
   const [selectedIndex, setSelectedIndex] = React.useState<
     IndexPath | IndexPath[]

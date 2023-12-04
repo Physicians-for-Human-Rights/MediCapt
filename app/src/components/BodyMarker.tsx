@@ -10,13 +10,14 @@ import {
   Image,
 } from 'react-native'
 import Photo from 'components/form-parts/Photo'
-import i18n from 'i18n'
+
 import _ from 'lodash'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import themedStyles from '../themeStyled'
 import { spacing, layout } from './styles'
 import ModalFooter from './styledComponents/ModalFooter'
 import ModalHeader from './styledComponents/ModalHeader'
+import { useStoreState, useStoreDispatch } from '../utils/store'
 
 function squareToImageCoordinates(
   p: {
@@ -89,6 +90,8 @@ function BodyMarker({
   onCoverPress?: () => any
   isDisabled: boolean
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const [imageSquareSize, setImageSquareSize] = useState(0)
   const [imageDimensions, setImageDimensions] = useState(
     null as null | { w: number; h: number }

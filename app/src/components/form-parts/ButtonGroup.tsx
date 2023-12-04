@@ -1,12 +1,9 @@
 import React from 'react'
 // import { IButtonGroupProps } from 'native-base/lib/typescript/components/primitives/Button'
 import _ from 'lodash'
-import {
-  Button,
-  ButtonGroup as ButtonGroupKitten,
-  useStyleSheet,
-} from '@ui-kitten/components'
-import themedStyles from '../../themeStyled'
+import { Text, ButtonGroup as ButtonGroupKitten } from '@ui-kitten/components'
+import { Pressable } from 'react-native'
+import { colors } from '../nativeBaseSpec'
 
 export default function ButtonGroup<T>({
   selected,
@@ -28,22 +25,17 @@ export default function ButtonGroup<T>({
   isDisabled?: boolean
   justifyContent?: any
 } & Partial<any>) {
-  const styleS = useStyleSheet(themedStyles)
   return (
     <ButtonGroupKitten
-      size="medium"
       style={{
         flex: fullwidth ? 1 : undefined,
         justifyContent: justifyContent || 'flex-end',
         width: fullwidth ? '100%' : '30%',
       }}
-      status={colorScheme}
-      // isDisabled={isDisabled}
-      // {...props}
     >
       {_.map(options, (v: T, k: string) => {
         return (
-          <Button
+          <Pressable
             key={k}
             disabled={isDisabled}
             // style={{
@@ -51,15 +43,41 @@ export default function ButtonGroup<T>({
             //   maxWidth: maxW,
             //   paddingHorizontal: 20,
             // }}
-            // _text={{ bold: true }}
             onPress={() => onPress(v)}
-            appearance={selected === v ? 'filled' : 'outline'}
             aria-label={'button ' + k}
+            style={[
+              baseStyle,
+              selected === v ? selectedStyle : unseledtedStyle,
+            ]}
           >
-            {k}
-          </Button>
+            <Text style={selected === v ? selectedText : unselectedText}>
+              {k}
+            </Text>
+          </Pressable>
         )
       })}
     </ButtonGroupKitten>
   )
+}
+const baseStyle = {
+  paddingHorizontal: 10,
+  paddingVertical: 8,
+  fontWeight: 600,
+}
+const unseledtedStyle = {
+  backgroundColor: 'white',
+  // color: colors.primary[500] + ' !important',
+  border: `1px solid ${colors.primary[500]}`,
+  color: colors.primary[500],
+}
+const selectedStyle = {
+  backgroundColor: colors.primary[500],
+  color: 'white',
+}
+const selectedText = {
+  color: 'white',
+}
+const unselectedText = {
+  fontWeight: 600,
+  colors: colors.primary[500],
 }

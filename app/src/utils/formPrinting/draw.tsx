@@ -33,7 +33,7 @@ import {
   randAddress,
   randPhoneNumber,
 } from '@ngneat/falso'
-import i18n from 'i18n'
+
 import { dataURItoBlob } from 'utils/data'
 import {
   PDFDocument,

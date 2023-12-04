@@ -11,7 +11,7 @@ import {
 import _ from 'lodash'
 import { ZodError } from 'zod'
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 import { useBreakpointValue } from '../hooks/useBreakpointValue'
 import FormMenu from 'components/FormMenu'
 import FromTop from 'components/FormTop'
@@ -78,6 +78,8 @@ function recordOverviewPage(
   shares: Share[],
   selectShare: (r: Share) => any
 ): RenderCommand[] {
+  const state = useStoreState()
+  const i18n = state?.i18n
   return _.concat(
     isSealed
       ? _.concat(
@@ -324,6 +326,8 @@ export default function Form({
   reloadPrevious: React.MutableRefObject<boolean>
   readOnly?: boolean
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const isSealed =
     (recordMetadataRef.current && recordMetadataRef.current.sealed) || false
   const [flatRecord, { set: setFlatRecordValue }] = useMap(() =>

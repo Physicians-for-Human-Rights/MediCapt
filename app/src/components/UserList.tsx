@@ -13,7 +13,7 @@ import { View } from 'react-native'
 import themedStyles from '../themeStyled'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 import _ from 'lodash'
 import { UserType } from 'utils/types/user'
 import { UserKindList } from 'utils/userTypes'
@@ -30,7 +30,8 @@ const isWider = width > breakpoints.md
 
 export function ListItem({ item }: { item: UserType }) {
   const styleS = useStyleSheet(themedStyles)
-
+  const state = useStoreState()
+  const i18n = state?.i18n
   return (
     <Pressable
       style={[
@@ -237,6 +238,8 @@ export default function UserList({
   allowedUserTypes?: string[]
   onlyEnabledUsers?: boolean
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   const [selectedIndexUser, setSelectedIndexUser] = useState<IndexPath>()
   const [selectedIndexEnabled, setSelectedIndexEnabled] = useState<IndexPath>()

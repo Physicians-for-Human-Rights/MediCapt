@@ -29,7 +29,7 @@ import { StackNavigationProp } from '@react-navigation/stack'
 import styles, { layout, spacing } from './styles'
 import { AlertIcon } from './Icons'
 import { useToast } from 'react-native-toast-notifications'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 
 export default function FormEditorVersions({
   formMetadata,
@@ -54,6 +54,8 @@ export default function FormEditorVersions({
   latestVersion: React.MutableRefObject<string | undefined>
   navigation: StackNavigationProp<RootStackParamList, 'FormEditor'>
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   const [selectedVersion, setSelectedVersionRaw] = useState(
     formMetadata.version

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import BodyMarker, { BodyMarkerAnnotation } from 'components/BodyMarker'
 import { useWindowDimensions } from 'react-native'
 import { disabledBackground } from 'utils/formRendering/utils'
-import i18n from 'i18n'
+import { useStoreState } from '../../utils/store'
 import _ from 'lodash'
 import { View } from 'react-native'
 import styles, { layout } from '../styles'
@@ -26,6 +26,8 @@ function BodyImage({
   removeAnnotation: (n: number) => any
   isDisabled: boolean
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   const window = useWindowDimensions()
   const modalSize = Math.min(window.height, window.width)

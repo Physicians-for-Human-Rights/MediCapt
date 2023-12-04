@@ -3,7 +3,7 @@ import { Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import themedStyles from '../themeStyled'
 // @ts-ignore Record some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 import _ from 'lodash'
 import { RecordMetadata } from 'utils/types/recordMetadata'
 import { FormMetadata } from 'utils/types/formMetadata'
@@ -28,6 +28,8 @@ export function ListItemMobile({
   forms: Record<string, FormMetadata>
   users: Record<string, Partial<UserType>>
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   return (
     <Pressable

@@ -45,7 +45,7 @@ const HomeIndex = (props: Props) => {
       <View style={[layout.center, spacing.pt5]}>
         <FlatList
           numColumns={shape.columns}
-          data={options}
+          data={options.length ? options : []}
           renderItem={({ item }) => (
             <BigTileButton
               icon={item.icon}

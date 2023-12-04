@@ -24,7 +24,7 @@ import { mapSectionWithPaths, nameFormSections } from 'utils/forms'
 import { allFormRenderCommands } from 'utils/formRendering/commands'
 import { RenderCommand } from 'utils/formRendering/types'
 import formatDate from 'utils/date.ts'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 import { dataURItoBlob } from 'utils/data'
 import { PageInfo, Row, rowSizeByType } from 'utils/formPrinting/types'
 import { mkPageInfo } from 'utils/formPrinting/layout'
@@ -50,6 +50,8 @@ export default function FormPrinted({
   setManifest: any
   recordMetadata?: Partial<RecordMetadata>
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const [width, setWidth] = useState(null as number | null)
   const [debug, setDebug] = useState(false)
   const [usPageSize, setUsPageSize] = useState(true)

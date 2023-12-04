@@ -12,7 +12,7 @@ import { default as FormDesignerApp } from 'screens/formDesigner/App'
 import { default as ResearcherApp } from 'screens/researcher/App'
 // import * as Localization from 'expo-localization'
 // import i18n from 'i18n-js'
-// import en from 'localization/en'
+// import en from './localization/en.json'
 // import fr from 'localization/fr'
 import * as Sentry from 'sentry-expo'
 import { ApplicationProvider, IconRegistry } from '@ui-kitten/components'
@@ -20,6 +20,7 @@ import { default as themeKitten } from './custom-theme.json'
 import * as material from '@eva-design/material'
 import { MaterialIconsPack } from './MaterialIcons' // <-- Import Material icons
 import { ToastProvider } from 'react-native-toast-notifications'
+import * as eva from '@eva-design/eva'
 
 Sentry.init({
   dsn: 'https://6fa825c71abb485092554ccb55e4cf67@o1300636.ingest.sentry.io/6535444',
@@ -58,19 +59,20 @@ function App({
   user: any
   userKind: UserKind
 }) {
-  const [storeUser, setStoreUser] = useUser()
-  const [storeSignOut, setStoreSignOut] = useSignOut()
+  console.log('userkind', userKind)
+  // const [storeUser, setStoreUser] = useUser()
+  // const [storeSignOut, setStoreSignOut] = useSignOut()
   const mockUser = {
     username: 'test user',
     email: 'test@gmail.com',
   }
   let userKindMock: string = 'Provider'
 
-  useEffect(() => {
-    // setStoreUser(user)
-    setStoreUser(mockUser)
-    setStoreSignOut(signOut)
-  }, [user, signOut])
+  // useEffect(() => {
+  //   // setStoreUser(user)
+  //   setStoreUser(mockUser)
+  //   setStoreSignOut(signOut)
+  // }, [user, signOut])
 
   switch (userKind) {
     case UserKind.Provider:
@@ -100,7 +102,7 @@ function LoginScreen() {
             {...material}
             theme={{ ...material.light, ...themeKitten }}
           >
-            <ProviderApp />
+            <AuthApp />
           </ApplicationProvider>
         </ToastProvider>
       </StoreProvider>

@@ -4,27 +4,34 @@ import { RootStackScreenProps } from 'utils/formDesigner/navigation'
 import { useUser } from 'utils/store'
 import HomeIndex from 'components/HomeIndex'
 import { HomeOption } from 'utils/types/home'
-import i18n from 'i18n'
+import { useStoreState } from 'utils/store'
 
-const options: HomeOption[] = [
-  {
-    icon: 'search',
-    label: i18n.t('common.find-share'),
-    to: 'FindShare',
-  },
-  {
-    icon: 'settings',
-    label: i18n.t('general.settings'),
-    to: 'Settings',
-  },
-  {
-    icon: 'school',
-    label: i18n.t('general.training'),
-    to: 'Training',
-  },
-]
+const createOptions = (): HomeOption[] => {
+  const state = useStoreState()
+  const i18n = state?.i18n
+  return [
+    {
+      icon: 'search',
+      label: i18n.t('common.find-share'),
+      to: 'FindShare',
+    },
+    {
+      icon: 'settings',
+      label: i18n.t('general.settings'),
+      to: 'Settings',
+    },
+    {
+      icon: 'school',
+      label: i18n.t('general.training'),
+      to: 'Training',
+    },
+  ]
+}
 
 export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
+  const options = createOptions()
+  const state = useStoreState()
+  const i18n = state?.i18n
   const user = {
     attributes: {
       nickname: 'nickname',

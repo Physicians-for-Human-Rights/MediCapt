@@ -8,12 +8,14 @@ import Loading from 'components/Loading'
 import { RootStackScreenProps } from 'utils/associate/navigation'
 import { getRecordShares } from 'api/associate'
 import { useToast } from 'react-native-toast-notifications'
-import i18n from 'i18n'
+import { useStoreState } from 'utils/store'
 
 export default function FindShare({
   route,
   navigation,
 }: RootStackScreenProps<'FindShare'>) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const [shares, setShares] = useState([] as Share[])
   const [nextKey, setNextKey] = useState(undefined as undefined | string)
 

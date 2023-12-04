@@ -10,7 +10,7 @@ import {
 import useDebounce from 'react-use/lib/useDebounce'
 import _ from 'lodash'
 import { MultipleFormValueTypes, FormKVRawType } from 'utils/types/form'
-import i18n from 'i18n'
+import { useStoreState } from 'utils/store'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
 import { disabledBackground } from 'utils/formRendering/utils'
 import uuid from 'react-native-uuid'
@@ -45,6 +45,8 @@ export function ListSelectMultiple({
   setOtherText: (s: string | undefined) => void
   isDisabled: boolean
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   const [rawContents, setRawContents] = React.useState(otherText)
   // NB useDebouce fires on start. We don't want that here, it modifies records
@@ -151,6 +153,8 @@ export function List({
       options: string[] | boolean[] | number[] | null
     }
 )) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   const [rawContents, setRawContents] = React.useState(
     (otherValue === null || otherValue === undefined

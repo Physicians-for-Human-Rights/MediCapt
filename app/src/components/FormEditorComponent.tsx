@@ -13,44 +13,80 @@ import {
   addOrReplaceFileToManifestByFilename,
 } from 'utils/manifests'
 import { getFormTypeFromManifest } from 'utils/manifests'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 
 const FormMemo = React.memo(Form)
 
 function onCancel() {}
 
-const defaultForm: FormType = {
-  'storage-version': '1.0.0',
-  common: {
-    gender: [
-      { key: 'male', value: i18n.t('gender.male') as string },
-      { key: 'female', value: i18n.t('gender.female') as string },
-      { key: 'transgender', value: i18n.t('gender.transgender') as string },
-    ],
-  },
-  sections: [
-    {
-      consent: {
-        title: i18n.t('general.consent'),
-        parts: [
-          {
-            'medical-exam': {
-              title: i18n.t('form-editor.authorizingMedicalExam'),
-              description: i18n.t('form-editor.iAuthorizeMedicalExam'),
-              type: 'bool',
-            },
-          },
-          {
-            signature: {
-              title: i18n.t('form-editor.authorizingMedicalExam'),
-              type: 'signature',
-            },
-          },
-        ],
-      },
+const createDefaultForm = (): FormType => {
+  const state = useStoreState()
+  const i18n = state?.i18n
+  return {
+    'storage-version': '1.0.0',
+    common: {
+      gender: [
+        { key: 'male', value: i18n.t('gender.male') as string },
+        { key: 'female', value: i18n.t('gender.female') as string },
+        { key: 'transgender', value: i18n.t('gender.transgender') as string },
+      ],
     },
-  ],
+    sections: [
+      {
+        consent: {
+          title: i18n.t('general.consent'),
+          parts: [
+            {
+              'medical-exam': {
+                title: i18n.t('form-editor.authorizingMedicalExam'),
+                description: i18n.t('form-editor.iAuthorizeMedicalExam'),
+                type: 'bool',
+              },
+            },
+            {
+              signature: {
+                title: i18n.t('form-editor.authorizingMedicalExam'),
+                type: 'signature',
+              },
+            },
+          ],
+        },
+      },
+    ],
+  }
 }
+// const defaultForm: FormType = {
+//   'storage-version': '1.0.0',
+//   common: {
+//     gender: [
+//       { key: 'male', value: i18n.t('gender.male') as string },
+//       { key: 'female', value: i18n.t('gender.female') as string },
+//       { key: 'transgender', value: i18n.t('gender.transgender') as string },
+//     ],
+//   },
+//   sections: [
+//     {
+//       consent: {
+//         title: i18n.t('general.consent'),
+//         parts: [
+//           {
+//             'medical-exam': {
+//               title: i18n.t('form-editor.authorizingMedicalExam'),
+//               description: i18n.t('form-editor.iAuthorizeMedicalExam'),
+//               type: 'bool',
+//             },
+//           },
+//           {
+//             signature: {
+//               title: i18n.t('form-editor.authorizingMedicalExam'),
+//               type: 'signature',
+//             },
+//           },
+//         ],
+//       },
+//     },
+//   ],
+// }
 
 export default function FormEditorComponent({
   manifest,
@@ -59,6 +95,7 @@ export default function FormEditorComponent({
   manifest: FormManifestWithData
   setForm: (form: FormType) => any
 }) {
+  const defaultForm: FormType = createDefaultForm()
   const [contents, setContents] = React.useState('' as string)
   const [localForm, setLocalForm] = React.useState({
     'storage-version': '1.0.0',

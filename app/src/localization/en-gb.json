@@ -1,8 +1,7 @@
 {
-  "en": {
+  "en-gb": {
     "languages": {
       "en": "English",
-      "en-gb": "English (United Kingdom)",
       "fr": "French"
     },
     "gender": {
@@ -52,12 +51,10 @@
       "ok": "Okay",
       "todo": "TODO",
       "other": "Other",
-      "askForHelp": "Ask for help from",
-      "record": "Record",
-      "dates": "Dates"
+      "askForHelp": "Ask for help from"
     },
     "user": {
-      "Provider": "Healthcare provider",
+      "Provider": "Healthcare provider -gb",
       "Associate": "Associate",
       "Manager": "Manager",
       "FormDesigner": "Form designer",
@@ -69,7 +66,7 @@
       "enter-location": "Narrow by location",
       "any-location": "Any location",
       "user-editor": "User Editor",
-      "logInAs": "Log in as",
+      "logInAs": "Log in as -gb",
       "search-by": {
         "username": "Search username",
         "email": "Search email",

@@ -21,7 +21,7 @@ import { SafeAreaView, Dimensions } from 'react-native'
 import styles, { layout } from '../../components/styles'
 import { breakpoints } from '../../components/nativeBaseSpec'
 import { useToast } from 'react-native-toast-notifications'
-import i18n from 'i18n'
+import { useStoreState } from 'utils/store'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -31,6 +31,8 @@ export default function ShareViewer({
   route,
   navigation,
 }: RootStackScreenProps<'ShareViewer'>) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const [waiting, setWaiting] = useState('Loading' as null | string)
 
   const [share, setShare] = useState(route.params.share as Share)

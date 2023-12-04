@@ -8,7 +8,7 @@ import { Button, useStyleSheet, Modal, Card } from '@ui-kitten/components'
 import { CloseCircleIcon, EditIcon } from './Icons'
 import themedStyles from '../themeStyled'
 import ModalHeader from './styledComponents/ModalHeader'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 
 export type SignatureProps = {
   isDisabled: boolean
@@ -24,6 +24,8 @@ function Signature({
   close,
   setSignature,
 }: SignatureProps) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   const [isOpen, setOpen] = useState(false)
   const internalClose = () => {

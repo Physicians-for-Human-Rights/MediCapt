@@ -32,7 +32,7 @@ import {
 import uuid from 'react-native-uuid'
 import useLeave from 'utils/useLeave'
 import confirmationDialog from 'utils/confirmationDialog'
-import i18n from 'i18n'
+import { useStoreState } from 'utils/store'
 import FormListStaticCompact from 'components/FormListStaticCompact'
 import { goBackMaybeRefreshing } from 'utils/navigation'
 import { createShareForRecord, getSharesForRecord } from 'api/provider'
@@ -53,6 +53,8 @@ export default function RecordEditor({
   route,
   navigation,
 }: RootStackScreenProps<'RecordEditor'>) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   const [changed, setChanged] = useState(false)
   const [waiting, setWaiting] = useState('Loading' as null | string)

@@ -3,7 +3,7 @@ import { Alert } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import { Camera } from 'expo-camera'
 import { disabledBackground } from 'utils/formRendering/utils'
-import i18n from 'i18n'
+import { useStoreState } from 'utils/store'
 import _ from 'lodash'
 import {
   Pressable,
@@ -46,6 +46,8 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
   isDisabled,
   onlyOne = false,
 }) => {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   const window = useWindowDimensions()
   const modalSize = Math.min(window.height, window.width)

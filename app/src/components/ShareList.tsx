@@ -12,7 +12,7 @@ import themedStyles from '../themeStyled'
 import { UserType } from 'utils/types/user'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 import _ from 'lodash'
 import { Share } from 'utils/types/share'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
@@ -101,6 +101,9 @@ export function ListItemDesktop({
   selectItem: (i: Share) => any
   users: Record<string, Partial<UserType>>
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
+  const styleS = useStyleSheet(themedStyles)
   return (
     <Pressable
       style={[spacing.px2, layout.flex1]}
@@ -185,6 +188,9 @@ export default function ShareList({
   doSearch: () => any
   selectItem: (f: Share) => any
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
+  const styleS = useStyleSheet(themedStyles)
   const [users, setUsers] = useState({} as Record<string, Partial<UserType>>)
   const [selectedIndex, setSelectedIndex] = useState<IndexPath>()
   useEffect(() => {
@@ -361,7 +367,7 @@ export default function ShareList({
                     styleS.mb3,
                   ]}
                 >
-                  Record
+                  {i18n.t('general.record')}
                 </Text>
                 <Text
                   style={[
@@ -372,7 +378,7 @@ export default function ShareList({
                     styleS.mb3,
                   ]}
                 >
-                  Form
+                  {i18n.t('record.heading.form')}
                 </Text>
                 <Text
                   style={[
@@ -383,7 +389,7 @@ export default function ShareList({
                     styleS.mb3,
                   ]}
                 >
-                  Dates
+                  {i18n.t('general.dates')}
                 </Text>
               </View>
               <View style={[layout.vStackGap3, spacing.mt3]}>

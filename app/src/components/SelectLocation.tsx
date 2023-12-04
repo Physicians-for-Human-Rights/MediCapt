@@ -6,7 +6,7 @@ import {
   SelectItemProps,
   IndexPath,
 } from '@ui-kitten/components'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 import _ from 'lodash'
 import { useUserLocations } from 'utils/store'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
@@ -29,13 +29,14 @@ export default function SelectLocation({
   size?: string
   itemProps?: SelectItemProps
 } & SelectProps) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const locations = useUserLocations()
   const [selectedIndex, setSelectedIndex] = useState<IndexPath>()
   const [displayVal, setDisplayVal] = useState<string>()
   const itemsArr = locations.map(location =>
     _.isString(location) ? location : location.shortName
   )
-  console.log({ itemsArr })
   if (any) {
     itemsArr.unshift(i18n.t(any))
   }

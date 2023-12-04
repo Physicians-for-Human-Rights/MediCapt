@@ -35,10 +35,9 @@ i18n.fallbacks = true
 //   }
 // }
 
-export const loadTranslations = async (i18n, locale) => {
-  const response = await fetch(`/localization/${locale}.json`)
-  const translations = await response.json()
-  i18n.store(translations)
+export const loadTranslations = locale => {
+  const response = require(`./localization/${locale}.json`)
+  i18n.store(response)
 }
 
 export default i18n

@@ -29,7 +29,7 @@ import themedStyles from '../themeStyled'
 import styles, { spacing, layout } from './styles'
 import { colors, breakpoints } from './nativeBaseSpec'
 import Header from './Header'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -99,6 +99,7 @@ export function Sidebar(signOut: any) {
             janedoe2@mydomain.com
           </Text>
         </View>
+
         <View style={[layout.vStack, spacing.px4, spacing.py4]}>
           {list.map((item: any, idx: number) => {
             return (
@@ -220,6 +221,8 @@ export function MobileHeader({
   showLogos: boolean
   reloadPrevious: React.RefObject<boolean> | undefined
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const localStyle = {
     borderColor: colors.coolGray[200],
     backgroundColor: isWider ? 'white' : colors.primary[900],

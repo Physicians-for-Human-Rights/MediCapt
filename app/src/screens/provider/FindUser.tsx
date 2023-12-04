@@ -3,12 +3,14 @@ import DashboardLayout from 'components/DashboardLayout'
 import _ from 'lodash'
 import UserSearch from 'components/UserSearch'
 import { RootStackScreenProps } from 'utils/provider/navigation'
-import i18n from 'i18n'
+import { useStoreState } from 'utils/store'
 
 export default function FindUser({
   route,
   navigation,
 }: RootStackScreenProps<'FindUser'>) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   return (
     <DashboardLayout
       navigation={navigation}

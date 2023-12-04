@@ -170,6 +170,7 @@ export const layout = StyleSheet.create({
     gap: 40,
   },
   hStackCenterGap2: {
+    flexDirection: 'row',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

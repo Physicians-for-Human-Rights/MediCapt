@@ -10,7 +10,7 @@ import {
 } from '@ui-kitten/components'
 import themedStyles from '../themeStyled'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 import _ from 'lodash'
 import { FormMetadata } from 'utils/types/formMetadata'
 import DebouncedTextInput from 'components/form-parts/DebouncedTextInput'
@@ -65,6 +65,8 @@ export default function FormList({
   doSearch: () => any
   selectItem: (f: FormMetadata) => any
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const selectList: string[] = [
     i18n.t('form.filter.any-is-form-enabled'),
     'enabled',
@@ -119,7 +121,6 @@ export default function FormList({
         <View style={[layout.center]}>
           <Language
             bg="white"
-            placeholder={i18n.t('location.select-language')}
             value={filterLanguage}
             setValue={setFilterLanguage}
             any={'location.any-language'}

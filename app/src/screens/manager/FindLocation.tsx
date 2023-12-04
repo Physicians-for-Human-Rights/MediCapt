@@ -8,12 +8,14 @@ import Loading from 'components/Loading'
 import { findLocations } from 'api/manager'
 import { RootStackScreenProps } from 'utils/manager/navigation'
 import { useToast } from 'react-native-toast-notifications'
-import i18n from 'i18n'
+import { useStoreState } from 'utils/store'
 
 export default function FormList({
   route,
   navigation,
 }: RootStackScreenProps<'FindLocation'>) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const [locations, setLocations] = useState([] as LocationType[])
   const [nextKey, setNextKey] = useState(undefined as any)
   const [filterCountry, setFilterCountry] = useState('')

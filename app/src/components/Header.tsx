@@ -22,6 +22,7 @@ import themedStyles from '../themeStyled'
 import styles, { spacing, layout } from './styles'
 import { colors, breakpoints } from './nativeBaseSpec'
 import { MenuIcon } from './Icons'
+import UserLanguage from './UserLanguage'
 
 interface IProps {
   title: string
@@ -155,6 +156,7 @@ const Header = (props: IProps) => {
           {middlebar}
 
           <View style={[layout.hStack, layout.alignCenter]}>
+            <UserLanguage />
             <Button
               appearance="ghost"
               status="basic"

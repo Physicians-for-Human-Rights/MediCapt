@@ -104,7 +104,7 @@ class CustomSignIn extends AuthPiece {
             </LinkCell>
           </View>
           <Button onPress={() => Linking.openURL('mailto:help@medicapt.click')}>
-            Ask for help from help@medicapt.click
+            {i18n.t('general.askForHelp')} help@medicapt.click
           </Button>
           <View />
           <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
@@ -123,7 +123,7 @@ function Header(userKind, setAccountType) {
     >
       <View style={{ jusifyContent: 'center', alignItems: 'center' }}>
         <Text category="h5" color="#d5001c">
-          Log in as
+          {i18n.t('user.logInAs')}
         </Text>
         <ButtonGroup
           selected={userKind}

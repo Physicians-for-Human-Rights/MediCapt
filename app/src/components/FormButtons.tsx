@@ -1,6 +1,6 @@
 import React from 'react'
 import _ from 'lodash'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 import { Button } from '@ui-kitten/components'
 import { breakpoints, colors } from './nativeBaseSpec'
 import {
@@ -49,6 +49,8 @@ export default function FormButtons({
   topSpace?: string
   readOnly: boolean
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const direction = width > breakpoints.sm ? 'row' : 'column'
   const localStyle = StyleSheet.create({
     container: {

@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { userTypes, UserType } from 'utils/types/user'
 import FloatingLabelInput from 'components/FloatingLabelInput'
 import NecessaryItem from 'components/NecessaryItem'
-import i18n from 'i18n'
 import _ from 'lodash'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
@@ -47,6 +46,7 @@ import {
 } from './Icons'
 import { View } from 'react-native'
 import { useToast } from 'react-native-toast-notifications'
+import { useStoreState } from '../utils/store'
 
 const dummyDate = new Date()
 
@@ -83,6 +83,8 @@ export default function UserEditor({
   navigation: StackNavigationProp<RootStackParamList, 'EditUser'>
   reloadPrevious: React.MutableRefObject<boolean>
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const toast = useToast()
   const styleS = useStyleSheet(themedStyles)
   const [error, warning, success] = useInfo()

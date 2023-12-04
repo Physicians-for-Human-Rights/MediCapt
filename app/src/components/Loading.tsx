@@ -1,7 +1,7 @@
 import React from 'react'
 import { Text, Spinner } from '@ui-kitten/components'
 import { View, StyleSheet } from 'react-native'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 import { layout } from './styles'
 
 const style = StyleSheet.create({
@@ -20,6 +20,8 @@ const style = StyleSheet.create({
 })
 
 const Loading = ({ loading }: { loading: string | null }) => {
+  const state = useStoreState()
+  const i18n = state?.i18n
   return loading ? (
     <View style={style.spinner}>
       <View style={layout.center}>

@@ -5,7 +5,7 @@ import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
 import { useInfo } from 'utils/errors'
 import { standardHandler } from 'api/utils'
 import { createForm, submitForm } from 'api/formdesigner'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 import _ from 'lodash'
 import AnyCountry from 'components/AnyCountry'
 import Language from 'components/Language'
@@ -89,6 +89,8 @@ export default function FormEditorOverview({
   setWaiting: React.Dispatch<React.SetStateAction<Partial<string | null>>>
   latestVersion: React.MutableRefObject<string | undefined>
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const [error, warning, success] = useInfo()
   const standardReporters = { setWaiting, error, warning, success }
   const createMode = !(formMetadata.formUUID && formMetadata.formUUID !== '')
@@ -194,7 +196,6 @@ export default function FormEditorOverview({
           // mt={1}
         />
         <Language
-          placeholder={i18n.t('form-editor.select-language')}
           value={formMetadata.language}
           setValue={v => setFormMetadata({ ...formMetadata, language: v })}
           // mx={3}

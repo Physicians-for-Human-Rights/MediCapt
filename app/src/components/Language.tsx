@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 import _ from 'lodash'
 import {
   Select,
@@ -19,21 +19,25 @@ export default function Language({
   itemProps,
   ...props
 }: {
-  placeholder: string
+  placeholder?: string
   value: string | undefined
   setValue: (val: string) => any
   bg?: string
   any?: string
   itemProps?: SelectItemProps
 } & SelectProps) {
+  const state = useStoreState()
+  const i18n = state?.i18n
+  if (!placeholder) {
+    placeholder = i18n.t('form-editor.select-language')
+  }
   const [selectedIndex, setSelectedIndex] = useState<IndexPath>(
     new IndexPath(0)
   )
 
-  console.log({ any })
   const itemsArr: string[] = [
     i18n.t('languages.' + 'en'),
-    i18n.t('languages.' + 'fr'),
+    i18n.t('languages.' + 'en-gb'),
   ]
   if (!!any) {
     itemsArr.unshift(i18n.t(any))

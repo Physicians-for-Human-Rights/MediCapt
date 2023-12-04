@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native'
 import { colors } from './nativeBaseSpec'
 import { Text, Icon, Button, useStyleSheet } from '@ui-kitten/components'
 import { spacing, layout } from './styles'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 
 import themedStyles from '../themeStyled'
 
@@ -26,6 +26,8 @@ const FormTop = ({
   isSectionCompleted: boolean
   overrideTitle?: string
 }) => {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   return (
     <View

@@ -12,7 +12,7 @@ import themedStyles from '../themeStyled'
 import { layout } from './styles'
 import { View } from 'react-native'
 import ModalHeader from './styledComponents/ModalHeader'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 
 export default function NecessaryItem({
   todoText,
@@ -33,6 +33,8 @@ export default function NecessaryItem({
   helpHeader?: string
   help?: string
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   if (isDone) {
     return (

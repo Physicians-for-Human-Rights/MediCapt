@@ -4,10 +4,11 @@ import { mapSectionWithPaths } from 'utils/forms'
 import { NamedFormSection } from 'utils/types/formHelpers'
 import { FlatRecord, RecordPhoto, RecordValuePath } from 'utils/types/record'
 import { getFlatRecordValue } from 'utils/records'
-import i18n from 'i18n'
 import { resolveRef } from 'utils/forms'
 import { RenderCommand } from 'utils/formRendering/types'
 import { bodyImage } from 'utils/formRendering/utils'
+import { useStoreState } from 'utils/store'
+
 import {
   ManifestFileWithData,
   lookupContentsByNameAndType,
@@ -32,6 +33,8 @@ export function allFormRenderCommands(
   flatRecord: FlatRecord,
   potentialFeilds: boolean = false
 ) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   let renderCommands: RenderCommand[] = []
   // any is an ok type here because we're discarding the output
   mapSectionWithPaths<void>(

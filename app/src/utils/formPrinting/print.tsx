@@ -5,20 +5,6 @@ import { FormType } from 'utils/types/form'
 import DisplayPDF from './DisplayPDF'
 import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
 import {
-  isImage,
-  isInManifest,
-  filterManifest,
-  mapManifest,
-  addFileToManifest,
-  makeManifestEntry,
-  changeFilenameInManifest,
-  lookupManifestByNameAndType,
-  addOrReplaceFileToManifestByFilename,
-  lookupManifest,
-  getRecordTypeFormManifest,
-  getFormTypeFromManifest,
-} from 'utils/manifests'
-import {
   PDFDocument,
   PageSizes,
   StandardFonts,
@@ -36,6 +22,8 @@ import { mapSectionWithPaths, nameFormSections } from 'utils/forms'
 import { allFormRenderCommands } from 'utils/formRendering/commands'
 import { RenderCommand } from 'utils/formRendering/types'
 import formatDate from 'utils/date.ts'
+import { useStoreState } from 'utils/store'
+
 import {
   randBoolean,
   randNumber,
@@ -46,7 +34,6 @@ import {
   randAddress,
   randPhoneNumber,
 } from '@ngneat/falso'
-import i18n from 'i18n'
 import { dataURItoBlob } from 'utils/data'
 import { PageInfo, Row, rowSizeByType } from 'utils/formPrinting/types'
 import {
@@ -166,6 +153,8 @@ export async function handleCellCommand(
   skipOutline: boolean = false,
   skipHeading: boolean = false
 ): Promise<Row> {
+  const state = useStoreState()
+  const i18n = state?.i18n
   var titleSize = text(pi, title.title, {
     scale: pi.md,
     x: 0,

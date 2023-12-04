@@ -9,7 +9,7 @@ import { RootStackScreenProps } from 'utils/provider/navigation'
 import { getRecords } from '../../utils/localStore/store'
 import { useUser } from 'utils/store'
 import { useToast } from 'react-native-toast-notifications'
-import i18n from 'i18n'
+import { useStoreState } from 'utils/store'
 
 const filterAssociatedOut = (r: RecordMetadata) => !r.isAssociatedRecord
 
@@ -17,8 +17,8 @@ export default function RecordList({
   route,
   navigation,
 }: RootStackScreenProps<'FindRecord'>) {
-  console.log({ route, navigation })
-
+  const state = useStoreState()
+  const i18n = state?.i18n
   const [records, setRecords] = useState([] as RecordMetadata[])
   const [nextKey, setNextKey] = useState(undefined as undefined | string)
 

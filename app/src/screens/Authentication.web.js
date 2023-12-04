@@ -5,7 +5,7 @@ import '@aws-amplify/ui-react/styles.css'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import ButtonGroup from 'components/form-parts/ButtonGroup'
 import { View } from 'react-native'
-import { Button, Text, useStyleSheet } from '@ui-kitten/components'
+import { Button, Text, useStyleSheet, Icon } from '@ui-kitten/components'
 
 import indexOf from 'lodash/indexOf'
 import medicapt_logo from '../../assets/medicapt.png'
@@ -20,11 +20,17 @@ import {
   reconfigureAmplifyForUserKind,
 } from 'utils/userTypes'
 
+import UserLanguage from '../components/UserLanguage'
+import { layout, spacing } from '../components/styles'
+import { useStoreState } from 'utils/store'
+
 function Header(userKind, setAccountType) {
+  const state = useStoreState()
+  const i18n = state.i18n
   const styleS = useStyleSheet(themedStyles)
   const { tokens } = useTheme()
   return () => (
-    <View style={{ backgroundColor: 'white' }}>
+    <View style={{ backgroundColor: 'white', paddingBottom: 24 }}>
       <Flex
         direction="row"
         justifyContent="space-around"
@@ -42,8 +48,12 @@ function Header(userKind, setAccountType) {
         alignContent="center"
         wrap="nowrap"
       >
-        <Text style={[styleS.fontBold]} category="h5" status="primary">
-          Log in as
+        <Text
+          style={[styleS.fontBold, styleS.mb2]}
+          category="h5"
+          status="basic"
+        >
+          {i18n.t('user.logInAs')}
         </Text>
       </Flex>
       <ButtonGroup
@@ -75,11 +85,33 @@ function Header(userKind, setAccountType) {
 }
 
 function Footer() {
+  const state = useStoreState()
+  const i18n = state.i18n
   return (
     <View style={{ backgroundColor: '#fff', padding: 16 }}>
-      <Button onPress={() => Linking.openURL('mailto:help@medicapt.click')}>
-        Ask for help from help@medicapt.click
+      <Button
+        onPress={() => Linking.openURL('mailto:help@medicapt.click')}
+        appearance="outline"
+      >
+        {i18n.t('general.askForHelp')} help@medicapt.click
       </Button>
+      <View
+        style={[
+          layout.hStackCenterGap2,
+          layout.width100percent,
+          layout.alignCenter,
+          spacing.mt2,
+        ]}
+      >
+        <UserLanguage />
+        {/* <Icon
+          name="language"
+          style={{ width: 24, height: 24, color: '#424242' }}
+        />
+        <View style={layout.width45percent}>
+          <UserLanguage />
+        </View> */}
+      </View>
     </View>
   )
 }

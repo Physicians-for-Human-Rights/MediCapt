@@ -12,7 +12,7 @@ import themedStyles from '../themeStyled'
 import { ScrollView, Pressable, Platform } from 'react-native'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
 import formatDate from 'utils/date.ts'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 import _ from 'lodash'
 import { LocationType, locationEntityTypes } from 'utils/types/location'
 import AnyCountry from 'components/AnyCountry'
@@ -27,6 +27,8 @@ const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
 
 export function ListItem({ item }: { item: LocationType }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   return (
     <Pressable
@@ -141,6 +143,8 @@ export function ListItemDesktop({
   item: LocationType
   selectItem: (location: LocationType) => any
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   return (
     <Pressable
@@ -234,6 +238,8 @@ export default function LocationList({
   doSearch: () => any
   selectItem: (location: LocationType) => any
 }) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   const [selectedIndex, setSelectedIndex] = useState<IndexPath>()
   const onSelect = (index: IndexPath | IndexPath[]) => {
@@ -268,7 +274,6 @@ export default function LocationList({
         <View style={layout.center}>
           <Language
             bg="white"
-            placeholder={i18n.t('location.select-language')}
             value={filterLanguage}
             setValue={setFilterLanguage}
             any={'location.any-language'}

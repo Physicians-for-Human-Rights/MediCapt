@@ -3,22 +3,23 @@ import DashboardLayout from 'components/DashboardLayout'
 import { RootStackScreenProps } from 'utils/formDesigner/navigation'
 import { HomeOption } from 'utils/types/home'
 import HomeIndex from 'components/HomeIndex'
-import i18n from 'i18n'
-
-const options: HomeOption[] = [
-  {
-    icon: 'add-box',
-    label: i18n.t('form.create-new'),
-    to: 'FormEditor',
-  },
-  {
-    icon: 'edit',
-    label: i18n.t('form.edit-existing'),
-    to: 'FormList',
-  },
-]
+import { useStoreState } from 'utils/store'
 
 export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
+  const state = useStoreState()
+  const i18n = state?.i18n
+  const options: HomeOption[] = [
+    {
+      icon: 'add-box',
+      label: i18n.t('form.create-new'),
+      to: 'FormEditor',
+    },
+    {
+      icon: 'edit',
+      label: i18n.t('form.edit-existing'),
+      to: 'FormList',
+    },
+  ]
   return (
     <DashboardLayout
       title={i18n.t('general.home')}

@@ -1,7 +1,8 @@
 import _ from 'lodash'
 import { RecordValuePath, RecordValue } from 'utils/types/record'
 import React from 'react'
-import i18n from 'i18n'
+import { useStoreState } from 'utils/store'
+
 import uuid from 'react-native-uuid'
 
 import { Icon, Text, Divider } from '@ui-kitten/components'
@@ -58,6 +59,8 @@ export function renderCommand(
   addKeepAlive: (n: string) => void,
   removeKeepAlive: (n: string) => void
 ) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   switch (command.type) {
     case 'title':
       return (

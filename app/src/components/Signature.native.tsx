@@ -10,7 +10,7 @@ import SignatureCanvas, {
 import { EditIcon, CloseCircleIcon } from './Icons'
 import themedStyles from '../themeStyled'
 import ModalHeader from './styledComponents/ModalHeader'
-import i18n from 'i18n'
+import { useStoreState } from '../utils/store'
 
 const canvasWebStyle = `.m-signature-pad {box-shadow: none; border: none; }
                             .m-signature-pad--body {border: none;}
@@ -32,6 +32,8 @@ function Signature({
   close,
   setSignature,
 }: SignatureProps) {
+  const state = useStoreState()
+  const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   const [isOpen, setOpen] = useState<boolean>(false)
   const internalClose = () => {
