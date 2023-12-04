@@ -91,7 +91,7 @@ function Footer() {
     <View style={{ backgroundColor: '#fff', padding: 16 }}>
       <Button
         onPress={() => Linking.openURL('mailto:help@medicapt.click')}
-        appearance="outline"
+        appearance="filled"
       >
         {i18n.t('general.askForHelp')} help@medicapt.click
       </Button>
@@ -104,13 +104,6 @@ function Footer() {
         ]}
       >
         <UserLanguage />
-        {/* <Icon
-          name="language"
-          style={{ width: 24, height: 24, color: '#424242' }}
-        />
-        <View style={layout.width45percent}>
-          <UserLanguage />
-        </View> */}
       </View>
     </View>
   )
