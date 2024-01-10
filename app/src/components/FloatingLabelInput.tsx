@@ -1,8 +1,7 @@
 import React, { Component, useCallback, useEffect } from 'react'
 import useDebounce from 'react-use/lib/useDebounce'
-import { Platform, Animated, StyleSheet, View } from 'react-native'
+import { Animated, StyleSheet, View } from 'react-native'
 import { Input } from '@ui-kitten/components'
-import { spacing } from './styles'
 import _ from 'lodash'
 
 export class RawFloatingLabelInput extends Component<any, any> {
@@ -41,40 +40,7 @@ export class RawFloatingLabelInput extends Component<any, any> {
 
   render() {
     const { label, ...props } = this.props
-    const lableContainerStyles = {
-      position: 'absolute',
-      left: 16,
-      top: this._animatedIsFocused.interpolate({
-        inputRange: [0, 1],
-        outputRange: [16, -7],
-      }),
-      zIndex: 5,
-      paddingLeft: 3,
-      paddingRight: 3,
-      backgroundColor: this.props.labelBGColor,
-    } as any
-    const AndroidlabelStyle = {
-      fontWeight: '500',
-      fontSize: this._animatedIsFocused.interpolate({
-        inputRange: [0, 1],
-        outputRange: [16, 12],
-      }),
 
-      color: this.props.labelColor,
-    } as any
-    const IOSlabelStyle = {
-      fontWeight: '500',
-      fontSize: this._animatedIsFocused.interpolate({
-        inputRange: [0, 1],
-        outputRange: [13, 12],
-      }),
-
-      marginTop: this._animatedIsFocused.interpolate({
-        inputRange: [0, 1],
-        outputRange: [-3, 0],
-      }),
-      color: this.props.labelColor,
-    } as any
     const localStyles = StyleSheet.create({
       container: {
         width: this.props.containerWidth,
@@ -83,23 +49,17 @@ export class RawFloatingLabelInput extends Component<any, any> {
         marginBottom: 12,
       },
     })
+    console.log({ props })
     return (
       <View style={localStyles.container}>
-        <Animated.View pointerEvents="none" style={lableContainerStyles}>
-          <Animated.Text
-            style={
-              Platform.OS === 'android' ? AndroidlabelStyle : IOSlabelStyle
-            }
-          >
-            {label}
-          </Animated.Text>
-        </Animated.View>
         <Input
           {...props}
+          label={label}
           style={{ padding: 12, marginTop: 0 }}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
-          // _hover={{ bg: this.props.labelBGColor }}
+          editable={!props.isReadOnly}
+          disabled={props.isReadOnly}
         />
       </View>
     )

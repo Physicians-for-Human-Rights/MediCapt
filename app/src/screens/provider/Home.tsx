@@ -26,21 +26,21 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
       label: i18n.t('record.your-record'),
       to: 'YourRecords',
     },
-    {
-      icon: 'share',
-      label: i18n.t('general.sharing'),
-      to: 'Sharing',
-    },
-    {
-      icon: 'settings',
-      label: i18n.t('general.settings'),
-      to: 'Settings',
-    },
-    {
-      icon: 'school',
-      label: i18n.t('general.training'),
-      to: 'Training',
-    },
+    // {
+    //   icon: 'share',
+    //   label: i18n.t('general.sharing'),
+    //   to: 'Sharing',
+    // },
+    // {
+    //   icon: 'settings',
+    //   label: i18n.t('general.settings'),
+    //   to: 'Settings',
+    // },
+    // {
+    //   icon: 'school',
+    //   label: i18n.t('general.training'),
+    //   to: 'Training',
+    // },
   ]
   const user = {
     attributes: {

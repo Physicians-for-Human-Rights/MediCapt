@@ -8,7 +8,6 @@ import FindForm from 'screens/provider/FindForm'
 import FindUser from 'screens/provider/FindUser'
 import { RootStackParamList } from 'utils/provider/navigation'
 import { useUserLocations } from 'utils/store'
-import Mock from './Mock'
 const RootStack = createStackNavigator<RootStackParamList>()
 
 export default function App({}: {}) {
@@ -16,11 +15,6 @@ export default function App({}: {}) {
   return (
     <NavigationContainer>
       <RootStack.Navigator initialRouteName="Home">
-        <RootStack.Screen
-          name="Mock"
-          component={Mock}
-          options={{ headerShown: false }}
-        />
         <RootStack.Screen
           name="Home"
           component={Home}
@@ -54,7 +48,7 @@ export default function App({}: {}) {
           options={{ headerShown: false }}
           initialParams={{ onlyUserRecords: true }}
         />
-        <RootStack.Screen
+        {/* <RootStack.Screen
           name="Sharing"
           component={FindRecord}
           options={{ headerShown: false }}
@@ -68,7 +62,7 @@ export default function App({}: {}) {
           name="Training"
           component={FindRecord}
           options={{ headerShown: false }}
-        />
+        /> */}
         <RootStack.Screen
           name="FindUser"
           component={FindUser}

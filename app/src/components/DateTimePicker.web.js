@@ -20,6 +20,7 @@ import { layout } from './styles'
 import ModalHeader from './styledComponents/ModalHeader'
 import themedStyles from '../themeStyled'
 import { useStoreState } from '../utils/store'
+import { CalenderIcon } from './Icons'
 
 export default function DateTimePicker({
   title,
@@ -27,7 +28,7 @@ export default function DateTimePicker({
   open,
   close,
   setDate,
-  time,
+  time = null,
   isDisabled,
   fancyLabel = undefined,
 }) {
@@ -124,11 +125,12 @@ export default function DateTimePicker({
               disabled={isDisabled}
               onPress={openInternal}
               size="small"
-              mt={fancyLabel ? 2 : 0}
+              // mt={fancyLabel ? 2 : 0}
               status="indigo"
               appearance="filled"
               accessoryLeft={CalenderIcon}
               aria-label={i18n.t('buttons.openCalendar')}
+              style={{ padding: 0 }}
             />
           </View>
         </View>

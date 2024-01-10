@@ -135,7 +135,9 @@
         "form-names-and-tags": "Search form names and tags"
       },
       "system": {
-        "add-permission": "Add permissions for at least one location"
+        "add-permission": "Add permissions for at least one location",
+        "creatingUser": "Creating user",
+        "userCreated": "User created"
       },
       "resend-confirmation-email": "Resend confirmation email",
       "resending-confirmation-email": "Resending confirmation email",

@@ -13,20 +13,20 @@ export type StandardReporters = {
 }
 
 export async function standardHandler<T>(
-  { setWaiting, error, warning, success }: StandardReporters,
+  // { setWaiting, error, warning, success }?: StandardReporters,
   preMsg: string,
   postMsg: string,
   apiCallFn: () => T
 ): Promise<T | null> {
   try {
-    setWaiting(preMsg)
+    // setWaiting(preMsg)
     const r = await apiCallFn()
-    postMsg && success(postMsg)
+    // postMsg && success(postMsg)
     return r
   } catch (e) {
-    handleStandardErrors(error, warning, success, e)
+    // handleStandardErrors(error, warning, success, e)
   } finally {
-    setWaiting(null)
+    // setWaiting(null)
   }
   return null
 }

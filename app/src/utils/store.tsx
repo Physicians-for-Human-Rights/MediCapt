@@ -35,6 +35,7 @@ export type StateType = {
 }
 
 const initialState: StateType = {
+  // temporary disabled
   // user: null,
   user: {
     username: 'testuser',

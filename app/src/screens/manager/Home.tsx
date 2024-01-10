@@ -30,16 +30,6 @@ export default function ({ route, navigation }: RootStackScreenProps<'Home'>) {
       label: i18n.t('location.find-location'),
       to: 'FindLocation',
     },
-    {
-      icon: 'settings',
-      label: i18n.t('general.settings'),
-      to: 'Settings',
-    },
-    {
-      icon: 'school',
-      label: i18n.t('general.training'),
-      to: 'Training',
-    },
   ]
   // const [user] = useUser()
   const user = {

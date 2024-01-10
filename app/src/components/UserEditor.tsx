@@ -33,6 +33,7 @@ import {
   Select,
   SelectItem,
   IndexPath,
+  Input,
 } from '@ui-kitten/components'
 import themedStyles from '../themeStyled'
 import { layout, spacing } from './styles'
@@ -83,25 +84,33 @@ export default function UserEditor({
   navigation: StackNavigationProp<RootStackParamList, 'EditUser'>
   reloadPrevious: React.MutableRefObject<boolean>
 }) {
+  const date = new Date()
+  // user = {
+  //   userType: 'Manager',
+  //   allowed_locations: `pse adasd Refugee camp Afghanistan English ${date} ML3-QBO-A4L-Q71, ML3-APU-LXZ-7EC`,
+  // }
   const state = useStoreState()
   const i18n = state?.i18n
   const toast = useToast()
   const styleS = useStyleSheet(themedStyles)
-  const [error, warning, success] = useInfo()
+  // const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
   // const foundIndex = userTypes.findIndex(user => user === user.userType)
   const [selectedIndex, setSelectedIndex] = useState<IndexPath>(
     new IndexPath(0)
   )
-  const standardReporters = { setWaiting, error, warning, success }
-
+  // const standardReporters = { setWaiting, error, warning, success }
+  const standardReporters = () => {
+    // write error handler
+    return 'err'
+  }
   const createMode = !(user.userUUID && user.userUUID !== '')
 
   const handleCreateUser = () =>
     standardHandler(
-      standardReporters,
-      'Creating user',
-      'User created',
+      // standardReporters,
+      i18n.t('user.system.creatingUser'),
+      i18n.t('user.system.userCreated'),
       async () => {
         const r = await createUser(
           //@ts-ignore We validate this before the call
@@ -119,7 +128,7 @@ export default function UserEditor({
     message?: string
   ) =>
     standardHandler(
-      standardReporters,
+      // standardReporters,
       inProgressMessage || i18n.t('user.submitting-user'),
       message || i18n.t('user.submitted-user'),
       async () => {
@@ -168,7 +177,7 @@ export default function UserEditor({
 
   const resetPassword = async () =>
     standardHandler(
-      standardReporters,
+      // standardReporters,
       i18n.t('user.password-resetting'),
       i18n.t('user.password-reset'),
       async () => {
@@ -178,7 +187,7 @@ export default function UserEditor({
 
   const confirmEmail = async () =>
     standardHandler(
-      standardReporters,
+      // standardReporters,
       i18n.t('user.confirming-email'),
       i18n.t('user.email-confirmed'),
       async () => {
@@ -189,7 +198,7 @@ export default function UserEditor({
 
   const resendConfirmationEmail = async () =>
     standardHandler(
-      standardReporters,
+      // standardReporters,
       i18n.t('user.resending-confirmation-email'),
       i18n.t('user.resent-confirmation-email'),
       async () => {
@@ -202,16 +211,17 @@ export default function UserEditor({
     setSelectedIndex(index)
     setUser({ ...user, userType: userTypes[index.row] })
   }
+
   return (
     <>
       <View style={[layout.vStack]}>
-        <FloatingLabelInput
+        <Input
           label={i18n.t('user.full-official-name')}
           value={user.formal_name}
-          setValue={v => setUser({ ...user, formal_name: v })}
-          mt={10}
+          onChangeText={v => setUser({ ...user, formal_name: v })}
+          style={{ paddingHorizontal: 24 }}
         />
-        <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
+        <View style={[layout.hStack, layout.spaceBet]}>
           <FloatingLabelInput
             label={
               i18n.t('user.username') +
@@ -225,28 +235,27 @@ export default function UserEditor({
             placeholder={user.username}
           />
           {createMode ? (
-            <Select
-              size="medium"
-              selectedIndex={selectedIndex}
-              // selectedValue={user.userType}
-              placeholder={i18n.t('user.user-type')}
-              style={{ width: '95%' }}
-              onSelect={index => onSelect(index as IndexPath)}
-              // onValueChange={itemValue => {
-              //   if (itemValue != null) {
-              //     // @ts-ignore this value comes from user.entityType, which is correct
-              //     setUser({ ...user, userType: itemValue })
-              //   }
-              // }}
-            >
-              {userTypes.map((e, i) => (
-                <SelectItem
-                  key={e}
-                  title={i18n.t('user.' + e)}
-                  // value={e}
-                />
-              ))}
-            </Select>
+            <>
+              <Select
+                label={i18n.t('user.user-type')}
+                size="medium"
+                selectedIndex={selectedIndex}
+                placeholder={i18n.t('user.user-type')}
+                style={{ width: '45%', paddingRight: 24 }}
+                onSelect={index => onSelect(index as IndexPath)}
+                value={userTypes[selectedIndex.row]}
+                // onValueChange={itemValue => {
+                //   if (itemValue != null) {
+                //     // @ts-ignore this value comes from user.entityType, which is correct
+                //     setUser({ ...user, userType: itemValue })
+                //   }
+                // }}
+              >
+                {userTypes.map((e, i) => (
+                  <SelectItem key={e} title={i18n.t('user.' + e)} />
+                ))}
+              </Select>
+            </>
           ) : (
             <FloatingLabelInput
               label={
@@ -346,25 +355,27 @@ export default function UserEditor({
             </View>
             {splitLocations(user.allowed_locations) !== ['admin'] &&
             !_.isEmpty(splitLocations(user.allowed_locations)) ? (
-              <LocationListStatic
-                locations={_.map(splitLocations(user.allowed_locations), l =>
-                  l in locations ? locations[l] : l
-                )}
-                selectItem={l => {
-                  setUser(u => {
-                    return {
-                      ...u,
-                      allowed_locations: _.join(
-                        _.without(
-                          splitLocations(user.allowed_locations),
-                          l.locationUUID
+              <View style={{ marginHorizontal: 16 }}>
+                <LocationListStatic
+                  locations={_.map(splitLocations(user.allowed_locations), l =>
+                    l in locations ? locations[l] : l
+                  )}
+                  selectItem={l => {
+                    setUser(u => {
+                      return {
+                        ...u,
+                        allowed_locations: _.join(
+                          _.without(
+                            splitLocations(user.allowed_locations),
+                            l.locationUUID
+                          ),
+                          ' '
                         ),
-                        ' '
-                      ),
-                    }
-                  })
-                }}
-              />
+                      }
+                    })
+                  }}
+                />
+              </View>
             ) : (
               <View style={[layout.center]}>
                 <Text category="h5" status="danger">
@@ -460,17 +471,11 @@ export default function UserEditor({
             placeholder={i18n.t('location.select-country')}
             value={user.country}
             setValue={v => setUser({ ...user, country: v })}
-            // mx={3}
-            // mt={1}
-            // mb={3}
           />
           <Language
             placeholder={i18n.t('location.select-default-language')}
             value={user.language}
             setValue={v => setUser({ ...user, language: v })}
-            // mx={3}
-            // mt={1}
-            // mb={3}
           />
         </View>
         <View style={[layout.center, spacing.pt4, spacing.pb2]}>

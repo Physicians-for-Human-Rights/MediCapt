@@ -12,6 +12,10 @@ import { useToast } from 'react-native-toast-notifications'
 import { useStoreState } from 'utils/store'
 
 const filterAssociatedOut = (r: RecordMetadata) => !r.isAssociatedRecord
+export interface SearchFilters {
+  text: string | undefined
+  type: string
+}
 
 export default function RecordList({
   route,
@@ -22,9 +26,10 @@ export default function RecordList({
   const [records, setRecords] = useState([] as RecordMetadata[])
   const [nextKey, setNextKey] = useState(undefined as undefined | string)
 
-  const [filterLocationID, setFilterLocationID] = useState('')
-  const [filterSearchType, setFilterSearchType] = useState('')
-  const [filterText, setFilterText] = useState(undefined as undefined | string)
+  // const [filterLocationID, setFilterLocationID] = useState('')
+  // const [filterSearchType, setFilterSearchType] = useState('')
+  // const [filterText, setFilterText] = useState(undefined as undefined | string)
+  const [filters, setFilters] = useState<SearchFilters>({ type: '', text: '' })
 
   const [waiting, setWaiting] = useState(null as null | string)
   const [user] = useUser()
@@ -34,13 +39,13 @@ export default function RecordList({
     setWaiting('Searching')
     try {
       const [records, nextKey] = await getRecords({
-        locationId: filterLocationID,
-        searchType: filterSearchType,
+        // locationId: filterLocationID, - should work without id
+        searchType: filters.type,
         createdByUUID:
           route.params && route.params.onlyUserRecords
             ? user.attributes.sub
             : undefined,
-        text: filterText,
+        text: filters.text,
       })
       setRecords(records)
       setNextKey(nextKey)
@@ -61,7 +66,7 @@ export default function RecordList({
 
   useEffect(() => {
     doSearch()
-  }, [filterLocationID, filterSearchType, filterText, refresh])
+  }, [filters.type, filters.text, refresh])
 
   return (
     <DashboardLayout
@@ -75,12 +80,8 @@ export default function RecordList({
           records={records}
           hasMore={false}
           loadMore={() => null}
-          filterLocationID={filterLocationID}
-          setFilterLocationID={setFilterLocationID}
-          filterSearchType={filterSearchType}
-          setFilterSearchType={setFilterSearchType}
-          filterText={filterText}
-          setFilterText={setFilterText}
+          filters={filters}
+          setFilters={setFilters}
           doSearch={doSearch}
           selectItem={recordMetadata => {
             navigation.navigate('RecordEditor', {

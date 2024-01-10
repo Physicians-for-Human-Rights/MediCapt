@@ -23,6 +23,8 @@ import { breakpoints, colors } from './nativeBaseSpec'
 import styles, { backgrounds, borders, layout, spacing } from './styles'
 import { CloseIcon, RefreshIcon } from './Icons'
 
+import mockData from '../mockData/locations'
+
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
 
@@ -238,6 +240,7 @@ export default function LocationList({
   doSearch: () => any
   selectItem: (location: LocationType) => any
 }) {
+  locations = mockData
   const state = useStoreState()
   const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)

@@ -20,6 +20,8 @@ import { default as themeKitten } from './custom-theme.json'
 import * as material from '@eva-design/material'
 import { MaterialIconsPack } from './MaterialIcons' // <-- Import Material icons
 import { ToastProvider } from 'react-native-toast-notifications'
+import { FormContextProvider } from './context/FormContext'
+import { RecordContextProvider } from './context/RecordContext'
 import * as eva from '@eva-design/eva'
 
 Sentry.init({
@@ -95,17 +97,22 @@ function LoginScreen() {
     // TODO Remove SafeAreaProvider after the native base switch
     // <React.StrictMode>
     <SafeAreaProvider>
-      <StoreProvider>
-        <ToastProvider swipeEnabled={true}>
-          <IconRegistry icons={[MaterialIconsPack]} />
-          <ApplicationProvider
-            {...material}
-            theme={{ ...material.light, ...themeKitten }}
-          >
-            <AuthApp />
-          </ApplicationProvider>
-        </ToastProvider>
-      </StoreProvider>
+      <FormContextProvider>
+        <StoreProvider>
+          <RecordContextProvider>
+            <ToastProvider swipeEnabled={true}>
+              <IconRegistry icons={[MaterialIconsPack]} />
+              <ApplicationProvider
+                {...material}
+                theme={{ ...material.light, ...themeKitten }}
+              >
+                <ManagerApp />
+                {/* <AuthApp /> */}
+              </ApplicationProvider>
+            </ToastProvider>
+          </RecordContextProvider>
+        </StoreProvider>
+      </FormContextProvider>
     </SafeAreaProvider>
     // </React.StrictMode>
   )

@@ -44,16 +44,6 @@ export default function App({}: {}) {
           component={FindLocation}
           options={{ headerShown: false }}
         />
-        <RootStack.Screen
-          name="Settings"
-          component={FindLocation}
-          options={{ headerShown: false }}
-        />
-        <RootStack.Screen
-          name="Training"
-          component={FindLocation}
-          options={{ headerShown: false }}
-        />
       </RootStack.Navigator>
     </NavigationContainer>
   )

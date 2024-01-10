@@ -43,17 +43,17 @@ export default function LocationEditor({
   const state = useStoreState()
   const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
-  const [error, warning, success] = useInfo()
+  // const [error, warning, success] = useInfo()
   const [waiting, setWaiting] = useState(null as null | string)
   const [selectedIndex, setSelectedIndex] = useState<IndexPath>(
     new IndexPath(0)
   )
   const createMode = !(location.locationUUID && location.locationUUID !== '')
 
-  const standardReporters = { setWaiting, error, warning, success }
+  // const standardReporters = { setWaiting, error, warning, success }
   const handleCreateLocation = () =>
     standardHandler(
-      standardReporters,
+      // standardReporters,
       i18n.t('location.system.creating'),
       i18n.t('location.system.created'),
       async () => {
@@ -69,7 +69,7 @@ export default function LocationEditor({
 
   const submitLocation = (updatedLocation: Partial<LocationType>) =>
     standardHandler(
-      standardReporters,
+      // standardReporters,
       i18n.t('location.system.updating'),
       i18n.t('location.system.updated'),
       async () => {
@@ -85,7 +85,7 @@ export default function LocationEditor({
 
   const handleDeleteLocation = () =>
     standardHandler(
-      standardReporters,
+      // standardReporters,
       i18n.t('location.system.deleting'),
       i18n.t('location.system.deleted'),
       async () => {

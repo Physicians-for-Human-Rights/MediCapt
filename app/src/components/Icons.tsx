@@ -1,5 +1,6 @@
 import { Icon, IconElement } from '@ui-kitten/components'
 import { StyleSheet } from 'react-native'
+import { colors } from './nativeBaseSpec'
 
 export const StarIcon = (props: any): IconElement => (
   <Icon {...props} name="star" />
@@ -11,7 +12,7 @@ export const AlertIcon = (props: any): IconElement => (
   <Icon {...props} name="alert-triangle" />
 )
 export const PlusIcon = (props: any): IconElement => (
-  <Icon {...props} name="plus-square" />
+  <Icon {...props} name="add-box" />
 )
 export const ShareIcon = (props: any): IconElement => (
   <Icon {...props} name="share" />
@@ -26,10 +27,10 @@ export const ArrowLeftIcon = (props: any): IconElement => (
   <Icon {...props} name="arrow-back" />
 )
 export const DownloadCloudIcon = (props: any): IconElement => (
-  <Icon {...props} name="cloud-download-outline" />
+  <Icon {...props} name="cloud-download" />
 )
 export const UploadCloudIcon = (props: any): IconElement => (
-  <Icon {...props} name="cloud-upload-outline" />
+  <Icon {...props} name="cloud-upload" />
 )
 export const CloseCircleIcon = (props: any): IconElement => (
   <Icon {...props} name="close-circle-outline" />
@@ -65,5 +66,15 @@ export const MenuIcon = (props: any): IconElement => (
   <Icon {...props} name="menu" pack="material" />
 )
 export const CalenderIcon = (props: any): IconElement => (
-  <Icon {...props} name="calendar_month" pack="material" />
+  <Icon {...props} name="calendar-today" pack="material" />
+)
+export const InputSearchIcon = (props: any): IconElement => (
+  <Icon
+    {...props}
+    pack="material"
+    size="tiny"
+    name="search"
+    fill={colors.coolGray[400]}
+    style={{ marginVertical: 8, marginLeft: 8 }}
+  />
 )

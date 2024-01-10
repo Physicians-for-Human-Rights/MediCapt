@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "allowJs": true,
+    "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./src",
     "resolveJsonModule": true,
@@ -11,8 +12,9 @@
     "noEmit": true,
     "skipLibCheck": true,
     "strict": true,
-    "noErrorTruncation": true
+    "noErrorTruncation": true,
+    "moduleSuffixes": [".web", ".native", ""]
   },
-  "include": ["src/index.d.ts", "src/**/*", "tests/**/*"],
+  "include": ["src/index.d.ts", "src/**/*", "tests/**/*", "**/*.ts"],
   "extends": "expo/tsconfig.base"
 }
