@@ -48,21 +48,6 @@ export default function App({}: {}) {
           options={{ headerShown: false }}
           initialParams={{ onlyUserRecords: true }}
         />
-        {/* <RootStack.Screen
-          name="Sharing"
-          component={FindRecord}
-          options={{ headerShown: false }}
-        />
-        <RootStack.Screen
-          name="Settings"
-          component={FindRecord}
-          options={{ headerShown: false }}
-        />
-        <RootStack.Screen
-          name="Training"
-          component={FindRecord}
-          options={{ headerShown: false }}
-        /> */}
         <RootStack.Screen
           name="FindUser"
           component={FindUser}

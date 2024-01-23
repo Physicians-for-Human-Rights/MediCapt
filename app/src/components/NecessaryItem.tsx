@@ -41,8 +41,8 @@ export default function NecessaryItem({
       <View style={[layout.hStack, layout.alignCenter]}>
         <Icon
           size={size}
-          fill="success"
-          name="checkmark-outline"
+          fill="#52af1f"
+          name="check"
           style={{ marginHorizontal: +mx * 4 }}
         />
         {/* <CheckIcon size={size} mx={mx} /> */}
@@ -65,11 +65,11 @@ export default function NecessaryItem({
             anchor={triggerProps => {
               return (
                 <Button
-                  {...triggerProps}
+                  // {...triggerProps}
                   appearance="ghost"
                   status="secondary"
                   style={[styleS.ml5, styleS.p0]}
-                  size="sm"
+                  size="small"
                 >
                   {i18n.t('general.tellMeMore')}
                 </Button>

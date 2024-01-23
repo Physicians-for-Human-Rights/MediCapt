@@ -59,6 +59,7 @@ export const recordPatchSchema = z.discriminatedUnion('patchType', [
 export const recordMetadataSchema = recordMetadataSchemaByUser
   .extend({
     'storage-version': z.literal('1.0.0'),
+    country: z.string(),
     recordUUID: z.string().nonempty(),
     recordID: z.string().nonempty(),
     patientUUID: z.string().nonempty(),

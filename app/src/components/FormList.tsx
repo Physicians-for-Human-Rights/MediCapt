@@ -124,9 +124,9 @@ export default function FormList({
             value={filterLanguage}
             setValue={setFilterLanguage}
             any={'location.any-language'}
-            mx={Platform.OS === 'android' ? 0 : { md: 2, base: 0 }}
-            my={Platform.OS === 'android' ? 1 : { md: 0, base: 2 }}
-            w={Platform.OS === 'android' ? '80%' : undefined}
+            // mx={Platform.OS === 'android' ? 0 : { md: 2, base: 0 }}
+            // my={Platform.OS === 'android' ? 1 : { md: 0, base: 2 }}
+            // w={Platform.OS === 'android' ? '80%' : undefined}
           />
         </View>
         {setFilterEnabled && (

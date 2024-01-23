@@ -50,7 +50,9 @@ export default function EditUser({
   // const [user, setUser] = useState(
   //   ((route.params && route.params.user) || defaultUser) as Partial<UserType>
   // )
-  const [user, setUser] = useState(userData)
+  const [user, setUser] = useState(
+    ((route.params && route.params.user) || defaultUser) as Partial<UserType>
+  )
   const state = useStoreState()
   const i18n = state?.i18n
   const [lastSubmitted, setLastSubmitted] = useState(

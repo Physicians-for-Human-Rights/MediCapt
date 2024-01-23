@@ -36,13 +36,18 @@ export const CloseCircleIcon = (props: any): IconElement => (
   <Icon {...props} name="close-circle-outline" />
 )
 export const CheckIcon = (props: any): IconElement => (
-  <Icon {...props} name="checkmark-outline" />
+  <Icon
+    {...props}
+    name="check-circle"
+    // style={{ width: 24, height: 24 }}
+    // fill={colors.success}
+  />
 )
 export const RefreshIcon = (props: any): IconElement => (
   <Icon {...props} name="refresh-outline" />
 )
 export const DeleteIcon = (props: any): IconElement => (
-  <Icon {...props} name="trash" />
+  <Icon {...props} name="delete" />
 )
 export const EditIcon = (props: any): IconElement => (
   <Icon {...props} name="edit" />
@@ -51,7 +56,7 @@ export const LockIcon = (props: any): IconElement => (
   <Icon {...props} name="lock" />
 )
 export const CameraIcon = (props: any): IconElement => (
-  <Icon {...props} name="camera" />
+  <Icon {...props} name="photo-camera" />
 )
 export const SearchIcon = (props: any): IconElement => (
   <Icon {...props} name="search" pack="material" />
@@ -66,7 +71,12 @@ export const MenuIcon = (props: any): IconElement => (
   <Icon {...props} name="menu" pack="material" />
 )
 export const CalenderIcon = (props: any): IconElement => (
-  <Icon {...props} name="calendar-today" pack="material" />
+  <Icon
+    {...props}
+    name="calendar-today"
+    pack="material"
+    style={{ padding: 0, width: 32, height: 32, color: 'white' }}
+  />
 )
 export const InputSearchIcon = (props: any): IconElement => (
   <Icon
@@ -77,4 +87,7 @@ export const InputSearchIcon = (props: any): IconElement => (
     fill={colors.coolGray[400]}
     style={{ marginVertical: 8, marginLeft: 8 }}
   />
+)
+export const CalendarIcon = (props: any): IconElement => (
+  <Icon {...props} name="calendar-month" pack="material" />
 )

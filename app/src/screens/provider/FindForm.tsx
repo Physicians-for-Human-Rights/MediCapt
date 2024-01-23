@@ -10,11 +10,13 @@ import { getForms } from '../../utils/localStore/store'
 import { useToast } from 'react-native-toast-notifications'
 import i18n from '../../i18n'
 
+import formsData from '../../mockData/forms'
+
 export default function FindForm({
   route,
   navigation,
 }: RootStackScreenProps<'FindForm'>) {
-  const [forms, setForms] = useState([] as FormMetadata[])
+  const [forms, setForms] = useState(formsData as FormMetadata[])
   const [nextKey, setNextKey] = useState(undefined as undefined | string)
 
   const [filterCountry, setFilterCountry] = useState('')

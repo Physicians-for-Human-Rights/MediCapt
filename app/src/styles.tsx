@@ -47,8 +47,8 @@ export default StyleSheet.create({
     marginRight: 10,
   },
   bigTileButton: {
-    width: '100px',
-    height: '100px',
+    width: 100,
+    height: 100,
   },
   submitButton: {
     height: 1000,

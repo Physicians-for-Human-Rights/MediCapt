@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { ScrollView, Pressable } from 'react-native'
-import { Text, useStyleSheet, Icon } from '@ui-kitten/components'
+import { Text, useStyleSheet, Icon, useTheme } from '@ui-kitten/components'
 import themedStyles from '../themeStyled'
 import { LocationType } from 'utils/types/location'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
@@ -131,11 +131,12 @@ export function ListItemDesktop({
   selectItem,
 }: {
   item: LocationType | string
-  selectItem: (location: LocationType) => any
+  selectItem: (location: LocationType | string) => any
 }) {
   const state = useStoreState()
   const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
+  const theme = useTheme()
   return (
     <Pressable
       style={[spacing.px2, layout.flex1]}
@@ -200,7 +201,12 @@ export function ListItemDesktop({
         </View>
 
         <View style={[layout.hStack, layout.width5percent]}>
-          <Icon fill="danger" size="6" name="delete" pack="material" />
+          <Icon
+            status="danger"
+            name="delete"
+            pack="material"
+            style={{ width: 24, height: 24, color: theme['color-danger-500'] }}
+          />
         </View>
       </View>
     </Pressable>

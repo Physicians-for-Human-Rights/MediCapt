@@ -124,13 +124,19 @@ export default function DateTimePicker({
             <Button
               disabled={isDisabled}
               onPress={openInternal}
-              size="small"
+              size="medium"
               // mt={fancyLabel ? 2 : 0}
-              status="indigo"
+              // status="indigo"
               appearance="filled"
-              accessoryLeft={CalenderIcon}
+              accessoryLeft={<CalenderIcon />}
               aria-label={i18n.t('buttons.openCalendar')}
-              style={{ padding: 0 }}
+              style={{
+                backgroundColor: '#4f46e5',
+                border: 0,
+                marginBottom: -10,
+                paddingHorizontal: 0,
+                paddingVertical: 0,
+              }}
             />
           </View>
         </View>

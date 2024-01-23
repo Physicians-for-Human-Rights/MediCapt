@@ -22,11 +22,13 @@ export type RenderCommand =
         type: 'title'
         title: string
         size: string
-        fontWeight: string
-        italic: boolean
+        fontWeight?: string
+        italic?: boolean
         color?: string
         maxW?: string
         originalType?: string
+        recordValue?: { type: 'text'; value: string } | undefined
+        recordSummary?: string | undefined
       }
     | {
         type: 'description'
@@ -197,4 +199,4 @@ export type RenderCommand =
         list: Share[]
         select: (r: Share) => any
       }
-  ) & { valuePath: RecordValuePath; key: string; disable: boolean }
+  ) & { valuePath?: RecordValuePath; key?: string; disable?: boolean }

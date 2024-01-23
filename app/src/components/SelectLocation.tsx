@@ -120,7 +120,6 @@ export default function SelectLocation({
         debounceMs={1000}
         value={value}
         onChangeText={setValue}
-        // onChangeText={setValue}
         {...props}
       />
     )

@@ -30,8 +30,8 @@ export default function FormButtons({
   onUpgrade,
   changed,
   isSealed,
-  hasAssociatedForms,
-  topSpace = '3',
+  hasAssociatedForms = false,
+  topSpace = 3,
   readOnly,
 }: {
   isSectionCompleteList: boolean[]
@@ -45,8 +45,8 @@ export default function FormButtons({
   onUpgrade?: () => any
   changed: boolean
   isSealed: boolean
-  hasAssociatedForms: boolean
-  topSpace?: string
+  hasAssociatedForms?: boolean
+  topSpace?: number
   readOnly: boolean
 }) {
   const state = useStoreState()
@@ -119,7 +119,6 @@ export default function FormButtons({
                     : colors.primary[800],
                 }}
                 accessoryLeft={StarIcon}
-                // accessoryLeft={<Icon as={AntDesign} name="staro" size="sm" />}
                 onPress={onCompleteRecord}
                 // _text={{ selectable: false }}
               >

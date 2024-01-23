@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react'
 import _ from 'lodash'
 import { Text } from '@ui-kitten/components'
 import { FormType } from 'utils/types/form'
-// @ts-ignore typescript doesn't do native/web modules
 import DisplayPDF from './DisplayPDF'
 import { FormMetadata, FormManifestWithData } from 'utils/types/formMetadata'
 import {

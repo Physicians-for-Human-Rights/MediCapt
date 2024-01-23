@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { Button, Modal, Card, useStyleSheet } from '@ui-kitten/components'
+import { Button, Modal, Card, useStyleSheet, Text } from '@ui-kitten/components'
 import _ from 'lodash'
 import Form from 'components/Form'
 import DashboardLayout from 'components/DashboardLayout'
@@ -44,6 +44,9 @@ import { Dimensions, SafeAreaView } from 'react-native'
 import themedStyles from '../../themeStyled'
 import ModalHeader from 'components/styledComponents/ModalHeader'
 import { useToast } from 'react-native-toast-notifications'
+import { formX } from '../../mockData/form_x'
+import formsData, { formTemplates } from '../../mockData/forms'
+import { record1 } from '../../mockData/records'
 
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
@@ -57,43 +60,48 @@ export default function RecordEditor({
   const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
   const [changed, setChanged] = useState(false)
-  const [waiting, setWaiting] = useState('Loading' as null | string)
+  // const [waiting, setWaiting] = useState('Loading' as null | string)
+  const [waiting, setWaiting] = useState<string | null>(null)
   const [isAssociatedModalOpen, setIsAssociatedModalOpen] = useState(false)
   const toast = useToast()
   const reloadPrevious = useRef(false)
 
   // Either formMetadata or recordMetadata passed to the RecordEditor as route params
-  const [formMetadata, setFormMetadata] = useState(
-    'formMetadata' in route.params ? route.params.formMetadata : undefined
-  )
-  const [recordMetadata, setRecordMetadataRaw] = useState(() =>
-    'recordMetadata' in route.params
-      ? route.params.recordMetadata
-      : {
-          'storage-version': '1.0.0',
-          formUUID: undefined,
-          formID: undefined,
-          formVersion: undefined,
-          locationID: undefined,
-          locationUUID: undefined,
-          patientName: '',
-          patientGender: '',
-          patientAddress: '',
-          patientDateOfBirth: new Date('January 01 1001'), // TODO Do better
-          patientPhoneNumber: '',
-          patientEmail: '',
-          incidentDate: new Date('January 01 1001'), // TODO Do better
-          caseId: '',
-          manifestHash: '',
-          manifestMD5: '',
-          associatedRecords: [],
-          userScopedLocalUUID: uuid.v4() as string,
-          isAssociatedRecord: route.params.isAssociatedRecord,
-        }
-  )
-  const [formManifest, setFormManifest] = useState(
-    undefined as FormManifestWithData | undefined
-  )
+  // const [formMetadata, setFormMetadata] = useState(
+  //   'formMetadata' in route.params ? route.params.formMetadata : undefined
+  // )
+  const [formMetadata, setFormMetadata] = useState(formsData[0])
+  // const [recordMetadata, setRecordMetadataRaw] = useState(() =>
+  //   'recordMetadata' in route.params
+  //     ? route.params.recordMetadata
+  //     : {
+  //         'storage-version': '1.0.0',
+  //         formUUID: undefined,
+  //         formID: undefined,
+  //         formVersion: undefined,
+  //         locationID: undefined,
+  //         locationUUID: undefined,
+  //         patientName: '',
+  //         patientGender: '',
+  //         patientAddress: '',
+  //         patientDateOfBirth: new Date('January 01 1001'), // TODO Do better
+  //         patientPhoneNumber: '',
+  //         patientEmail: '',
+  //         incidentDate: new Date('January 01 1001'), // TODO Do better
+  //         caseId: '',
+  //         manifestHash: '',
+  //         manifestMD5: '',
+  //         associatedRecords: [],
+  //         userScopedLocalUUID: uuid.v4() as string,
+  //         isAssociatedRecord: route.params.isAssociatedRecord,
+  //       }
+  // )
+  const [recordMetadata, setRecordMetadataRaw] = useState(record1.metadata)
+  console.log('recordMetadata', recordMetadata)
+  // const [formManifest, setFormManifest] = useState(
+  //   undefined as FormManifestWithData | undefined
+  // )
+  const [formManifest, setFormManifest] = useState(record1.manifest)
   const [recordManifest, setRecordManifestRaw] = useState(
     // @ts-ignore TODO metadata
     {
@@ -136,116 +144,115 @@ export default function RecordEditor({
     i18n.t('system.confirm-leave'),
     () => {}
   )
-
+  const fetchData = async () => {
+    setWaiting('Loading')
+    try {
+      // Load Record
+      const recordResponse =
+        'recordUUID' in recordMetadata
+          ? await getRecord(recordMetadata.recordUUID)
+          : undefined
+      if (recordResponse) {
+        const contentsWithData = await getRecordManifestContents(
+          recordResponse.manifest.contents
+        )
+        const newRecordMetadata = recordResponse.metadata
+        if (!_.isEqual(recordMetadata, recordResponse.metadata))
+          setRecordMetadata(newRecordMetadata)
+        setRecordManifest({
+          'storage-version': '1.0.0',
+          root: recordResponse.manifest.root,
+          contents: contentsWithData,
+        })
+        // Load up associated records
+        try {
+          const l = [] as RecordMetadata[]
+          if (newRecordMetadata && newRecordMetadata.associatedRecords) {
+            for (const r of newRecordMetadata.associatedRecords || []) {
+              const recordResponse = await getRecordMetadata(r.recordUUID)
+              if (recordResponse) {
+                l.push(recordResponse)
+              }
+            }
+          }
+          setAssociatedRecords(l)
+        } catch (e) {
+          console.error(e)
+          toast.show(i18n.t('record.system.failed-to-load-records'), {
+            type: 'warning',
+            placement: 'bottom',
+            duration: 4000,
+            animationType: 'slide-in',
+          })
+        }
+        // Look up shares
+        try {
+          setShares(await getSharesForRecord(newRecordMetadata.recordUUID))
+        } catch (e) {
+          console.error(e)
+          toast.show(i18n.t('record.system.failed-to-load-shares'), {
+            type: 'warning',
+            placement: 'bottom',
+            duration: 4000,
+            animationType: 'slide-in',
+          })
+        }
+      }
+      // The input record overrides any form information that may have been provided.
+      const formUUID =
+        recordResponse?.metadata.formUUID || formMetadata?.formUUID
+      const formVersion =
+        recordResponse?.metadata.formVersion || formMetadata?.version
+      const formResponse =
+        formUUID &&
+        (formVersion
+          ? await getFormVersion(formUUID, formVersion)
+          : await getForm(formUUID))
+      if (formResponse) {
+        const contentsWithData = await getFormManifestContents(
+          formResponse.manifest.contents
+        )
+        if (!_.isEqual(formMetadata, formResponse.metadata))
+          setFormMetadata(formResponse.metadata)
+        setFormManifest({
+          'storage-version': '1.0.0',
+          root: formResponse.manifest.root,
+          contents: contentsWithData,
+        })
+        // Load the associated form metadata
+        const l = [] as FormMetadata[]
+        if (formResponse.metadata) {
+          for (const f of formResponse.metadata.associatedForms || []) {
+            const formResponse = await getForm(f.formUUID)
+            if (formResponse) {
+              l.push(formResponse.metadata)
+            }
+          }
+        }
+        setAssociatedForms(l)
+      } else {
+        throw Error('Missing form')
+      }
+    } catch (e) {
+      // handleStandardErrors(error, warning, success, e)
+      console.error(e)
+      const res: string[] = formatErrorMsg(e)
+      const msg: string = res.join(' ')
+      toast.show(msg, {
+        type: 'danger',
+        placement: 'bottom',
+        duration: 5000,
+        // description,
+        // accessibilityAnnouncement: 'Encountered error ' + error,
+      })
+    } finally {
+      setWaiting(null)
+    }
+    setChanged(false)
+  }
   // Load the form and record on startup
   useEffect(() => {
-    const fetchData = async () => {
-      setWaiting('Loading')
-      try {
-        // Load Record
-        const recordResponse =
-          'recordUUID' in recordMetadata
-            ? await getRecord(recordMetadata.recordUUID)
-            : undefined
-        if (recordResponse) {
-          const contentsWithData = await getRecordManifestContents(
-            recordResponse.manifest.contents
-          )
-          const newRecordMetadata = recordResponse.metadata
-          if (!_.isEqual(recordMetadata, recordResponse.metadata))
-            setRecordMetadata(newRecordMetadata)
-          setRecordManifest({
-            'storage-version': '1.0.0',
-            root: recordResponse.manifest.root,
-            contents: contentsWithData,
-          })
-          // Load up associated records
-          try {
-            const l = [] as RecordMetadata[]
-            if (newRecordMetadata && newRecordMetadata.associatedRecords) {
-              for (const r of newRecordMetadata.associatedRecords || []) {
-                const recordResponse = await getRecordMetadata(r.recordUUID)
-                if (recordResponse) {
-                  l.push(recordResponse)
-                }
-              }
-            }
-            setAssociatedRecords(l)
-          } catch (e) {
-            console.error(e)
-            toast.show(i18n.t('record.system.failed-to-load-records'), {
-              type: 'warning',
-              placement: 'bottom',
-              duration: 4000,
-              animationType: 'slide-in',
-            })
-          }
-          // Look up shares
-          try {
-            setShares(await getSharesForRecord(newRecordMetadata.recordUUID))
-          } catch (e) {
-            console.error(e)
-            toast.show(i18n.t('record.system.failed-to-load-shares'), {
-              type: 'warning',
-              placement: 'bottom',
-              duration: 4000,
-              animationType: 'slide-in',
-            })
-          }
-        }
-        // The input record overrides any form information that may have been provided.
-        const formUUID =
-          recordResponse?.metadata.formUUID || formMetadata?.formUUID
-        const formVersion =
-          recordResponse?.metadata.formVersion || formMetadata?.version
-        const formResponse =
-          formUUID &&
-          (formVersion
-            ? await getFormVersion(formUUID, formVersion)
-            : await getForm(formUUID))
-        if (formResponse) {
-          const contentsWithData = await getFormManifestContents(
-            formResponse.manifest.contents
-          )
-          if (!_.isEqual(formMetadata, formResponse.metadata))
-            setFormMetadata(formResponse.metadata)
-          setFormManifest({
-            'storage-version': '1.0.0',
-            root: formResponse.manifest.root,
-            contents: contentsWithData,
-          })
-          // Load the associated form metadata
-          const l = [] as FormMetadata[]
-          if (formResponse.metadata) {
-            for (const f of formResponse.metadata.associatedForms || []) {
-              const formResponse = await getForm(f.formUUID)
-              if (formResponse) {
-                l.push(formResponse.metadata)
-              }
-            }
-          }
-          setAssociatedForms(l)
-        } else {
-          throw Error('Missing form')
-        }
-      } catch (e) {
-        // handleStandardErrors(error, warning, success, e)
-        console.error(e)
-        const res: string[] = formatErrorMsg(e)
-        const msg: string = res.join(' ')
-        toast.show(msg, {
-          type: 'danger',
-          placement: 'bottom',
-          duration: 5000,
-          // description,
-          // accessibilityAnnouncement: 'Encountered error ' + error,
-        })
-      } finally {
-        setWaiting(null)
-      }
-      setChanged(false)
-    }
-    fetchData()
+    // fetchData()
   }, [])
 
   const addPhotoToManifest = useCallback((uri: string) => {
@@ -316,9 +323,6 @@ export default function RecordEditor({
             type: 'danger',
             placement: 'bottom',
             duration: 5000,
-            // isClosable: true,
-            // description,
-            // accessibilityAnnouncement: 'Encountered error ' + error,
           })
         } finally {
           setWaiting(null)
@@ -510,6 +514,7 @@ export default function RecordEditor({
   }, [recordMetadata, formMetadata])
 
   const onPrintRecord = useCallback(() => {
+    // write a function to print the record
     false
   }, [])
 
@@ -536,6 +541,7 @@ export default function RecordEditor({
       reloadPrevious={reloadPrevious}
     >
       <>
+        <Text>test</Text>
         <SafeAreaView
           style={[
             layout.vStack,
@@ -573,7 +579,7 @@ export default function RecordEditor({
               changed={changed}
               associatedRecords={associatedRecords}
               selectAssociatedRecord={r => {
-                const { formMetadata, ...newParams } = route.params
+                const { ...newParams } = route.params
                 navigation.push('RecordEditor', {
                   ...newParams,
                   recordMetadata: r,
@@ -604,7 +610,7 @@ export default function RecordEditor({
               forms={associatedForms}
               selectItem={e => {
                 setIsAssociatedModalOpen(false)
-                const { recordMetadata, ...newParams } = route.params
+                const { ...newParams } = route.params
                 navigation.push('RecordEditor', {
                   ...newParams,
                   formMetadata: e,

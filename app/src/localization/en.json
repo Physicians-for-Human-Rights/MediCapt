@@ -367,6 +367,8 @@
       },
       "Yes": "Yes",
       "No": "No",
+      "required": "* Required",
+      "emailNotValid": "Please enter a valid email address",
       "edit-existing": "Edit an existing form",
       "create-new": "Create a new form",
       "select-value": "Select a value",
@@ -398,7 +400,9 @@
       "camera-viewer": "Camera view",
       "print-preview": "Print preview",
       "pdfNotUploaded": "PDF is not uploaded",
-      "tags-id": "Tags / Form ID"
+      "tags-id": "Tags / Form ID",
+      "submitFirst": "Submit first",
+      "pleaseFillOutAllRequired": "Please fill out all required fields"
     },
     "system": {
       "loading": "Loading...",

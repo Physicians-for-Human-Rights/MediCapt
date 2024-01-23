@@ -14,6 +14,7 @@ export default function AnyCountry({
   setValue,
   bg,
   any,
+  label,
 }: // itemProps,
 {
   placeholder: string
@@ -21,6 +22,7 @@ export default function AnyCountry({
   setValue: (val: string) => any
   bg?: string
   any?: string
+  label?: string
   // itemProps?: SelectItemProps
 } & SelectProps) {
   const state = useStoreState()
@@ -58,6 +60,7 @@ export default function AnyCountry({
       placeholder={placeholder}
       onSelect={assignValue}
       selectedIndex={selectedIndex}
+      label={label && label}
     >
       {itemsArr.map(item => (
         <SelectItem key={item} title={item} />

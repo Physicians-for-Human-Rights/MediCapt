@@ -29,6 +29,13 @@ export class RawFloatingLabelInput extends Component<any, any> {
       'toggleFocusHandler' in this.props &&
       this.props.toggleFocusHandler(false)
   }
+  handleChange = (str: string) => {
+    //if not readonly
+    console.log('this.props.readonly', this.props.readonly)
+    if (!this.props.readonly) {
+      this.props.onChangeText(str)
+    }
+  }
 
   componentDidUpdate() {
     Animated.timing(this._animatedIsFocused, {
@@ -49,7 +56,6 @@ export class RawFloatingLabelInput extends Component<any, any> {
         marginBottom: 12,
       },
     })
-    console.log({ props })
     return (
       <View style={localStyles.container}>
         <Input
@@ -58,8 +64,8 @@ export class RawFloatingLabelInput extends Component<any, any> {
           style={{ padding: 12, marginTop: 0 }}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
-          editable={!props.isReadOnly}
-          disabled={props.isReadOnly}
+          onChangeText={this.handleChange}
+          // disabled={props.isReadOnly}
         />
       </View>
     )

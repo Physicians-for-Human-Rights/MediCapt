@@ -59,6 +59,9 @@ export const spacing = StyleSheet.create({
   mx3: {
     marginHorizontal: 12,
   },
+  mx6: {
+    marginHorizontal: 24,
+  },
   ml1: {
     marginLeft: 4,
   },
@@ -67,6 +70,9 @@ export const spacing = StyleSheet.create({
   },
   mr2: {
     marginRight: 8,
+  },
+  mr8: {
+    marginRight: 24,
   },
   mb3: {
     marginBottom: 12,

@@ -30,7 +30,7 @@ export function getFormPathsAndInfo(manifest: FormManifestWithData) {
   if (f) {
     let pathsWithPeriods: { prefix: string; path: string }[] = []
     const allPaths: string[] = []
-    function pathsPartMaΩp(prefix: string, parts: any) {
+    function pathsPartMap(prefix: string, parts: any) {
       for (const key in parts) {
         if (_.includes(key, '.')) pathsWithPeriods.push({ prefix, path: key })
         paths(prefix + '.' + key, parts[key])
@@ -89,10 +89,11 @@ export default function FormEditorOverview({
   setWaiting: React.Dispatch<React.SetStateAction<Partial<string | null>>>
   latestVersion: React.MutableRefObject<string | undefined>
 }) {
+  console.log({ manifest })
   const state = useStoreState()
   const i18n = state?.i18n
-  const [error, warning, success] = useInfo()
-  const standardReporters = { setWaiting, error, warning, success }
+  // const [error, warning, success] = useInfo()
+  // const standardReporters = { setWaiting, error, warning, success }
   const createMode = !(formMetadata.formUUID && formMetadata.formUUID !== '')
 
   const [duplicatePaths, setDuplicatePaths] = useState([] as string[])
@@ -105,22 +106,23 @@ export default function FormEditorOverview({
     setPathsWithPeriods(r.pathsWithPeriods)
   }, [manifest])
 
-  const handleCreateForm = () =>
-    standardHandler(
-      standardReporters,
-      'Creating form',
-      'Form created',
-      async () => {
-        setFormMetadata(
-          await createForm(
-            //@ts-ignore We validate this before the call
-            formMetadata
-          )
-        )
-        setChanged(false)
-        latestVersion.current = '1'
-      }
-    )
+  const handleCreateForm = () => {
+    // standardHandler(
+    //   standardReporters,
+    //   'Creating form',
+    //   'Form created',
+    //   async () => {
+    //     setFormMetadata(
+    //       await createForm(
+    //         //@ts-ignore We validate this before the call
+    //         formMetadata
+    //       )
+    //     )
+    //     setChanged(false)
+    //     latestVersion.current = '1'
+    //   }
+    // )
+  }
 
   const submitFormWrapper = (
     updatedMetadata: Partial<FormMetadata>,
@@ -129,7 +131,7 @@ export default function FormEditorOverview({
     submitForm(
       updatedMetadata,
       updatedManifest,
-      standardReporters,
+      // standardReporters,
       setFormMetadata,
       setChanged,
       () => {
@@ -204,7 +206,7 @@ export default function FormEditorOverview({
       </View>
       <View style={[layout.hStack, layout.alignCenter, layout.spaceBet]}>
         <SelectLocation
-          bg="white"
+          // bg="white"
           placeholder={i18n.t('form-editor.select-location')}
           value={formMetadata.locationID}
           setValue={(id, uuid) =>
@@ -276,7 +278,7 @@ export default function FormEditorOverview({
       <View style={[layout.vStackGap3, spacing.mt10, spacing.mb5]}>
         <Button
           size="tiny"
-          status="coolGray" // make this no onhover effect
+          status="info" // make this no onhover effect
           // bg="coolGray.400"
           // alignSelf="flex-start"
           // _text={{
@@ -287,14 +289,17 @@ export default function FormEditorOverview({
         >
           {i18n.t('form-editor.formChecklist')}
         </Button>
-        <NecessaryItem
-          isDone={isInManifest(manifest, e => e.filename == 'form.yaml')}
-          todoText={i18n.t('form-editor.system.noFormBodyFilled')}
-          doneText={i18n.t('form-editor.system.formBodyExists')}
-          size="tiny"
-          optional={false}
-          help={i18n.t('form-editor.system.clickEditorTabAndFillForm')}
-        />
+        {/* {manifest && (
+          <NecessaryItem
+            isDone={isInManifest(manifest, e => e?.filename == 'form.yaml')}
+            todoText={i18n.t('form-editor.system.noFormBodyFilled')}
+            doneText={i18n.t('form-editor.system.formBodyExists')}
+            size="tiny"
+            optional={false}
+            help={i18n.t('form-editor.system.clickEditorTabAndFillForm')}
+          />
+        )} */}
+
         <NecessaryItem
           isDone={_.isEmpty(pathsWithPeriods)}
           todoText={i18n.t('form-editor.system.formPathsHasPeriods')}

@@ -1,0 +1,1213 @@
+export const formX = {
+  common: {
+    gender: [
+      { key: 'male', value: 'Male' },
+      { key: 'female', value: 'Female' },
+      { key: 'transgender', value: 'Transgender' },
+    ],
+    'lab-sample-destination': [
+      {
+        destination: {
+          title: 'Destination',
+          type: 'list-multiple',
+          options: ['National government lab', 'Health facility lab'],
+        },
+      },
+      {
+        comments: { title: 'Comments', type: 'text', placeholder: 'comments' },
+      },
+    ],
+    'lab-sample-type-a': [
+      {
+        'wet-prep-microscope': {
+          title: 'Wet prep microscope',
+          type: 'bool',
+          parts: { Ref: 'lab-sample-destination' },
+        },
+      },
+      {
+        dna: {
+          title: 'DNA',
+          type: 'bool',
+          parts: { Ref: 'lab-sample-destination' },
+        },
+      },
+      {
+        'culture-and-sensitivity': {
+          title: 'Culture and sensitivity',
+          type: 'bool',
+          parts: { Ref: 'lab-sample-destination' },
+        },
+      },
+    ],
+    'counties-code-list': [
+      { key: 'Mombasa', value: '001' },
+      { key: 'Kwale', value: '002' },
+      { key: 'Kilifi', value: '003' },
+      { key: 'Tana river', value: '004' },
+      { key: 'Lamu', value: '005' },
+      { key: 'Taita taveta', value: '006' },
+      { key: 'Garissa', value: '007' },
+      { key: 'Wajir', value: '008' },
+      { key: 'Mandera', value: '009' },
+      { key: 'Marsabit', value: '010' },
+      { key: 'Isiolo', value: '011' },
+      { key: 'Meru', value: '012' },
+      { key: 'Tharaka-nithi', value: '013' },
+      { key: 'Embu', value: '014' },
+      { key: 'Kitui', value: '015' },
+      { key: 'Machakos', value: '016' },
+      { key: 'Makueni', value: '017' },
+      { key: 'Nyandarua', value: '018' },
+      { key: 'Nyeri', value: '019' },
+      { key: 'Kirinyaga', value: '020' },
+      { key: 'Muranga', value: '021' },
+      { key: 'Kiambu', value: '022' },
+      { key: 'Turkana', value: '023' },
+      { key: 'West pokot', value: '024' },
+      { key: 'Samburu', value: '025' },
+      { key: 'Transzoia', value: '026' },
+      { key: 'Uasin gishu', value: '027' },
+      { key: 'Elgeyo marakwet', value: '028' },
+      { key: 'Nandi', value: '029' },
+      { key: 'Baringo', value: '030' },
+      { key: 'Laikipia', value: '031' },
+      { key: 'Nakuru', value: '032' },
+      { key: 'Narok', value: '033' },
+      { key: 'Kajiado', value: '034' },
+      { key: 'Kericho', value: '035' },
+      { key: 'Bomet', value: '036' },
+      { key: 'Kakamega', value: '037' },
+      { key: 'Vihiga', value: '038' },
+      { key: 'Bungoma', value: '039' },
+      { key: 'Busia', value: '040' },
+      { key: 'Siaya', value: '041' },
+      { key: 'Kisumu', value: '042' },
+      { key: 'Homabay', value: '043' },
+      { key: 'Migori', value: '044' },
+      { key: 'Kisii', value: '045' },
+      { key: 'Nyamira', value: '046' },
+      { key: 'Nairobi', value: '047' },
+    ],
+  },
+  pdf: {
+    pdfSections: [
+      {
+        partA: {
+          title: 'Post Rape Care Form (PRC) — PART A',
+          subtitle: 'FORM IS NOT FOR SALE',
+          id: 'MOH 363',
+          logo: 'ministry_logo',
+          description:
+            'Ministry of Health National Rape Management Guidelines: Examination documentation form for survivors of rape/sexual violence (to be used as clinical notes to guide filling in of the P3 form)',
+        },
+      },
+    ],
+  },
+  sections: [
+    {
+      consent: {
+        title: 'Consent',
+        parts: [
+          {
+            'medical-exam': {
+              title: 'Authorizing medical exam',
+              description:
+                'I AUTHORIZE the clinician to conduct a medical examination including a pelvic exam.',
+              type: 'bool',
+            },
+          },
+          {
+            evidence: {
+              title: 'Authorizing evidence collection',
+              description:
+                'I AUTHORIZE the clinician to collect evidence, such as bodily fluid samples, collection of clothing, hair combings, scrapings or cuttings of finger nails, blood samples, and photographs.',
+              type: 'bool',
+            },
+          },
+          {
+            'police-information': {
+              title: 'Sharing information',
+              description:
+                'I agree for the INFORMATION I am providing to the clinician in this document ALONG WITH MY NAME to be sent to the police or prosecutors at the end of this visit for purposes of a criminal investigation. I understand the potential risks involved and that refusal to share any of this information WILL NOT affect my access to medical care and treatment.',
+              type: 'bool',
+            },
+          },
+          {
+            'police-evidence': {
+              title: 'Sharing evidence',
+              description:
+                'I agree for the EVIDENCE I am providing to the clinician in this document ALONG WITH MY NAME to be sent to the police or prosecutors at the end of this visit for purposes of a criminal investigation. I understand the potential risks involved and that refusal to share any of the evidence WILL NOT affect my access to medical care and treatment.',
+              type: 'bool',
+            },
+          },
+          {
+            'police-photos': {
+              title: 'Sharing photos',
+              description:
+                'I agree for the PHOTOS I am providing to the clinician in this document ALONG WITH MY NAME to be sent to the police or prosecutors at the end of this visit for purposes of a criminal investigation. I understand the potential risks involved and that refusal to share any of the photos WILL NOT affect my access to medical care and treatment.',
+              type: 'bool',
+            },
+          },
+          {
+            proxy: {
+              title: 'Proxy',
+              parts: [
+                {
+                  'is-proxy': {
+                    title:
+                      'I am responding on behalf of a minor or disabled person',
+                    type: 'bool',
+                  },
+                },
+                {
+                  reason: {
+                    title: 'The person you are speaking for is',
+                    'only-when': {
+                      path: 'sections.consent.parts.proxy.parts.is-proxy',
+                      value: true,
+                    },
+                    type: 'list-multiple',
+                    other: 'text',
+                    options: ['Minor', 'Disabled'],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            coercion: {
+              title:
+                'My responses were reached without coercion or pressure from anyone.',
+              type: 'bool',
+            },
+          },
+          {
+            signature: {
+              title: 'Signature',
+              type: 'signature',
+              signer: 'patient',
+            },
+          },
+        ],
+      },
+    },
+    {
+      clinic: {
+        title: 'Clinic',
+        parts: [
+          { 'date-start': { title: 'Start date', type: 'date' } },
+          { 'date-complete': { title: 'Date form completed', type: 'date' } },
+          {
+            'county-code': {
+              title: 'County code',
+              type: 'list-with-labels',
+              options: { Ref: 'counties-code-list' },
+              other: 'text',
+            },
+          },
+          {
+            'sub-county-code': {
+              title: 'Sub-county code',
+              type: 'text',
+              placeholder: 'code',
+            },
+          },
+          {
+            'facility-name': {
+              title: 'Facility name',
+              type: 'text',
+              placeholder: 'name',
+            },
+          },
+          { 'op-ip-number': { title: 'OP/IP Number', type: 'number' } },
+          {
+            'mfl-code': {
+              title: 'MFL Code',
+              type: 'text',
+              placeholder: 'code',
+            },
+          },
+          { time: { title: 'Date and time of exam', type: 'date-time' } },
+        ],
+      },
+    },
+    {
+      demographics: {
+        title: 'Demographics',
+        parts: [
+          {
+            name: {
+              title: 'Name',
+              type: 'text',
+              'if-unknown': 'Unknown',
+              'record-summary': 'patient-name',
+            },
+          },
+          {
+            date: {
+              title: 'Date of birth',
+              type: 'date',
+              'record-summary': 'patient-date-of-birth',
+            },
+          },
+          {
+            gender: {
+              title: 'Gender',
+              type: 'gender',
+              'record-summary': 'patient-gender',
+            },
+          },
+          {
+            address: {
+              title: 'Address',
+              type: 'address',
+              'record-summary': 'patient-address',
+            },
+          },
+          {
+            'phone-number': {
+              title: 'Phone number',
+              type: 'phone-number',
+              'record-summary': 'patient-phone-number',
+            },
+          },
+          {
+            disabilities: {
+              title: 'Disabilities',
+              repeated: true,
+              type: 'long-text',
+            },
+          },
+          {
+            'orphaned-vulnerable-child': {
+              title: 'Orphaned Vulnerable Child',
+              type: 'bool',
+            },
+          },
+          { 'marital-status': { title: 'Marital status', type: 'text' } },
+          { citizenship: { title: 'Citizenship', type: 'text' } },
+        ],
+      },
+    },
+    {
+      'incident-basics': {
+        title: 'Incident basics',
+        parts: [
+          { time: { title: 'Date and time of incident', type: 'date-time' } },
+          {
+            'nr-of-perpetrators': {
+              title: 'Number of perpetrators',
+              type: 'number',
+            },
+          },
+          {
+            perpetrator: {
+              title: 'Alleged perpetrators',
+              repeated: true,
+              parts: [
+                {
+                  relationship: {
+                    title: 'Relationship',
+                    type: 'text',
+                    'if-unknown': 'Unknown',
+                  },
+                },
+                {
+                  gender: {
+                    title: 'Gender',
+                    type: 'gender',
+                    'if-unknown': 'Unknown',
+                  },
+                },
+                {
+                  age: {
+                    title: 'Estimated age',
+                    type: 'number',
+                    'if-unknown': 'Unknown',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            location: {
+              title: 'Location',
+              parts: [
+                {
+                  'county-code': {
+                    title: 'County code',
+                    type: 'list-with-labels',
+                    options: { Ref: 'counties-code-list' },
+                    other: 'text',
+                  },
+                },
+                {
+                  'sub-county-code': { title: 'Sub-county code', type: 'text' },
+                },
+                { landmark: { title: 'Landmark', type: 'text' } },
+              ],
+            },
+          },
+          {
+            'chief-complaints': {
+              title: 'Chief complaints',
+              parts: [
+                { observed: { title: 'What is observed', type: 'long-text' } },
+                { reported: { title: 'What is reported', type: 'long-text' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      'incident-details': {
+        title: 'Incident details',
+        parts: [
+          {
+            circumstance: {
+              title: 'Circumstances and survivor account',
+              description: 'How, where, what was used? Struggle?',
+              type: 'long-text',
+            },
+          },
+          {
+            'type-of-violence': {
+              title: 'Type of sexual violence',
+              type: 'list-multiple',
+              other: 'text',
+              options: ['Oral', 'Vaginal', 'Anal'],
+            },
+          },
+          {
+            condom: {
+              title: 'Use of condom',
+              type: 'bool',
+              'if-unknown': 'Unknown',
+            },
+          },
+          {
+            'police-report': {
+              title: 'Police report',
+              parts: [
+                {
+                  'was-filed': {
+                    title: 'Was a report already made?',
+                    type: 'bool',
+                    'show-parts-when-true': [
+                      {
+                        'police-station': {
+                          title: 'Police station',
+                          type: 'long-text',
+                        },
+                      },
+                      {
+                        time: {
+                          title: 'Date and time of report',
+                          type: 'date-time',
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            'healthcare-facility': {
+              title: 'Previous healthcare facility',
+              parts: [
+                {
+                  'did-attend': {
+                    title: 'Was a previous facility attended?',
+                    type: 'bool',
+                  },
+                },
+                {
+                  name: {
+                    title: 'Name of facility',
+                    'only-when': {
+                      path: 'sections.incident-details.parts.healthcare-facility.parts.did-attend',
+                      value: true,
+                    },
+                    type: 'long-text',
+                  },
+                },
+                {
+                  time: {
+                    title: 'Date and time facility was attended',
+                    'only-when': {
+                      path: 'sections.incident-details.parts.healthcare-facility.parts.did-attend',
+                      value: true,
+                    },
+                    type: 'date-time',
+                  },
+                },
+                {
+                  'was-treated': {
+                    title: 'Were you treated?',
+                    'only-when': {
+                      path: 'sections.incident-details.parts.healthcare-facility.parts.did-attend',
+                      value: true,
+                    },
+                    type: 'bool',
+                  },
+                },
+                {
+                  referral: {
+                    title: 'Were you given referral notes?',
+                    'only-when': {
+                      path: 'sections.incident-details.parts.healthcare-facility.parts.did-attend',
+                      value: true,
+                    },
+                    type: 'bool',
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      history: {
+        title: 'Significant medical or surgical history',
+        parts: [{ history: { title: 'History', type: 'long-text' } }],
+      },
+    },
+    {
+      comments: {
+        title: 'Other information',
+        parts: [
+          {
+            observations: {
+              title:
+                'Information provided by the patient or observed by the clinician',
+              type: 'long-text',
+            },
+          },
+          { photo: { title: 'Additional photos', type: 'photo' } },
+        ],
+      },
+    },
+    {
+      'general-condition': {
+        title: 'General condition',
+        parts: [
+          { bp: { title: 'BP', type: 'number' } },
+          { 'pulse-rate': { title: 'Pulse rate', type: 'number' } },
+          { 'respiratory-rate': { title: 'Respiratory rate', type: 'number' } },
+          { temperature: { title: 'Temperature', type: 'number' } },
+          { demeanor: { title: 'Demeanor', type: 'long-text' } },
+        ],
+      },
+    },
+    {
+      'physical-exam': {
+        title: 'Physical exam',
+        parts: [
+          {
+            anterior: {
+              title: 'Anterior',
+              optional: true,
+              type: 'body-image',
+              filename: 'anterior',
+            },
+          },
+          {
+            posterior: {
+              title: 'Posterior',
+              optional: true,
+              type: 'body-image',
+              filename: 'posterior',
+            },
+          },
+          {
+            top: {
+              title: 'Top',
+              optional: true,
+              type: 'body-image',
+              filename: 'top',
+            },
+          },
+          {
+            bottom: {
+              title: 'Bottom',
+              optional: true,
+              type: 'body-image',
+              filename: 'bottom',
+            },
+          },
+          {
+            comments: { title: 'Comments', optional: true, type: 'long-text' },
+          },
+        ],
+      },
+    },
+    {
+      'ob-gyn-history': {
+        title: 'OB/GYN history',
+        'only-sex': 'female',
+        parts: [
+          { parity: { title: 'Parity', type: 'number' } },
+          { contraception: { title: 'Contraception type', type: 'text' } },
+          { lmp: { title: 'Last menstrual period', type: 'text' } },
+          { 'known-pregnancy': { title: 'Known pregnancy?', type: 'bool' } },
+          {
+            'last-consensual-intercourse': {
+              title: 'Date of last consensual intercourse',
+              type: 'date',
+              'if-unknown': 'Unknown',
+            },
+          },
+        ],
+      },
+    },
+    {
+      'genital-exam': {
+        title: 'Genital examination',
+        parts: [
+          {
+            'image-1': {
+              type: 'body-image',
+              optional: true,
+              'filename-female': 'female-1',
+              'filename-male': 'male-1',
+            },
+          },
+          {
+            'image-2': {
+              type: 'body-image',
+              optional: true,
+              'filename-female': 'female-2',
+              'filename-male': 'male-2',
+            },
+          },
+          {
+            'image-3': {
+              type: 'body-image',
+              optional: true,
+              'filename-female': 'female-3',
+              'filename-male': 'male-3',
+            },
+          },
+          {
+            'physical-injuries': {
+              title: 'Physical injuries',
+              type: 'long-text',
+            },
+          },
+          {
+            'outer-genitalia': { title: 'Outer genitalia', type: 'long-text' },
+          },
+          {
+            vagina: {
+              title: 'Vagina',
+              'only-sex': 'female',
+              type: 'long-text',
+            },
+          },
+          {
+            hymen: { title: 'Hymen', 'only-sex': 'female', type: 'long-text' },
+          },
+          { anus: { title: 'Anus', type: 'long-text' } },
+          {
+            other: {
+              title: 'Other significant orifices',
+              optional: true,
+              type: 'long-text',
+            },
+          },
+          {
+            comments: { title: 'Comments', optional: true, type: 'long-text' },
+          },
+        ],
+      },
+    },
+    {
+      forensic: {
+        title: 'Forensic exam',
+        parts: [
+          {
+            'change-clothes': {
+              title: 'Did survivor change clothes?',
+              type: 'bool',
+            },
+          },
+          {
+            'state-of-clothes': {
+              title: 'State of clothes',
+              type: 'long-text',
+            },
+          },
+          {
+            'clothes-transported': {
+              title: 'How were the clothes transported?',
+              type: 'list-multiple',
+              other: 'text',
+              options: ['plastic bag', 'non plastic bag'],
+            },
+          },
+          {
+            'clothes-to-police': {
+              title: 'Were clothes handed to the police?',
+              type: 'bool',
+            },
+          },
+          {
+            toilet: {
+              title: 'Did the survivor go the toilet?',
+              type: 'list-multiple',
+              options: ['short call', 'long call'],
+            },
+          },
+          {
+            'bath-or-cleaning': {
+              title: 'Did the survivor have a bath or clean themselves?',
+              type: 'bool',
+              'show-parts-when-true': [
+                { details: { title: 'Details', type: 'long-text' } },
+              ],
+            },
+          },
+          {
+            'marks-on-perpetrator': {
+              title: 'Did the survivor leave any marks on the perpetrator?',
+              type: 'bool',
+              'show-parts-when-true': [
+                { details: { title: 'Details', type: 'long-text' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      'immediate-management': {
+        title: 'Immediate management',
+        parts: [
+          {
+            pep: {
+              title: 'PEP first dose',
+              type: 'bool',
+              'show-parts-when-true': [
+                { tablets: { title: 'Number of tablets', type: 'number' } },
+              ],
+            },
+          },
+          { ecp: { title: 'ECP given', type: 'bool' } },
+          {
+            stitching: {
+              title: 'Stitching / surgical toilet done',
+              type: 'bool',
+              'show-parts-when-true': [
+                { comment: { title: 'Comment', type: 'long-text' } },
+              ],
+            },
+          },
+          {
+            sti: {
+              title: 'STI treatment given',
+              type: 'bool',
+              'show-parts-when-true': [
+                { comment: { title: 'Comment', type: 'long-text' } },
+              ],
+            },
+          },
+          {
+            other: {
+              title: 'Any other treatment or medication given?',
+              optional: true,
+              type: 'long-text',
+            },
+          },
+        ],
+      },
+    },
+    {
+      referrals: {
+        title: 'Referrals',
+        parts: [
+          {
+            'referral-list': {
+              title: 'Referrals',
+              type: 'list-multiple',
+              other: 'long-text',
+              optional: true,
+              options: [
+                'Police station',
+                'HIV test',
+                'Laboratory',
+                'Legal',
+                'Trauma counseling',
+                'Safe shelter',
+                'OPD/CCC/HIV clinic',
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      'laboratory-samples': {
+        title: 'Laboratory samples',
+        parts: [
+          {
+            samples: {
+              title: 'Sample',
+              optional: true,
+              type: 'list-with-parts',
+              options: [
+                {
+                  'outer-genital-swab': {
+                    title: 'Outer genital swab',
+                    repeated: 'at-least-one',
+                    parts: { Ref: 'lab-sample-type-a' },
+                  },
+                },
+                {
+                  'anal-swab': {
+                    title: 'Anal swab',
+                    parts: { Ref: 'lab-sample-type-a' },
+                  },
+                },
+                {
+                  'oral-swab': {
+                    title: 'Oral swab',
+                    parts: { Ref: 'lab-sample-type-a' },
+                  },
+                },
+                {
+                  'other-swab': {
+                    title: 'Other swab',
+                    type: 'text',
+                    parts: { Ref: 'lab-sample-type-a' },
+                  },
+                },
+                {
+                  'high-vaginal-swab': {
+                    title: 'High vaginal swab',
+                    parts: [
+                      {
+                        'wet-prep-microscope': {
+                          title: 'Wet prep microscope',
+                          type: 'bool',
+                          parts: { Ref: 'lab-sample-destination' },
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  urine: {
+                    title: 'Urine',
+                    parts: [
+                      {
+                        'pregnancy-test': {
+                          title: 'Pregnancy test',
+                          type: 'bool',
+                          parts: { Ref: 'lab-sample-destination' },
+                        },
+                      },
+                      {
+                        microscopy: {
+                          title: 'Microscopy',
+                          type: 'bool',
+                          parts: { Ref: 'lab-sample-destination' },
+                        },
+                      },
+                      {
+                        'drugs-and-alcohol': {
+                          title: 'Drugs and alcohol',
+                          type: 'bool',
+                          parts: { Ref: 'lab-sample-destination' },
+                        },
+                      },
+                      {
+                        other: {
+                          title: 'other',
+                          type: 'text',
+                          parts: { Ref: 'lab-sample-destination' },
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  blood: {
+                    title: 'Blood',
+                    parts: [
+                      {
+                        hemoglobin: {
+                          title: 'Hemoglobin',
+                          type: 'bool',
+                          parts: { Ref: 'lab-sample-destination' },
+                        },
+                      },
+                      {
+                        'hiv-test': {
+                          title: 'HIV test',
+                          type: 'bool',
+                          parts: { Ref: 'lab-sample-destination' },
+                        },
+                      },
+                      {
+                        'SGPT-GOT': {
+                          title: 'SGPT/GOT',
+                          type: 'bool',
+                          parts: { Ref: 'lab-sample-destination' },
+                        },
+                      },
+                      {
+                        VDRL: {
+                          title: 'VDRL',
+                          type: 'bool',
+                          parts: { Ref: 'lab-sample-destination' },
+                        },
+                      },
+                      {
+                        DNA: {
+                          title: 'DNA',
+                          type: 'bool',
+                          parts: { Ref: 'lab-sample-destination' },
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  'public-hair': {
+                    title: 'Pubic hair',
+                    parts: [
+                      {
+                        DNA: {
+                          title: 'DNA',
+                          type: 'bool',
+                          parts: { Ref: 'lab-sample-destination' },
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  'nail-clippings': {
+                    title: 'Nail clippings',
+                    parts: [
+                      {
+                        DNA: {
+                          title: 'DNA',
+                          type: 'bool',
+                          parts: { Ref: 'lab-sample-destination' },
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  'foreign-bodies': {
+                    title: 'Foreign bodies',
+                    parts: [
+                      {
+                        DNA: {
+                          title: 'DNA',
+                          type: 'bool',
+                          parts: { Ref: 'lab-sample-destination' },
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  other: {
+                    title: 'Other',
+                    type: 'long-text',
+                    parts: [
+                      {
+                        other: {
+                          title: 'Test type',
+                          type: 'long-text',
+                          parts: { Ref: 'lab-sample-destination' },
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      'chain-of-custody': {
+        title: 'Chain of custody',
+        parts: [
+          {
+            custody: {
+              optional: true,
+              parts: [
+                {
+                  packed: {
+                    title: 'What samples where packed and issued',
+                    type: 'long-text',
+                  },
+                },
+                {
+                  by: {
+                    title: 'By',
+                    parts: [
+                      {
+                        name: {
+                          title: 'Name of examining clinician',
+                          type: 'text',
+                        },
+                      },
+                      {
+                        signature: {
+                          title: 'Signature',
+                          type: 'signature',
+                          signer: 'healthcare-provider',
+                        },
+                      },
+                      { date: { title: 'Date', type: 'date' } },
+                    ],
+                  },
+                },
+                {
+                  to: {
+                    title: 'To',
+                    parts: [
+                      {
+                        name: { title: 'Name of police officer', type: 'text' },
+                      },
+                      {
+                        signature: {
+                          title: 'Signature',
+                          type: 'signature',
+                          signer: 'police-officer',
+                        },
+                      },
+                      { date: { title: 'Date', type: 'date' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      'psychological-assessment': {
+        title: 'Psychological assessment',
+        parts: [
+          {
+            general: {
+              title: 'General appearance and behavior',
+              description:
+                'Note appearance (appear older or younger than stated age), gait, dressing, grooming (neat or unkempt) and posture.',
+              type: 'long-text',
+            },
+          },
+          {
+            rapport: {
+              title: 'Rapport',
+              description:
+                'Easy to establish, initially difficult but easier over time, difficult to establish.',
+              type: 'long-text',
+            },
+          },
+          {
+            mood: {
+              title: 'Mood',
+              description:
+                'How he/she feels most days (happy, sad, hopeless, euphoric, elevated, depressed, irritable, anxious, angry, easily upset).',
+              type: 'long-text',
+            },
+          },
+          {
+            affect: {
+              title: 'Affect',
+              description:
+                'Physical manifestation of the mood e.g. labile (emotions that are freely expressed and tend to alter quickly and spontaneously like sobbing and laughing at the same time), blunt/ flat, appropriate/ inappropriate to content.',
+              type: 'long-text',
+            },
+          },
+          {
+            speech: {
+              title: 'Speech',
+              description:
+                'Rate, volume, speed, pressured (tends to speak rapidly and frenziedly), quality (clear or mumbling), impoverished (monosyllables, hesitant).',
+              type: 'long-text',
+            },
+          },
+          {
+            perception: {
+              title: 'Perception',
+              description:
+                'Disturbances e.g. Hallucination, feeling of unreality (corroborative history may be needed to ascertain details)',
+              type: 'long-text',
+            },
+          },
+          {
+            'thought-content': {
+              title: 'Thought content',
+              description:
+                'Suicidal and homicidal ideation (ideas but no plan or intent; clear/unclear plan but no intent; ideas coupled with clear plan and intent to carry it out); any preoccupying thoughts.',
+              type: 'long-text',
+            },
+          },
+          {
+            'thought-process': {
+              title: 'Thought process',
+              description:
+                'Goal-directed/logical ideas, loosened associations / flight of ideas / illogical, relevant, circumstantial (drifting but often coming back to the point), ability to abstract, perseveration (constant repetition, lacking ability to switch ideas).',
+              type: 'long-text',
+            },
+          },
+          {
+            children: {
+              title: "Children's thought process",
+              description:
+                '(or children use wishes and dreams, and art/ play therapy to assess the thought process and content. Through drawing and play (e.g. use of toys. Allow the child to comment on the drawing and report verbatim.',
+              type: 'long-text',
+              'only-child': true,
+            },
+          },
+          {
+            'children-unconscious': {
+              title: "Children's unconscious",
+              description:
+                'Assess the unconscious world of the child by asking about feelings e.g. ask the child to report the feeling that he/she commonly experiences and ask what makes him/her feel that way',
+              type: 'long-text',
+              'only-child': true,
+            },
+          },
+        ],
+      },
+    },
+    {
+      'cognitive-function': {
+        title: 'Cognitive function',
+        parts: [
+          {
+            memory: {
+              title: 'Memory',
+              description:
+                'Recent memory, long-term and short term memory (past several days, months, years).',
+              type: 'long-text',
+            },
+          },
+          {
+            orientation: {
+              title: 'Orientation',
+              description:
+                'Orientation to time, place, person i.e. ability to recognize time, where they are, people around etc.',
+              type: 'long-text',
+            },
+          },
+          {
+            concentration: {
+              title: 'Concentration',
+              description:
+                'Ability to pay attention e.g. counting or spelling backwards, small tasks.',
+              type: 'long-text',
+            },
+          },
+          {
+            intelligence: {
+              title: 'Intelligence',
+              description:
+                'Use of vocabulary (compare level of education with case presentation; above average, average, below average).',
+              type: 'long-text',
+            },
+          },
+          {
+            judgment: {
+              title: 'Judgment',
+              description:
+                'Ability to understand relations between facts and to draw conclusions; responses in social situations.',
+              type: 'long-text',
+            },
+          },
+        ],
+      },
+    },
+    {
+      'psychological-conclusions': {
+        title: 'Psychological assessment conclusions',
+        parts: [
+          {
+            'insight-level': {
+              title: 'Insight level',
+              description:
+                'Realizing that there are physical or mental problems; denial of illness, ascribing blame to outside factors; recognizing need for treatment (Indicate whether insight level is; present, fair, not present)',
+              type: 'long-text',
+            },
+          },
+          {
+            recommendation: {
+              title: 'Recommendation following assessment',
+              type: 'long-text',
+            },
+          },
+          { 'referral-point': { title: 'Referral points', type: 'long-text' } },
+          {
+            'referral-uptake': {
+              title:
+                "Referral uptake since last visit e.g. other medical services, children's department, police, legal aid, shelter etc.",
+              type: 'long-text',
+            },
+          },
+          {
+            by: {
+              title: 'By',
+              parts: [
+                {
+                  name: { title: 'Name of examining clinician', type: 'text' },
+                },
+                { signature: { title: 'Signature', type: 'signature' } },
+                { date: { title: 'Date', type: 'date' } },
+              ],
+            },
+          },
+          {
+            to: {
+              optional: true,
+              title: 'To',
+              parts: [
+                { name: { title: 'Name of police officer', type: 'text' } },
+                { signature: { title: 'Signature', type: 'signature' } },
+                { date: { title: 'Date', type: 'date' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      attestation: {
+        title: 'Physician attestation',
+        parts: [
+          {
+            record: {
+              title:
+                'I hereby attest that this medical record entry accurately reflects the history and physical examination that I obtained in my capacity as the evaluating clinician.',
+              type: 'bool',
+            },
+          },
+          {
+            information: {
+              title:
+                'I do hereby attest that this information is true, accurate and complete to the best of my knowledge.',
+              type: 'bool',
+            },
+          },
+          { signature: { title: 'Signature', type: 'signature' } },
+        ],
+      },
+    },
+  ],
+  'storage-version': '1.0.0',
+}

@@ -17,6 +17,7 @@ export default function Language({
   bg,
   any,
   itemProps,
+  label,
   ...props
 }: {
   placeholder?: string
@@ -24,6 +25,7 @@ export default function Language({
   setValue: (val: string) => any
   bg?: string
   any?: string
+  label?: string
   itemProps?: SelectItemProps
 } & SelectProps) {
   const state = useStoreState()
@@ -61,6 +63,7 @@ export default function Language({
       selectedIndex={selectedIndex}
       onSelect={index => onSelect(index as IndexPath)}
       value={displayVal || itemsArr[0]}
+      label={label && label}
     >
       {itemsArr?.map(item => {
         return <SelectItem key={item} title={item} />

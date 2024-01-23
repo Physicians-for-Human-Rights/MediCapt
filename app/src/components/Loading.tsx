@@ -1,21 +1,23 @@
 import React from 'react'
 import { Text, Spinner } from '@ui-kitten/components'
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, Dimensions } from 'react-native'
 import { useStoreState } from '../utils/store'
 import { layout } from './styles'
-
+let ScreenHeight = Dimensions.get('window').height
 const style = StyleSheet.create({
   spinner: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
+    // position: 'absolute',
+    // left: 0,
+    // right: 0,
+    // top: 0,
+    // bottom: 0,
     opacity: 0.5,
     backgroundColor: 'black',
     alignItems: 'center',
     justifyContent: 'center',
     zindex: 100,
+    width: '100%',
+    height: ScreenHeight,
   },
 })
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Alert } from 'react-native'
+import { Alert, Dimensions } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import { Camera } from 'expo-camera'
 import { disabledBackground } from 'utils/formRendering/utils'
@@ -38,6 +38,11 @@ type Photo = {
 
 const disabledStyle = { backgroundColor: disabledBackground }
 const goodStyle = {}
+const windowWidth = Dimensions.get('window').width
+const isWider = windowWidth > 480
+const stackStyle = isWider
+  ? [layout.hStack, layout.justifyCenter]
+  : [layout.vStack]
 
 const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
   photos,
@@ -69,7 +74,7 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
     const image = await ImagePicker.launchCameraAsync({
       base64: true,
     })
-    if (image.cancelled === false) {
+    if (image.canceled === false) {
       addPhoto({
         uri: `data:image/jpeg;base64,${image.base64}`,
         'date-taken': new Date(),
@@ -164,7 +169,7 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
             <Button
               style={[styleS.fontBold, styleS.fontSizeMd, styleS.py2]}
               disabled={isDisabled}
-              appearance="info"
+              status="info"
               accessoryLeft={DeleteIcon}
               onPress={() => removePhoto(index)}
               aria-label={i18n.t('form.delete-photo')}
@@ -178,7 +183,7 @@ const Photo: React.FunctionComponent<PhotoSelectorProps> = ({
           onlyOne && photos && photos.length > 0 ? (
             <></>
           ) : (
-            <View style={[layout.hStack, layout.justifyCenter]}>
+            <View style={stackStyle}>
               <Button
                 style={[
                   styleS.my2,

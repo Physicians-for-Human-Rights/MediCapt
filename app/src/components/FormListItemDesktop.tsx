@@ -1,5 +1,5 @@
 import React from 'react'
-import { Pressable } from 'react-native'
+import { Pressable, StyleSheet } from 'react-native'
 import { Text, useStyleSheet, Icon } from '@ui-kitten/components'
 import themedStyles from '../themeStyled'
 // @ts-ignore Form some reason expo doesn't pick up this module without the extension
@@ -9,6 +9,7 @@ import _ from 'lodash'
 import { FormMetadata } from 'utils/types/formMetadata'
 import { View } from 'react-native'
 import { layout, spacing } from './styles'
+import { colors } from './nativeBaseSpec'
 
 const FormListItemDesktop = ({
   item,
@@ -20,6 +21,13 @@ const FormListItemDesktop = ({
   const state = useStoreState()
   const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
+  const style = StyleSheet.create({
+    icon: {
+      width: 24,
+      height: 24,
+      color: colors.success['500'],
+    },
+  })
   return (
     <Pressable
       style={[spacing.px2, layout.flex1]}
@@ -54,11 +62,21 @@ const FormListItemDesktop = ({
           </Text>
         </View>
 
-        <View style={[layout.hStack, layout.width5percent]}>
+        <View style={[layout.hStack]}>
           {item.enabled ? (
-            <Icon fill="success" size="6" name="check-circle" pack="material" />
+            <Icon
+              fill={colors.success['500']}
+              style={style.icon}
+              name="check-circle"
+              pack="material"
+            />
           ) : (
-            <Icon fill="error" size="6" name="cancel" pack="material" />
+            <Icon
+              fill={colors.primary}
+              style={style.icon}
+              name="cancel"
+              pack="material"
+            />
           )}
         </View>
       </View>
