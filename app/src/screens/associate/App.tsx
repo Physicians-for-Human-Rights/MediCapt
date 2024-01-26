@@ -31,16 +31,16 @@ export default function App({}: {}) {
           component={ShareViewer}
           options={{ headerShown: false }}
         />
-        <RootStack.Screen
-          name="Settings"
-          component={FindShare}
-          options={{ headerShown: false }}
-        />
-        <RootStack.Screen
-          name="Training"
-          component={FindShare}
-          options={{ headerShown: false }}
-        />
+        {/*<RootStack.Screen*/}
+        {/*  name="Settings"*/}
+        {/*  component={FindShare}*/}
+        {/*  options={{ headerShown: false }}*/}
+        {/*/>*/}
+        {/*<RootStack.Screen*/}
+        {/*  name="Training"*/}
+        {/*  component={FindShare}*/}
+        {/*  options={{ headerShown: false }}*/}
+        {/*/>*/}
       </RootStack.Navigator>
     </NavigationContainer>
   )

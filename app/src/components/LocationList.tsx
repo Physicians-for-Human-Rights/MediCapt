@@ -293,13 +293,7 @@ export default function LocationList({
             // selectedValue={filterEntityType}
             // onValueChange={setFilterEntityType}
             placeholder={i18n.t('location.select-entity-type')}
-            style={{ backgroundColor: 'white' }}
           >
-            {/* <SelectItem
-              key={'__any__'}
-              title={i18n.t('location.any-entity-type')}
-              // value={''}
-            /> */}
             {locationEntityTypes.map(e => (
               <SelectItem
                 key={e}

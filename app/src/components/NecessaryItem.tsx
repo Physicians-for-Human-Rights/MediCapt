@@ -10,14 +10,14 @@ import {
 import _ from 'lodash'
 import themedStyles from '../themeStyled'
 import { layout } from './styles'
-import { View } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import ModalHeader from './styledComponents/ModalHeader'
 import { useStoreState } from '../utils/store'
 
 export default function NecessaryItem({
   todoText,
   doneText,
-  size = 'tiny',
+  size = 'small',
   mx = 4,
   isDone,
   optional = false,
@@ -36,14 +36,19 @@ export default function NecessaryItem({
   const state = useStoreState()
   const i18n = state?.i18n
   const styleS = useStyleSheet(themedStyles)
+  const styles = StyleSheet.create({
+    icon: {
+      width: 24,
+      height: 24,
+    },
+  })
   if (isDone) {
     return (
       <View style={[layout.hStack, layout.alignCenter]}>
         <Icon
-          size={size}
           fill="#52af1f"
           name="check"
-          style={{ marginHorizontal: +mx * 4 }}
+          style={[styles.icon, { marginHorizontal: +mx * 4 }]}
         />
         {/* <CheckIcon size={size} mx={mx} /> */}
         <Text>{doneText}</Text>
@@ -54,10 +59,9 @@ export default function NecessaryItem({
     return (
       <View style={[layout.hStack, layout.alignCenter]}>
         <Icon
-          size={size}
-          style={{ marginHorizontal: +mx * 4 }}
+          style={[styles.icon, { marginHorizontal: +mx * 4 }]}
           fill={optional ? 'warning' : 'danger'}
-          name={optional ? 'alert-triangle' : 'close'}
+          name={optional ? 'warning' : 'close'}
         />
         <Text status={optional ? 'warning' : 'error'}>{todoText}</Text>
         {help && (
@@ -66,10 +70,10 @@ export default function NecessaryItem({
               return (
                 <Button
                   // {...triggerProps}
-                  appearance="ghost"
-                  status="secondary"
+                  appearance="outline"
+                  status="info"
                   style={[styleS.ml5, styleS.p0]}
-                  size="small"
+                  size="medium"
                 >
                   {i18n.t('general.tellMeMore')}
                 </Button>

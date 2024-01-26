@@ -106,7 +106,7 @@ function LoginScreen() {
                 {...material}
                 theme={{ ...material.light, ...themeKitten }}
               >
-                <ProviderApp />
+                <FormDesignerApp />
                 {/* <AuthApp /> */}
               </ApplicationProvider>
             </ToastProvider>

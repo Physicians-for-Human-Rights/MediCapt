@@ -15,7 +15,7 @@ import { LocationType } from 'utils/types/location'
 import { getLocationCached } from 'api/common'
 import en from '../localization/en.json'
 import { loadTranslations } from '../i18n'
-// import i18n from '../i18n'
+import { userData } from '../mockData/user'
 
 const i18n = new I18n()
 i18n.store(en)
@@ -37,10 +37,7 @@ export type StateType = {
 const initialState: StateType = {
   // temporary disabled
   // user: null,
-  user: {
-    username: 'testuser',
-    userType: 'provider',
-  },
+  user: userData,
   language: 'en',
   signOut: authSignOut,
   i18n: i18n,
@@ -117,6 +114,7 @@ export const useSignOut = () => {
 export const useUserLocationIDs = () => {
   // @ts-ignore Why doesn't typescript like useContext with two return values?
   const state = useStoreState()
+  console.log({ state })
   if (
     state &&
     state.user &&

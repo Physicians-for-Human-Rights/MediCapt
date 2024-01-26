@@ -53,7 +53,7 @@ function Signature({
     setSignature(undefined)
     internalClose()
   }
-  const Footer = (
+  const Footer: React.JSX.Element = (
     <>
       <Button
         appearance="ghost"

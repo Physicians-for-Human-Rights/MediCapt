@@ -9,6 +9,7 @@ export type RootStackParamList = {
   }
   Settings: {}
   Training: {}
+  YourRecords?: {}
 }
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =

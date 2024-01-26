@@ -277,7 +277,7 @@ export default function FormEditorOverview({
       </View>
       <View style={[layout.vStackGap3, spacing.mt10, spacing.mb5]}>
         <Button
-          size="tiny"
+          size="small"
           status="info" // make this no onhover effect
           // bg="coolGray.400"
           // alignSelf="flex-start"

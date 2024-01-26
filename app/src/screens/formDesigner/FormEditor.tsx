@@ -12,7 +12,6 @@ import FormEditorPrinted from 'components/FormEditorPrinted'
 import FormEditorVersions from 'components/FormEditorVersions'
 import FormEditorOverview from 'components/FormEditorOverview'
 import _ from 'lodash'
-import { readFile } from 'utils/forms'
 import Loading from 'components/Loading'
 import { getForm } from 'api/formdesigner'
 import {
@@ -22,7 +21,6 @@ import {
   fetchManifestContents,
 } from 'utils/manifests'
 import useLeave from 'utils/useLeave'
-import { dataURItoBlob } from 'utils/data'
 import { Dimensions, View, SafeAreaView } from 'react-native'
 import styles from '../../components/styles'
 import { breakpoints, colors } from '../../components/nativeBaseSpec'
@@ -77,7 +75,6 @@ function Tabs({
           // }}
           accessoryLeft={CheckIcon}
           onSelect={index => onSelect(index as IndexPath)}
-          // onValueChange={itemValue => setTabName(itemValue)}
         >
           {items.map(item => {
             return <SelectItem key={item.val} title={item.label} />
@@ -113,12 +110,12 @@ const defaultFormMetadata: Partial<FormMetadata> = {
   version: undefined,
 }
 
-const defaultForm: Partial<FormType> = {
-  'storage-version': '1.0.0',
-  skipConsent: undefined,
-  common: {},
-  sections: [],
-}
+// const defaultForm: Partial<FormType> = {
+//   'storage-version': '1.0.0',
+//   skipConsent: undefined,
+//   common: {},
+//   sections: [],
+// }
 
 const defaultManifest: FormManifestWithData = {
   'storage-version': '1.0.0',
@@ -144,14 +141,14 @@ export default function FormEditor({
 
   // This is how we keep track of whether the form has been changed.
   const setFormMetadata = useCallback(
-    x => {
+    (x: any) => {
       setChanged(true)
       setFormMetadataRaw(x)
     },
     [setFormMetadataRaw]
   )
   const setManifest = useCallback(
-    x => {
+    (x: any) => {
       setChanged(true)
       setManifestRaw(x)
     },

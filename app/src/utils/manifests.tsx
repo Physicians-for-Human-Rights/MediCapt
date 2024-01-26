@@ -305,6 +305,7 @@ export function getFormTypeFromManifest(
     e => e.filetype === 'text/yaml' && e.filename === 'form.yaml'
   )
   if (formFile) {
+    console.log('formFile', formFile)
     return yaml.load(formFile.data) as FormType
   }
   return null

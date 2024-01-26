@@ -18,7 +18,6 @@ export default function SelectLocation({
   bg,
   any,
   itemProps,
-  size = 'md',
   ...props
 }: {
   placeholder: string
@@ -26,21 +25,23 @@ export default function SelectLocation({
   setValue: (locationID: string, locationUUID: string) => any
   bg?: string
   any?: string
-  size?: string
   itemProps?: SelectItemProps
 } & SelectProps) {
   const state = useStoreState()
   const i18n = state?.i18n
   const locations = useUserLocations()
+  console.log({ locations })
   const [selectedIndex, setSelectedIndex] = useState<IndexPath>()
   const [displayVal, setDisplayVal] = useState<string>()
   const itemsArr = locations.map(location =>
     _.isString(location) ? location : location.shortName
   )
+  console.log({ itemsArr, any })
   if (any) {
     itemsArr.unshift(i18n.t(any))
   }
   const onSelect = (index: IndexPath) => {
+    console.log('index', index)
     let i
     setSelectedIndex(index)
     if (any) {
@@ -69,9 +70,8 @@ export default function SelectLocation({
     return (
       <Select
         style={{ backgroundColor: bg }}
-        size={size}
+        size="medium"
         selectedIndex={selectedIndex}
-        // selectedValue={selected}
         placeholder={placeholder}
         onSelect={index => onSelect(index as IndexPath)}
         value={displayVal}

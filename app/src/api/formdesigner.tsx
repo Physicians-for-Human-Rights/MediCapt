@@ -20,13 +20,7 @@ import {
   formManifestSchema,
   FormManifestWithData,
 } from 'utils/types/formMetadata'
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  Feather,
-  MaterialIcons,
-} from '@expo/vector-icons'
+
 import { standardHandler, StandardReporters } from 'api/utils'
 import {
   sha256,
@@ -244,7 +238,7 @@ export async function submitForm(
   postFn?: () => any
 ) {
   await standardHandler(
-    standardReporters,
+    // standardReporters,
     'Updating form',
     'Form updated',
     async () => {

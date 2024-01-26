@@ -5,7 +5,7 @@ import '@aws-amplify/ui-react/styles.css'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import ButtonGroup from 'components/form-parts/ButtonGroup'
 import { View } from 'react-native'
-import { Button, Text, useStyleSheet, Icon } from '@ui-kitten/components'
+import { Button, Text, useStyleSheet } from '@ui-kitten/components'
 
 import indexOf from 'lodash/indexOf'
 import medicapt_logo from '../../assets/medicapt.png'

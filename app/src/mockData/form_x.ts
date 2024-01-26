@@ -1,4 +1,5 @@
-export const formX = {
+import type { FormType } from 'utils/types/form'
+export const formX: FormType = {
   common: {
     gender: [
       { key: 'male', value: 'Male' },

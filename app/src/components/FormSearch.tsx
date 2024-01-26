@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import {
-  AntDesign,
-  Ionicons,
-  MaterialIcons,
-  MaterialCommunityIcons,
-} from '@expo/vector-icons'
-import DashboardLayout from 'components/DashboardLayout'
+
 import _ from 'lodash'
 import { default as FormListComponent } from 'components/FormList'
 import { FormMetadata } from 'utils/types/formMetadata'
@@ -14,16 +8,19 @@ import { findForms } from 'api/formdesigner'
 import Loading from 'components/Loading'
 import { useToast } from 'react-native-toast-notifications'
 
+import formsData from '../mockData/forms'
+
 export default function FormSearch({
   selectItem,
 }: {
   selectItem: (fm: FormMetadata) => any
 }) {
-  const [forms, setForms] = useState([] as FormMetadata[])
+  // const [forms, setForms] = useState<FormMetadata[]>([] as FormMetadata[])
+  const [forms, setForms] = useState<FormMetadata[]>(formsData)
   const [nextKey, setNextKey] = useState(undefined as any)
-  const [filterCountry, setFilterCountry] = useState('')
-  const [filterLanguage, setFilterLanguage] = useState('')
-  const [filterLocationID, setFilterLocationID] = useState('')
+  const [filterCountry, setFilterCountry] = useState<string>('')
+  const [filterLanguage, setFilterLanguage] = useState<string>('')
+  const [filterLocationID, setFilterLocationID] = useState<string>('')
   const [filterEnabled, setFilterEnabled] = useState('')
   const [filterSearchType, setFilterSearchType] = useState('')
   const [filterText, setFilterText] = useState(undefined as undefined | string)

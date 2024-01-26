@@ -26,7 +26,7 @@ import {
   RecordMetadata,
   RecordManifestWithData,
 } from 'utils/types/recordMetadata'
-import { getFormTypeFromManifest } from 'utils/manifests'
+// import { getFormTypeFromManifest } from 'utils/manifests'
 import { getUserByUUIDCached } from 'api/common'
 import { UserType } from 'utils/types/user'
 import FormButtons from 'components/FormButtons'
@@ -38,7 +38,8 @@ import { disableRenderCommands } from 'utils/formRendering/utils'
 import { layout } from './styles'
 import recordOverviewPage from './RecordOverViewPage'
 import getRecordFromManifest from './getRecordFromManifest'
-// import { formSections } from './FormElements'
+import { formX } from '../mockData/form_x'
+
 // FIXME Temproary hack before rewriting Form to invert control back to
 // RecordEditor and show error messages
 
@@ -110,8 +111,8 @@ export default function Form({
     getRecordFromManifest(recordManifest)
   )
 
-  const form = getFormTypeFromManifest(formManifest)
-
+  // const form = getFormTypeFromManifest(formManifest)
+  const form = formX
   const formSections = _.concat(
     overviewSection
       ? [
@@ -124,7 +125,6 @@ export default function Form({
       : [],
     nameFormSections(form.sections)
   )
-
   const [keepAlive, { add: addKeepAlive, remove: removeKeepAlive }] = useSet(
     new Set([] as string[])
   )

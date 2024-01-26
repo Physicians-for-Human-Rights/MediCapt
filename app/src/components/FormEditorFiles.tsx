@@ -108,11 +108,7 @@ export default function FormEditorFiles({
 
   const pdfHasAnnotations = false
   const renderToggleButton = (): React.ReactElement => (
-    <Button
-      status="secondary"
-      appearance="ghost"
-      onPress={() => setVisible(true)}
-    >
+    <Button status="info" appearance="ghost" onPress={() => setVisible(true)}>
       {i18n.t('general.tellMeMore')}
     </Button>
   )

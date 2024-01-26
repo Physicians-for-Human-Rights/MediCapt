@@ -34,7 +34,7 @@ const userDB = {
   Username: 'jmiller',
 }
 
-const userData = {
+export const userData = {
   userUUID: 'ca86532c-bbb7-4bbf-8910-01388fc1895e',
   userID: 'MU3-HTZ-PTX-3EC',
   created_time: '2022-11-17T22:38:51.503Z',

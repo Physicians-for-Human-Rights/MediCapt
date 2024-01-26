@@ -27,25 +27,7 @@ import FormListItemDesktop from './FormListItemDesktop'
 const { width } = Dimensions.get('window')
 const isWider = width > breakpoints.md
 
-export default function FormList({
-  forms,
-  hasMore = false,
-  loadMore,
-  filterCountry,
-  setFilterCountry,
-  filterLanguage,
-  setFilterLanguage,
-  filterLocationID,
-  setFilterLocationID,
-  filterEnabled,
-  setFilterEnabled,
-  filterSearchType,
-  setFilterSearchType,
-  filterText,
-  setFilterText,
-  doSearch,
-  selectItem,
-}: {
+interface IProps {
   forms: FormMetadata[]
   hasMore: boolean
   loadMore?: () => any
@@ -64,7 +46,26 @@ export default function FormList({
   setFilterText: React.Dispatch<React.SetStateAction<string | undefined>>
   doSearch: () => any
   selectItem: (f: FormMetadata) => any
-}) {
+}
+export default function FormList({
+  forms,
+  hasMore = false,
+  loadMore,
+  filterCountry,
+  setFilterCountry,
+  filterLanguage,
+  setFilterLanguage,
+  filterLocationID,
+  setFilterLocationID,
+  filterEnabled,
+  setFilterEnabled,
+  filterSearchType,
+  setFilterSearchType,
+  filterText,
+  setFilterText,
+  doSearch,
+  selectItem,
+}: IProps) {
   const state = useStoreState()
   const i18n = state?.i18n
   const selectList: string[] = [
